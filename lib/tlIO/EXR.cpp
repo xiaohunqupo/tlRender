@@ -557,7 +557,7 @@ namespace tl
 
         Imf::Compression toImf(Compression value)
         {
-            const std::array<Imf::Compression, 10> data =
+            static const std::array<Imf::Compression, 10> data =
             {
                 Imf::NO_COMPRESSION,
                 Imf::RLE_COMPRESSION,

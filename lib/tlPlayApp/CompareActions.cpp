@@ -16,7 +16,7 @@ namespace tl
         {
             auto appWeak = std::weak_ptr<App>(app);
             auto labels = timeline::getCompareLabels();
-            const std::array<std::string, static_cast<size_t>(timeline::Compare::Count)> icons =
+            static const std::array<std::string, static_cast<size_t>(timeline::Compare::Count)> icons =
             {
                 "CompareA",
                 "CompareB",
@@ -27,7 +27,7 @@ namespace tl
                 "CompareVertical",
                 "CompareTile",
             };
-            const std::array<ftk::Key, static_cast<size_t>(timeline::Compare::Count)> shortcuts =
+            static const std::array<ftk::Key, static_cast<size_t>(timeline::Compare::Count)> shortcuts =
             {
                 ftk::Key::A,
                 ftk::Key::B,
@@ -37,7 +37,7 @@ namespace tl
                 ftk::Key::Unknown,
                 ftk::Key::Unknown
             };
-            const std::array<std::string, static_cast<size_t>(timeline::Compare::Count)> tooltips =
+            static const std::array<std::string, static_cast<size_t>(timeline::Compare::Count)> tooltips =
             {
                 "Show the A file.",
                 "Show the B file.",

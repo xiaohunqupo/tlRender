@@ -58,7 +58,7 @@ namespace tl
 
         std::pair<int, int> toRational(double value)
         {
-            const std::array<std::pair<int, int>, 6> common =
+            static const std::array<std::pair<int, int>, 6> common =
             {
                 std::make_pair(24, 1),
                 std::make_pair(30, 1),
