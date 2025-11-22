@@ -7,7 +7,7 @@ cmake ^
     -B sbuild-%BUILD_TYPE% ^
     -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
     -DCMAKE_INSTALL_PREFIX=%CD%/install-%BUILD_TYPE% ^
-    -DCMAKE_PREFIX_PATH=%CD%/install-%BUILD_TYPE% ^
+    -DCMAKE_PREFIX_PATH="%CD%/install-%BUILD_TYPE%;%TLRENDER_QT6_DIR%" ^
     -Dftk_API=%FTK_API% ^
     -DTLRENDER_NET=%TLRENDER_NET% ^
     -DTLRENDER_OCIO=%TLRENDER_OCIO% ^
@@ -28,7 +28,7 @@ cmake ^
     -S tlRender ^
     -B build-%BUILD_TYPE% ^
     -DCMAKE_INSTALL_PREFIX=%CD%/install-%BUILD_TYPE% ^
-    -DCMAKE_PREFIX_PATH=%CD%/install-%BUILD_TYPE% ^
+    -DCMAKE_PREFIX_PATH="%CD%/install-%BUILD_TYPE%;%TLRENDER_QT6_DIR%" ^
     -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
     -Dftk_API=%FTK_API% ^
     -DTLRENDER_NET=%TLRENDER_NET% ^
