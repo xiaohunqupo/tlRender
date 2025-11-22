@@ -20,7 +20,7 @@ namespace tl
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
-            ISequenceRead::_init(path, memory, options, logSystem);
+            ISeqRead::_init(path, memory, options, logSystem);
         }
 
         Read::Read()

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <tlIOTest/OpenEXRTest.h>
+#include <tlIOTest/EXRTest.h>
 
-#include <tlIO/OpenEXR.h>
+#include <tlIO/EXR.h>
 #include <tlIO/System.h>
 
 #include <ftk/Core/Assert.h>
@@ -17,28 +17,28 @@ namespace tl
 {
     namespace io_tests
     {
-        OpenEXRTest::OpenEXRTest(const std::shared_ptr<ftk::Context>& context) :
-            ITest(context, "io_tests::OpenEXRTest")
+        EXRTest::EXRTest(const std::shared_ptr<ftk::Context>& context) :
+            ITest(context, "io_tests::EXRTest")
         {}
 
-        std::shared_ptr<OpenEXRTest> OpenEXRTest::create(const std::shared_ptr<ftk::Context>& context)
+        std::shared_ptr<EXRTest> EXRTest::create(const std::shared_ptr<ftk::Context>& context)
         {
-            return std::shared_ptr<OpenEXRTest>(new OpenEXRTest(context));
+            return std::shared_ptr<EXRTest>(new EXRTest(context));
         }
 
-        void OpenEXRTest::run()
+        void EXRTest::run()
         {
             _enums();
             _util();
             _io();
         }
 
-        void OpenEXRTest::_enums()
+        void EXRTest::_enums()
         {
             _enum<exr::Compression>("Compression", exr::getCompressionEnums);
         }
 
-        void OpenEXRTest::_util()
+        void EXRTest::_util()
         {
             {
                 const std::set<std::string> data =
@@ -163,7 +163,7 @@ namespace tl
             }
         }
 
-        void OpenEXRTest::_io()
+        void EXRTest::_io()
         {
             auto readSystem = _context->getSystem<ReadSystem>();
             auto readPlugin = readSystem->getPlugin<exr::ReadPlugin>();
@@ -250,7 +250,7 @@ namespace tl
             };
             const std::vector<std::string> fileNames =
             {
-                "OpenEXRTest",
+                "EXRTest",
                 "大平原"
             };
             const std::vector<bool> memoryIOList =

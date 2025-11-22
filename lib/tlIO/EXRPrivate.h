@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <tlIO/OpenEXR.h>
+#include <tlIO/EXR.h>
 
 #include <ftk/Core/Box.h>
 

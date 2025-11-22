@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <tlIO/SequenceIO.h>
+#include <tlIO/SeqIO.h>
 
 #include <atomic>
 #include <condition_variable>
@@ -15,11 +15,11 @@ namespace tl
 {
     namespace io
     {
-        struct ISequenceRead::Private
+        struct ISeqRead::Private
         {
             void addTags(Info&);
 
-            size_t threadCount = SequenceOptions().threadCount;
+            size_t threadCount = SeqOptions().threadCount;
 
             Info info;
 

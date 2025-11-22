@@ -469,7 +469,7 @@ namespace tl
                 {
                     const auto memRead = getMemRead(clip->media_reference());
                     io::Options options = ioOptions;
-                    options["SequenceIO/DefaultSpeed"] = ftk::Format("{0}").arg(timeRange.duration().rate());
+                    options["SeqIO/DefaultSpeed"] = ftk::Format("{0}").arg(timeRange.duration().rate());
                     const auto ioSystem = context->getSystem<io::ReadSystem>();
                     out = ioSystem->read(path, memRead, options);
                     readCache.add(key, out);

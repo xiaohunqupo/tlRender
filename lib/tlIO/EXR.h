@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <tlIO/SequenceIO.h>
+#include <tlIO/SeqIO.h>
 
 namespace tl
 {
@@ -36,7 +36,7 @@ namespace tl
         void reorderChannels(std::vector<std::string>&);
 
         //! OpenEXR reader.
-        class Read : public io::ISequenceRead
+        class Read : public io::ISeqRead
         {
         protected:
             void _init(
@@ -75,7 +75,7 @@ namespace tl
         };
 
         //! OpenEXR writer.
-        class Write : public io::ISequenceWrite
+        class Write : public io::ISeqWrite
         {
         protected:
             void _init(

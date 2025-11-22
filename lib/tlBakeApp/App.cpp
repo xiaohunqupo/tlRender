@@ -86,12 +86,12 @@ namespace tl
                 { "-sequenceDefaultSpeed" },
                 "Default speed for image sequences.",
                 "Image Sequences",
-                io::SequenceOptions().defaultSpeed);
+                io::SeqOptions().defaultSpeed);
             _cmdLine.sequenceThreadCount = ftk::CmdLineValueOption<int>::create(
                 { "-sequenceThreadCount" },
                 "Number of threads for image sequence I/O.",
                 "Image Sequences",
-                static_cast<int>(io::SequenceOptions().threadCount));
+                static_cast<int>(io::SeqOptions().threadCount));
 #if defined(TLRENDER_EXR)
             _cmdLine.exrCompression = ftk::CmdLineValueOption<exr::Compression>::create(
                 { "-exrCompression" },
@@ -363,13 +363,13 @@ namespace tl
             {
                 std::stringstream ss;
                 ss << _cmdLine.sequenceDefaultSpeed->getValue();
-                out["SequenceIO/DefaultSpeed"] = ss.str();
+                out["SeqIO/DefaultSpeed"] = ss.str();
             }
             if (_cmdLine.sequenceThreadCount->hasValue())
             {
                 std::stringstream ss;
                 ss << _cmdLine.sequenceThreadCount->getValue();
-                out["SequenceIO/ThreadCount"] = ss.str();
+                out["SeqIO/ThreadCount"] = ss.str();
             }
 #if defined(TLRENDER_EXR)
             if (_cmdLine.exrCompression->hasValue())

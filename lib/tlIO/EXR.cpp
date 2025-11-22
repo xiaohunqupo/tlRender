@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <tlIO/OpenEXRPrivate.h>
+#include <tlIO/EXRPrivate.h>
 
 #include <ftk/Core/Error.h>
 #include <ftk/Core/Format.h>

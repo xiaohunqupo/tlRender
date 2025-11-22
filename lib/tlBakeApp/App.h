@@ -4,9 +4,9 @@
 #include <tlTimeline/IRender.h>
 #include <tlTimeline/Timeline.h>
 
-#include <tlIO/SequenceIO.h>
+#include <tlIO/SeqIO.h>
 #if defined(TLRENDER_EXR)
-#include <tlIO/OpenEXR.h>
+#include <tlIO/EXR.h>
 #endif // TLRENDER_EXR
 #if defined(TLRENDER_FFMPEG)
 #include <tlIO/FFmpeg.h>

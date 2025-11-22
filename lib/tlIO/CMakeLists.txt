@@ -4,30 +4,30 @@ set(HEADERS
     Init.h
     Plugin.h
     Read.h
-    SequenceIO.h
+    SeqIO.h
     System.h
     SystemInline.h
     Write.h)
 set(HEADERS_PRIVATE
-    SequenceIOReadPrivate.h)
+    SeqIOReadPrivate.h)
 
 set(SOURCE
     IO.cpp
     Init.cpp
     Plugin.cpp
     Read.cpp
-    SequenceIO.cpp
-    SequenceIORead.cpp
-    SequenceIOWrite.cpp
+    SeqIO.cpp
+    SeqIORead.cpp
+    SeqIOWrite.cpp
     System.cpp
     Write.cpp)
 
 set(LIBRARIES)
 set(LIBRARIES_PRIVATE)
 if(TLRENDER_EXR)
-    list(APPEND HEADERS OpenEXR.h)
-    list(APPEND HEADERS_PRIVATE OpenEXRPrivate.h)
-    list(APPEND SOURCE OpenEXR.cpp OpenEXRRead.cpp OpenEXRWrite.cpp)
+    list(APPEND HEADERS EXR.h)
+    list(APPEND HEADERS_PRIVATE EXRPrivate.h)
+    list(APPEND SOURCE EXR.cpp EXRRead.cpp EXRWrite.cpp)
     list(APPEND LIBRARIES_PRIVATE OpenEXR::OpenEXR)
 endif()
 if(TLRENDER_FFMPEG)

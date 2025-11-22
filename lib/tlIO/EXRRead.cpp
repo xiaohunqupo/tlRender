@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <tlIO/OpenEXRPrivate.h>
+#include <tlIO/EXRPrivate.h>
 
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
@@ -518,7 +518,7 @@ namespace tl
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
-            ISequenceRead::_init(path, mem, options, logSystem);
+            ISeqRead::_init(path, mem, options, logSystem);
         }
 
         Read::Read()

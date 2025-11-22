@@ -20,7 +20,7 @@
 #include <tlIOTest/FFmpegTest.h>
 #endif // TLRENDER_FFMPEG
 #if defined(TLRENDER_EXR)
-#include <tlIOTest/OpenEXRTest.h>
+#include <tlIOTest/EXRTest.h>
 #endif // TLRENDER_EXR
 #if defined(TLRENDER_OIIO)
 #include <tlIOTest/OIIOTest.h>
@@ -63,7 +63,7 @@ void ioTests(
     tests.push_back(io_tests::OIIOTest::create(context));
 #endif // TLRENDER_OIIO
 #if defined(TLRENDER_EXR)
-    tests.push_back(io_tests::OpenEXRTest::create(context));
+    tests.push_back(io_tests::EXRTest::create(context));
 #endif // TLRENDER_EXR
 }
 

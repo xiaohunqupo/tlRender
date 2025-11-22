@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <tlIO/SequenceIOReadPrivate.h>
+#include <tlIO/SeqIOReadPrivate.h>
 
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
@@ -18,7 +18,7 @@ namespace tl
             const std::chrono::milliseconds requestTimeout(5);
         }
 
-        void ISequenceRead::_init(
+        void ISeqRead::_init(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& mem,
             const Options& options,
@@ -44,13 +44,13 @@ namespace tl
                 }
             }
 
-            auto i = options.find("SequenceIO/ThreadCount");
+            auto i = options.find("SeqIO/ThreadCount");
             if (i != options.end())
             {
                 std::stringstream ss(i->second);
                 ss >> p.threadCount;
             }
-            i = options.find("SequenceIO/DefaultSpeed");
+            i = options.find("SeqIO/DefaultSpeed");
             if (i != options.end())
             {
                 std::stringstream ss(i->second);
@@ -76,7 +76,7 @@ namespace tl
                         if (auto logSystem = _logSystem.lock())
                         {
                             logSystem->print(
-                                "tl::io::ISequenceRead",
+                                "tl::io::ISeqRead",
                                 e.what(),
                                 ftk::LogType::Error);
                         }
@@ -90,14 +90,14 @@ namespace tl
                 });
         }
 
-        ISequenceRead::ISequenceRead() :
+        ISeqRead::ISeqRead() :
             _p(new Private)
         {}
 
-        ISequenceRead::~ISequenceRead()
+        ISeqRead::~ISeqRead()
         {}
 
-        std::future<Info> ISequenceRead::getInfo()
+        std::future<Info> ISeqRead::getInfo()
         {
             FTK_P();
             auto request = std::make_shared<Private::InfoRequest>();
@@ -122,7 +122,7 @@ namespace tl
             return future;
         }
 
-        std::future<VideoData> ISequenceRead::readVideo(
+        std::future<VideoData> ISeqRead::readVideo(
             const OTIO_NS::RationalTime& time,
             const Options& options)
         {
@@ -151,12 +151,12 @@ namespace tl
             return future;
         }
 
-        void ISequenceRead::cancelRequests()
+        void ISeqRead::cancelRequests()
         {
             _cancelRequests();
         }
 
-        void ISequenceRead::_finish()
+        void ISeqRead::_finish()
         {
             FTK_P();
             p.thread.running = false;
@@ -166,7 +166,7 @@ namespace tl
             }
         }
 
-        void ISequenceRead::_thread()
+        void ISeqRead::_thread()
         {
             FTK_P();
             p.thread.logTimer = std::chrono::steady_clock::now();
@@ -275,7 +275,7 @@ namespace tl
                     if (diff.count() > 10.F)
                     {
                         p.thread.logTimer = now;
-                        const std::string id = ftk::Format("tl::io::ISequenceRead {0}").arg(this);
+                        const std::string id = ftk::Format("tl::io::ISeqRead {0}").arg(this);
                         size_t requestsSize = 0;
                         {
                             std::unique_lock<std::mutex> lock(p.mutex.mutex);
@@ -295,7 +295,7 @@ namespace tl
             }
         }
 
-        void ISequenceRead::_finishRequests()
+        void ISeqRead::_finishRequests()
         {
             FTK_P();
             for (auto& request : p.thread.videoRequestsInProgress)
@@ -311,7 +311,7 @@ namespace tl
             p.thread.videoRequestsInProgress.clear();
         }
 
-        void ISequenceRead::_cancelRequests()
+        void ISeqRead::_cancelRequests()
         {
             FTK_P();
             std::list<std::shared_ptr<Private::InfoRequest> > infoRequests;
@@ -331,7 +331,7 @@ namespace tl
             }
         }
 
-        void ISequenceRead::Private::addTags(Info& info)
+        void ISeqRead::Private::addTags(Info& info)
         {
             if (!info.video.empty())
             {

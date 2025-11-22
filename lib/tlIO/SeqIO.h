@@ -11,20 +11,20 @@ namespace tl
     namespace io
     {
         //! Sequence I/O options.
-        struct SequenceOptions
+        struct SeqOptions
         {
             double defaultSpeed = 24.0;
             size_t threadCount = 16;
 
-            bool operator == (const SequenceOptions&) const;
-            bool operator != (const SequenceOptions&) const;
+            bool operator == (const SeqOptions&) const;
+            bool operator != (const SeqOptions&) const;
         };
 
         //! Get sequence I/O options.
-        Options getOptions(const SequenceOptions&);
+        Options getOptions(const SeqOptions&);
 
         //! Base class for image sequence readers.
-        class ISequenceRead : public IRead
+        class ISeqRead : public IRead
         {
         protected:
             void _init(
@@ -33,10 +33,10 @@ namespace tl
                 const Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
-            ISequenceRead();
+            ISeqRead();
 
         public:
-            virtual ~ISequenceRead();
+            virtual ~ISeqRead();
 
             std::future<Info> getInfo() override;
             std::future<VideoData> readVideo(
@@ -59,7 +59,7 @@ namespace tl
 
             int64_t _startFrame = 0;
             int64_t _endFrame = 0;
-            float _defaultSpeed = SequenceOptions().defaultSpeed;
+            float _defaultSpeed = SeqOptions().defaultSpeed;
 
         private:
             void _thread();
@@ -70,7 +70,7 @@ namespace tl
         };
 
         //! Base class for image sequence writers.
-        class ISequenceWrite : public IWrite
+        class ISeqWrite : public IWrite
         {
         protected:
             void _init(
@@ -79,10 +79,10 @@ namespace tl
                 const Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
-            ISequenceWrite();
+            ISeqWrite();
 
         public:
-            virtual ~ISequenceWrite();
+            virtual ~ISeqWrite();
 
             void writeVideo(
                 const OTIO_NS::RationalTime&,
@@ -103,9 +103,9 @@ namespace tl
         //! \name Serialize
         ///@{
 
-        void to_json(nlohmann::json&, const SequenceOptions&);
+        void to_json(nlohmann::json&, const SeqOptions&);
 
-        void from_json(const nlohmann::json&, SequenceOptions&);
+        void from_json(const nlohmann::json&, SeqOptions&);
 
         ///@}
     }

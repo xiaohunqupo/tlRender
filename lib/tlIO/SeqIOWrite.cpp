@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <tlIO/SequenceIO.h>
+#include <tlIO/SeqIO.h>
 
 #include <cstring>
 #include <sstream>
@@ -10,7 +10,7 @@ namespace tl
 {
     namespace io
     {
-        struct ISequenceWrite::Private
+        struct ISeqWrite::Private
         {
             std::string path;
             std::string baseName;
@@ -18,10 +18,10 @@ namespace tl
             int pad = 0;
             std::string extension;
 
-            float defaultSpeed = SequenceOptions().defaultSpeed;
+            float defaultSpeed = SeqOptions().defaultSpeed;
         };
 
-        void ISequenceWrite::_init(
+        void ISeqWrite::_init(
             const ftk::Path& path,
             const Info& info,
             const Options& options,
@@ -31,7 +31,7 @@ namespace tl
 
             FTK_P();
 
-            const auto i = options.find("SequenceIO/DefaultSpeed");
+            const auto i = options.find("SeqIO/DefaultSpeed");
             if (i != options.end())
             {
                 std::stringstream ss(i->second);
@@ -39,14 +39,14 @@ namespace tl
             }
         }
 
-        ISequenceWrite::ISequenceWrite() :
+        ISeqWrite::ISeqWrite() :
             _p(new Private)
         {}
 
-        ISequenceWrite::~ISequenceWrite()
+        ISeqWrite::~ISeqWrite()
         {}
 
-        void ISequenceWrite::writeVideo(
+        void ISeqWrite::writeVideo(
             const OTIO_NS::RationalTime& time,
             const std::shared_ptr<ftk::Image>& image,
             const Options& options)

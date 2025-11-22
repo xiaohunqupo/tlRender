@@ -21,7 +21,7 @@ namespace tl
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
-            ISequenceWrite::_init(path, info, options, logSystem);
+            ISeqWrite::_init(path, info, options, logSystem);
         }
 
         Write::Write()

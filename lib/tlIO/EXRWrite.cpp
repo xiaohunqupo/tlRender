@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <tlIO/OpenEXRPrivate.h>
+#include <tlIO/EXRPrivate.h>
 
 #include <ftk/Core/Format.h>
 
@@ -18,7 +18,7 @@ namespace tl
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
-            ISequenceWrite::_init(path, info, options, logSystem);
+            ISeqWrite::_init(path, info, options, logSystem);
 
             auto i = options.find("OpenEXR/Compression");
             if (i != options.end())
@@ -66,7 +66,7 @@ namespace tl
                 Imf::INCREASING_Y,
                 toImf(_compression));
             header.dwaCompressionLevel() = _dwaCompressionLevel;
-            writeTags(image->getTags(), io::SequenceOptions().defaultSpeed, header);
+            writeTags(image->getTags(), io::SeqOptions().defaultSpeed, header);
             Imf::RgbaOutputFile f(fileName.c_str(), header);
             const size_t scanlineSize = static_cast<size_t>(info.size.w) * 4 * 2;
             const uint8_t* p = image->getData() + (info.size.h - 1) * scanlineSize;
