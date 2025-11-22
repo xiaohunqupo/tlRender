@@ -1,0 +1,131 @@
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright Contributors to the tlRender project.
+
+#include <tlRender/Qt/Init.h>
+
+#include <tlRender/Qt/MetaTypes.h>
+#include <tlRender/Qt/TimeObject.h>
+
+#include <tlRender/Timeline/Init.h>
+
+#include <ftk/Core/Context.h>
+
+#include <QSurfaceFormat>
+
+namespace tl
+{
+    namespace qt
+    {
+        void init(
+            const std::shared_ptr<ftk::Context>& context,
+            DefaultSurfaceFormat defaultSurfaceFormat)
+        {
+            timeline::init(context);
+            System::create(context, defaultSurfaceFormat);
+        }
+
+        System::System(
+            const std::shared_ptr<ftk::Context>& context,
+            DefaultSurfaceFormat defaultSurfaceFormat) :
+            ISystem(context, "tl::qt::System")
+        {
+            qRegisterMetaType<OTIO_NS::RationalTime>("OTIO_NS::RationalTime");
+            qRegisterMetaType<OTIO_NS::TimeRange>("OTIO_NS::TimeRange");
+            qRegisterMetaType<std::vector<OTIO_NS::TimeRange> >("std::vector<OTIO_NS::TimeRange>");
+
+            qRegisterMetaType<ftk::AlphaBlend>("ftk::AlphaBlend");
+            qRegisterMetaType<ftk::ChannelDisplay>("ftk::ChannelDisplay");
+            qRegisterMetaType<ftk::ImageType>("ftk::ImageType");
+            qRegisterMetaType<ftk::ImageFilter>("ftk::ImageFilter");
+            qRegisterMetaType<ftk::InputVideoLevels>("ftk::InputVideoLevels");
+            qRegisterMetaType<ftk::PathOptions>("ftk::PathOptions");
+            qRegisterMetaType<ftk::Size2I>("ftk::Size2I");
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            QMetaType::registerComparators<ftk::AlphaBlend>();
+            QMetaType::registerComparators<ftk::ChannelDisplay>();
+            QMetaType::registerComparators<ftk::ImageType>();
+            QMetaType::registerComparators<ftk::ImageFilter>();
+            QMetaType::registerComparators<ftk::InputVideoLevels>();
+#endif // QT_VERSION
+
+            qRegisterMetaType<audio::DataType>("tl::audio::DataType");
+            qRegisterMetaType<audio::DeviceID>("tl::audio::DeviceID");
+            qRegisterMetaType<audio::DeviceInfo>("tl::audio::DeviceInfo");
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            QMetaType::registerComparators<audio::DataType>();
+#endif // QT_VERSION
+
+            qRegisterMetaType<io::FileType>("tl::io::FileType");
+            qRegisterMetaType<io::Info>("tl::io::Info");
+            qRegisterMetaType<io::VideoData>("tl::io::VideoData");
+            qRegisterMetaType<io::AudioData>("tl::io::AudioData");
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            QMetaType::registerComparators<io::FileType>();
+#endif // QT_VERSION
+
+            qRegisterMetaType<timeline::AudioData>("tl::timeline::AudioData");
+            qRegisterMetaType<timeline::AudioLayer>("tl::timeline::AudioLayer");
+            qRegisterMetaType<timeline::Color>("tl::timeline::Color");
+            qRegisterMetaType<timeline::Compare>("tl::timeline::Compare");
+            qRegisterMetaType<timeline::CompareTime>("tl::timeline::CompareTime");
+            qRegisterMetaType<timeline::CompareOptions>("tl::timeline::CompareOptions");
+            qRegisterMetaType<timeline::EXRDisplay>("tl::timeline::EXRDisplay");
+            qRegisterMetaType<timeline::ImageSeqAudio>("tl::timeline::ImageSeqAudio");
+            qRegisterMetaType<timeline::LUTOptions>("tl::timeline::LUTOptions");
+            qRegisterMetaType<timeline::Levels>("tl::timeline::Levels");
+            qRegisterMetaType<timeline::Loop>("tl::timeline::Loop");
+            qRegisterMetaType<timeline::OCIOOptions>("tl::timeline::OCIOOptions");
+            qRegisterMetaType<timeline::Options>("tl::timeline::Options");
+            qRegisterMetaType<timeline::Playback>("tl::timeline::Playback");
+            qRegisterMetaType<timeline::PlayerCacheInfo>("tl::timeline::PlayerCacheInfo");
+            qRegisterMetaType<timeline::PlayerCacheOptions>("tl::timeline::PlayerCacheOptions");
+            qRegisterMetaType<timeline::PlayerOptions>("tl::timeline::PlayerOptions");
+            qRegisterMetaType<timeline::TimeAction>("tl::timeline::TimeAction");
+            qRegisterMetaType<timeline::TimeUnits>("tl::timeline::TimeUnits");
+            qRegisterMetaType<timeline::Transition>("tl::timeline::Transition");
+            qRegisterMetaType<timeline::VideoData>("tl::timeline::VideoData");
+            qRegisterMetaType<timeline::VideoLayer>("tl::timeline::VideoLayer");
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+            QMetaType::registerComparators<timeline::Compare>();
+            QMetaType::registerComparators<timeline::CompareTime>();
+            QMetaType::registerComparators<timeline::ImageuenceAudio>();
+            QMetaType::registerComparators<timeline::Loop>();
+            QMetaType::registerComparators<timeline::Playback>();
+            QMetaType::registerComparators<timeline::TimeAction>();
+            QMetaType::registerComparators<timeline::TimeUnits>();
+            QMetaType::registerComparators<timeline::Transition>();
+#endif // QT_VERSION
+
+            switch (defaultSurfaceFormat)
+            {
+            case DefaultSurfaceFormat::OpenGL_4_1_CoreProfile:
+            {
+                QSurfaceFormat surfaceFormat;
+                surfaceFormat.setMajorVersion(4);
+                surfaceFormat.setMinorVersion(1);
+                surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
+                QSurfaceFormat::setDefaultFormat(surfaceFormat);
+                break;
+            }
+            default: break;
+            }
+        }
+
+        System::~System()
+        {}
+
+        std::shared_ptr<System> System::create(
+            const std::shared_ptr<ftk::Context>& context,
+            DefaultSurfaceFormat defaultSurfaceFormat)
+        {
+            auto out = context->getSystem<System>();
+            if (!out)
+            {
+                out = std::shared_ptr<System>(new System(context, defaultSurfaceFormat));
+                context->addSystem(out);
+            }
+            return out;
+        }
+    }
+}
+

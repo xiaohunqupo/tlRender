@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <tlBakeApp/App.h>
+#include <tlRender/BakeApp/App.h>
 
-#include <tlTimeline/Init.h>
+#include <tlRender/Timeline/Init.h>
 
 #include <ftk/Core/Context.h>
 

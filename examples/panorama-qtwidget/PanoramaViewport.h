@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include <tlQt/PlayerObject.h>
+#include <tlRender/Qt/PlayerObject.h>
 
-#include <tlTimelineGL/Render.h>
+#include <tlRender/GL/Render.h>
 
 #include <ftk/GL/Mesh.h>
 #include <ftk/GL/OffscreenBuffer.h>

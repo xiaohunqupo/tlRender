@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include <tlQt/ContextObject.h>
-#include <tlQt/PlayerObject.h>
-#include <tlQt/TimeObject.h>
+#include <tlRender/Qt/ContextObject.h>
+#include <tlRender/Qt/PlayerObject.h>
+#include <tlRender/Qt/TimeObject.h>
 
 #include <ftk/Core/IApp.h>
 

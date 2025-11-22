@@ -2,36 +2,36 @@
 // Copyright Contributors to the tlRender project.
 
 #if defined(TLRENDER_QT5) || defined(TLRENDER_QT6)
-#include <tlQtTest/TimeObjectTest.h>
-#include <tlQt/Init.h>
+#include <QtTest/TimeObjectTest.h>
+#include <tlRender/Qt/Init.h>
 #endif // TLRENDER_QT5 || TLRENDER_QT6
 
-#include <tlTimelineTest/ColorOptionsTest.h>
-#include <tlTimelineTest/CompareOptionsTest.h>
-#include <tlTimelineTest/DisplayOptionsTest.h>
-#include <tlTimelineTest/MemRefTest.h>
-#include <tlTimelineTest/PlayerOptionsTest.h>
-#include <tlTimelineTest/PlayerTest.h>
-#include <tlTimelineTest/TimelineTest.h>
-#include <tlTimelineTest/UtilTest.h>
+#include <TimelineTest/ColorOptionsTest.h>
+#include <TimelineTest/CompareOptionsTest.h>
+#include <TimelineTest/DisplayOptionsTest.h>
+#include <TimelineTest/MemRefTest.h>
+#include <TimelineTest/PlayerOptionsTest.h>
+#include <TimelineTest/PlayerTest.h>
+#include <TimelineTest/TimelineTest.h>
+#include <TimelineTest/UtilTest.h>
 
-#include <tlIOTest/IOTest.h>
+#include <IOTest/IOTest.h>
 #if defined(TLRENDER_FFMPEG)
-#include <tlIOTest/FFmpegTest.h>
+#include <IOTest/FFmpegTest.h>
 #endif // TLRENDER_FFMPEG
 #if defined(TLRENDER_EXR)
-#include <tlIOTest/EXRTest.h>
+#include <IOTest/EXRTest.h>
 #endif // TLRENDER_EXR
 #if defined(TLRENDER_OIIO)
-#include <tlIOTest/OIIOTest.h>
+#include <IOTest/OIIOTest.h>
 #endif // TLRENDER_OIIO
 
-#include <tlCoreTest/AudioTest.h>
-#include <tlCoreTest/HDRTest.h>
-#include <tlCoreTest/TimeTest.h>
-#include <tlCoreTest/URLTest.h>
+#include <CoreTest/AudioTest.h>
+#include <CoreTest/HDRTest.h>
+#include <CoreTest/TimeTest.h>
+#include <CoreTest/URLTest.h>
 
-#include <tlTimeline/Init.h>
+#include <tlRender/Timeline/Init.h>
 
 #include <ftk/Core/Context.h>
 

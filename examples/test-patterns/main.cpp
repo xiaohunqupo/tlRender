@@ -3,7 +3,7 @@
 
 #include "App.h"
 
-#include <tlTimeline/Init.h>
+#include <tlRender/Timeline/Init.h>
 
 #include <ftk/Core/Context.h>
 

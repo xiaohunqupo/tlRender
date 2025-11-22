@@ -1,0 +1,102 @@
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright Contributors to the tlRender project.
+
+#include "ViewActions.h"
+
+#include "App.h"
+
+#include <tlRender/UI/Viewport.h>
+
+namespace tl
+{
+    namespace play
+    {
+        void ViewActions::_init(
+            const std::shared_ptr<ftk::Context>& context,
+            const std::shared_ptr<App>& app,
+            const std::shared_ptr<timelineui::Viewport>& viewport)
+        {
+            auto viewportWeak = std::weak_ptr<timelineui::Viewport>(viewport);
+            _actions["Frame"] = ftk::Action::create(
+                "Frame",
+                "ViewFrame",
+                ftk::Key::Backspace,
+                0,
+                [viewportWeak](bool value)
+                {
+                    if (auto viewport = viewportWeak.lock())
+                    {
+                        viewport->setFrameView(value);
+                    }
+                });
+            _actions["Frame"]->setTooltip("Toggle whether the view is automatically framed.");
+
+            _actions["ZoomReset"] = ftk::Action::create(
+                "Zoom Reset",
+                "ViewZoomReset",
+                ftk::Key::_0,
+                0,
+                [viewportWeak]
+                {
+                    if (auto viewport = viewportWeak.lock())
+                    {
+                        viewport->viewZoomReset();
+                    }
+                });
+            _actions["ZoomReset"]->setTooltip("Reset the view zoom to 1:1.");
+
+            _actions["ZoomIn"] = ftk::Action::create(
+                "Zoom In",
+                "ViewZoomIn",
+                ftk::Key::Equals,
+                0,
+                [viewportWeak]
+                {
+                    if (auto viewport = viewportWeak.lock())
+                    {
+                        viewport->viewZoomIn();
+                    }
+                });
+            _actions["ZoomIn"]->setTooltip("Zoom the view in.");
+
+            _actions["ZoomOut"] = ftk::Action::create(
+                "Zoom Out",
+                "ViewZoomOut",
+                ftk::Key::Minus,
+                0,
+                [viewportWeak]
+                {
+                    if (auto viewport = viewportWeak.lock())
+                    {
+                        viewport->viewZoomOut();
+                    }
+                });
+            _actions["ZoomOut"]->setTooltip("Zoom the view out.");
+
+            _frameObserver = ftk::ValueObserver<bool>::create(
+                viewport->observeFrameView(),
+                [this](bool value)
+                {
+                    _actions["Frame"]->setChecked(value);
+                });
+        }
+
+        ViewActions::~ViewActions()
+        {}
+
+        std::shared_ptr<ViewActions> ViewActions::create(
+            const std::shared_ptr<ftk::Context>& context,
+            const std::shared_ptr<App>& app,
+            const std::shared_ptr<timelineui::Viewport>& viewport)
+        {
+            auto out = std::shared_ptr<ViewActions>(new ViewActions);
+            out->_init(context, app, viewport);
+            return out;
+        }
+
+        const std::map<std::string, std::shared_ptr<ftk::Action> >& ViewActions::getActions() const
+        {
+            return _actions;
+        }
+    }
+}

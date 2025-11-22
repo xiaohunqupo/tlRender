@@ -295,7 +295,7 @@ endif()
 #-------------------------------------------------------------------------------
 # Sub-directories
 
-add_subdirectory(lib)
+add_subdirectory(lib/tlRender)
 if(TLRENDER_PROGRAMS)
     add_subdirectory(bin)
 endif()

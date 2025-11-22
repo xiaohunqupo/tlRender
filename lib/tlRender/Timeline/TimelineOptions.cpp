@@ -1,0 +1,40 @@
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright Contributors to the tlRender project.
+
+#include <tlRender/Timeline/TimelineOptions.h>
+
+#include <ftk/Core/Error.h>
+#include <ftk/Core/String.h>
+
+#include <sstream>
+
+namespace tl
+{
+    namespace timeline
+    {
+        FTK_ENUM_IMPL(
+            ImageSeqAudio,
+            "None",
+            "Ext",
+            "FileName");
+
+        bool Options::operator == (const Options& other) const
+        {
+            return
+                imageSeqAudio == other.imageSeqAudio &&
+                imageSeqAudioExts == other.imageSeqAudioExts &&
+                imageSeqAudioFileName == other.imageSeqAudioFileName &&
+                compat == other.compat &&
+                videoRequestMax == other.videoRequestMax &&
+                audioRequestMax == other.audioRequestMax &&
+                requestTimeout == other.requestTimeout &&
+                ioOptions == other.ioOptions &&
+                pathOptions == other.pathOptions;
+        }
+
+        bool Options::operator != (const Options& other) const
+        {
+            return !(*this == other);
+        }
+    }
+}

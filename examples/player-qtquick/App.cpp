@@ -3,9 +3,9 @@
 
 #include "App.h"
 
-#include <tlQtQuick/GLFramebufferObject.h>
+#include <tlRender/QtQuick/GLFramebufferObject.h>
 
-#include <tlCore/AudioSystem.h>
+#include <tlRender/Core/AudioSystem.h>
 
 #include <ftk/Core/CmdLine.h>
 #include <ftk/Core/Format.h>

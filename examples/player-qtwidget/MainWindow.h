@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include <tlQtWidget/Viewport.h>
-#include <tlQtWidget/TimeLabel.h>
-#include <tlQtWidget/TimeSpinBox.h>
-#include <tlQtWidget/TimelineWidget.h>
+#include <tlRender/QtWidget/Viewport.h>
+#include <tlRender/QtWidget/TimeLabel.h>
+#include <tlRender/QtWidget/TimeSpinBox.h>
+#include <tlRender/QtWidget/TimelineWidget.h>
 
 #include <QMainWindow>
 

@@ -3,10 +3,10 @@
 
 #include "PanoramaViewport.h"
 
-#include <tlQtWidget/Init.h>
+#include <tlRender/QtWidget/Init.h>
 
-#include <tlQt/ContextObject.h>
-#include <tlQt/PlayerObject.h>
+#include <tlRender/Qt/ContextObject.h>
+#include <tlRender/Qt/PlayerObject.h>
 
 #include <ftk/Core/Context.h>
 

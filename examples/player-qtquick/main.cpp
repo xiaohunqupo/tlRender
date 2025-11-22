@@ -3,7 +3,7 @@
 
 #include "App.h"
 
-#include <tlQtQuick/Init.h>
+#include <tlRender/QtQuick/Init.h>
 
 #include <ftk/Core/Context.h>
 

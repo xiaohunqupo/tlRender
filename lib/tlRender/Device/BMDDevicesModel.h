@@ -1,0 +1,95 @@
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright Contributors to the tlRender project.
+
+#pragma once
+
+#include <tlRender/Device/BMDData.h>
+
+#include <ftk/Core/Image.h>
+#include <ftk/Core/ObservableValue.h>
+
+#include <memory>
+#include <string>
+
+namespace ftk
+{
+    class Context;
+}
+
+namespace tl
+{
+    namespace bmd
+    {
+        //! BMD devices model data.
+        struct DevicesModelData
+        {
+            std::vector<std::string> devices;
+            int                      deviceIndex = 0;
+            std::vector<std::string> displayModes;
+            int                      displayModeIndex = 0;
+            std::vector<PixelType>   pixelTypes;
+            int                      pixelTypeIndex = 0;
+            bool                     deviceEnabled = true;
+            BoolOptions              boolOptions;
+            ftk::VideoLevels         videoLevels = ftk::VideoLevels::LegalRange;
+            HDRMode                  hdrMode = HDRMode::FromFile;
+            image::HDRData           hdrData;
+
+            bool operator == (const DevicesModelData&) const;
+        };
+
+        //! BMD devices model.
+        class DevicesModel : public std::enable_shared_from_this<DevicesModel>
+        {
+            FTK_NON_COPYABLE(DevicesModel);
+
+        protected:
+            void _init(const std::shared_ptr<ftk::Context>&);
+
+            DevicesModel();
+
+        public:
+            ~DevicesModel();
+
+            //! Create a new device model.
+            static std::shared_ptr<DevicesModel> create(
+                const std::shared_ptr<ftk::Context>&);
+
+            //! Observe the model data.
+            std::shared_ptr<ftk::IObservableValue<DevicesModelData> > observeData() const;
+
+            //! Set the device index.
+            void setDeviceIndex(int);
+
+            //! Set the display mode index.
+            void setDisplayModeIndex(int);
+
+            //! Set the pixel type index.
+            void setPixelTypeIndex(int);
+
+            //! Set whether the device is enabled.
+            void setDeviceEnabled(bool);
+
+            //! Set the boolean options.
+            void setBoolOptions(const BoolOptions&);
+
+            //! Set the video levels.
+            void setVideoLevels(ftk::VideoLevels);
+
+            //! Set the HDR mode.
+            void setHDRMode(HDRMode);
+
+            //! Set the HDR data.
+            void setHDRData(const image::HDRData&);
+
+        private:
+            void _update();
+
+            FTK_PRIVATE();
+        };
+
+        void to_json(nlohmann::json&, const DevicesModelData&);
+
+        void from_json(const nlohmann::json&, DevicesModelData&);
+    }
+}

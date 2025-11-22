@@ -5,9 +5,9 @@
 
 #include "TestPatterns.h"
 
-#include <tlTimelineGL/Render.h>
+#include <tlRender/GL/Render.h>
 
-#include <tlIO/System.h>
+#include <tlRender/IO/System.h>
 
 #include <ftk/GL/GL.h>
 #include <ftk/GL/OffscreenBuffer.h>
