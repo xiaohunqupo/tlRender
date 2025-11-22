@@ -301,10 +301,13 @@ namespace tl
                 auto ioSystem = context->getSystem<io::ReadSystem>();
 
                 // Is the input a sequence?
-                ftk::expandSeq(
-                    std::filesystem::u8path(path.get()),
-                    path,
-                    options.pathOptions);
+                if (path.getFrames().equal())
+                {
+                    ftk::expandSeq(
+                        std::filesystem::u8path(path.get()),
+                        path,
+                        options.pathOptions);
+                }
                 if (!path.getFrames().equal())
                 {
                     if (audioPath.isEmpty())
