@@ -16,9 +16,9 @@ namespace tl
         //! File types.
         enum class FileType
         {
-            Unknown  = 0,
-            Media    = 1,
-            Sequence = 2,
+            Unknown = 0,
+            Media   = 1,
+            Seq     = 2,
 
             Count,
             First = Unknown

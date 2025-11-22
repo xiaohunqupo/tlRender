@@ -10,7 +10,7 @@ namespace tl
     namespace io
     {
         void IWrite::_init(
-            const file::Path& path,
+            const ftk::Path& path,
             const Options& options,
             const Info& info,
             const std::shared_ptr<ftk::LogSystem>& logSystem)

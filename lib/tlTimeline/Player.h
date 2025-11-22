@@ -106,10 +106,10 @@ namespace tl
             const std::shared_ptr<Timeline>& getTimeline() const;
 
             //! Get the path.
-            const file::Path& getPath() const;
+            const ftk::Path& getPath() const;
 
             //! Get the audio path.
-            const file::Path& getAudioPath() const;
+            const ftk::Path& getAudioPath() const;
 
             //! Get the timeline player options.
             const PlayerOptions& getPlayerOptions() const;

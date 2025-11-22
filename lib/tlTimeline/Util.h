@@ -19,7 +19,7 @@ namespace tl
             const std::shared_ptr<ftk::Context>&,
             int types =
                 static_cast<int>(io::FileType::Media) |
-                static_cast<int>(io::FileType::Sequence));
+                static_cast<int>(io::FileType::Seq));
 
         //! Convert frames to ranges.
         std::vector<OTIO_NS::TimeRange> toRanges(std::vector<OTIO_NS::RationalTime>);
@@ -47,7 +47,7 @@ namespace tl
             const ftk::Range<int64_t>&);
 
         //! Cache direction.
-        enum class CacheDirection
+        enum class CacheDir
         {
             Forward,
             Reverse,
@@ -55,7 +55,7 @@ namespace tl
             Count,
             First = Forward
         };
-        FTK_ENUM(CacheDirection);
+        FTK_ENUM(CacheDir);
 
         //! Get the root (highest parent).
         const OTIO_NS::Composable* getRoot(const OTIO_NS::Composable*);
@@ -73,29 +73,29 @@ namespace tl
         OTIO_NS::TimeRange getTimeRange(const OTIO_NS::Timeline*);
 
         //! Get a list of paths to open from the given path.
-        std::vector<file::Path> getPaths(
+        std::vector<ftk::Path> getPaths(
             const std::shared_ptr<ftk::Context>&,
-            const file::Path&,
-            const file::PathOptions&);
+            const ftk::Path&,
+            const ftk::PathOptions&);
 
         //! Get an absolute path.
-        file::Path getPath(
+        ftk::Path getPath(
             const std::string& url,
             const std::string& directory,
-            const file::PathOptions&);
+            const ftk::PathOptions&);
 
         //! Get a path for a media reference.
-        file::Path getPath(
+        ftk::Path getPath(
             const OTIO_NS::MediaReference*,
             const std::string& directory,
-            file::PathOptions);
+            ftk::PathOptions);
 
         //! Get a memory read for a media reference.
-        std::vector<ftk::InMemoryFile> getMemoryRead(
+        std::vector<ftk::MemFile> getMemRead(
             const OTIO_NS::MediaReference*);
 
         //! Convert to memory references.
-        enum class ToMemoryReference
+        enum class ToMemRef
         {
             Shared,
             Raw,
@@ -103,14 +103,14 @@ namespace tl
             Count,
             First = Shared
         };
-        FTK_ENUM(ToMemoryReference);
+        FTK_ENUM(ToMemRef);
 
         //! Convert media references to memory references for testing.
-        void toMemoryReferences(
+        void toMemRefs(
             OTIO_NS::Timeline*,
             const std::string& directory,
-            ToMemoryReference,
-            const file::PathOptions& = file::PathOptions());
+            ToMemRef,
+            const ftk::PathOptions& = ftk::PathOptions());
 
         //! Transform track time to video media time.
         OTIO_NS::RationalTime toVideoMediaTime(

@@ -13,19 +13,19 @@ namespace tl
     {
         void ReadPlugin::_init(const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
-            std::map<std::string, io::FileType> extensions;
+            std::map<std::string, io::FileType> exts;
             for (const auto& i : OIIO::get_extension_map())
             {
                 //! Filter out FFmpeg extensions.
                 if (i.first != "ffmpeg")
                 {
-                    for (const auto& extension : i.second)
+                    for (const auto& ext : i.second)
                     {
-                        extensions["." + extension] = io::FileType::Sequence;
+                        exts["." + ext] = io::FileType::Seq;
                     }
                 }
             }
-            IReadPlugin::_init("OIIO", extensions, logSystem);
+            IReadPlugin::_init("OIIO", exts, logSystem);
         }
 
         std::shared_ptr<ReadPlugin> ReadPlugin::create(
@@ -37,15 +37,15 @@ namespace tl
         }
 
         std::shared_ptr<io::IRead> ReadPlugin::read(
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Options& options)
         {
             return Read::create(path, options, _logSystem.lock());
         }
 
         std::shared_ptr<io::IRead> ReadPlugin::read(
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& memory,
             const io::Options& options)
         {
             return Read::create(path, memory, options, _logSystem.lock());
@@ -53,15 +53,15 @@ namespace tl
 
         void WritePlugin::_init(const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
-            std::map<std::string, io::FileType> extensions;
+            std::map<std::string, io::FileType> exts;
             for (const auto& i : OIIO::get_extension_map())
             {
-                for (const auto& extension : i.second)
+                for (const auto& ext : i.second)
                 {
-                    extensions[extension] = io::FileType::Sequence;
+                    exts[ext] = io::FileType::Seq;
                 }
             }
-            IWritePlugin::_init("OIIO", extensions, logSystem);
+            IWritePlugin::_init("OIIO", exts, logSystem);
         }
 
         std::shared_ptr<WritePlugin> WritePlugin::create(
@@ -108,7 +108,7 @@ namespace tl
         }
 
         std::shared_ptr<io::IWrite> WritePlugin::write(
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Info& info,
             const io::Options& options)
         {

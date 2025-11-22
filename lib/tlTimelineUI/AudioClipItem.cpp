@@ -16,8 +16,8 @@ namespace tl
     {
         struct AudioClipItem::Private
         {
-            file::Path path;
-            std::vector<ftk::InMemoryFile> memoryRead;
+            ftk::Path path;
+            std::vector<ftk::MemFile> memRead;
             std::shared_ptr<ThumbnailGenerator> thumbnailGenerator;
 
             struct SizeData
@@ -44,11 +44,11 @@ namespace tl
         {
             const auto path = timeline::getPath(
                 clip->media_reference(),
-                itemData->directory,
+                itemData->dir,
                 itemData->options.pathOptions);
             IBasicItem::_init(
                 context,
-                !clip->name().empty() ? clip->name() : path.get(-1, file::PathType::FileName),
+                !clip->name().empty() ? clip->name() : path.getFileName(),
                 ftk::ColorRole::AudioClip,
                 "tl::timelineui::AudioClipItem",
                 clip.value,
@@ -60,7 +60,7 @@ namespace tl
             FTK_P();
 
             p.path = path;
-            p.memoryRead = timeline::getMemoryRead(clip->media_reference());
+            p.memRead = timeline::getMemRead(clip->media_reference());
             p.thumbnailGenerator = thumbnailGenerator;
 
             const std::string infoCacheKey = ThumbnailCache::getInfoKey(
@@ -256,7 +256,7 @@ namespace tl
                     p.infoRequest = p.thumbnailGenerator->getInfo(
                         reinterpret_cast<intptr_t>(this),
                         p.path,
-                        p.memoryRead,
+                        p.memRead,
                         _data->options.ioOptions);
                 }
             }
@@ -332,7 +332,7 @@ namespace tl
                                 p.waveformRequests[mediaRange.start_time()] = p.thumbnailGenerator->getWaveform(
                                     reinterpret_cast<intptr_t>(this),
                                     p.path,
-                                    p.memoryRead,
+                                    p.memRead,
                                     box.size(),
                                     mediaRange,
                                     _data->options.ioOptions);

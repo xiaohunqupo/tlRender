@@ -207,12 +207,12 @@ namespace tl
             return _p->timeline;
         }
 
-        const file::Path& Player::getPath() const
+        const ftk::Path& Player::getPath() const
         {
             return _p->timeline->getPath();
         }
 
-        const file::Path& Player::getAudioPath() const
+        const ftk::Path& Player::getAudioPath() const
         {
             return _p->timeline->getAudioPath();
         }
@@ -334,9 +334,9 @@ namespace tl
                         p.mutex.state.playback = value;
                         p.mutex.state.currentTime = p.currentTime->get();
                         p.mutex.clearRequests = true;
-                        p.mutex.cacheDirection = Playback::Forward == value ?
-                            CacheDirection::Forward :
-                            CacheDirection::Reverse;
+                        p.mutex.cacheDir = Playback::Forward == value ?
+                            CacheDir::Forward :
+                            CacheDir::Reverse;
                     }
                     {
                         std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
@@ -799,7 +799,7 @@ namespace tl
                 Private::PlaybackState state;
                 bool clearRequests = false;
                 bool clearCache = false;
-                CacheDirection cacheDirection = CacheDirection::First;
+                CacheDir cacheDir = CacheDir::First;
                 PlayerCacheOptions cacheOptions;
                 {
                     std::unique_lock<std::mutex> lock(p.mutex.mutex);
@@ -808,15 +808,15 @@ namespace tl
                     p.mutex.clearRequests = false;
                     clearCache = p.mutex.clearCache;
                     p.mutex.clearCache = false;
-                    cacheDirection = p.mutex.cacheDirection;
+                    cacheDir = p.mutex.cacheDir;
                 }
                 if (state != p.thread.state ||
                     clearRequests ||
                     clearCache ||
-                    cacheDirection != p.thread.cacheDirection)
+                    cacheDir != p.thread.cacheDir)
                 {
                     p.thread.state = state;
-                    p.thread.cacheDirection = cacheDirection;
+                    p.thread.cacheDir = cacheDir;
                 }
 
                 // Clear requests.

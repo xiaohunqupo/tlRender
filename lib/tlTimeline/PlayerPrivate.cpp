@@ -82,7 +82,7 @@ namespace tl
                         mutex.state.playback = Playback::Forward;
                         mutex.state.currentTime = out;
                         mutex.clearRequests = true;
-                        mutex.cacheDirection = CacheDirection::Forward;
+                        mutex.cacheDir = CacheDir::Forward;
                     }
                     {
                         std::unique_lock<std::mutex> lock(audioMutex.mutex);
@@ -103,7 +103,7 @@ namespace tl
                         mutex.state.playback = Playback::Reverse;
                         mutex.state.currentTime = out;
                         mutex.clearRequests = true;
-                        mutex.cacheDirection = CacheDirection::Reverse;
+                        mutex.cacheDir = CacheDir::Reverse;
                     }
                     {
                         std::unique_lock<std::mutex> lock(audioMutex.mutex);
@@ -207,14 +207,14 @@ namespace tl
             const OTIO_NS::RationalTime readBehind =
                 OTIO_NS::RationalTime(thread.state.cacheOptions.readBehind, 1.0).rescaled_to(rate);
 
-            switch (thread.cacheDirection)
+            switch (thread.cacheDir)
             {
-            case CacheDirection::Forward:
+            case CacheDir::Forward:
                 out = OTIO_NS::TimeRange::range_from_start_end_time_inclusive(
                     (thread.state.currentTime - readBehind).round(),
                     (thread.state.currentTime + readAhead).round());
                 break;
-            case CacheDirection::Reverse:
+            case CacheDir::Reverse:
                 out = OTIO_NS::TimeRange::range_from_start_end_time_inclusive(
                     (thread.state.currentTime - readAhead).round(),
                     (thread.state.currentTime + readBehind).round());
@@ -235,12 +235,12 @@ namespace tl
                 static_cast<size_t>(thread.state.inOutRange.duration().rescaled_to(1.0).value()));
             const int64_t readBehind = OTIO_NS::RationalTime(thread.state.cacheOptions.readBehind, 1.0).value();
 
-            switch (thread.cacheDirection)
+            switch (thread.cacheDir)
             {
-            case CacheDirection::Forward:
+            case CacheDir::Forward:
                 out = ftk::Range<int64_t>(c - readBehind, c + readAhead);
                 break;
-            case CacheDirection::Reverse:
+            case CacheDir::Reverse:
                 out = ftk::Range<int64_t>(c - readAhead, c + readBehind);
                 break;
             default: break;

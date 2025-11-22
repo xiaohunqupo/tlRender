@@ -40,7 +40,7 @@ namespace tl
             std::shared_ptr<T> getPlugin() const;
 
             //! Get a plugin for the given path.
-            std::shared_ptr<IReadPlugin> getPlugin(const file::Path&) const;
+            std::shared_ptr<IReadPlugin> getPlugin(const ftk::Path&) const;
 
             //! Get the plugin names.
             const std::vector<std::string>& getNames() const;
@@ -48,20 +48,20 @@ namespace tl
             //! Get the supported file extensions.
             std::set<std::string> getExts(int types =
                 static_cast<int>(FileType::Media) |
-                static_cast<int>(FileType::Sequence)) const;
+                static_cast<int>(FileType::Seq)) const;
 
             //! Get the file type for the given extension.
             FileType getFileType(const std::string&) const;
 
             //! Create a reader for the given path.
             std::shared_ptr<IRead> read(
-                const file::Path&,
+                const ftk::Path&,
                 const Options& = Options());
 
             //! Create a reader for the given path and memory locations.
             std::shared_ptr<IRead> read(
-                const file::Path&,
-                const std::vector<ftk::InMemoryFile>&,
+                const ftk::Path&,
+                const std::vector<ftk::MemFile>&,
                 const Options& = Options());
 
         private:
@@ -98,7 +98,7 @@ namespace tl
             std::shared_ptr<T> getPlugin() const;
 
             //! Get a plugin for the given path.
-            std::shared_ptr<IWritePlugin> getPlugin(const file::Path&) const;
+            std::shared_ptr<IWritePlugin> getPlugin(const ftk::Path&) const;
 
             //! Get the plugin names.
             const std::vector<std::string>& getNames() const;
@@ -106,14 +106,14 @@ namespace tl
             //! Get the supported file extensions.
             std::set<std::string> getExts(int types =
                 static_cast<int>(FileType::Media) |
-                static_cast<int>(FileType::Sequence)) const;
+                static_cast<int>(FileType::Seq)) const;
 
             //! Get the file type for the given extension.
             FileType getFileType(const std::string&) const;
 
             //! Create a writer for the given path.
             std::shared_ptr<IWrite> write(
-                const file::Path&,
+                const ftk::Path&,
                 const Info&,
                 const Options & = Options());
 

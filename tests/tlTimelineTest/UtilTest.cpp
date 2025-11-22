@@ -5,9 +5,8 @@
 
 #include <tlTimeline/Util.h>
 
-#include <tlCore/FileInfo.h>
-
 #include <ftk/Core/Format.h>
+#include <ftk/Core/Path.h>
 
 #include <opentimelineio/clip.h>
 
@@ -39,8 +38,8 @@ namespace tl
 
         void UtilTest::_enums()
         {
-            _enum<CacheDirection>("CacheDirection", getCacheDirectionEnums);
-            _enum<ToMemoryReference>("ToMemoryReference", getToMemoryReferenceEnums);
+            _enum<CacheDir>("CacheDir", getCacheDirEnums);
+            _enum<ToMemRef>("ToMemRef", getToMemRefEnums);
         }
 
         void UtilTest::_exts()
@@ -48,7 +47,7 @@ namespace tl
             for (const auto& i : getExts(
                 _context,
                 static_cast<int>(io::FileType::Media) |
-                static_cast<int>(io::FileType::Sequence)))
+                static_cast<int>(io::FileType::Seq)))
             {
                 std::stringstream ss;
                 ss << "Timeline extension: " << i;
@@ -56,8 +55,8 @@ namespace tl
             }
             for (const auto& path : getPaths(
                 _context,
-                file::Path(TLRENDER_SAMPLE_DATA),
-                file::PathOptions()))
+                ftk::Path(TLRENDER_SAMPLE_DATA),
+                ftk::PathOptions()))
             {
                 _print(ftk::Format("Path: {0}").arg(path.get()));
             }
@@ -373,18 +372,16 @@ namespace tl
         
         void UtilTest::_otioz()
         {
-            std::vector<file::FileInfo> list;
-            file::list(TLRENDER_SAMPLE_DATA, list);
-            for (const auto& entry : list)
+            for (const auto& entry : ftk::dirList(TLRENDER_SAMPLE_DATA))
             {
-                if (".otio" == entry.getPath().getExtension())
+                if (".otio" == entry.path.getExt())
                 {
                     OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> timeline(
-                        dynamic_cast<OTIO_NS::Timeline*>(OTIO_NS::Timeline::from_json_file(entry.getPath().get())));
-                    file::Path outputPath = entry.getPath();
-                    outputPath.setExtension(".otioz");
+                        dynamic_cast<OTIO_NS::Timeline*>(OTIO_NS::Timeline::from_json_file(entry.path.get())));
+                    ftk::Path outPath = entry.path;
+                    outPath.setExt(".otioz");
                     writeOTIOZ(
-                        outputPath.get(-1, file::PathType::FileName),
+                        outPath.getFileName(),
                         timeline,
                         TLRENDER_SAMPLE_DATA);
                 }

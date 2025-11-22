@@ -91,7 +91,7 @@ namespace tl
 
         std::string ThumbnailCache::getInfoKey(
             intptr_t id,
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Options& options)
         {
             std::stringstream ss;
@@ -126,7 +126,7 @@ namespace tl
 
         std::string ThumbnailCache::getThumbnailKey(
             intptr_t id,
-            const file::Path& path,
+            const ftk::Path& path,
             int height,
             const OTIO_NS::RationalTime& time,
             const io::Options& options)
@@ -167,7 +167,7 @@ namespace tl
 
         std::string ThumbnailCache::getWaveformKey(
             intptr_t id,
-            const file::Path& path,
+            const ftk::Path& path,
             const ftk::Size2I& size,
             const OTIO_NS::TimeRange& timeRange,
             const io::Options& options)
@@ -235,8 +235,8 @@ namespace tl
             {
                 uint64_t id = 0;
                 intptr_t callerId = 0;
-                file::Path path;
-                std::vector<ftk::InMemoryFile> memoryRead;
+                ftk::Path path;
+                std::vector<ftk::MemFile> memoryRead;
                 io::Options options;
                 std::promise<io::Info> promise;
             };
@@ -245,8 +245,8 @@ namespace tl
             {
                 uint64_t id = 0;
                 intptr_t callerId = 0;
-                file::Path path;
-                std::vector<ftk::InMemoryFile> memoryRead;
+                ftk::Path path;
+                std::vector<ftk::MemFile> memoryRead;
                 int height = 0;
                 OTIO_NS::RationalTime time = time::invalidTime;
                 io::Options options;
@@ -257,8 +257,8 @@ namespace tl
             {
                 uint64_t id = 0;
                 intptr_t callerId = 0;
-                file::Path path;
-                std::vector<ftk::InMemoryFile> memoryRead;
+                ftk::Path path;
+                std::vector<ftk::MemFile> memoryRead;
                 ftk::Size2I size;
                 OTIO_NS::TimeRange timeRange = time::invalidTimeRange;
                 io::Options options;
@@ -431,7 +431,7 @@ namespace tl
 
         InfoRequest ThumbnailGenerator::getInfo(
             intptr_t id,
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Options& options)
         {
             return getInfo(id, path, {}, options);
@@ -439,8 +439,8 @@ namespace tl
 
         InfoRequest ThumbnailGenerator::getInfo(
             intptr_t id,
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memoryRead,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& memoryRead,
             const io::Options& options)
         {
             FTK_P();
@@ -476,7 +476,7 @@ namespace tl
 
         ThumbnailRequest ThumbnailGenerator::getThumbnail(
             intptr_t id,
-            const file::Path& path,
+            const ftk::Path& path,
             int height,
             const OTIO_NS::RationalTime& time,
             const io::Options& options)
@@ -486,8 +486,8 @@ namespace tl
 
         ThumbnailRequest ThumbnailGenerator::getThumbnail(
             intptr_t id,
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memoryRead,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& memoryRead,
             int height,
             const OTIO_NS::RationalTime& time,
             const io::Options& options)
@@ -529,7 +529,7 @@ namespace tl
 
         WaveformRequest ThumbnailGenerator::getWaveform(
             intptr_t id,
-            const file::Path& path,
+            const ftk::Path& path,
             const ftk::Size2I& size,
             const OTIO_NS::TimeRange& range,
             const io::Options& options)
@@ -539,8 +539,8 @@ namespace tl
 
         WaveformRequest ThumbnailGenerator::getWaveform(
             intptr_t id,
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memoryRead,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& memoryRead,
             const ftk::Size2I& size,
             const OTIO_NS::TimeRange& timeRange,
             const io::Options& options)
@@ -779,11 +779,11 @@ namespace tl
                             else if (
                                 ftk::compare(
                                     ".otio",
-                                    request->path.getExtension(),
+                                    request->path.getExt(),
                                     ftk::CaseCompare::Insensitive) ||
                                 ftk::compare(
                                     ".otioz",
-                                    request->path.getExtension(),
+                                    request->path.getExt(),
                                     ftk::CaseCompare::Insensitive))
                             {
                                 timeline::Options timelineOptions;
@@ -1112,7 +1112,7 @@ namespace tl
 
         InfoRequest ThumbnailSystem::getInfo(
             intptr_t id,
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Options& ioOptions)
         {
             return _p->generator->getInfo(id, path, ioOptions);
@@ -1120,7 +1120,7 @@ namespace tl
 
         ThumbnailRequest ThumbnailSystem::getThumbnail(
             intptr_t id,
-            const file::Path& path,
+            const ftk::Path& path,
             int height,
             const OTIO_NS::RationalTime& time,
             const io::Options& ioOptions)
@@ -1130,7 +1130,7 @@ namespace tl
 
         WaveformRequest ThumbnailSystem::getWaveform(
             intptr_t id,
-            const file::Path& path,
+            const ftk::Path& path,
             const ftk::Size2I& size,
             const OTIO_NS::TimeRange& timeRange,
             const io::Options& ioOptions)

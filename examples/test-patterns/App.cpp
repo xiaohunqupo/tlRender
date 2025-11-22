@@ -87,8 +87,8 @@ namespace tl
                         OTIO_NS::SerializableObject::Retainer<OTIO_NS::ImageSequenceReference> mediaReference(
                             new OTIO_NS::ImageSequenceReference(
                                 "file://",
-                                file::Path(output).getBaseName(),
-                                file::Path(output).getExtension(),
+                                ftk::Path(output).getBase(),
+                                ftk::Path(output).getExt(),
                                 0,
                                 1,
                                 24));
@@ -100,7 +100,7 @@ namespace tl
                         otioTrack->append_child(otioClip);
 
                         // Create the I/O plugin.
-                        auto writerPlugin = _context->getSystem<io::WriteSystem>()->getPlugin(file::Path(output));
+                        auto writerPlugin = _context->getSystem<io::WriteSystem>()->getPlugin(ftk::Path(output));
                         if (!writerPlugin)
                         {
                             throw std::runtime_error(ftk::Format("Cannot open: \"{0}\"").arg(output));
@@ -117,7 +117,7 @@ namespace tl
                         io::Info ioInfo;
                         ioInfo.video.push_back(info);
                         ioInfo.videoTime = timeRange;
-                        auto writer = writerPlugin->write(file::Path(output), ioInfo);
+                        auto writer = writerPlugin->write(ftk::Path(output), ioInfo);
                         if (!writer)
                         {
                             throw std::runtime_error(ftk::Format("Cannot open: \"{0}\"").arg(output));

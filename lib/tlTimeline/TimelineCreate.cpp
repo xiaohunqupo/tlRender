@@ -3,12 +3,11 @@
 
 #include <tlTimeline/TimelinePrivate.h>
 
-#include <tlTimeline/MemoryReference.h>
+#include <tlTimeline/MemRef.h>
 #include <tlTimeline/Util.h>
 
 #include <tlIO/System.h>
 
-#include <tlCore/FileInfo.h>
 #include <tlCore/URL.h>
 
 #include <ftk/Core/Context.h>
@@ -31,34 +30,34 @@ namespace tl
     {
         namespace
         {
-            file::Path getAudioPath(
+            ftk::Path getAudioPath(
                 const std::shared_ptr<ftk::Context>& context,
-                const file::Path& path,
-                const ImageSequenceAudio& imageSequenceAudio,
-                const std::vector<std::string>& imageSequenceAudioExtensions,
-                const std::string& imageSequenceAudioFileName,
-                const file::PathOptions& pathOptions)
+                const ftk::Path& path,
+                const ImageSeqAudio& imageSeqAudio,
+                const std::vector<std::string>& imageSeqAudioExts,
+                const std::string& imageSeqAudioFileName,
+                const ftk::PathOptions& pathOptions)
             {
-                file::Path out;
+                ftk::Path out;
                 auto ioSystem = context->getSystem<io::ReadSystem>();
-                switch (imageSequenceAudio)
+                switch (imageSeqAudio)
                 {
-                case ImageSequenceAudio::Extension:
+                case ImageSeqAudio::Ext:
                 {
                     // Check for an audio file with the same base name.
                     std::vector<std::string> baseNames;
-                    baseNames.push_back(path.getDirectory() + path.getBaseName());
-                    std::string tmp = path.getBaseName();
+                    baseNames.push_back(path.getDir() + path.getBase());
+                    std::string tmp = path.getBase();
                     if (!tmp.empty() && '.' == tmp[tmp.size() - 1])
                     {
                         tmp.pop_back();
                     }
-                    baseNames.push_back(path.getDirectory() + tmp);
+                    baseNames.push_back(path.getDir() + tmp);
                     for (const auto& baseName : baseNames)
                     {
-                        for (const auto& extension : imageSequenceAudioExtensions)
+                        for (const auto& ext : imageSeqAudioExts)
                         {
-                            const file::Path audioPath(baseName + extension, pathOptions);
+                            const ftk::Path audioPath(baseName + ext, pathOptions);
                             if (std::filesystem::exists(std::filesystem::u8path(audioPath.get())))
                             {
                                 out = audioPath;
@@ -70,22 +69,21 @@ namespace tl
                     // Or use the first audio file.
                     if (out.isEmpty())
                     {
-                        std::vector<file::FileInfo> list;
-                        file::ListOptions listOptions;
-                        listOptions.extensions.insert(
-                            imageSequenceAudioExtensions.begin(),
-                            imageSequenceAudioExtensions.end());
-                        file::list(path.getDirectory(), list, listOptions);
-                        if (!list.empty())
+                        ftk::DirListOptions listOptions;
+                        listOptions.filterExt.insert(
+                            imageSeqAudioExts.begin(),
+                            imageSeqAudioExts.end());
+                        const auto entries = ftk::dirList(path.getDir(), listOptions);
+                        if (!entries.empty())
                         {
-                            out = list.front().getPath();
+                            out = entries.front().path;
                         }
                     }
 
                     break;
                 }
-                case ImageSequenceAudio::FileName:
-                    out = file::Path(path.getDirectory() + imageSequenceAudioFileName, pathOptions);
+                case ImageSeqAudio::FileName:
+                    out = ftk::Path(path.getDir() + imageSeqAudioFileName, pathOptions);
                     break;
                 default: break;
                 }
@@ -143,18 +141,18 @@ namespace tl
         };
 
         OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> readOTIO(
-            const file::Path& path,
+            const ftk::Path& path,
             OTIO_NS::ErrorStatus* errorStatus)
         {
             OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> out;
             const std::string fileName = path.get();
-            const std::string extension = ftk::toLower(path.getExtension());
-            if (".otio" == extension)
+            const std::string ext = ftk::toLower(path.getExt());
+            if (".otio" == ext)
             {
                 out = dynamic_cast<OTIO_NS::Timeline*>(
                     OTIO_NS::Timeline::from_json_file(fileName, errorStatus));
             }
-            else if (".otioz" == extension)
+            else if (".otioz" == ext)
             {
                 {
                     ZipReader zipReader(fileName);
@@ -199,7 +197,7 @@ namespace tl
                         if (auto externalReference =
                             dynamic_cast<OTIO_NS::ExternalReference*>(clip->media_reference()))
                         {
-                            const std::string mediaFileName = file::Path(
+                            const std::string mediaFileName = ftk::Path(
                                 url::decode(externalReference->target_url())).get();
 
                             int32_t err = mz_zip_reader_locate_entry(zipReader.reader, mediaFileName.c_str(), 0);
@@ -219,28 +217,28 @@ namespace tl
                                 30 +
                                 fileInfo->filename_size +
                                 fileInfo->extrafield_size;
-                            auto memoryReference = new ZipMemoryReference(
+                            auto memReference = new ZipMemRef(
                                 fileIO,
                                 externalReference->target_url(),
-                                fileIO->getMemoryStart() +
+                                fileIO->getMemStart() +
                                 fileInfo->disk_offset +
                                 headerSize,
                                 fileInfo->uncompressed_size,
                                 externalReference->available_range(),
                                 externalReference->metadata());
-                            clip->set_media_reference(memoryReference);
+                            clip->set_media_reference(memReference);
                         }
-                        else if (auto imageSequenceReference =
+                        else if (auto imageSeqReference =
                             dynamic_cast<OTIO_NS::ImageSequenceReference*>(clip->media_reference()))
                         {
                             std::vector<const uint8_t*> memory;
                             std::vector<size_t> memory_sizes;
                             for (int number = 0;
-                                number < imageSequenceReference->number_of_images_in_sequence();
+                                number < imageSeqReference->number_of_images_in_sequence();
                                 ++number)
                             {
-                                const std::string mediaFileName = file::Path(
-                                    url::decode(imageSequenceReference->target_url_for_image_number(number))).get();
+                                const std::string mediaFileName = ftk::Path(
+                                    url::decode(imageSeqReference->target_url_for_image_number(number))).get();
 
                                 int32_t err = mz_zip_reader_locate_entry(zipReader.reader, mediaFileName.c_str(), 0);
                                 if (err != MZ_OK)
@@ -260,18 +258,18 @@ namespace tl
                                     fileInfo->filename_size +
                                     fileInfo->extrafield_size;
                                 memory.push_back(
-                                    fileIO->getMemoryStart() +
+                                    fileIO->getMemStart() +
                                     fileInfo->disk_offset +
                                     headerSize);
                                 memory_sizes.push_back(fileInfo->uncompressed_size);
                             }
-                            auto memoryReference = new ZipMemorySequenceReference(
+                            auto memoryReference = new SeqZipMemRef(
                                 fileIO,
-                                imageSequenceReference->target_url_for_image_number(0),
+                                imageSeqReference->target_url_for_image_number(0),
                                 memory,
                                 memory_sizes,
-                                imageSequenceReference->available_range(),
-                                imageSequenceReference->metadata());
+                                imageSeqReference->available_range(),
+                                imageSeqReference->metadata());
                             clip->set_media_reference(memoryReference);
                         }
                     }
@@ -282,61 +280,42 @@ namespace tl
 
         OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
             const std::shared_ptr<ftk::Context>& context,
-            const file::Path& path,
+            const ftk::Path& path,
             const Options& options)
         {
-            return create(context, path, file::Path(), options);
+            return create(context, path, ftk::Path(), options);
         }
 
         OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
             const std::shared_ptr<ftk::Context>& context,
-            const file::Path& inputPath,
-            const file::Path& inputAudioPath,
+            const ftk::Path& inputPath,
+            const ftk::Path& inputAudioPath,
             const Options& options)
         {
             OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> out;
             std::string error;
-            file::Path path = inputPath;
-            file::Path audioPath = inputAudioPath;
+            ftk::Path path = inputPath;
+            ftk::Path audioPath = inputAudioPath;
             try
             {
                 auto ioSystem = context->getSystem<io::ReadSystem>();
 
                 // Is the input a sequence?
-                const bool isSequence =
-                    io::FileType::Sequence == ioSystem->getFileType(path.getExtension()) &&
-                    !path.getNumber().empty();
-                if (isSequence)
+                ftk::expandSeq(
+                    std::filesystem::u8path(path.get()),
+                    path,
+                    options.pathOptions);
+                if (!path.getFrames().equal())
                 {
-                    if (!path.isSequence())
-                    {
-                        // Check for other files in the sequence.
-                        std::vector<file::FileInfo> list;
-                        file::ListOptions listOptions;
-                        listOptions.sequenceExtensions = { path.getExtension() };
-                        listOptions.maxNumberDigits = options.pathOptions.maxNumberDigits;
-                        file::list(path.getDirectory(), list, listOptions);
-                        const auto i = std::find_if(
-                            list.begin(),
-                            list.end(),
-                            [path](const file::FileInfo& value)
-                            {
-                                return value.getPath().sequence(path);
-                            });
-                        if (i != list.end())
-                        {
-                            path = i->getPath();
-                        }
-                    }
                     if (audioPath.isEmpty())
                     {
                         // Check for an associated audio file.
                         audioPath = getAudioPath(
                             context,
                             path,
-                            options.imageSequenceAudio,
-                            options.imageSequenceAudioExtensions,
-                            options.imageSequenceAudioFileName,
+                            options.imageSeqAudio,
+                            options.imageSeqAudioExts,
+                            options.imageSeqAudioFileName,
                             options.pathOptions);
                     }
                 }
@@ -357,23 +336,23 @@ namespace tl
                         startTime = info.videoTime.start_time();
                         auto videoClip = new OTIO_NS::Clip;
                         videoClip->set_source_range(info.videoTime);
-                        if (isSequence)
+                        if (!path.getFrames().equal())
                         {
                             auto mediaReference = new OTIO_NS::ImageSequenceReference(
                                 "",
-                                path.getBaseName(),
-                                path.getExtension(),
+                                path.getBase(),
+                                path.getExt(),
                                 info.videoTime.start_time().value(),
                                 1,
                                 info.videoTime.duration().rate(),
-                                path.getPadding());
+                                path.getPad());
                             mediaReference->set_available_range(info.videoTime);
                             videoClip->set_media_reference(mediaReference);
                         }
                         else
                         {
                             videoClip->set_media_reference(new OTIO_NS::ExternalReference(
-                                path.get(-1, file::PathType::FileName),
+                                path.getFileName(),
                                 info.videoTime));
                         }
                         videoTrack = new OTIO_NS::Track("Video", std::nullopt, OTIO_NS::Track::Kind::video);
@@ -394,7 +373,7 @@ namespace tl
                             auto audioClip = new OTIO_NS::Clip;
                             audioClip->set_source_range(audioInfo.audioTime);
                             audioClip->set_media_reference(new OTIO_NS::ExternalReference(
-                                audioPath.get(-1, file::PathType::FileName),
+                                audioPath.getFileName(),
                                 audioInfo.audioTime));
 
                             audioTrack = new OTIO_NS::Track("Audio", std::nullopt, OTIO_NS::Track::Kind::audio);
@@ -415,7 +394,7 @@ namespace tl
                         auto audioClip = new OTIO_NS::Clip;
                         audioClip->set_source_range(info.audioTime);
                         audioClip->set_media_reference(new OTIO_NS::ExternalReference(
-                            path.get(-1, file::PathType::FileName),
+                            path.getFileName(),
                             info.audioTime));
 
                         audioTrack = new OTIO_NS::Track("Audio", std::nullopt, OTIO_NS::Track::Kind::audio);
@@ -515,7 +494,7 @@ namespace tl
             auto out = std::shared_ptr<Timeline>(new Timeline);
             auto otioTimeline = timeline::create(
                 context,
-                file::Path(fileName, options.pathOptions),
+                ftk::Path(fileName, options.pathOptions),
                 options);
             out->_init(context, otioTimeline, options);
             return out;
@@ -523,7 +502,7 @@ namespace tl
 
         std::shared_ptr<Timeline> Timeline::create(
             const std::shared_ptr<ftk::Context>& context,
-            const file::Path& path,
+            const ftk::Path& path,
             const Options& options)
         {
             auto out = std::shared_ptr<Timeline>(new Timeline);
@@ -541,8 +520,8 @@ namespace tl
             auto out = std::shared_ptr<Timeline>(new Timeline);
             auto otioTimeline = timeline::create(
                 context,
-                file::Path(fileName, options.pathOptions),
-                file::Path(audioFileName, options.pathOptions),
+                ftk::Path(fileName, options.pathOptions),
+                ftk::Path(audioFileName, options.pathOptions),
                 options);
             out->_init(context, otioTimeline, options);
             return out;
@@ -550,8 +529,8 @@ namespace tl
 
         std::shared_ptr<Timeline> Timeline::create(
             const std::shared_ptr<ftk::Context>& context,
-            const file::Path& path,
-            const file::Path& audioPath,
+            const ftk::Path& path,
+            const ftk::Path& audioPath,
             const Options& options)
         {
             auto out = std::shared_ptr<Timeline>(new Timeline);

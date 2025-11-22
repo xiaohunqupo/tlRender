@@ -10,13 +10,13 @@ namespace tl
     namespace io
     {
         void IRead::_init(
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& mem,
             const Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             IIO::_init(path, options, logSystem);
-            _memory = memory;
+            _mem = mem;
         }
 
         IRead::IRead()

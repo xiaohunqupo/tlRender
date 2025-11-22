@@ -51,7 +51,7 @@ namespace tl
         public:
             ReadVideo(
                 const std::string& fileName,
-                const std::vector<ftk::InMemoryFile>& memory,
+                const std::vector<ftk::MemFile>& memory,
                 const ReadOptions& options);
 
             ~ReadVideo();
@@ -100,7 +100,7 @@ namespace tl
         public:
             ReadAudio(
                 const std::string& fileName,
-                const std::vector<ftk::InMemoryFile>&,
+                const std::vector<ftk::MemFile>&,
                 double videoRate,
                 const ReadOptions&);
 

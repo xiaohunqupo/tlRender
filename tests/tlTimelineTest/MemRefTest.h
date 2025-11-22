@@ -9,13 +9,13 @@ namespace tl
 {
     namespace timeline_tests
     {
-        class MemoryReferenceTest : public tests::ITest
+        class MemRefTest : public tests::ITest
         {
         protected:
-            MemoryReferenceTest(const std::shared_ptr<ftk::Context>&);
+            MemRefTest(const std::shared_ptr<ftk::Context>&);
 
         public:
-            static std::shared_ptr<MemoryReferenceTest> create(const std::shared_ptr<ftk::Context>&);
+            static std::shared_ptr<MemRefTest> create(const std::shared_ptr<ftk::Context>&);
 
             void run() override;
         };

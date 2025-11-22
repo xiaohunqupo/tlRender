@@ -5,7 +5,7 @@
 
 #include <tlIO/IO.h>
 
-#include <tlCore/Path.h>
+#include <ftk/Core/Path.h>
 
 namespace tl
 {
@@ -13,28 +13,28 @@ namespace tl
     namespace timeline
     {
         //! Image sequence audio options.
-        enum class ImageSequenceAudio
+        enum class ImageSeqAudio
         {
-            None,      //!< No audio
-            Extension, //!< Search for an audio file by extension
-            FileName,  //!< Use the given audio file name
+            None,     //!< No audio
+            Ext,      //!< Search for an audio file by extension
+            FileName, //!< Use the given audio file name
 
             Count,
             First = None
         };
-        FTK_ENUM(ImageSequenceAudio);
+        FTK_ENUM(ImageSeqAudio);
 
         //! Timeline options.
         struct Options
         {
             //! Image sequence audio.
-            ImageSequenceAudio imageSequenceAudio = ImageSequenceAudio::Extension;
+            ImageSeqAudio imageSeqAudio = ImageSeqAudio::Ext;
 
             //! Image sequence audio extensions.
-            std::vector<std::string> imageSequenceAudioExtensions = { ".mp3", ".wav" };
+            std::vector<std::string> imageSeqAudioExts = { ".mp3", ".wav" };
 
             //! Image sequence audio file name.
-            std::string imageSequenceAudioFileName;
+            std::string imageSeqAudioFileName;
 
             //! Enable workarounds for timelines that may not conform exactly
             //! to specification.
@@ -53,7 +53,7 @@ namespace tl
             io::Options ioOptions;
 
             //! Path options.
-            file::PathOptions pathOptions;
+            ftk::PathOptions pathOptions;
 
             bool operator == (const Options&) const;
             bool operator != (const Options&) const;

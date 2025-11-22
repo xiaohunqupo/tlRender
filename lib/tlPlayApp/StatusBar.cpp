@@ -105,7 +105,7 @@ namespace tl
             {
                 std::vector<std::string> pieces;
                 const auto& path = player->getPath();
-                pieces.push_back(path.get(-1, file::PathType::FileName));
+                pieces.push_back(path.getFileName());
 
                 const auto& ioInfo = player->getIOInfo();
                 if (!ioInfo.video.empty())

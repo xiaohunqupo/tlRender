@@ -7,7 +7,7 @@ set(HEADERS
     ForegroundOptions.h
     IRender.h
     Init.h
-    MemoryReference.h
+    MemRef.h
     Player.h
     PlayerOptions.h
     RenderUtil.h
@@ -31,7 +31,7 @@ set(SOURCE
     ForegroundOptions.cpp
     IRender.cpp
     Init.cpp
-    MemoryReference.cpp
+    MemRef.cpp
     Player.cpp
     PlayerAudio.cpp
     PlayerOptions.cpp

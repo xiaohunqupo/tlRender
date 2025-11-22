@@ -7,9 +7,8 @@
 #include <tlTimeline/TimelineOptions.h>
 #include <tlTimeline/Video.h>
 
-#include <tlCore/Path.h>
-
 #include <ftk/Core/ObservableValue.h>
+#include <ftk/Core/Path.h>
 
 #include <opentimelineio/timeline.h>
 
@@ -29,7 +28,7 @@ namespace tl
         //! file, .otioz file, movie file, or image sequence.
         OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
             const std::shared_ptr<ftk::Context>&,
-            const file::Path&,
+            const ftk::Path&,
             const Options& = Options());
 
         //! Create a new timeline from a path and audio path. The file name
@@ -37,8 +36,8 @@ namespace tl
         //! sequence.
         OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
             const std::shared_ptr<ftk::Context>&,
-            const file::Path& path,
-            const file::Path& audioPath,
+            const ftk::Path& path,
+            const ftk::Path& audioPath,
             const Options& = Options());
 
         //! Video size request.
@@ -102,7 +101,7 @@ namespace tl
             //! .otio file, movie file, or image sequence.
             static std::shared_ptr<Timeline> create(
                 const std::shared_ptr<ftk::Context>&,
-                const file::Path&,
+                const ftk::Path&,
                 const Options& = Options());
 
             //! Create a new timeline from a file name and audio file name.
@@ -118,8 +117,8 @@ namespace tl
             //! point to an .otio file, movie file, or image sequence.
             static std::shared_ptr<Timeline> create(
                 const std::shared_ptr<ftk::Context>&,
-                const file::Path& path,
-                const file::Path& audioPath,
+                const ftk::Path& path,
+                const ftk::Path& audioPath,
                 const Options& = Options());
 
             //! Get the context.
@@ -129,10 +128,10 @@ namespace tl
             const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline>& getTimeline() const;
 
             //! Get the file path.
-            const file::Path& getPath() const;
+            const ftk::Path& getPath() const;
 
             //! Get the audio file path.
-            const file::Path& getAudioPath() const;
+            const ftk::Path& getAudioPath() const;
 
             //! Get the timeline options.
             const Options& getOptions() const;

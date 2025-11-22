@@ -5,9 +5,8 @@
 
 #include <tlIO/IO.h>
 
-#include <tlCore/Path.h>
-
 #include <ftk/Core/FileIO.h>
+#include <ftk/Core/Path.h>
 
 #include <future>
 #include <set>
@@ -34,7 +33,7 @@ namespace tl
 
         protected:
             void _init(
-                const file::Path&,
+                const ftk::Path&,
                 const Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
@@ -44,10 +43,10 @@ namespace tl
             virtual ~IIO() = 0;
 
             //! Get the path.
-            const file::Path& getPath() const;
+            const ftk::Path& getPath() const;
 
         protected:
-            file::Path _path;
+            ftk::Path _path;
             Options _options;
             std::weak_ptr<ftk::LogSystem> _logSystem;
         };
@@ -74,7 +73,7 @@ namespace tl
             //! Get the supported file extensions.
             std::set<std::string> getExts(int types =
                 static_cast<int>(FileType::Media) |
-                static_cast<int>(FileType::Sequence)) const;
+                static_cast<int>(FileType::Seq)) const;
 
         protected:
             std::weak_ptr<ftk::LogSystem> _logSystem;

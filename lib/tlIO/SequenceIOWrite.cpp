@@ -22,7 +22,7 @@ namespace tl
         };
 
         void ISequenceWrite::_init(
-            const file::Path& path,
+            const ftk::Path& path,
             const Info& info,
             const Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
@@ -52,7 +52,7 @@ namespace tl
             const Options& options)
         {
             _writeVideo(
-                _path.get(static_cast<int>(time.value())),
+                _path.getFrame(static_cast<int>(time.value()), true),
                 time,
                 image,
                 merge(options, _options));

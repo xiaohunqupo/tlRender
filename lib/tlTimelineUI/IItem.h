@@ -21,7 +21,7 @@ namespace tl
         struct ItemData
         {
             double speed = 0.0;
-            std::string directory;
+            std::string dir;
             timeline::Options options;
             std::shared_ptr<timeline::ITimeUnitsModel> timeUnitsModel;
             std::map<std::string, std::shared_ptr<io::Info> > info;

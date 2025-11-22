@@ -672,7 +672,7 @@ namespace tl
                 if (auto context = getContext())
                 {
                     p.itemData->speed = p.player->getDefaultSpeed();
-                    p.itemData->directory = p.player->getPath().getDirectory();
+                    p.itemData->dir = p.player->getPath().getDir();
                     p.itemData->options = p.player->getOptions();
                     p.timelineItem = TimelineItem::create(
                         context,

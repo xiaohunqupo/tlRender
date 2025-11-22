@@ -19,28 +19,28 @@ namespace tl
         }
 
         void ISequenceRead::_init(
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& mem,
             const Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
-            IRead::_init(path, memory, options, logSystem);
+            IRead::_init(path, mem, options, logSystem);
             FTK_P();
 
-            const std::string& number = path.getNumber();
-            if (!number.empty())
+            const std::string& num = path.getNum();
+            if (!num.empty())
             {
-                if (!_memory.empty())
+                if (!_mem.empty())
                 {
-                    std::stringstream ss(number);
+                    std::stringstream ss(num);
                     ss >> _startFrame;
-                    _endFrame = _startFrame + _memory.size() - 1;
+                    _endFrame = _startFrame + _mem.size() - 1;
                 }
                 else
                 {
-                    const ftk::RangeI& sequence = path.getSequence();
-                    _startFrame = sequence.min();
-                    _endFrame = sequence.max();
+                    const ftk::RangeI64& frames = path.getFrames();
+                    _startFrame = frames.min();
+                    _endFrame = frames.max();
                 }
             }
 
@@ -65,8 +65,8 @@ namespace tl
                     try
                     {
                         p.info = _getInfo(
-                            path.get(-1, file::PathType::Path),
-                            !_memory.empty() ? &_memory[0] : nullptr);
+                            path.getFileName(true),
+                            !_mem.empty() ? &_mem[0] : nullptr);
                         p.addTags(p.info);
                         _thread();
                     }
@@ -212,16 +212,14 @@ namespace tl
 
                     bool seq = false;
                     std::string fileName;
-                    if (!_path.getNumber().empty())
+                    if (!_path.getNum().empty())
                     {
                         seq = true;
-                        fileName = _path.get(
-                            static_cast<int>(request->time.value()),
-                            file::PathType::Path);
+                        fileName = _path.getFrame(static_cast<int>(request->time.value()), true);
                     }
                     else
                     {
-                        fileName = _path.get(-1, file::PathType::Path);
+                        fileName = _path.getFileName(true);
                     }
                     const OTIO_NS::RationalTime time = request->time;
                     const Options options = request->options;
@@ -233,10 +231,10 @@ namespace tl
                             try
                             {
                                 const int64_t frame = time.value();
-                                const int64_t memoryIndex = seq ? (frame - _startFrame) : 0;
+                                const int64_t memIndex = seq ? (frame - _startFrame) : 0;
                                 out = _readVideo(
                                     fileName,
-                                    memoryIndex >= 0 && memoryIndex < _memory.size() ? &_memory[memoryIndex] : nullptr,
+                                    memIndex >= 0 && memIndex < _mem.size() ? &_mem[memIndex] : nullptr,
                                     time,
                                     options);
                             }

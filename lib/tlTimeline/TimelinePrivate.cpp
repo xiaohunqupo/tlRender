@@ -444,11 +444,11 @@ namespace tl
 
         namespace
         {
-            std::string getKey(const file::Path& path)
+            std::string getKey(const ftk::Path& path)
             {
                 std::vector<std::string> out;
                 out.push_back(path.get());
-                out.push_back(path.getNumber());
+                out.push_back(path.getNum());
                 return ftk::join(out, ';');
             }
         }
@@ -460,18 +460,18 @@ namespace tl
             std::shared_ptr<io::IRead> out;
             const auto path = timeline::getPath(
                 clip->media_reference(),
-                this->path.getDirectory(),
+                this->path.getDir(),
                 options.pathOptions);
             const std::string key = getKey(path);
             if (!readCache.get(key, out))
             {
                 if (auto context = this->context.lock())
                 {
-                    const auto memoryRead = getMemoryRead(clip->media_reference());
+                    const auto memRead = getMemRead(clip->media_reference());
                     io::Options options = ioOptions;
                     options["SequenceIO/DefaultSpeed"] = ftk::Format("{0}").arg(timeRange.duration().rate());
                     const auto ioSystem = context->getSystem<io::ReadSystem>();
-                    out = ioSystem->read(path, memoryRead, options);
+                    out = ioSystem->read(path, memRead, options);
                     readCache.add(key, out);
                 }
             }

@@ -29,7 +29,7 @@ namespace tl
             void write(
                 const std::shared_ptr<io::IWritePlugin>& plugin,
                 const std::shared_ptr<ftk::Image>& image,
-                const file::Path& path,
+                const ftk::Path& path,
                 const ftk::ImageInfo& imageInfo,
                 const Options& options)
             {
@@ -43,19 +43,19 @@ namespace tl
             void read(
                 const std::shared_ptr<io::IReadPlugin>& plugin,
                 const std::shared_ptr<ftk::Image>& image,
-                const file::Path& path,
+                const ftk::Path& path,
                 bool memoryIO,
                 const Options& options)
             {
                 std::vector<uint8_t> memoryData;
-                std::vector<ftk::InMemoryFile> memory;
+                std::vector<ftk::MemFile> memory;
                 std::shared_ptr<io::IRead> read;
                 if (memoryIO)
                 {
                     auto fileIO = ftk::FileIO::create(path.get(), ftk::FileMode::Read);
                     memoryData.resize(fileIO->getSize());
                     fileIO->read(memoryData.data(), memoryData.size());
-                    memory.push_back(ftk::InMemoryFile(memoryData.data(), memoryData.size()));
+                    memory.push_back(ftk::MemFile(memoryData.data(), memoryData.size()));
                     read = plugin->read(path, memory, options);
                 }
                 else
@@ -77,7 +77,7 @@ namespace tl
             void readError(
                 const std::shared_ptr<io::IReadPlugin>& plugin,
                 const std::shared_ptr<ftk::Image>& image,
-                const file::Path& path,
+                const ftk::Path& path,
                 bool memoryIO,
                 const Options& options)
             {
@@ -88,13 +88,13 @@ namespace tl
                     ftk::truncateFile(path.get(), size / 2);
                 }
                 std::vector<uint8_t> memoryData;
-                std::vector<ftk::InMemoryFile> memory;
+                std::vector<ftk::MemFile> memory;
                 if (memoryIO)
                 {
                     auto fileIO = ftk::FileIO::create(path.get(), ftk::FileMode::Read);
                     memoryData.resize(fileIO->getSize());
                     fileIO->read(memoryData.data(), memoryData.size());
-                    memory.push_back(ftk::InMemoryFile(memoryData.data(), memoryData.size()));
+                    memory.push_back(ftk::MemFile(memoryData.data(), memoryData.size()));
                 }
                 auto read = plugin->read(path, memory, options);
                 const auto videoData = read->readVideo(OTIO_NS::RationalTime(0.0, 24.0)).get();
@@ -159,12 +159,12 @@ namespace tl
                                     const auto imageInfo = writePlugin->getInfo(ftk::ImageInfo(size, pixelType));
                                     if (imageInfo.isValid())
                                     {
-                                        file::Path path;
+                                        ftk::Path path;
                                         {
                                             std::stringstream ss;
                                             ss << fileName << ' ' << count << ' ' << size << ' ' << pixelType << ".0" << extension;
                                             _print(ss.str());
-                                            path = file::Path(ss.str());
+                                            path = ftk::Path(ss.str());
                                         }
                                         const auto image = ftk::Image::create(imageInfo);
                                         image->zero();

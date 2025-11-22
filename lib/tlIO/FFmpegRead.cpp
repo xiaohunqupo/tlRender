@@ -63,12 +63,12 @@ namespace tl
         }
 
         void Read::_init(
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& mem,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
-            IRead::_init(path, memory, options, logSystem);
+            IRead::_init(path, mem, options, logSystem);
             FTK_P();
 
             auto i = options.find("FFmpeg/YUVToRGB");
@@ -127,8 +127,8 @@ namespace tl
                     try
                     {
                         p.readVideo = std::make_shared<ReadVideo>(
-                            path.get(-1, path.isFileProtocol() ? file::PathType::Path : file::PathType::Full),
-                            _memory,
+                            path.hasProtocol() ? path.get() : path.getFileName(true),
+                            _mem,
                             p.options);
                         const auto& videoInfo = p.readVideo->getInfo();
                         if (videoInfo.isValid())
@@ -139,8 +139,8 @@ namespace tl
                         }
 
                         p.readAudio = std::make_shared<ReadAudio>(
-                            path.get(-1, path.isFileProtocol() ? file::PathType::Path : file::PathType::Full),
-                            _memory,
+                            path.hasProtocol() ? path.get() : path.getFileName(true),
+                            _mem,
                             p.info.videoTime.duration().rate(),
                             p.options);
                         p.info.audio = p.readAudio->getInfo();
@@ -217,7 +217,7 @@ namespace tl
         }
 
         std::shared_ptr<Read> Read::create(
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
@@ -227,13 +227,13 @@ namespace tl
         }
 
         std::shared_ptr<Read> Read::create(
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& mem,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             auto out = std::shared_ptr<Read>(new Read);
-            out->_init(path, memory, options, logSystem);
+            out->_init(path, mem, options, logSystem);
             return out;
         }
 

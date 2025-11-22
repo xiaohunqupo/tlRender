@@ -15,8 +15,8 @@ namespace tl
         {
         protected:
             void _init(
-                const file::Path&,
-                const std::vector<ftk::InMemoryFile>&,
+                const ftk::Path&,
+                const std::vector<ftk::MemFile>&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
@@ -27,24 +27,24 @@ namespace tl
 
             //! Create a new reader.
             static std::shared_ptr<Read> create(
-                const file::Path&,
+                const ftk::Path&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
             //! Create a new reader.
             static std::shared_ptr<Read> create(
-                const file::Path&,
-                const std::vector<ftk::InMemoryFile>&,
+                const ftk::Path&,
+                const std::vector<ftk::MemFile>&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
         protected:
             io::Info _getInfo(
                 const std::string& fileName,
-                const ftk::InMemoryFile*) override;
+                const ftk::MemFile*) override;
             io::VideoData _readVideo(
                 const std::string& fileName,
-                const ftk::InMemoryFile*,
+                const ftk::MemFile*,
                 const OTIO_NS::RationalTime&,
                 const io::Options&) override;
         };
@@ -54,7 +54,7 @@ namespace tl
         {
         protected:
             void _init(
-                const file::Path&,
+                const ftk::Path&,
                 const io::Info&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
@@ -66,7 +66,7 @@ namespace tl
 
             //! Create a new writer.
             static std::shared_ptr<Write> create(
-                const file::Path&,
+                const ftk::Path&,
                 const io::Info&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
@@ -93,11 +93,11 @@ namespace tl
                 const std::shared_ptr<ftk::LogSystem>&);
 
             std::shared_ptr<io::IRead> read(
-                const file::Path&,
+                const ftk::Path&,
                 const io::Options& = io::Options()) override;
             std::shared_ptr<io::IRead> read(
-                const file::Path&,
-                const std::vector<ftk::InMemoryFile>&,
+                const ftk::Path&,
+                const std::vector<ftk::MemFile>&,
                 const io::Options & = io::Options()) override;
         };
 
@@ -118,7 +118,7 @@ namespace tl
                 const ftk::ImageInfo&,
                 const io::Options & = io::Options()) const override;
             std::shared_ptr<io::IWrite> write(
-                const file::Path&,
+                const ftk::Path&,
                 const io::Info&,
                 const io::Options & = io::Options()) override;
         };

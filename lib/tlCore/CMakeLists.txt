@@ -3,16 +3,11 @@ set(HEADERS
     AudioInline.h
     AudioResample.h
     AudioSystem.h
-    FileInfo.h
-    FileInfoInline.h
-    FileInfoPrivate.h
     FileLogSystem.h
     HDR.h
     HDRInline.h
     ISystem.h
     Init.h
-    Path.h
-    PathInline.h
     Time.h
     TimeInline.h
     URL.h)
@@ -21,21 +16,12 @@ set(SOURCE
     Audio.cpp
     AudioResample.cpp
     AudioSystem.cpp
-    FileInfo.cpp
     FileLogSystem.cpp
     HDR.cpp
     ISystem.cpp
     Init.cpp
-    Path.cpp
     Time.cpp
     URL.cpp)
-if (WIN32)
-    list(APPEND SOURCE
-        FileInfoWin32.cpp)
-else()
-    list(APPEND SOURCE
-        FileInfoUnix.cpp)
-endif()
 
 set(LIBRARIES tlResource ftk::ftkCore OTIO::opentimelineio Imath::Imath nlohmann_json::nlohmann_json)
 set(LIBRARIES_PRIVATE Freetype::Freetype MINIZIP::minizip-ng ZLIB::ZLIB)

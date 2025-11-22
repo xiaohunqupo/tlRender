@@ -81,13 +81,13 @@ namespace tl
             return out;
         }
 
-        std::shared_ptr<IReadPlugin> ReadSystem::getPlugin(const file::Path& path) const
+        std::shared_ptr<IReadPlugin> ReadSystem::getPlugin(const ftk::Path& path) const
         {
-            const std::string extension = ftk::toLower(path.getExtension());
+            const std::string ext = ftk::toLower(path.getExt());
             for (const auto& i : _plugins)
             {
                 const auto& exts = i->getExts();
-                if (exts.find(extension) != exts.end())
+                if (exts.find(ext) != exts.end())
                 {
                     return i;
                 }
@@ -125,13 +125,13 @@ namespace tl
             return out;
         }
         
-        FileType ReadSystem::getFileType(const std::string& extension) const
+        FileType ReadSystem::getFileType(const std::string& ext) const
         {
             FileType out = FileType::Unknown;
-            const std::string lower = ftk::toLower(extension);
+            const std::string lower = ftk::toLower(ext);
             for (const auto& plugin : _plugins)
             {
-                for (auto fileType : { FileType::Media, FileType::Sequence })
+                for (auto fileType : { FileType::Media, FileType::Seq })
                 {
                     const auto& exts = plugin->getExts(static_cast<int>(fileType));
                     const auto i = exts.find(lower);
@@ -146,14 +146,14 @@ namespace tl
         }
 
         std::shared_ptr<IRead> ReadSystem::read(
-            const file::Path& path,
+            const ftk::Path& path,
             const Options& options)
         {
-            const std::string extension = ftk::toLower(path.getExtension());
+            const std::string ext = ftk::toLower(path.getExt());
             for (const auto& i : _plugins)
             {
                 const auto& exts = i->getExts();
-                if (exts.find(extension) != exts.end())
+                if (exts.find(ext) != exts.end())
                 {
                     return i->read(path, options);
                 }
@@ -162,15 +162,15 @@ namespace tl
         }
 
         std::shared_ptr<IRead> ReadSystem::read(
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& memory,
             const Options& options)
         {
-            const std::string extension = ftk::toLower(path.getExtension());
+            const std::string ext = ftk::toLower(path.getExt());
             for (const auto& i : _plugins)
             {
                 const auto& exts = i->getExts();
-                if (exts.find(extension) != exts.end())
+                if (exts.find(ext) != exts.end())
                 {
                     return i->read(path, memory, options);
                 }
@@ -223,13 +223,13 @@ namespace tl
             return out;
         }
 
-        std::shared_ptr<IWritePlugin> WriteSystem::getPlugin(const file::Path& path) const
+        std::shared_ptr<IWritePlugin> WriteSystem::getPlugin(const ftk::Path& path) const
         {
-            const std::string extension = ftk::toLower(path.getExtension());
+            const std::string ext = ftk::toLower(path.getExt());
             for (const auto& i : _plugins)
             {
                 const auto& exts = i->getExts();
-                if (exts.find(extension) != exts.end())
+                if (exts.find(ext) != exts.end())
                 {
                     return i;
                 }
@@ -267,13 +267,13 @@ namespace tl
             return out;
         }
 
-        FileType WriteSystem::getFileType(const std::string& extension) const
+        FileType WriteSystem::getFileType(const std::string& ext) const
         {
             FileType out = FileType::Unknown;
-            const std::string lower = ftk::toLower(extension);
+            const std::string lower = ftk::toLower(ext);
             for (const auto& plugin : _plugins)
             {
-                for (auto fileType : { FileType::Media, FileType::Sequence })
+                for (auto fileType : { FileType::Media, FileType::Seq })
                 {
                     const auto& exts = plugin->getExts(static_cast<int>(fileType));
                     const auto i = exts.find(lower);
@@ -288,15 +288,15 @@ namespace tl
         }
 
         std::shared_ptr<IWrite> WriteSystem::write(
-            const file::Path& path,
+            const ftk::Path& path,
             const Info& info,
             const Options& options)
         {
-            const std::string extension = ftk::toLower(path.getExtension());
+            const std::string ext = ftk::toLower(path.getExt());
             for (const auto& i : _plugins)
             {
                 const auto& exts = i->getExts();
-                if (exts.find(extension) != exts.end())
+                if (exts.find(ext) != exts.end())
                 {
                     return i->write(path, info, options);
                 }

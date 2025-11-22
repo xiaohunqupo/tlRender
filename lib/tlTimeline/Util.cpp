@@ -3,17 +3,17 @@
 
 #include <tlTimeline/Util.h>
 
-#include <tlTimeline/MemoryReference.h>
+#include <tlTimeline/MemRef.h>
 
 #include <tlIO/System.h>
 
-#include <tlCore/FileInfo.h>
 #include <tlCore/URL.h>
 
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Error.h>
 #include <ftk/Core/Format.h>
+#include <ftk/Core/Path.h>
 #include <ftk/Core/String.h>
 
 #include <opentimelineio/clip.h>
@@ -207,7 +207,7 @@ namespace tl
         }
 
         FTK_ENUM_IMPL(
-            CacheDirection,
+            CacheDir,
             "Forward",
             "Reverse");
 
@@ -261,30 +261,27 @@ namespace tl
             return out;
         }
 
-        std::vector<file::Path> getPaths(
+        std::vector<ftk::Path> getPaths(
             const std::shared_ptr<ftk::Context>& context,
-            const file::Path& path,
-            const file::PathOptions& pathOptions)
+            const ftk::Path& path,
+            const ftk::PathOptions& pathOptions)
         {
-            std::vector<file::Path> out;
-            const auto fileInfo = file::FileInfo(path);
-            switch (fileInfo.getType())
-            {
-            case file::Type::Directory:
+            std::vector<ftk::Path> out;
+            if (std::filesystem::is_directory(std::filesystem::u8path(path.get())))
             {
                 auto ioSystem = context->getSystem<io::ReadSystem>();
-                file::ListOptions listOptions;
-                listOptions.maxNumberDigits = pathOptions.maxNumberDigits;
-                std::vector<file::FileInfo> list;
-                file::list(path.get(-1, file::PathType::Path), list, listOptions);
-                for (const auto& fileInfo : list)
+                ftk::DirListOptions listOptions;
+                listOptions.seqNegative = pathOptions.seqNegative;
+                listOptions.seqMaxDigits = pathOptions.seqMaxDigits;
+                const auto entries = ftk::dirList(path.getFileName(true), listOptions);
+                for (const auto& entry : entries)
                 {
-                    const file::Path& path = fileInfo.getPath();
-                    const std::string ext = ftk::toLower(path.getExtension());
+                    const ftk::Path& path = entry.path;
+                    const std::string ext = ftk::toLower(path.getExt());
                     switch (ioSystem->getFileType(ext))
                     {
                     case io::FileType::Media:
-                    case io::FileType::Sequence:
+                    case io::FileType::Seq:
                         out.push_back(path);
                         break;
                     default:
@@ -295,120 +292,110 @@ namespace tl
                         break;
                     }
                 }
-                break;
             }
-            default:
+            else
+            {
                 out.push_back(path);
-                break;
             }
             return out;
         }
 
-        file::Path getPath(
+        ftk::Path getPath(
             const std::string& url,
             const std::string& directory,
-            const file::PathOptions& pathOptions)
+            const ftk::PathOptions& pathOptions)
         {
-            file::Path out(url::decode(url), pathOptions);
-            if (out.isFileProtocol() && !out.isAbsolute())
+            ftk::Path out(url::decode(url), pathOptions);
+            if (!out.hasProtocol() && !out.isAbs())
             {
-                out.setDirectory(file::appendSeparator(directory) + out.getDirectory());
+                out.setDir(ftk::appendSeparator(directory) + out.getDir());
             }
             return out;
         }
 
-        file::Path getPath(
+        ftk::Path getPath(
             const OTIO_NS::MediaReference* ref,
             const std::string& directory,
-            file::PathOptions pathOptions)
+            ftk::PathOptions pathOptions)
         {
             std::string url;
-            ftk::RangeI sequence;
+            ftk::RangeI64 frames;
             if (auto externalRef = dynamic_cast<const OTIO_NS::ExternalReference*>(ref))
             {
                 url = externalRef->target_url();
-                pathOptions.maxNumberDigits = 0;
+                pathOptions.seqMaxDigits = 0;
             }
-            else if (auto imageSequenceRef = dynamic_cast<const OTIO_NS::ImageSequenceReference*>(ref))
+            else if (auto imageSeqRef = dynamic_cast<const OTIO_NS::ImageSequenceReference*>(ref))
             {
                 std::stringstream ss;
-                ss << imageSequenceRef->target_url_base() <<
-                    imageSequenceRef->name_prefix() <<
-                    std::setfill('0') << std::setw(imageSequenceRef->frame_zero_padding()) <<
-                    imageSequenceRef->start_frame() <<
-                    imageSequenceRef->name_suffix();
+                ss << imageSeqRef->target_url_base() <<
+                    imageSeqRef->name_prefix() <<
+                    std::setfill('0') << std::setw(imageSeqRef->frame_zero_padding()) <<
+                    imageSeqRef->start_frame() <<
+                    imageSeqRef->name_suffix();
                 url = ss.str();
-                sequence = ftk::RangeI(
-                    imageSequenceRef->start_frame(),
-                    imageSequenceRef->end_frame());
+                frames = ftk::RangeI64(
+                    imageSeqRef->start_frame(),
+                    imageSeqRef->end_frame());
             }
-            else if (auto rawMemoryRef = dynamic_cast<const RawMemoryReference*>(ref))
+            else if (auto rawMemRef = dynamic_cast<const RawMemRef*>(ref))
             {
-                url = rawMemoryRef->target_url();
-                pathOptions.maxNumberDigits = 0;
+                url = rawMemRef->target_url();
+                pathOptions.seqMaxDigits = 0;
             }
-            else if (auto sharedMemoryRef = dynamic_cast<const SharedMemoryReference*>(ref))
+            else if (auto sharedMemRef = dynamic_cast<const SharedMemRef*>(ref))
             {
-                url = sharedMemoryRef->target_url();
-                pathOptions.maxNumberDigits = 0;
+                url = sharedMemRef->target_url();
+                pathOptions.seqMaxDigits = 0;
             }
-            else if (auto rawMemorySequenceRef = dynamic_cast<const RawMemorySequenceReference*>(ref))
+            else if (auto seqRawMemRef = dynamic_cast<const SeqRawMemRef*>(ref))
             {
-                url = rawMemorySequenceRef->target_url();
+                url = seqRawMemRef->target_url();
             }
-            else if (auto sharedMemorySequenceRef = dynamic_cast<const SharedMemorySequenceReference*>(ref))
+            else if (auto seqSharedMemRef = dynamic_cast<const SeqSharedMemRef*>(ref))
             {
-                url = sharedMemorySequenceRef->target_url();
+                url = seqSharedMemRef->target_url();
             }
-            file::Path out = timeline::getPath(url, directory, pathOptions);
-            if (sequence.min() != sequence.max())
+            ftk::Path out = timeline::getPath(url, directory, pathOptions);
+            if (!frames.equal())
             {
-                out.setSequence(sequence);
+                out.setFrames(frames);
             }
             return out;
         }
 
-        std::vector<ftk::InMemoryFile> getMemoryRead(
-            const OTIO_NS::MediaReference* ref)
+        std::vector<ftk::MemFile> getMemRead(const OTIO_NS::MediaReference* ref)
         {
-            std::vector<ftk::InMemoryFile> out;
-            if (auto rawMemoryReference =
-                dynamic_cast<const RawMemoryReference*>(ref))
+            std::vector<ftk::MemFile> out;
+            if (auto rawMemRef = dynamic_cast<const RawMemRef*>(ref))
             {
-                out.push_back(ftk::InMemoryFile(
-                    rawMemoryReference->memory(),
-                    rawMemoryReference->memory_size()));
+                out.push_back(ftk::MemFile(rawMemRef->mem(), rawMemRef->mem_size()));
             }
-            else if (auto sharedMemoryReference =
-                dynamic_cast<const SharedMemoryReference*>(ref))
+            else if (auto sharedMemRef = dynamic_cast<const SharedMemRef*>(ref))
             {
-                if (const auto& memory = sharedMemoryReference->memory())
+                if (const auto& mem = sharedMemRef->mem())
                 {
-                    out.push_back(ftk::InMemoryFile(
-                        memory->data(),
-                        memory->size()));
+                    out.push_back(ftk::MemFile(mem->data(), mem->size()));
                 }
             }
-            else if (auto rawMemorySequenceReference =
-                dynamic_cast<const RawMemorySequenceReference*>(ref))
+            else if (auto seqRawMemRef = dynamic_cast<const SeqRawMemRef*>(ref))
             {
-                const auto& memory = rawMemorySequenceReference->memory();
-                const size_t memory_size = memory.size();
-                const auto& memory_sizes = rawMemorySequenceReference->memory_sizes();
-                const size_t memory_sizes_size = memory_sizes.size();
-                for (size_t i = 0; i < memory_size && i < memory_sizes_size; ++i)
+                const auto& mem = seqRawMemRef->mem();
+                const size_t mem_size = mem.size();
+                const auto& mem_sizes = seqRawMemRef->mem_sizes();
+                const size_t mem_sizes_size = mem_sizes.size();
+                for (size_t i = 0; i < mem_size && i < mem_sizes_size; ++i)
                 {
-                    out.push_back(ftk::InMemoryFile(memory[i], memory_sizes[i]));
+                    out.push_back(ftk::MemFile(mem[i], mem_sizes[i]));
                 }
             }
-            else if (auto sharedMemorySequenceReference =
-                dynamic_cast<const SharedMemorySequenceReference*>(ref))
+            else if (auto seqSharedMemRef = dynamic_cast<const SeqSharedMemRef*>(ref))
             {
-                for (const auto& memory : sharedMemorySequenceReference->memory())
+                for (const auto& mem : seqSharedMemRef->mem())
                 {
-                    if (memory)
+                    if (mem)
                     {
-                        out.push_back(ftk::InMemoryFile(memory->data(), memory->size()));
+                        out.push_back(ftk::MemFile(mem->data(), mem->size()));
                     }
                 }
             }
@@ -416,15 +403,15 @@ namespace tl
         }
 
         FTK_ENUM_IMPL(
-            ToMemoryReference,
+            ToMemRef,
             "Shared",
             "Raw");
 
-        void toMemoryReferences(
+        void toMemRefs(
             OTIO_NS::Timeline* otioTimeline,
             const std::string& directory,
-            ToMemoryReference toMemoryReference,
-            const file::PathOptions& pathOptions)
+            ToMemRef toMemRef,
+            const ftk::PathOptions& pathOptions)
         {
             // Recursively iterate over all clips in the timeline.
             for (auto clip : otioTimeline->find_children<OTIO_NS::Clip>())
@@ -439,27 +426,27 @@ namespace tl
                     const size_t size = fileIO->getSize();
 
                     // Replace the external reference with a memory reference.
-                    switch (toMemoryReference)
+                    switch (toMemRef)
                     {
-                    case ToMemoryReference::Shared:
+                    case ToMemRef::Shared:
                     {
-                        auto memory = std::make_shared<MemoryReferenceData>();
-                        memory->resize(size);
-                        fileIO->read(memory->data(), size);
-                        clip->set_media_reference(new SharedMemoryReference(
+                        auto mem = std::make_shared<MemRefData>();
+                        mem->resize(size);
+                        fileIO->read(mem->data(), size);
+                        clip->set_media_reference(new SharedMemRef(
                             ref->target_url(),
-                            memory,
+                            mem,
                             clip->available_range(),
                             ref->metadata()));
                         break;
                     }
-                    case ToMemoryReference::Raw:
+                    case ToMemRef::Raw:
                     {
-                        uint8_t* memory = new uint8_t [size];
-                        fileIO->read(memory, size);
-                        clip->set_media_reference(new RawMemoryReference(
+                        uint8_t* mem = new uint8_t [size];
+                        fileIO->read(mem, size);
+                        clip->set_media_reference(new RawMemRef(
                             ref->target_url(),
-                            memory,
+                            mem,
                             size,
                             clip->available_range(),
                             ref->metadata()));
@@ -481,34 +468,34 @@ namespace tl
                     const auto path = getPath(ss.str(), directory, pathOptions);
 
                     // Read the image sequence reference into memory.
-                    std::vector<std::shared_ptr<MemoryReferenceData> > sharedMemoryList;
-                    std::vector<const uint8_t*> rawMemoryList;
-                    std::vector<size_t> rawMemorySizeList;
+                    std::vector<std::shared_ptr<MemRefData> > sharedMemList;
+                    std::vector<const uint8_t*> rawMemList;
+                    std::vector<size_t> rawMemSizeList;
                     const auto range = clip->trimmed_range();
                     for (
                         int64_t frame = ref->start_frame();
                         frame < ref->start_frame() + range.duration().value();
                         ++frame)
                     {
-                        const auto fileName = path.get(frame);
+                        const auto fileName = path.getFrame(frame, true);
                         auto fileIO = ftk::FileIO::create(fileName, ftk::FileMode::Read);
                         const size_t size = fileIO->getSize();
-                        switch (toMemoryReference)
+                        switch (toMemRef)
                         {
-                        case ToMemoryReference::Shared:
+                        case ToMemRef::Shared:
                         {
-                            auto memory = std::make_shared<MemoryReferenceData>();
-                            memory->resize(size);
-                            fileIO->read(memory->data(), size);
-                            sharedMemoryList.push_back(memory);
+                            auto mem = std::make_shared<MemRefData>();
+                            mem->resize(size);
+                            fileIO->read(mem->data(), size);
+                            sharedMemList.push_back(mem);
                             break;
                         }
-                        case ToMemoryReference::Raw:
+                        case ToMemRef::Raw:
                         {
-                            auto memory = new uint8_t [size];
-                            fileIO->read(memory, size);
-                            rawMemoryList.push_back(memory);
-                            rawMemorySizeList.push_back(size);
+                            auto mem = new uint8_t [size];
+                            fileIO->read(mem, size);
+                            rawMemList.push_back(mem);
+                            rawMemSizeList.push_back(size);
                             break;
                         }
                         default: break;
@@ -517,20 +504,20 @@ namespace tl
 
                     // Replace the image sequence reference with a memory
                     // sequence reference.
-                    switch (toMemoryReference)
+                    switch (toMemRef)
                     {
-                    case ToMemoryReference::Shared:
-                        clip->set_media_reference(new SharedMemorySequenceReference(
+                    case ToMemRef::Shared:
+                        clip->set_media_reference(new SeqSharedMemRef(
                             path.get(),
-                            sharedMemoryList,
+                            sharedMemList,
                             clip->available_range(),
                             ref->metadata()));
                         break;
-                    case ToMemoryReference::Raw:
-                        clip->set_media_reference(new RawMemorySequenceReference(
+                    case ToMemRef::Raw:
+                        clip->set_media_reference(new SeqRawMemRef(
                             path.get(),
-                            rawMemoryList,
-                            rawMemorySizeList,
+                            rawMemList,
+                            rawMemSizeList,
                             clip->available_range(),
                             ref->metadata()));
                         break;
@@ -722,14 +709,14 @@ namespace tl
                             ref->name_prefix() <<
                             std::setfill('0') << std::setw(padding) << ref->start_frame() <<
                             ref->name_suffix();
-                        const file::Path path(_getMediaFileName(ss.str(), directoryTmp));
+                        const ftk::Path path(_getMediaFileName(ss.str(), directoryTmp));
                         const auto range = clip->trimmed_range();
                         for (
                             int64_t frame = ref->start_frame();
                             frame < ref->start_frame() + range.duration().value();
                             ++frame)
                         {
-                            const std::string mediaFileName = path.get(frame);
+                            const std::string mediaFileName = path.getFrame(frame, true);
                             const std::string fileNameInZip = _getFileNameInZip(mediaFileName);
                             mediaFilesNames[mediaFileName] = fileNameInZip;
                         }

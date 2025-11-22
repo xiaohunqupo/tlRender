@@ -16,8 +16,8 @@ namespace tl
         void Read::_init(
             int64_t id,
             const std::shared_ptr<Render>& render,
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& memory,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
@@ -37,7 +37,7 @@ namespace tl
         std::shared_ptr<Read> Read::create(
             int64_t id,
             const std::shared_ptr<Render>& render,
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {

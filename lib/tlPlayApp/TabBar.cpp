@@ -47,7 +47,7 @@ namespace tl
                     for (const auto& player : value)
                     {
                         _tabBar->addTab(
-                            player->getPath().get(-1, file::PathType::FileName),
+                            player->getPath().getFileName(),
                             player->getPath().get());
                     }
                     _tabBar->setCurrentTab(index);

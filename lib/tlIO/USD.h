@@ -54,8 +54,8 @@ namespace tl
             void _init(
                 int64_t id,
                 const std::shared_ptr<Render>&,
-                const file::Path&,
-                const std::vector<ftk::InMemoryFile>&,
+                const ftk::Path&,
+                const std::vector<ftk::MemFile>&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
@@ -68,7 +68,7 @@ namespace tl
             static std::shared_ptr<Read> create(
                 int64_t id,
                 const std::shared_ptr<Render>&,
-                const file::Path&,
+                const ftk::Path&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
@@ -98,11 +98,11 @@ namespace tl
                 const std::shared_ptr<ftk::LogSystem>&);
             
             std::shared_ptr<io::IRead> read(
-                const file::Path&,
+                const ftk::Path&,
                 const io::Options& = io::Options()) override;
             std::shared_ptr<io::IRead> read(
-                const file::Path&,
-                const std::vector<ftk::InMemoryFile>&,
+                const ftk::Path&,
+                const std::vector<ftk::MemFile>&,
                 const io::Options& = io::Options()) override;
                 
         private:

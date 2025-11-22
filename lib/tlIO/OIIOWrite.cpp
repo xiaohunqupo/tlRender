@@ -16,7 +16,7 @@ namespace tl
     namespace oiio
     {
         void Write::_init(
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Info& info,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
@@ -31,7 +31,7 @@ namespace tl
         {}
 
         std::shared_ptr<Write> Write::create(
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Info& info,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)

@@ -111,7 +111,7 @@ namespace tl
                 PlaybackState state;
                 bool clearRequests = false;
                 bool clearCache = false;
-                CacheDirection cacheDirection = CacheDirection::Forward;
+                CacheDir cacheDir = CacheDir::Forward;
                 std::vector<VideoData> currentVideoData;
                 std::vector<AudioData> currentAudioData;
                 PlayerCacheInfo cacheInfo;
@@ -122,7 +122,7 @@ namespace tl
             struct Thread
             {
                 PlaybackState state;
-                CacheDirection cacheDirection = CacheDirection::Forward;
+                CacheDir cacheDir = CacheDir::Forward;
                 std::map<OTIO_NS::RationalTime, std::vector<VideoRequest> > videoDataRequests;
                 std::map<OTIO_NS::RationalTime, std::vector<VideoData> > videoCache;
                 std::map<int64_t, AudioRequest> audioDataRequests;

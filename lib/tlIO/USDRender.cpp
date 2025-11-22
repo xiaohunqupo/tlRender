@@ -43,12 +43,12 @@ namespace tl
         namespace
         {
             std::string getCacheKey(
-                const file::Path& path,
+                const ftk::Path& path,
                 const OTIO_NS::RationalTime& time,
                 const io::Options& options)
             {
                 std::stringstream ss;
-                ss << path.get() << ";" << path.getNumber() << ";" << time << ";";
+                ss << path.get() << ";" << path.getNum() << ";" << time << ";";
                 for (const auto& i : options)
                 {
                     ss << i.first << ":" << i.second << ";";
@@ -67,7 +67,7 @@ namespace tl
             struct InfoRequest
             {
                 int64_t id = -1;
-                file::Path path;
+                ftk::Path path;
                 io::Options options;
                 std::promise<io::Info> promise;
             };
@@ -75,7 +75,7 @@ namespace tl
             struct Request
             {
                 int64_t id = -1;
-                file::Path path;
+                ftk::Path path;
                 OTIO_NS::RationalTime time = time::invalidTime;
                 io::Options options;
                 std::promise<io::VideoData> promise;
@@ -266,7 +266,7 @@ namespace tl
         
         std::future<io::Info> Render::getInfo(
             int64_t id,
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Options& options)
         {
             FTK_P();
@@ -297,7 +297,7 @@ namespace tl
 
         std::future<io::VideoData> Render::render(
             int64_t id,
-            const file::Path& path,
+            const ftk::Path& path,
             const OTIO_NS::RationalTime& time,
             const io::Options& options)
         {
@@ -608,7 +608,7 @@ namespace tl
                 }
                 if (infoRequest)
                 {
-                    const std::string fileName = infoRequest->path.get(-1, file::PathType::Path);
+                    const std::string fileName = infoRequest->path.getFileName(true);
                     Private::StageCacheItem stageCacheItem;
                     if (!p.thread.stageCache.get(fileName, stageCacheItem))
                     {
@@ -706,7 +706,7 @@ namespace tl
                     try
                     {
                         // Check the stage cache for a previously opened stage.
-                        const std::string fileName = request->path.get(-1, file::PathType::Path);
+                        const std::string fileName = request->path.getFileName(true);
                         Private::StageCacheItem stageCacheItem;
                         if (!p.thread.stageCache.get(fileName, stageCacheItem))
                         {

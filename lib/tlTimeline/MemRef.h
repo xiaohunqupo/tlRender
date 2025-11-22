@@ -17,22 +17,22 @@ namespace tl
     namespace timeline
     {
         //! Memory reference data.
-        typedef std::vector<uint8_t> MemoryReferenceData;
+        typedef std::vector<uint8_t> MemRefData;
 
         //! Read references from raw memory pointers.
-        class RawMemoryReference : public OTIO_NS::MediaReference
+        class RawMemRef : public OTIO_NS::MediaReference
         {
         public:
             struct Schema
             {
-                static auto constexpr name = "RawMemoryReference";
+                static auto constexpr name = "RawMemRef";
                 static int constexpr version = 1;
             };
 
-            RawMemoryReference(
+            RawMemRef(
                 const std::string& target_url = std::string(),
-                const uint8_t* memory = nullptr,
-                size_t memory_size = 0,
+                const uint8_t* mem = nullptr,
+                size_t mem_size = 0,
                 const std::optional<OTIO_NS::TimeRange>& available_range = std::nullopt,
                 const OTIO_NS::AnyDictionary& metadata = OTIO_NS::AnyDictionary());
 
@@ -40,33 +40,33 @@ namespace tl
 
             void set_target_url(const std::string&);
 
-            const uint8_t* memory() const noexcept;
+            const uint8_t* mem() const noexcept;
 
-            size_t memory_size() const noexcept;
+            size_t mem_size() const noexcept;
 
-            void set_memory(const uint8_t* memory, size_t memory_size);
+            void set_mem(const uint8_t* mem, size_t mem_size);
 
         protected:
-            virtual ~RawMemoryReference();
+            virtual ~RawMemRef();
 
             std::string _target_url;
-            const uint8_t* _memory = nullptr;
-            size_t _memory_size = 0;
+            const uint8_t* _mem = nullptr;
+            size_t _mem_size = 0;
         };
 
         //! Read references from a shared memory pointer.
-        class SharedMemoryReference : public OTIO_NS::MediaReference
+        class SharedMemRef : public OTIO_NS::MediaReference
         {
         public:
             struct Schema
             {
-                static auto constexpr name = "SharedMemoryReference";
+                static auto constexpr name = "SharedMemRef";
                 static int constexpr version = 1;
             };
 
-            SharedMemoryReference(
+            SharedMemRef(
                 const std::string& target_url = std::string(),
-                const std::shared_ptr<MemoryReferenceData>& memory = nullptr,
+                const std::shared_ptr<MemRefData>& mem = nullptr,
                 const std::optional<OTIO_NS::TimeRange>& available_range = std::nullopt,
                 const OTIO_NS::AnyDictionary& metadata = OTIO_NS::AnyDictionary());
 
@@ -74,31 +74,31 @@ namespace tl
 
             void set_target_url(const std::string&);
 
-            const std::shared_ptr<MemoryReferenceData>& memory() const noexcept;
+            const std::shared_ptr<MemRefData>& mem() const noexcept;
 
-            void set_memory(const std::shared_ptr<MemoryReferenceData>&);
+            void set_mem(const std::shared_ptr<MemRefData>&);
 
         protected:
-            virtual ~SharedMemoryReference();
+            virtual ~SharedMemRef();
 
             std::string _target_url;
-            std::shared_ptr<MemoryReferenceData> _memory;
+            std::shared_ptr<MemRefData> _mem;
         };
 
         //! Read sequence references from raw memory pointers.
-        class RawMemorySequenceReference : public OTIO_NS::MediaReference
+        class SeqRawMemRef : public OTIO_NS::MediaReference
         {
         public:
             struct Schema
             {
-                static auto constexpr name = "RawMemorySequenceReference";
+                static auto constexpr name = "SeqRawMemRef";
                 static int constexpr version = 1;
             };
 
-            RawMemorySequenceReference(
+            SeqRawMemRef(
                 const std::string& target_url = std::string(),
-                const std::vector<const uint8_t*>& memory = {},
-                const std::vector<size_t> memory_sizes = {},
+                const std::vector<const uint8_t*>& mem = {},
+                const std::vector<size_t> mem_sizes = {},
                 const std::optional<OTIO_NS::TimeRange>& available_range = std::nullopt,
                 const OTIO_NS::AnyDictionary& metadata = OTIO_NS::AnyDictionary());
 
@@ -106,35 +106,35 @@ namespace tl
 
             void set_target_url(const std::string&);
 
-            const std::vector<const uint8_t*>& memory() const noexcept;
+            const std::vector<const uint8_t*>& mem() const noexcept;
 
-            const std::vector<size_t>& memory_sizes() const noexcept;
+            const std::vector<size_t>& mem_sizes() const noexcept;
 
-            void set_memory(
-                const std::vector<const uint8_t*>& memory,
-                const std::vector<size_t>& memory_sizes);
+            void set_mem(
+                const std::vector<const uint8_t*>& mem,
+                const std::vector<size_t>& mem_sizes);
 
         protected:
-            virtual ~RawMemorySequenceReference();
+            virtual ~SeqRawMemRef();
 
             std::string _target_url;
-            std::vector<const uint8_t*> _memory;
-            std::vector<size_t> _memory_sizes;
+            std::vector<const uint8_t*> _mem;
+            std::vector<size_t> _mem_sizes;
         };
 
         //! Read sequence references from shared memory pointers.
-        class SharedMemorySequenceReference : public OTIO_NS::MediaReference
+        class SeqSharedMemRef : public OTIO_NS::MediaReference
         {
         public:
             struct Schema
             {
-                static auto constexpr name = "SharedMemorySequenceReference";
+                static auto constexpr name = "SeqSharedMemRef";
                 static int constexpr version = 1;
             };
 
-            SharedMemorySequenceReference(
+            SeqSharedMemRef(
                 const std::string& target_url = std::string(),
-                const std::vector<std::shared_ptr<MemoryReferenceData> >& memory = {},
+                const std::vector<std::shared_ptr<MemRefData> >& mem = {},
                 const std::optional<OTIO_NS::TimeRange>& available_range = std::nullopt,
                 const OTIO_NS::AnyDictionary& metadata = OTIO_NS::AnyDictionary());
 
@@ -142,33 +142,33 @@ namespace tl
 
             void set_target_url(const std::string&);
 
-            const std::vector<std::shared_ptr<MemoryReferenceData> >& memory() const noexcept;
+            const std::vector<std::shared_ptr<MemRefData> >& mem() const noexcept;
 
-            void set_memory(
-                const std::vector<std::shared_ptr<MemoryReferenceData> >&);
+            void set_mem(
+                const std::vector<std::shared_ptr<MemRefData> >&);
 
         protected:
-            virtual ~SharedMemorySequenceReference();
+            virtual ~SeqSharedMemRef();
 
             std::string _target_url;
-            std::vector<std::shared_ptr<MemoryReferenceData> > _memory;
+            std::vector<std::shared_ptr<MemRefData> > _mem;
         };
 
         //! Zip file memory reference for .otioz support.
-        class ZipMemoryReference : public RawMemoryReference
+        class ZipMemRef : public RawMemRef
         {
         public:
             struct Schema
             {
-                static auto constexpr name = "ZipMemoryReference";
+                static auto constexpr name = "ZipMemRef";
                 static int constexpr version = 1;
             };
 
-            ZipMemoryReference(
+            ZipMemRef(
                 const std::shared_ptr<ftk::FileIO>& file_io = nullptr,
                 const std::string& target_url = std::string(),
-                const uint8_t* memory = nullptr,
-                size_t memory_size = 0,
+                const uint8_t* mem = nullptr,
+                size_t mem_size = 0,
                 const std::optional<OTIO_NS::TimeRange>& available_range = std::nullopt,
                 const OTIO_NS::AnyDictionary& metadata = OTIO_NS::AnyDictionary());
 
@@ -177,26 +177,26 @@ namespace tl
             void set_file_io(const std::shared_ptr<ftk::FileIO>&);
 
         protected:
-            virtual ~ZipMemoryReference();
+            virtual ~ZipMemRef();
 
             std::shared_ptr<ftk::FileIO> _file_io;
         };
 
         //! Zip file memory sequence reference for .otioz support.
-        class ZipMemorySequenceReference : public RawMemorySequenceReference
+        class SeqZipMemRef : public SeqRawMemRef
         {
         public:
             struct Schema
             {
-                static auto constexpr name = "ZipMemorySequenceReference";
+                static auto constexpr name = "SeqZipMemRef";
                 static int constexpr version = 1;
             };
 
-            ZipMemorySequenceReference(
+            SeqZipMemRef(
                 const std::shared_ptr<ftk::FileIO>& file_io = nullptr,
                 const std::string& target_url = std::string(),
-                const std::vector<const uint8_t*>& memory = {},
-                const std::vector<size_t> memory_sizes = {},
+                const std::vector<const uint8_t*>& mem = {},
+                const std::vector<size_t> mem_sizes = {},
                 const std::optional<OTIO_NS::TimeRange>& available_range = std::nullopt,
                 const OTIO_NS::AnyDictionary& metadata = OTIO_NS::AnyDictionary());
 
@@ -205,7 +205,7 @@ namespace tl
             void set_file_io(const std::shared_ptr<ftk::FileIO>&);
 
         protected:
-            virtual ~ZipMemorySequenceReference();
+            virtual ~SeqZipMemRef();
 
             std::shared_ptr<ftk::FileIO> _file_io;
         };

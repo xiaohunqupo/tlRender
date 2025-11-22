@@ -31,8 +31,8 @@ namespace tl
         {
         protected:
             void _init(
-                const file::Path&,
-                const std::vector<ftk::InMemoryFile>&,
+                const ftk::Path&,
+                const std::vector<ftk::MemFile>&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
@@ -43,14 +43,14 @@ namespace tl
 
             //! Create a new reader.
             static std::shared_ptr<Read> create(
-                const file::Path&,
+                const ftk::Path&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
             //! Create a new reader.
             static std::shared_ptr<Read> create(
-                const file::Path&,
-                const std::vector<ftk::InMemoryFile>&,
+                const ftk::Path&,
+                const std::vector<ftk::MemFile>&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
@@ -77,7 +77,7 @@ namespace tl
         {
         protected:
             void _init(
-                const file::Path&,
+                const ftk::Path&,
                 const io::Info&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
@@ -89,7 +89,7 @@ namespace tl
 
             //! Create a new writer.
             static std::shared_ptr<Write> create(
-                const file::Path&,
+                const ftk::Path&,
                 const io::Info&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
@@ -119,11 +119,11 @@ namespace tl
                 const std::shared_ptr<ftk::LogSystem>&);
 
             std::shared_ptr<io::IRead> read(
-                const file::Path&,
+                const ftk::Path&,
                 const io::Options& = io::Options()) override;
             std::shared_ptr<io::IRead> read(
-                const file::Path&,
-                const std::vector<ftk::InMemoryFile>&,
+                const ftk::Path&,
+                const std::vector<ftk::MemFile>&,
                 const io::Options & = io::Options()) override;
 
         private:
@@ -156,7 +156,7 @@ namespace tl
                 const ftk::ImageInfo&,
                 const io::Options & = io::Options()) const override;
             std::shared_ptr<io::IWrite> write(
-                const file::Path&,
+                const ftk::Path&,
                 const io::Info&,
                 const io::Options & = io::Options()) override;
 

@@ -66,7 +66,7 @@ namespace tl
             {
             public:
                 std::shared_ptr<IRead> read(
-                    const file::Path&,
+                    const ftk::Path&,
                     const Options& = Options()) override
                 {
                     return nullptr;
@@ -84,7 +84,7 @@ namespace tl
                 }
 
                 std::shared_ptr<IWrite> write(
-                    const file::Path&,
+                    const ftk::Path&,
                     const Info&,
                     const Options & = Options()) override
                 {
@@ -118,9 +118,9 @@ namespace tl
                 }
                 for (const auto& plugin : plugins)
                 {
-                    FTK_ASSERT(readSystem->getPlugin(file::Path("test" + plugin.first)) == plugin.second);
+                    FTK_ASSERT(readSystem->getPlugin(ftk::Path("test" + plugin.first)) == plugin.second);
                 }
-                FTK_ASSERT(!readSystem->getPlugin(file::Path()));
+                FTK_ASSERT(!readSystem->getPlugin(ftk::Path()));
                 FTK_ASSERT(!readSystem->getPlugin<DummyReadPlugin>());
             }
             {
@@ -133,9 +133,9 @@ namespace tl
                 ss << "Extensions: " << ftk::join(exts, ", ");
                 _print(ss.str());
             }
-            FTK_ASSERT(!readSystem->read(file::Path()));
+            FTK_ASSERT(!readSystem->read(ftk::Path()));
             auto writeSystem = _context->getSystem<WriteSystem>();
-            FTK_ASSERT(!writeSystem->write(file::Path(), Info()));
+            FTK_ASSERT(!writeSystem->write(ftk::Path(), Info()));
         }
     }
 }

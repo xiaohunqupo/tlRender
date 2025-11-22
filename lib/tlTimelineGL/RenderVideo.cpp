@@ -747,7 +747,7 @@ namespace tl
                                     if (p.vbos["video"])
                                     {
                                         p.vbos["video"]->copy(convert(
-                                            ftk::mesh(ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
+                                            ftk::mesh(ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h), true),
                                             p.vbos["video"]->getType()));
                                     }
                                     if (p.vaos["video"])

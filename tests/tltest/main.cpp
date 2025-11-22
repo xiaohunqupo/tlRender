@@ -9,7 +9,7 @@
 #include <tlTimelineTest/ColorOptionsTest.h>
 #include <tlTimelineTest/CompareOptionsTest.h>
 #include <tlTimelineTest/DisplayOptionsTest.h>
-#include <tlTimelineTest/MemoryReferenceTest.h>
+#include <tlTimelineTest/MemRefTest.h>
 #include <tlTimelineTest/PlayerOptionsTest.h>
 #include <tlTimelineTest/PlayerTest.h>
 #include <tlTimelineTest/TimelineTest.h>
@@ -27,9 +27,7 @@
 #endif // TLRENDER_OIIO
 
 #include <tlCoreTest/AudioTest.h>
-#include <tlCoreTest/FileInfoTest.h>
 #include <tlCoreTest/HDRTest.h>
-#include <tlCoreTest/PathTest.h>
 #include <tlCoreTest/TimeTest.h>
 #include <tlCoreTest/URLTest.h>
 
@@ -48,9 +46,7 @@ void coreTests(
     const std::shared_ptr<ftk::Context>& context)
 {
     tests.push_back(core_tests::AudioTest::create(context));
-    tests.push_back(core_tests::FileInfoTest::create(context));
     tests.push_back(core_tests::HDRTest::create(context));
-    tests.push_back(core_tests::PathTest::create(context));
     tests.push_back(core_tests::TimeTest::create(context));
     tests.push_back(core_tests::URLTest::create(context));
 }
@@ -78,7 +74,7 @@ void timelineTests(
     tests.push_back(timeline_tests::ColorOptionsTest::create(context));
     tests.push_back(timeline_tests::CompareOptionsTest::create(context));
     tests.push_back(timeline_tests::DisplayOptionsTest::create(context));
-    tests.push_back(timeline_tests::MemoryReferenceTest::create(context));
+    tests.push_back(timeline_tests::MemRefTest::create(context));
     tests.push_back(timeline_tests::PlayerOptionsTest::create(context));
     tests.push_back(timeline_tests::PlayerTest::create(context));
     tests.push_back(timeline_tests::TimelineTest::create(context));

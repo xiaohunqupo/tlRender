@@ -28,8 +28,8 @@ namespace tl
         {
         protected:
             void _init(
-                const file::Path&,
-                const std::vector<ftk::InMemoryFile>&,
+                const ftk::Path&,
+                const std::vector<ftk::MemFile>&,
                 const Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
@@ -47,10 +47,10 @@ namespace tl
         protected:
             virtual Info _getInfo(
                 const std::string& fileName,
-                const ftk::InMemoryFile*) = 0;
+                const ftk::MemFile*) = 0;
             virtual VideoData _readVideo(
                 const std::string& fileName,
-                const ftk::InMemoryFile*,
+                const ftk::MemFile*,
                 const OTIO_NS::RationalTime&,
                 const Options&) = 0;
 
@@ -74,7 +74,7 @@ namespace tl
         {
         protected:
             void _init(
-                const file::Path&,
+                const ftk::Path&,
                 const Info&,
                 const Options&,
                 const std::shared_ptr<ftk::LogSystem>&);

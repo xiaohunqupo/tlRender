@@ -49,7 +49,7 @@ namespace tl
         {
             if (auto context = _context.lock())
             {
-                auto timeline = timeline::Timeline::create(context, file::Path(path.u8string()));
+                auto timeline = timeline::Timeline::create(context, ftk::Path(path.u8string()));
                 auto player = timeline::Player::create(context, timeline);
                 player->setCacheOptions(_cacheOptions);
                 const int index = _players->getSize();
@@ -122,7 +122,7 @@ namespace tl
             if (context && player)
             {
                 const std::size_t index = _players->indexOf(player);
-                const file::Path path = player->getPath();
+                const ftk::Path path = player->getPath();
                 auto timeline = timeline::Timeline::create(context, path);
                 player = timeline::Player::create(context, timeline);
                 _players->setItem(index, player);

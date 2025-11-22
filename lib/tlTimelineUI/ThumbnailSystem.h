@@ -6,11 +6,11 @@
 #include <tlIO/IO.h>
 
 #include <tlCore/ISystem.h>
-#include <tlCore/Path.h>
 
 #include <ftk/Core/FileIO.h>
 #include <ftk/Core/Image.h>
 #include <ftk/Core/Mesh.h>
+#include <ftk/Core/Path.h>
 
 #include <future>
 
@@ -81,7 +81,7 @@ namespace tl
             //! Get an I/O information cache key.
             static std::string getInfoKey(
                 intptr_t id,
-                const file::Path&,
+                const ftk::Path&,
                 const io::Options&);
 
             //! Add I/O information to the cache.
@@ -96,7 +96,7 @@ namespace tl
             //! Get a thumbnail cache key.
             static std::string getThumbnailKey(
                 intptr_t id,
-                const file::Path&,
+                const ftk::Path&,
                 int height,
                 const OTIO_NS::RationalTime&,
                 const io::Options&);
@@ -117,7 +117,7 @@ namespace tl
             //! Get a waveform cache key.
             static std::string getWaveformKey(
                 intptr_t id,
-                const file::Path&,
+                const ftk::Path&,
                 const ftk::Size2I&,
                 const OTIO_NS::TimeRange&,
                 const io::Options&);
@@ -167,20 +167,20 @@ namespace tl
             //! Get information.
             InfoRequest getInfo(
                 intptr_t id,
-                const file::Path&,
+                const ftk::Path&,
                 const io::Options& = io::Options());
 
             //! Get information.
             InfoRequest getInfo(
                 intptr_t id,
-                const file::Path&,
-                const std::vector<ftk::InMemoryFile>&,
+                const ftk::Path&,
+                const std::vector<ftk::MemFile>&,
                 const io::Options& = io::Options());
 
             //! Get a video thumbnail.
             ThumbnailRequest getThumbnail(
                 intptr_t id,
-                const file::Path&,
+                const ftk::Path&,
                 int height,
                 const OTIO_NS::RationalTime& = time::invalidTime,
                 const io::Options& = io::Options());
@@ -188,8 +188,8 @@ namespace tl
             //! Get a video thumbnail.
             ThumbnailRequest getThumbnail(
                 intptr_t id,
-                const file::Path&,
-                const std::vector<ftk::InMemoryFile>&,
+                const ftk::Path&,
+                const std::vector<ftk::MemFile>&,
                 int height,
                 const OTIO_NS::RationalTime& = time::invalidTime,
                 const io::Options& = io::Options());
@@ -197,7 +197,7 @@ namespace tl
             //! Get an audio waveform.
             WaveformRequest getWaveform(
                 intptr_t id,
-                const file::Path&,
+                const ftk::Path&,
                 const ftk::Size2I&,
                 const OTIO_NS::TimeRange& = time::invalidTimeRange,
                 const io::Options& = io::Options());
@@ -205,8 +205,8 @@ namespace tl
             //! Get an audio waveform.
             WaveformRequest getWaveform(
                 intptr_t id,
-                const file::Path&,
-                const std::vector<ftk::InMemoryFile>&,
+                const ftk::Path&,
+                const std::vector<ftk::MemFile>&,
                 const ftk::Size2I&,
                 const OTIO_NS::TimeRange& = time::invalidTimeRange,
                 const io::Options& = io::Options());
@@ -241,13 +241,13 @@ namespace tl
             //! Get information.
             InfoRequest getInfo(
                 intptr_t id,
-                const file::Path&,
+                const ftk::Path&,
                 const io::Options& = io::Options());
 
             //! Get a video thumbnail.
             ThumbnailRequest getThumbnail(
                 intptr_t id,
-                const file::Path&,
+                const ftk::Path&,
                 int height,
                 const OTIO_NS::RationalTime& = time::invalidTime,
                 const io::Options& = io::Options());
@@ -255,7 +255,7 @@ namespace tl
             //! Get an audio waveform.
             WaveformRequest getWaveform(
                 intptr_t id,
-                const file::Path&,
+                const ftk::Path&,
                 const ftk::Size2I&,
                 const OTIO_NS::TimeRange& = time::invalidTimeRange,
                 const io::Options& = io::Options());

@@ -18,7 +18,7 @@ namespace tl
     {
         ReadVideo::ReadVideo(
             const std::string& fileName,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const std::vector<ftk::MemFile>& memory,
             const ReadOptions& options) :
             _fileName(fileName),
             _options(options)

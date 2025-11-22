@@ -63,10 +63,10 @@ namespace tl
             IReadPlugin::_init(
                 "USD",
                 {
-                    { ".usd", io::FileType::Sequence },
-                    { ".usda", io::FileType::Sequence },
-                    { ".usdc", io::FileType::Sequence },
-                    { ".usdz", io::FileType::Sequence }
+                    { ".usd", io::FileType::Seq },
+                    { ".usda", io::FileType::Seq },
+                    { ".usdc", io::FileType::Seq },
+                    { ".usdz", io::FileType::Seq }
                 },
                 logSystem);
             FTK_P();
@@ -89,7 +89,7 @@ namespace tl
         }
 
         std::shared_ptr<io::IRead> ReadPlugin::read(
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Options& options)
         {
             FTK_P();
@@ -103,8 +103,8 @@ namespace tl
         }
         
         std::shared_ptr<io::IRead> ReadPlugin::read(
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& memory,
             const io::Options& options)
         {
             FTK_P();

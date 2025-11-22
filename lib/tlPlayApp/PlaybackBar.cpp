@@ -46,7 +46,7 @@ namespace tl
             _durationLabel->setTooltip("The timeline duration.");
 
             _speedEdit = ftk::DoubleEdit::create(context, _layout);
-            _speedEdit->setRange(ftk::RangeD(1.0, 999.0));
+            _speedEdit->setRange(ftk::RangeD(1.0, 99999.0));
             _speedEdit->setStep(1.0);
             _speedEdit->setLargeStep(10.0);
             _speedEdit->setTooltip("The timeline speed.");

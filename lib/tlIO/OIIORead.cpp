@@ -15,8 +15,8 @@ namespace tl
     namespace oiio
     {
         void Read::_init(
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& memory,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
@@ -32,7 +32,7 @@ namespace tl
         }
 
         std::shared_ptr<Read> Read::create(
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
@@ -42,8 +42,8 @@ namespace tl
         }
 
         std::shared_ptr<Read> Read::create(
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& memory,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
@@ -111,7 +111,7 @@ namespace tl
 
         io::Info Read::_getInfo(
             const std::string& fileName,
-            const ftk::InMemoryFile* memory)
+            const ftk::MemFile* memory)
         {
             // Open the file.
             std::unique_ptr<OIIO::Filesystem::IOMemReader> oiioMemReader;
@@ -169,7 +169,7 @@ namespace tl
 
         io::VideoData Read::_readVideo(
             const std::string& fileName,
-            const ftk::InMemoryFile* memory,
+            const ftk::MemFile* memory,
             const OTIO_NS::RationalTime& time,
             const io::Options& options)
         {

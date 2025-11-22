@@ -49,14 +49,14 @@ namespace tl
         void PlayerTest::_player()
         {
             // Test timeline players.
-            const std::vector<file::Path> paths =
+            const std::vector<ftk::Path> paths =
             {
-                file::Path(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v"),
-                file::Path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg"),
-                file::Path(TLRENDER_SAMPLE_DATA, "MovieAndSeq.otio"),
-                file::Path(TLRENDER_SAMPLE_DATA, "TransitionGap.otio"),
-                file::Path(TLRENDER_SAMPLE_DATA, "SingleClip.otioz"),
-                file::Path(TLRENDER_SAMPLE_DATA, "SingleClipSeq.otioz")
+                ftk::Path(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v"),
+                ftk::Path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg"),
+                ftk::Path(TLRENDER_SAMPLE_DATA, "MovieAndSeq.otio"),
+                ftk::Path(TLRENDER_SAMPLE_DATA, "TransitionGap.otio"),
+                ftk::Path(TLRENDER_SAMPLE_DATA, "SingleClip.otioz"),
+                ftk::Path(TLRENDER_SAMPLE_DATA, "SingleClipSeq.otioz")
             };
             for (const auto& path : paths)
             {
@@ -79,7 +79,7 @@ namespace tl
                 {
                     _print(ftk::Format("Memory timeline: {0}").arg(path.get()));
                     auto otioTimeline = timeline::create(_context, path);
-                    toMemoryReferences(otioTimeline, path.getDirectory(), ToMemoryReference::Shared);
+                    toMemRefs(otioTimeline, path.getDir(), ToMemRef::Shared);
                     auto timeline = Timeline::create(_context, otioTimeline);
                     auto player = Player::create(_context, timeline);
                     _player(player);
@@ -93,8 +93,8 @@ namespace tl
 
         void PlayerTest::_player(const std::shared_ptr<timeline::Player>& player)
         {
-            const file::Path& path = player->getPath();
-            const file::Path& audioPath = player->getAudioPath();
+            const ftk::Path& path = player->getPath();
+            const ftk::Path& audioPath = player->getAudioPath();
             const PlayerOptions& playerOptions = player->getPlayerOptions();
             const Options options = player->getOptions();
             const OTIO_NS::TimeRange& timeRange = player->getTimeRange();

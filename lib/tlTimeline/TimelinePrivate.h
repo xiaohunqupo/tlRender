@@ -50,8 +50,8 @@ namespace tl
 
             std::weak_ptr<ftk::Context> context;
             OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> otioTimeline;
-            file::Path path;
-            file::Path audioPath;
+            ftk::Path path;
+            ftk::Path audioPath;
             Options options;
             ftk::LRUCache<std::string, std::shared_ptr<io::IRead> > readCache;
             OTIO_NS::TimeRange timeRange = time::invalidTimeRange;

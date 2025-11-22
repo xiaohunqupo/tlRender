@@ -43,14 +43,14 @@ namespace tl
 
         void TimelineTest::_enums()
         {
-            _enum<ImageSequenceAudio>("ImageSequenceAudio", getImageSequenceAudioEnums);
+            _enum<ImageSeqAudio>("ImageSeqAudio", getImageSeqAudioEnums);
             _enum<Transition>("Transition", getTransitionEnums);
         }
 
         void TimelineTest::_options()
         {
             Options a;
-            a.imageSequenceAudio = ImageSequenceAudio::FileName;
+            a.imageSeqAudio = ImageSeqAudio::FileName;
             FTK_ASSERT(a == a);
             FTK_ASSERT(a != Options());
         }
@@ -86,14 +86,14 @@ namespace tl
         void TimelineTest::_timeline()
         {
             // Test timelines.
-            const std::vector<file::Path> paths =
+            const std::vector<ftk::Path> paths =
             {
-                file::Path(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v"),
-                file::Path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg"),
-                file::Path(TLRENDER_SAMPLE_DATA, "MovieAndSeq.otio"),
-                file::Path(TLRENDER_SAMPLE_DATA, "TransitionGap.otio"),
-                file::Path(TLRENDER_SAMPLE_DATA, "SingleClip.otioz"),
-                file::Path(TLRENDER_SAMPLE_DATA, "SingleClipSeq.otioz")
+                ftk::Path(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v"),
+                ftk::Path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg"),
+                ftk::Path(TLRENDER_SAMPLE_DATA, "MovieAndSeq.otio"),
+                ftk::Path(TLRENDER_SAMPLE_DATA, "TransitionGap.otio"),
+                ftk::Path(TLRENDER_SAMPLE_DATA, "SingleClip.otioz"),
+                ftk::Path(TLRENDER_SAMPLE_DATA, "SingleClipSeq.otioz")
             };
             for (const auto& path : paths)
             {
@@ -114,7 +114,7 @@ namespace tl
                 {
                     _print(ftk::Format("Memory timeline: {0}").arg(path.get()));
                     auto otioTimeline = timeline::create(_context, path);
-                    toMemoryReferences(otioTimeline, path.getDirectory(), ToMemoryReference::Shared);
+                    toMemRefs(otioTimeline, path.getDir(), ToMemRef::Shared);
                     auto timeline = timeline::Timeline::create(_context, otioTimeline);
                     _timeline(timeline);
                 }
@@ -220,8 +220,8 @@ namespace tl
 #if defined(TLRENDER_FFMPEG)
             try
             {
-                const file::Path path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg");
-                const file::Path audioPath(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v");
+                const ftk::Path path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg");
+                const ftk::Path audioPath(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v");
                 auto timeline = Timeline::create(_context, path.get(), audioPath.get());
             }
             catch (const std::exception& e)
@@ -230,8 +230,8 @@ namespace tl
             }
             try
             {
-                const file::Path path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg");
-                const file::Path audioPath(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v");
+                const ftk::Path path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg");
+                const ftk::Path audioPath(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v");
                 auto timeline = Timeline::create(_context, path, audioPath);
             }
             catch (const std::exception& e)
@@ -240,12 +240,12 @@ namespace tl
             }
             try
             {
-                const file::Path path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg");
+                const ftk::Path path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg");
                 _print(ftk::Format("Path: {0}").arg(path.get()));
                 Options options;
-                options.imageSequenceAudio = ImageSequenceAudio::None;
+                options.imageSeqAudio = ImageSeqAudio::None;
                 auto timeline = Timeline::create(_context, path, options);
-                const file::Path& audioPath = timeline->getAudioPath();
+                const ftk::Path& audioPath = timeline->getAudioPath();
                 FTK_ASSERT(audioPath.isEmpty());
                 _print(ftk::Format("Audio path: {0}").arg(audioPath.get()));
             }
@@ -255,12 +255,12 @@ namespace tl
             }
             try
             {
-                const file::Path path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg");
+                const ftk::Path path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg");
                 _print(ftk::Format("Path: {0}").arg(path.get()));
                 Options options;
-                options.imageSequenceAudio = ImageSequenceAudio::Extension;
+                options.imageSeqAudio = ImageSeqAudio::Ext;
                 auto timeline = Timeline::create(_context, path, options);
-                const file::Path& audioPath = timeline->getAudioPath();
+                const ftk::Path& audioPath = timeline->getAudioPath();
                 FTK_ASSERT(!audioPath.isEmpty());
                 _print(ftk::Format("Audio path: {0}").arg(audioPath.get()));
             }
@@ -270,14 +270,14 @@ namespace tl
             }
             try
             {
-                const file::Path path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg");
+                const ftk::Path path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg");
                 _print(ftk::Format("Path: {0}").arg(path.get()));
                 Options options;
-                options.imageSequenceAudio = ImageSequenceAudio::FileName;
-                options.imageSequenceAudioFileName = file::Path(
+                options.imageSeqAudio = ImageSeqAudio::FileName;
+                options.imageSeqAudioFileName = ftk::Path(
                     TLRENDER_SAMPLE_DATA, "AudioToneStereo.wav").get();
                 auto timeline = Timeline::create(_context, path, options);
-                const file::Path& audioPath = timeline->getAudioPath();
+                const ftk::Path& audioPath = timeline->getAudioPath();
                 FTK_ASSERT(!audioPath.isEmpty());
                 _print(ftk::Format("Audio path: {0}").arg(audioPath.get()));
             }

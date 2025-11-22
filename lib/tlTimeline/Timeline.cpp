@@ -33,11 +33,11 @@ namespace tl
                 std::vector<std::string> lines;
                 lines.push_back(std::string());
                 lines.push_back(ftk::Format("    Image sequence audio: {0}").
-                    arg(options.imageSequenceAudio));
+                    arg(options.imageSeqAudio));
                 lines.push_back(ftk::Format("    Image sequence audio extensions: {0}").
-                    arg(ftk::join(options.imageSequenceAudioExtensions, ", ")));
+                    arg(ftk::join(options.imageSeqAudioExts, ", ")));
                 lines.push_back(ftk::Format("    Image sequence audio file name: {0}").
-                    arg(options.imageSequenceAudioFileName));
+                    arg(options.imageSeqAudioFileName));
                 lines.push_back(ftk::Format("    Compatability: {0}").
                     arg(options.compat));
                 lines.push_back(ftk::Format("    Video request max: {0}").
@@ -53,7 +53,7 @@ namespace tl
                         arg(i.second));
                 }
                 lines.push_back(ftk::Format("    Path max number digits: {0}").
-                    arg(options.pathOptions.maxNumberDigits));
+                    arg(options.pathOptions.seqMaxDigits));
                 logSystem->print(
                     ftk::Format("tl::timeline::Timeline {0}").arg(this),
                     ftk::join(lines, "\n"));
@@ -70,12 +70,12 @@ namespace tl
                     auto j = dict.find("path");
                     if (j != dict.end())
                     {
-                        p.path = file::Path(std::any_cast<std::string>(j->second));
+                        p.path = ftk::Path(std::any_cast<std::string>(j->second));
                     }
                     j = dict.find("audioPath");
                     if (j != dict.end())
                     {
-                        p.audioPath = file::Path(std::any_cast<std::string>(j->second));
+                        p.audioPath = ftk::Path(std::any_cast<std::string>(j->second));
                     }
                 }
                 catch (const std::exception&)
@@ -184,12 +184,12 @@ namespace tl
             return _p->otioTimeline;
         }
 
-        const file::Path& Timeline::getPath() const
+        const ftk::Path& Timeline::getPath() const
         {
             return _p->path;
         }
 
-        const file::Path& Timeline::getAudioPath() const
+        const ftk::Path& Timeline::getAudioPath() const
         {
             return _p->audioPath;
         }

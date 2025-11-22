@@ -32,17 +32,17 @@ namespace tl
         {
             FTK_P();
             p.f = ftk::FileIO::create(fileName, ftk::FileMode::Read);
-            p.p = p.f->getMemoryP();
+            p.p = p.f->getMemP();
             p.size = p.f->getSize();
         }
 
-        IStream::IStream(const std::string& fileName, const uint8_t* memoryP, size_t memorySize) :
+        IStream::IStream(const std::string& fileName, const uint8_t* memP, size_t memSize) :
             Imf::IStream(fileName.c_str()),
             _p(new Private)
         {
             FTK_P();
-            p.p = memoryP;
-            p.size = memorySize;
+            p.p = memP;
+            p.size = memSize;
         }
 
         IStream::~IStream()
@@ -139,13 +139,13 @@ namespace tl
             public:
                 File(
                     const std::string& fileName,
-                    const ftk::InMemoryFile* memory,
+                    const ftk::MemFile* mem,
                     const std::shared_ptr<ftk::LogSystem>& logSystem)
                 {
                     // Open the file.
-                    if (memory)
+                    if (mem)
                     {
-                        _s.reset(new IStream(fileName, memory->p, memory->size));
+                        _s.reset(new IStream(fileName, mem->p, mem->size));
                     }
                     else
                     {
@@ -513,12 +513,12 @@ namespace tl
         }
 
         void Read::_init(
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& mem,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
-            ISequenceRead::_init(path, memory, options, logSystem);
+            ISequenceRead::_init(path, mem, options, logSystem);
         }
 
         Read::Read()
@@ -530,7 +530,7 @@ namespace tl
         }
 
         std::shared_ptr<Read> Read::create(
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
@@ -540,21 +540,21 @@ namespace tl
         }
 
         std::shared_ptr<Read> Read::create(
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& mem,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             auto out = std::shared_ptr<Read>(new Read);
-            out->_init(path, memory, options, logSystem);
+            out->_init(path, mem, options, logSystem);
             return out;
         }
 
         io::Info Read::_getInfo(
             const std::string& fileName,
-            const ftk::InMemoryFile* memory)
+            const ftk::MemFile* mem)
         {
-            io::Info out = File(fileName, memory, _logSystem.lock()).getInfo();
+            io::Info out = File(fileName, mem, _logSystem.lock()).getInfo();
             float speed = _defaultSpeed;
             const auto i = out.tags.find("Frame Per Second");
             if (i != out.tags.end())
@@ -569,11 +569,11 @@ namespace tl
 
         io::VideoData Read::_readVideo(
             const std::string& fileName,
-            const ftk::InMemoryFile* memory,
+            const ftk::MemFile* mem,
             const OTIO_NS::RationalTime& time,
             const io::Options& options)
         {
-            return File(fileName, memory, _logSystem.lock()).read(fileName, time, options);
+            return File(fileName, mem, _logSystem.lock()).read(fileName, time, options);
         }
     }
 }

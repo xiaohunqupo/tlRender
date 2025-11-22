@@ -404,7 +404,7 @@ namespace tl
             class WMFObject
             {
             public:
-                WMFObject(const file::Path& path);
+                WMFObject(const ftk::Path& path);
 
                 ~WMFObject();
 
@@ -443,7 +443,7 @@ namespace tl
                 IMFMediaBufferWrapper _outBuffer;*/
             };
 
-            WMFObject::WMFObject(const file::Path& path)
+            WMFObject::WMFObject(const ftk::Path& path)
             {
                 // Initialize COM.
                 HRESULT hr = CoInitializeEx(0, COINIT_MULTITHREADED);
@@ -1080,8 +1080,8 @@ namespace tl
         }
 
         void Read::_init(
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& memory,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
@@ -1130,7 +1130,7 @@ namespace tl
         }
 
         std::shared_ptr<Read> Read::create(
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
@@ -1140,8 +1140,8 @@ namespace tl
         }
 
         std::shared_ptr<Read> Read::create(
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& memory,
             const io::Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
@@ -1259,7 +1259,7 @@ namespace tl
             }
         }
 
-        void Read::_thread(const file::Path& path)
+        void Read::_thread(const ftk::Path& path)
         {
             FTK_P();
 

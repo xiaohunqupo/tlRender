@@ -10,7 +10,7 @@ namespace tl
     namespace io
     {
         void IIO::_init(
-            const file::Path& path,
+            const ftk::Path& path,
             const Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
@@ -25,7 +25,7 @@ namespace tl
         IIO::~IIO()
         {}
 
-        const file::Path& IIO::getPath() const
+        const ftk::Path& IIO::getPath() const
         {
             return _path;
         }

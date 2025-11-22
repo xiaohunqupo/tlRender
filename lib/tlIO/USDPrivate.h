@@ -34,13 +34,13 @@ namespace tl
             //! Get information.
             std::future<io::Info> getInfo(
                 int64_t id,
-                const file::Path& path,
+                const ftk::Path& path,
                 const io::Options&);
             
             //! Render an image.
             std::future<io::VideoData> render(
                 int64_t id,
-                const file::Path& path,
+                const ftk::Path& path,
                 const OTIO_NS::RationalTime& time,
                 const io::Options&);
 

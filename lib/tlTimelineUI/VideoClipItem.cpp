@@ -18,8 +18,8 @@ namespace tl
         struct VideoClipItem::Private
         {
             std::string clipName;
-            file::Path path;
-            std::vector<ftk::InMemoryFile> memoryRead;
+            ftk::Path path;
+            std::vector<ftk::MemFile> memRead;
             std::shared_ptr<ThumbnailGenerator> thumbnailGenerator;
 
             struct SizeData
@@ -47,11 +47,11 @@ namespace tl
         {
             const auto path = timeline::getPath(
                 clip->media_reference(),
-                itemData->directory,
+                itemData->dir,
                 itemData->options.pathOptions);
             IBasicItem::_init(
                 context,
-                !clip->name().empty() ? clip->name() : path.get(-1, file::PathType::FileName),
+                !clip->name().empty() ? clip->name() : path.getFileName(),
                 ftk::ColorRole::VideoClip,
                 "tl::timelineui::VideoClipItem",
                 clip.value,
@@ -64,7 +64,7 @@ namespace tl
 
             p.clipName = clip->name();
             p.path = path;
-            p.memoryRead = timeline::getMemoryRead(clip->media_reference());
+            p.memRead = timeline::getMemRead(clip->media_reference());
             p.thumbnailGenerator = thumbnailGenerator;
 
             p.ioOptions = _data->options.ioOptions;
@@ -261,7 +261,7 @@ namespace tl
                     p.infoRequest = p.thumbnailGenerator->getInfo(
                         reinterpret_cast<intptr_t>(this),
                         p.path,
-                        p.memoryRead,
+                        p.memRead,
                         p.ioOptions);
                 }
             }
@@ -345,7 +345,7 @@ namespace tl
                                 p.thumbnailRequests[mediaTime] = p.thumbnailGenerator->getThumbnail(
                                     reinterpret_cast<intptr_t>(this),
                                     p.path,
-                                    p.memoryRead,
+                                    p.memRead,
                                     _displayOptions.thumbnailHeight,
                                     mediaTime,
                                     p.ioOptions);

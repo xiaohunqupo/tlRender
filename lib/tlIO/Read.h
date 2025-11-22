@@ -14,8 +14,8 @@ namespace tl
         {
         protected:
             void _init(
-                const file::Path&,
-                const std::vector<ftk::InMemoryFile>&,
+                const ftk::Path&,
+                const std::vector<ftk::MemFile>&,
                 const Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
@@ -41,7 +41,7 @@ namespace tl
             virtual void cancelRequests() = 0;
 
         protected:
-            std::vector<ftk::InMemoryFile> _memory;
+            std::vector<ftk::MemFile> _mem;
         };
 
         //! Base class for read plugins.
@@ -62,13 +62,13 @@ namespace tl
 
             //! Create a reader for the given path.
             virtual std::shared_ptr<IRead> read(
-                const file::Path&,
+                const ftk::Path&,
                 const Options& = Options()) = 0;
 
             //! Create a reader for the given path and memory locations.
             virtual std::shared_ptr<IRead> read(
-                const file::Path&,
-                const std::vector<ftk::InMemoryFile>&,
+                const ftk::Path&,
+                const std::vector<ftk::MemFile>&,
                 const Options& = Options()) = 0;
 
         private:

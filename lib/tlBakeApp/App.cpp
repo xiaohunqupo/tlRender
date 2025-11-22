@@ -271,7 +271,7 @@ namespace tl
 
             // Create the writer.
             const std::string output = _cmdLine.output->getValue();
-            _writerPlugin = _context->getSystem<io::WriteSystem>()->getPlugin(file::Path(output));
+            _writerPlugin = _context->getSystem<io::WriteSystem>()->getPlugin(ftk::Path(output));
             if (!_writerPlugin)
             {
                 throw std::runtime_error(ftk::Format("Cannot open: \"{0}\"").arg(output));
@@ -295,7 +295,7 @@ namespace tl
             io::Info ioInfo;
             ioInfo.video.push_back(_outputInfo);
             ioInfo.videoTime = _timeRange;
-            _writer = _writerPlugin->write(file::Path(output), ioInfo, _getIOOptions());
+            _writer = _writerPlugin->write(ftk::Path(output), ioInfo, _getIOOptions());
             if (!_writer)
             {
                 throw std::runtime_error(ftk::Format("Cannot open: \"{0}\"").arg(output));

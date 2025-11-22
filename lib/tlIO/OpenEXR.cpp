@@ -582,7 +582,7 @@ namespace tl
         {
             IReadPlugin::_init(
                 "OpenEXR",
-                { { ".exr", io::FileType::Sequence } },
+                { { ".exr", io::FileType::Seq } },
                 logSystem);
 
             Imf::setGlobalThreadCount(0);
@@ -600,15 +600,15 @@ namespace tl
         }
 
         std::shared_ptr<io::IRead> ReadPlugin::read(
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Options& options)
         {
             return Read::create(path, options, _logSystem.lock());
         }
 
         std::shared_ptr<io::IRead> ReadPlugin::read(
-            const file::Path& path,
-            const std::vector<ftk::InMemoryFile>& memory,
+            const ftk::Path& path,
+            const std::vector<ftk::MemFile>& memory,
             const io::Options& options)
         {
             return Read::create(path, memory, options, _logSystem.lock());
@@ -619,7 +619,7 @@ namespace tl
         {
             IWritePlugin::_init(
                 "OpenEXR",
-                { { ".exr", io::FileType::Sequence } },
+                { { ".exr", io::FileType::Seq } },
                 logSystem);
 
             Imf::setGlobalThreadCount(0);
@@ -654,7 +654,7 @@ namespace tl
         }
 
         std::shared_ptr<io::IWrite> WritePlugin::write(
-            const file::Path& path,
+            const ftk::Path& path,
             const io::Info& info,
             const io::Options& options)
         {

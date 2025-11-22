@@ -13,17 +13,17 @@ namespace tl
     namespace timeline
     {
         FTK_ENUM_IMPL(
-            ImageSequenceAudio,
+            ImageSeqAudio,
             "None",
-            "Extension",
+            "Ext",
             "FileName");
 
         bool Options::operator == (const Options& other) const
         {
             return
-                imageSequenceAudio == other.imageSequenceAudio &&
-                imageSequenceAudioExtensions == other.imageSequenceAudioExtensions &&
-                imageSequenceAudioFileName == other.imageSequenceAudioFileName &&
+                imageSeqAudio == other.imageSeqAudio &&
+                imageSeqAudioExts == other.imageSeqAudioExts &&
+                imageSeqAudioFileName == other.imageSeqAudioFileName &&
                 compat == other.compat &&
                 videoRequestMax == other.videoRequestMax &&
                 audioRequestMax == other.audioRequestMax &&

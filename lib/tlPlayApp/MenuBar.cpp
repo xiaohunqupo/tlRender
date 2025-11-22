@@ -49,7 +49,7 @@ namespace tl
                     for (size_t i = 0; i < players.size(); ++i)
                     {
                         auto action = ftk::Action::create(
-                            players[i]->getPath().get(-1, file::PathType::FileName),
+                            players[i]->getPath().getFileName(),
                             [this, appWeak, i]
                             {
                                 if (auto app = appWeak.lock())
@@ -138,7 +138,7 @@ namespace tl
                     for (size_t i = 0; i < players.size(); ++i)
                     {
                         auto action = ftk::Action::create(
-                            players[i]->getPath().get(-1, file::PathType::FileName),
+                            players[i]->getPath().getFileName(),
                             [this, appWeak, i](bool value)
                             {
                                 close();

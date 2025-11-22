@@ -14,7 +14,7 @@ namespace tl
         {
         protected:
             void _init(
-                const file::Path&,
+                const ftk::Path&,
                 const Options&,
                 const Info&,
                 const std::shared_ptr<ftk::LogSystem>&);
@@ -57,7 +57,7 @@ namespace tl
 
             //! Create a writer for the given path.
             virtual std::shared_ptr<IWrite> write(
-                const file::Path&,
+                const ftk::Path&,
                 const Info&,
                 const Options& = Options()) = 0;
 

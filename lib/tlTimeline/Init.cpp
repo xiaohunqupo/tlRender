@@ -3,7 +3,7 @@
 
 #include <tlTimeline/Init.h>
 
-#include <tlTimeline/MemoryReference.h>
+#include <tlTimeline/MemRef.h>
 
 #include <tlIO/Init.h>
 
@@ -28,28 +28,28 @@ namespace tl
             const std::vector<std::pair<std::string, bool> > registerTypes
             {
                 {
-                    "RawMemoryReference",
-                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::RawMemoryReference>()
+                    "RawMemRef",
+                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::RawMemRef>()
                 },
                 {
-                    "SharedMemoryReference",
-                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::SharedMemoryReference>()
+                    "SharedMemRef",
+                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::SharedMemRef>()
                 },
                 {
-                    "RawMemorySequenceReference",
-                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::RawMemorySequenceReference>()
+                    "SeqRawMemRef",
+                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::SeqRawMemRef>()
                 },
                 {
-                    "SharedMemorySequenceReference",
-                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::SharedMemorySequenceReference>()
+                    "SeqSharedMemRef",
+                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::SeqSharedMemRef>()
                 },
                 {
-                    "ZipMemoryReference",
-                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::ZipMemoryReference>()
+                    "ZipMemRef",
+                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::ZipMemRef>()
                 },
                 {
-                    "ZipMemorySequenceReference",
-                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::ZipMemorySequenceReference>()
+                    "SeqZipMemRef",
+                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::SeqZipMemRef>()
                 }
             };
             for (const auto& t : registerTypes)
