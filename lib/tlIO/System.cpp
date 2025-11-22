@@ -7,7 +7,7 @@
 #include <tlIO/FFmpeg.h>
 #endif // TLRENDER_FFMPEG
 #if defined(TLRENDER_EXR)
-#include <tlIO/OpenEXR.h>
+#include <tlIO/EXR.h>
 #endif // TLRENDER_EXR
 #if defined(TLRENDER_OIIO)
 #include <tlIO/OIIO.h>
