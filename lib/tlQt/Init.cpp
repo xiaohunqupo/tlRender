@@ -38,6 +38,7 @@ namespace tl
             qRegisterMetaType<ftk::ImageType>("ftk::ImageType");
             qRegisterMetaType<ftk::ImageFilter>("ftk::ImageFilter");
             qRegisterMetaType<ftk::InputVideoLevels>("ftk::InputVideoLevels");
+            qRegisterMetaType<ftk::PathOptions>("ftk::PathOptions");
             qRegisterMetaType<ftk::Size2I>("ftk::Size2I");
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
             QMetaType::registerComparators<ftk::AlphaBlend>();
@@ -54,8 +55,6 @@ namespace tl
             QMetaType::registerComparators<audio::DataType>();
 #endif // QT_VERSION
 
-            qRegisterMetaType<file::PathOptions>("tl::file::PathOptions");
-
             qRegisterMetaType<io::FileType>("tl::io::FileType");
             qRegisterMetaType<io::Info>("tl::io::Info");
             qRegisterMetaType<io::VideoData>("tl::io::VideoData");
@@ -71,7 +70,7 @@ namespace tl
             qRegisterMetaType<timeline::CompareTime>("tl::timeline::CompareTime");
             qRegisterMetaType<timeline::CompareOptions>("tl::timeline::CompareOptions");
             qRegisterMetaType<timeline::EXRDisplay>("tl::timeline::EXRDisplay");
-            qRegisterMetaType<timeline::ImageSequenceAudio>("tl::timeline::ImageSequenceAudio");
+            qRegisterMetaType<timeline::ImageSeqAudio>("tl::timeline::ImageSeqAudio");
             qRegisterMetaType<timeline::LUTOptions>("tl::timeline::LUTOptions");
             qRegisterMetaType<timeline::Levels>("tl::timeline::Levels");
             qRegisterMetaType<timeline::Loop>("tl::timeline::Loop");

@@ -223,12 +223,12 @@ namespace tl
             return _p->player->getTimeline();
         }
 
-        const file::Path& PlayerObject::path() const
+        const ftk::Path& PlayerObject::path() const
         {
             return _p->player->getPath();
         }
 
-        const file::Path& PlayerObject::audioPath() const
+        const ftk::Path& PlayerObject::audioPath() const
         {
             return _p->player->getAudioPath();
         }
