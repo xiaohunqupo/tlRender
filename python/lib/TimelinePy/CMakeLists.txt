@@ -1,8 +1,16 @@
 set(HEADERS
-    Bindings.h)
+    Bindings.h
+    Player.h
+    PlayerOptions.h
+    Timeline.h
+    TimelineOptions.h)
 set(HEADERS_PRIVATE)
 set(SOURCE
-    Bindings.cpp)
+    Bindings.cpp
+    Player.cpp
+    PlayerOptions.cpp
+    Timeline.cpp
+    TimelineOptions.cpp)
 
 add_library(tlTimelinePy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
 target_link_libraries(tlTimelinePy tlTimeline Python3::Python)

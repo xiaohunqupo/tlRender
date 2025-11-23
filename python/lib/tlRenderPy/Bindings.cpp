@@ -2,6 +2,7 @@
 // Copyright Contributors to the feather-tk project.
 
 #include <TimelinePy/Bindings.h>
+#include <UIPy/Bindings.h>
 
 #include <pybind11/pybind11.h>
 
@@ -10,5 +11,7 @@ namespace py = pybind11;
 PYBIND11_MODULE(tlRenderPy, m)
 {
     m.doc() = "tlRender is an open source library for building playback and review applications for visual effects, film, and animation.";
-    tl::timelineBind(m);
+    py::module_::import("ftkPy");
+    tl::timelineLibBind(m);
+    tl::uiBind(m);
 }

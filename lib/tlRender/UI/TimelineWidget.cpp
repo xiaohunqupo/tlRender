@@ -3,6 +3,8 @@
 
 #include <tlRender/UI/TimelineWidget.h>
 
+#include <tlRender/Timeline/TimeUnits.h>
+
 #include <ftk/UI/ScrollWidget.h>
 #include <ftk/GL/GL.h>
 #include <ftk/GL/Window.h>
@@ -74,7 +76,9 @@ namespace tl
             FTK_P();
 
             p.itemData = std::make_shared<ItemData>();
-            p.itemData->timeUnitsModel = timeUnitsModel;
+            p.itemData->timeUnitsModel = timeUnitsModel ?
+                timeUnitsModel :
+                timeline::TimeUnitsModel::create(context);
 
             p.editable = ftk::ObservableValue<bool>::create(false);
             p.frameView = ftk::ObservableValue<bool>::create(true);
@@ -110,12 +114,26 @@ namespace tl
 
         std::shared_ptr<TimelineWidget> TimelineWidget::create(
             const std::shared_ptr<ftk::Context>& context,
+            const std::shared_ptr<IWidget>& parent)
+        {
+            auto out = std::shared_ptr<TimelineWidget>(new TimelineWidget);
+            out->_init(context, nullptr, parent);
+            return out;
+        }
+
+        std::shared_ptr<TimelineWidget> TimelineWidget::create(
+            const std::shared_ptr<ftk::Context>& context,
             const std::shared_ptr<timeline::ITimeUnitsModel>& timeUnitsModel,
             const std::shared_ptr<IWidget>& parent)
         {
             auto out = std::shared_ptr<TimelineWidget>(new TimelineWidget);
             out->_init(context, timeUnitsModel, parent);
             return out;
+        }
+
+        const std::shared_ptr<timeline::ITimeUnitsModel>& TimelineWidget::getTimeUnitsModel() const
+        {
+            return _p->itemData->timeUnitsModel;
         }
 
         std::shared_ptr<timeline::Player>& TimelineWidget::getPlayer() const

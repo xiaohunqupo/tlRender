@@ -7,5 +7,5 @@
 
 namespace tl
 {
-    void timelineLibBind(pybind11::module_&);
+    void viewportBind(pybind11::module_&);
 }

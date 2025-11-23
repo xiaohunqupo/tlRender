@@ -31,8 +31,16 @@ namespace tl
             //! Create a new widget.
             static std::shared_ptr<TimelineWidget> create(
                 const std::shared_ptr<ftk::Context>&,
+                const std::shared_ptr<IWidget>& parent = nullptr);
+
+            //! Create a new widget.
+            static std::shared_ptr<TimelineWidget> create(
+                const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<timeline::ITimeUnitsModel>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
+
+            //! Get the time units model.
+            const std::shared_ptr<timeline::ITimeUnitsModel>& getTimeUnitsModel() const;
 
             //! Get the timeline player.
             std::shared_ptr<timeline::Player>& getPlayer() const;

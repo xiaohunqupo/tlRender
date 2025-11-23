@@ -7,5 +7,5 @@
 
 namespace tl
 {
-    void timelineLibBind(pybind11::module_&);
+    void playerBind(pybind11::module_&);
 }
