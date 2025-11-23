@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <tlGL/RenderPrivate.h>
+#include <tlRender/GL/RenderPrivate.h>
 
 #include <ftk/Core/Format.h>
 
