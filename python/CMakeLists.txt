@@ -1,0 +1,7 @@
+add_subdirectory(lib)
+if(TLRENDER_TESTS)
+    add_subdirectory(tests)
+endif()
+if(TLRENDER_EXAMPLES)
+    add_subdirectory(examples)
+endif()

@@ -42,6 +42,7 @@ set(TLRENDER_BMD OFF CACHE BOOL "Enable support for Blackmagic Design devices")
 set(TLRENDER_BMD_SDK "" CACHE PATH "Full path to the Blackmagic Design SDK")
 set(TLRENDER_QT6 OFF CACHE BOOL "Enable support for Qt6")
 set(TLRENDER_QT5 OFF CACHE BOOL "Enable support for Qt5")
+set(TLRENDER_PYTHON OFF CACHE BOOL "Enable support for Python")
 set(TLRENDER_PROGRAMS ON CACHE BOOL "Build programs")
 set(TLRENDER_EXAMPLES ON CACHE BOOL "Build examples")
 set(TLRENDER_TESTS ON CACHE BOOL "Build tests")
@@ -292,10 +293,24 @@ elseif(TLRENDER_QT5)
     find_package(Qt5 REQUIRED COMPONENTS Quick Widgets Svg HINTS "$ENV{QTDIR}")
 endif()
 
+# Python dependencies
+if(TLRENDER_PYTHON)
+    include_directories(python/lib)
+    if(TLRENDER_TESTS)
+        include_directories(python/tests)
+    endif()
+    add_definitions(-DTLRENDER_PYTHON)
+    find_package(Python3 REQUIRED Interpreter Development)
+    find_package(pybind11 REQUIRED)
+endif()
+
 #-------------------------------------------------------------------------------
 # Sub-directories
 
 add_subdirectory(lib/tlRender)
+if(TLRENDER_PYTHON)
+    add_subdirectory(python)
+endif()
 if(TLRENDER_PROGRAMS)
     add_subdirectory(bin)
 endif()

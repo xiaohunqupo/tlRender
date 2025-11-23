@@ -8,7 +8,7 @@ set(ftk_ARGS
     -Dftk_API=${ftk_API}
     -Dftk_ZLIB=OFF
     -Dftk_PNG=OFF
-    -Dftk_PYTHON=OFF
+    -Dftk_PYTHON=${TLRENDER_PYTHON}
     -Dftk_TESTS=OFF
     -Dftk_EXAMPLES=OFF
     ${TLRENDER_EXTERNAL_ARGS})
