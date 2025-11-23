@@ -36,9 +36,9 @@ namespace tl
                     ss >> _startFrame;
                     _endFrame = _startFrame + _mem.size() - 1;
                 }
-                else
+                else if (path.getFrames().has_value())
                 {
-                    const ftk::RangeI64& frames = path.getFrames();
+                    const ftk::RangeI64& frames = path.getFrames().value();
                     _startFrame = frames.min();
                     _endFrame = frames.max();
                 }

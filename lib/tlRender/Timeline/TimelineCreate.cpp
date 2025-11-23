@@ -154,51 +154,90 @@ namespace tl
             }
             else if (".otioz" == ext)
             {
+                ZipReader zipReader(fileName);
+
+                const std::string contentFileName = "content.otio";
+                int32_t err = mz_zip_reader_locate_entry(
+                    zipReader.reader,
+                    contentFileName.c_str(),
+                    0);
+                if (err != MZ_OK)
                 {
-                    ZipReader zipReader(fileName);
+                    throw std::runtime_error(ftk::Format(
+                        "Cannot find zip entry: \"{0}\"").arg(contentFileName));
+                }
+                mz_zip_file* fileInfo = nullptr;
+                err = mz_zip_reader_entry_get_info(zipReader.reader, &fileInfo);
+                if (err != MZ_OK)
+                {
+                    throw std::runtime_error(ftk::Format(
+                        "Cannot get zip entry information: \"{0}\"").arg(contentFileName));
+                }
+                ZipReaderFile zipReaderFile(zipReader.reader, contentFileName);
+                std::vector<char> buf;
+                buf.resize(fileInfo->uncompressed_size + 1);
+                err = mz_zip_reader_entry_read(
+                    zipReader.reader,
+                    buf.data(),
+                    fileInfo->uncompressed_size);
+                if (err != fileInfo->uncompressed_size)
+                {
+                    throw std::runtime_error(ftk::Format(
+                        "Cannot read zip entry: \"{0}\"").arg(contentFileName));
+                }
+                buf[fileInfo->uncompressed_size] = 0;
 
-                    const std::string contentFileName = "content.otio";
-                    int32_t err = mz_zip_reader_locate_entry(
-                        zipReader.reader,
-                        contentFileName.c_str(),
-                        0);
-                    if (err != MZ_OK)
-                    {
-                        throw std::runtime_error(ftk::Format(
-                            "Cannot find zip entry: \"{0}\"").arg(contentFileName));
-                    }
-                    mz_zip_file* fileInfo = nullptr;
-                    err = mz_zip_reader_entry_get_info(zipReader.reader, &fileInfo);
-                    if (err != MZ_OK)
-                    {
-                        throw std::runtime_error(ftk::Format(
-                            "Cannot get zip entry information: \"{0}\"").arg(contentFileName));
-                    }
-                    ZipReaderFile zipReaderFile(zipReader.reader, contentFileName);
-                    std::vector<char> buf;
-                    buf.resize(fileInfo->uncompressed_size + 1);
-                    err = mz_zip_reader_entry_read(
-                        zipReader.reader,
-                        buf.data(),
-                        fileInfo->uncompressed_size);
-                    if (err != fileInfo->uncompressed_size)
-                    {
-                        throw std::runtime_error(ftk::Format(
-                            "Cannot read zip entry: \"{0}\"").arg(contentFileName));
-                    }
-                    buf[fileInfo->uncompressed_size] = 0;
+                out = dynamic_cast<OTIO_NS::Timeline*>(
+                    OTIO_NS::Timeline::from_json_string(buf.data(), errorStatus));
 
-                    out = dynamic_cast<OTIO_NS::Timeline*>(
-                        OTIO_NS::Timeline::from_json_string(buf.data(), errorStatus));
-
-                    auto fileIO = ftk::FileIO::create(fileName, ftk::FileMode::Read);
-                    for (auto clip : out->find_children<OTIO_NS::Clip>())
+                auto fileIO = ftk::FileIO::create(fileName, ftk::FileMode::Read);
+                for (auto clip : out->find_children<OTIO_NS::Clip>())
+                {
+                    if (auto externalReference =
+                        dynamic_cast<OTIO_NS::ExternalReference*>(clip->media_reference()))
                     {
-                        if (auto externalReference =
-                            dynamic_cast<OTIO_NS::ExternalReference*>(clip->media_reference()))
+                        const std::string mediaFileName = ftk::Path(
+                            url::decode(externalReference->target_url())).get();
+
+                        int32_t err = mz_zip_reader_locate_entry(zipReader.reader, mediaFileName.c_str(), 0);
+                        if (err != MZ_OK)
+                        {
+                            throw std::runtime_error(ftk::Format(
+                                "Cannot find zip entry: \"{0}\"").arg(mediaFileName));
+                        }
+                        err = mz_zip_reader_entry_get_info(zipReader.reader, &fileInfo);
+                        if (err != MZ_OK)
+                        {
+                            throw std::runtime_error(ftk::Format(
+                                "Cannot get zip entry information: \"{0}\"").arg(mediaFileName));
+                        }
+
+                        const size_t headerSize =
+                            30 +
+                            fileInfo->filename_size +
+                            fileInfo->extrafield_size;
+                        auto memReference = new ZipMemRef(
+                            fileIO,
+                            externalReference->target_url(),
+                            fileIO->getMemStart() +
+                            fileInfo->disk_offset +
+                            headerSize,
+                            fileInfo->uncompressed_size,
+                            externalReference->available_range(),
+                            externalReference->metadata());
+                        clip->set_media_reference(memReference);
+                    }
+                    else if (auto imageSeqReference =
+                        dynamic_cast<OTIO_NS::ImageSequenceReference*>(clip->media_reference()))
+                    {
+                        std::vector<const uint8_t*> memory;
+                        std::vector<size_t> memory_sizes;
+                        for (int number = 0;
+                            number < imageSeqReference->number_of_images_in_sequence();
+                            ++number)
                         {
                             const std::string mediaFileName = ftk::Path(
-                                url::decode(externalReference->target_url())).get();
+                                url::decode(imageSeqReference->target_url_for_image_number(number))).get();
 
                             int32_t err = mz_zip_reader_locate_entry(zipReader.reader, mediaFileName.c_str(), 0);
                             if (err != MZ_OK)
@@ -217,61 +256,20 @@ namespace tl
                                 30 +
                                 fileInfo->filename_size +
                                 fileInfo->extrafield_size;
-                            auto memReference = new ZipMemRef(
-                                fileIO,
-                                externalReference->target_url(),
+                            memory.push_back(
                                 fileIO->getMemStart() +
                                 fileInfo->disk_offset +
-                                headerSize,
-                                fileInfo->uncompressed_size,
-                                externalReference->available_range(),
-                                externalReference->metadata());
-                            clip->set_media_reference(memReference);
+                                headerSize);
+                            memory_sizes.push_back(fileInfo->uncompressed_size);
                         }
-                        else if (auto imageSeqReference =
-                            dynamic_cast<OTIO_NS::ImageSequenceReference*>(clip->media_reference()))
-                        {
-                            std::vector<const uint8_t*> memory;
-                            std::vector<size_t> memory_sizes;
-                            for (int number = 0;
-                                number < imageSeqReference->number_of_images_in_sequence();
-                                ++number)
-                            {
-                                const std::string mediaFileName = ftk::Path(
-                                    url::decode(imageSeqReference->target_url_for_image_number(number))).get();
-
-                                int32_t err = mz_zip_reader_locate_entry(zipReader.reader, mediaFileName.c_str(), 0);
-                                if (err != MZ_OK)
-                                {
-                                    throw std::runtime_error(ftk::Format(
-                                        "Cannot find zip entry: \"{0}\"").arg(mediaFileName));
-                                }
-                                err = mz_zip_reader_entry_get_info(zipReader.reader, &fileInfo);
-                                if (err != MZ_OK)
-                                {
-                                    throw std::runtime_error(ftk::Format(
-                                        "Cannot get zip entry information: \"{0}\"").arg(mediaFileName));
-                                }
-
-                                const size_t headerSize =
-                                    30 +
-                                    fileInfo->filename_size +
-                                    fileInfo->extrafield_size;
-                                memory.push_back(
-                                    fileIO->getMemStart() +
-                                    fileInfo->disk_offset +
-                                    headerSize);
-                                memory_sizes.push_back(fileInfo->uncompressed_size);
-                            }
-                            auto memoryReference = new SeqZipMemRef(
-                                fileIO,
-                                imageSeqReference->target_url_for_image_number(0),
-                                memory,
-                                memory_sizes,
-                                imageSeqReference->available_range(),
-                                imageSeqReference->metadata());
-                            clip->set_media_reference(memoryReference);
-                        }
+                        auto memoryReference = new SeqZipMemRef(
+                            fileIO,
+                            imageSeqReference->target_url_for_image_number(0),
+                            memory,
+                            memory_sizes,
+                            imageSeqReference->available_range(),
+                            imageSeqReference->metadata());
+                        clip->set_media_reference(memoryReference);
                     }
                 }
             }
@@ -301,14 +299,14 @@ namespace tl
                 auto ioSystem = context->getSystem<io::ReadSystem>();
 
                 // Is the input a sequence?
-                if (path.getFrames().equal())
+                if (!path.isSeq() && path.hasNum() || path.hasSeqWildcard())
                 {
                     ftk::expandSeq(
                         std::filesystem::u8path(path.get()),
                         path,
                         options.pathOptions);
                 }
-                if (!path.getFrames().equal())
+                if (path.isSeq())
                 {
                     if (audioPath.isEmpty())
                     {
@@ -339,7 +337,7 @@ namespace tl
                         startTime = info.videoTime.start_time();
                         auto videoClip = new OTIO_NS::Clip;
                         videoClip->set_source_range(info.videoTime);
-                        if (!path.getFrames().equal())
+                        if (path.isSeq())
                         {
                             auto mediaReference = new OTIO_NS::ImageSequenceReference(
                                 "",
