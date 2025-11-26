@@ -303,10 +303,6 @@ endif()
 
 # Python dependencies
 if(TLRENDER_PYTHON)
-    include_directories(python/lib)
-    if(TLRENDER_TESTS)
-        include_directories(python/tests)
-    endif()
     add_definitions(-DTLRENDER_PYTHON)
     find_package(Python3 REQUIRED Interpreter Development)
     find_package(pybind11 REQUIRED)
@@ -316,9 +312,6 @@ endif()
 # Sub-directories
 
 add_subdirectory(lib/tlRender)
-if(TLRENDER_PYTHON)
-    add_subdirectory(python)
-endif()
 if(TLRENDER_PROGRAMS)
     add_subdirectory(bin)
 endif()

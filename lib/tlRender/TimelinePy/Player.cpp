@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <TimelinePy/Player.h>
+#include <tlRender/TimelinePy/Player.h>
 
 #include <tlRender/Timeline/Player.h>
 

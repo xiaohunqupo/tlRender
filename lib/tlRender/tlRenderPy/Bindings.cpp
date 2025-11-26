@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
-#include <TimelinePy/Bindings.h>
-#include <UIPy/Bindings.h>
+#include <tlRender/TimelinePy/Bindings.h>
+#include <tlRender/UIPy/Bindings.h>
 
 #include <pybind11/pybind11.h>
 

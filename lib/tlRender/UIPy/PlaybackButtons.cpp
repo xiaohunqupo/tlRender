@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <UIPy/PlaybackButtons.h>
+#include <tlRender/UIPy/PlaybackButtons.h>
 
 #include <tlRender/UI/PlaybackButtons.h>
 

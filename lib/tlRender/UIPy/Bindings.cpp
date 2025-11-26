@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <UIPy/Bindings.h>
+#include <tlRender/UIPy/Bindings.h>
 
-#include <UIPy/PlaybackButtons.h>
-#include <UIPy/TimeEdit.h>
-#include <UIPy/TimelineWidget.h>
-#include <UIPy/Viewport.h>
+#include <tlRender/UIPy/PlaybackButtons.h>
+#include <tlRender/UIPy/TimeEdit.h>
+#include <tlRender/UIPy/TimelineWidget.h>
+#include <tlRender/UIPy/Viewport.h>
 
 #include <tlRender/UI/Init.h>
 
