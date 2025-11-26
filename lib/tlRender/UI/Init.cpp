@@ -5,10 +5,13 @@
 
 #include <tlRender/UI/ThumbnailSystem.h>
 
+#include <tlRender/GL/Render.h>
+
 #include <tlRender/Timeline/Init.h>
 
 #include <ftk/UI/Init.h>
 #include <ftk/UI/IconSystem.h>
+#include <ftk/GL/System.h>
 
 namespace tl_resource
 {
@@ -60,6 +63,7 @@ namespace tl
         {
             tl::timeline::init(context);
             ftk::uiInit(context);
+            context->getSystem<ftk::gl::System>()->setRenderFactory(std::make_shared<timeline_gl::RenderFactory>());
             ThumbnailSystem::create(context);
 
             auto iconSystem = context->getSystem<ftk::IconSystem>();

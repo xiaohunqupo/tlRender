@@ -10,9 +10,6 @@ namespace tl
     namespace timelineui
     {
         //! Timeline widget.
-        //! 
-        //! \tool Adjust the current frame label to stay visible on the right
-        //! side of the timeline widget.
         class TimelineWidget : public ftk::IWidget
         {
             FTK_NON_COPYABLE(TimelineWidget);

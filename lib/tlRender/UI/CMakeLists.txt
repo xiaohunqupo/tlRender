@@ -11,8 +11,7 @@ set(HEADERS
     TimelineWidget.h
     TransitionItem.h
     VideoClipItem.h
-    Viewport.h
-    Window.h)
+    Viewport.h)
 set(HEADERS_PRIVATE
     TimelineItemPrivate.h)
 
@@ -29,8 +28,7 @@ set(SOURCE
     TimelineWidget.cpp
     TransitionItem.cpp
     VideoClipItem.cpp
-    Viewport.cpp
-    Window.cpp)
+    Viewport.cpp)
 
 add_library(tlUI ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
 target_link_libraries(tlUI PUBLIC tlGL ftk::ftkUI)

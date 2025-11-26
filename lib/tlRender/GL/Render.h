@@ -13,7 +13,7 @@ namespace tl
     //! Timeline OpenGL support
     namespace timeline_gl
     {
-        //! OpenGL renderer.
+        //! Timeline OpenGL renderer.
         class Render : public timeline::IRender
         {
             FTK_NON_COPYABLE(Render);
@@ -168,6 +168,13 @@ namespace tl
                 ftk::ImageType colorBuffer);
 
             FTK_PRIVATE();
+        };
+
+        //! Timeline OpenGL render factory.
+        class RenderFactory : public ftk::IRenderFactory
+        {
+        public:
+            std::shared_ptr<ftk::IRender> createRender(const std::shared_ptr<ftk::LogSystem>& logSystem) override;
         };
     }
 }

@@ -635,5 +635,10 @@ namespace tl
             }
 #endif // TLRENDER_OCIO
         }
+
+        std::shared_ptr<ftk::IRender> RenderFactory::createRender(const std::shared_ptr<ftk::LogSystem>& logSystem)
+        {
+            return Render::create(logSystem);
+        }
     }
 }

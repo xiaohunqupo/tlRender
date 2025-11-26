@@ -29,6 +29,7 @@ namespace tl
                 py::arg("context"),
                 py::arg("timeline"),
                 py::arg("options") = timeline::PlayerOptions())
-            .def_property("playback", &timeline::Player::getPlayback, &timeline::Player::setPlayback);
+            .def_property("playback", &timeline::Player::getPlayback, &timeline::Player::setPlayback)
+            .def("tick", &timeline::Player::tick);
     }
 }

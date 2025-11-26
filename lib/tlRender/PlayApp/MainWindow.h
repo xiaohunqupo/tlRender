@@ -5,7 +5,6 @@
 
 #include <tlRender/UI/TimelineWidget.h>
 #include <tlRender/UI/Viewport.h>
-#include <tlRender/UI/Window.h>
 
 #include <tlRender/Timeline/Player.h>
 
@@ -31,7 +30,7 @@ namespace tl
         class WindowActions;
 
         //! Main window.
-        class MainWindow : public timelineui::Window
+        class MainWindow : public ftk::Window
         {
             FTK_NON_COPYABLE(MainWindow);
 

@@ -10,8 +10,8 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(tlRenderPy, m)
 {
-    m.doc() = "tlRender is an open source library for building playback and review applications for visual effects, film, and animation.";
     py::module_::import("ftkPy");
+    m.doc() = "tlRender is an open source library for building playback and review applications for visual effects, film, and animation.";
     tl::timelineLibBind(m);
     tl::uiBind(m);
 }

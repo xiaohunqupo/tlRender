@@ -50,10 +50,9 @@ namespace tl
             void open();
             void reload();
 
-            void run() override;
+            void tick() override;
 
-        protected:
-            void _tick() override;
+            void run() override;
 
         private:
             struct CmdLine

@@ -3,9 +3,9 @@
 
 #include <UIPy/Bindings.h>
 
+#include <UIPy/TimeEdit.h>
 #include <UIPy/TimelineWidget.h>
 #include <UIPy/Viewport.h>
-#include <UIPy/Window.h>
 
 #include <tlRender/UI/Init.h>
 
@@ -23,9 +23,9 @@ namespace tl
             py::arg("context"),
             "Initialize the library.");
 
+        timeEditBind(m);
         timelineWidgetBind(m);
         viewportBind(m);
-        windowBind(m);
     }
 }
 

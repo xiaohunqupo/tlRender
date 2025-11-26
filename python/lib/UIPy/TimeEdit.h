@@ -7,5 +7,5 @@
 
 namespace tl
 {
-    void windowBind(pybind11::module_&);
+    void timeEditBind(pybind11::module_&);
 }

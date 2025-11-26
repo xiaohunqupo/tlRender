@@ -105,6 +105,18 @@ namespace tl
             }
         }
 
+        void App::tick()
+        {
+            ftk::App::tick();
+            _filesModel->tick();
+#if defined(TLRENDER_BMD)
+            if (_bmdOutputDevice)
+            {
+                _bmdOutputDevice->tick();
+            }
+#endif // TLRENDER_BMD
+        }
+
         void App::run()
         {
             _context->getSystem<ftk::FileBrowserSystem>()->setNativeFileDialog(false);
@@ -151,17 +163,6 @@ namespace tl
             }
 
             ftk::App::run();
-        }
-
-        void App::_tick()
-        {
-            _filesModel->tick();
-#if defined(TLRENDER_BMD)
-            if (_bmdOutputDevice)
-            {
-                _bmdOutputDevice->tick();
-            }
-#endif // TLRENDER_BMD
         }
     }
 }

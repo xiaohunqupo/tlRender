@@ -1,14 +1,14 @@
 set(HEADERS
     Bindings.h
+    TimeEdit.h
     TimelineWidget.h
-    Viewport.h
-    Window.h)
+    Viewport.h)
 set(HEADERS_PRIVATE)
 set(SOURCE
     Bindings.cpp
+    TimeEdit.cpp
     TimelineWidget.cpp
-    Viewport.cpp
-    Window.cpp)
+    Viewport.cpp)
 
 add_library(tlUIPy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
 target_link_libraries(tlUIPy tlUI Python3::Python)

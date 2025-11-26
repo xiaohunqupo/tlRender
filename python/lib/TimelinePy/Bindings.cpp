@@ -5,6 +5,7 @@
 
 #include <TimelinePy/Player.h>
 #include <TimelinePy/PlayerOptions.h>
+#include <TimelinePy/TimeUnits.h>
 #include <TimelinePy/Timeline.h>
 #include <TimelinePy/TimelineOptions.h>
 
@@ -24,6 +25,7 @@ namespace tl
             py::arg("context"),
             "Initialize the library.");
 
+        timeUnitsBind(m);
         timelineOptionsBind(m);
         timelineBind(m);
         playerOptionsBind(m);

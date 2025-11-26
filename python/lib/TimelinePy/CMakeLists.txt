@@ -2,6 +2,7 @@ set(HEADERS
     Bindings.h
     Player.h
     PlayerOptions.h
+    TimeUnits.h
     Timeline.h
     TimelineOptions.h)
 set(HEADERS_PRIVATE)
@@ -9,6 +10,7 @@ set(SOURCE
     Bindings.cpp
     Player.cpp
     PlayerOptions.cpp
+    TimeUnits.cpp
     Timeline.cpp
     TimelineOptions.cpp)
 
