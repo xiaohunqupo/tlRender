@@ -7,5 +7,9 @@
 
 namespace tl
 {
-    void uiBind(pybind11::module_&);
+    namespace python
+    {
+        void uiBind(pybind11::module_&);
+    }
 }
+

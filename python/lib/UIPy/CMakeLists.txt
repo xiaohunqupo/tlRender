@@ -1,11 +1,13 @@
 set(HEADERS
     Bindings.h
+    PlaybackButtons.h
     TimeEdit.h
     TimelineWidget.h
     Viewport.h)
 set(HEADERS_PRIVATE)
 set(SOURCE
     Bindings.cpp
+    PlaybackButtons.cpp
     TimeEdit.cpp
     TimelineWidget.cpp
     Viewport.cpp)

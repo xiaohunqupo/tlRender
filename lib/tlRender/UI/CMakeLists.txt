@@ -4,6 +4,7 @@ set(HEADERS
     IBasicItem.h
     IItem.h
     Init.h
+    PlaybackButtons.h
     ThumbnailSystem.h
     TimeEdit.h
     TimeLabel.h
@@ -21,6 +22,7 @@ set(SOURCE
     IBasicItem.cpp
     IItem.cpp
     Init.cpp
+    PlaybackButtons.cpp
     ThumbnailSystem.cpp
     TimeEdit.cpp
     TimeLabel.cpp

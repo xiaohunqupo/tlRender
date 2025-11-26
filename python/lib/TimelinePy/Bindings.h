@@ -7,5 +7,8 @@
 
 namespace tl
 {
-    void timelineLibBind(pybind11::module_&);
+    namespace python
+    {
+        void timelineBind(pybind11::module_&);
+    }
 }

@@ -7,5 +7,9 @@
 
 namespace tl
 {
-    void timeEditBind(pybind11::module_&);
+    namespace python
+    {
+        void timeEdit(pybind11::module_&);
+    }
 }
+

@@ -7,5 +7,8 @@
 
 namespace tl
 {
-    void playerBind(pybind11::module_&);
+    namespace python
+    {
+        void player(pybind11::module_&);
+    }
 }

@@ -7,5 +7,9 @@
 
 namespace tl
 {
-    void timelineWidgetBind(pybind11::module_&);
+    namespace python
+    {
+        void timelineWidget(pybind11::module_&);
+    }
 }
+

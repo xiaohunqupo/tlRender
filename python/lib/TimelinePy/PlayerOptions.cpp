@@ -12,11 +12,15 @@ namespace py = pybind11;
 
 namespace tl
 {
-    void playerOptionsBind(py::module_& m)
+    namespace python
     {
-        py::class_<timeline::PlayerOptions>(m, "PlayerOptions")
-            .def_readwrite("videoRequestMax", &timeline::PlayerOptions::videoRequestMax)
-            .def(pybind11::self == pybind11::self)
-            .def(pybind11::self != pybind11::self);
+        void playerOptions(py::module_& m)
+        {
+            py::class_<timeline::PlayerOptions>(m, "PlayerOptions")
+                .def_readwrite("videoRequestMax", &timeline::PlayerOptions::videoRequestMax)
+                .def(pybind11::self == pybind11::self)
+                .def(pybind11::self != pybind11::self);
+        }
     }
 }
+

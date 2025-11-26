@@ -17,19 +17,22 @@ namespace py = pybind11;
 
 namespace tl
 {
-    void timelineLibBind(py::module_& m)
+    namespace python
     {
-        m.def(
-            "init",
-            &timeline::init,
-            py::arg("context"),
-            "Initialize the library.");
+        void timelineBind(py::module_& m)
+        {
+            m.def(
+                "init",
+                &timeline::init,
+                py::arg("context"),
+                "Initialize the library.");
 
-        timeUnitsBind(m);
-        timelineOptionsBind(m);
-        timelineBind(m);
-        playerOptionsBind(m);
-        playerBind(m);
+            timeUnits(m);
+            timelineOptions(m);
+            timeline(m);
+            playerOptions(m);
+            player(m);
+        }
     }
 }
 

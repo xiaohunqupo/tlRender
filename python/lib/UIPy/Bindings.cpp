@@ -3,6 +3,7 @@
 
 #include <UIPy/Bindings.h>
 
+#include <UIPy/PlaybackButtons.h>
 #include <UIPy/TimeEdit.h>
 #include <UIPy/TimelineWidget.h>
 #include <UIPy/Viewport.h>
@@ -15,17 +16,21 @@ namespace py = pybind11;
 
 namespace tl
 {
-    void uiBind(py::module_& m)
-    {
-        m.def(
-            "uiInit",
-            &timelineui::init,
-            py::arg("context"),
-            "Initialize the library.");
+    namespace python
+        {
+        void uiBind(py::module_& m)
+        {
+            m.def(
+                "uiInit",
+                &timelineui::init,
+                py::arg("context"),
+                "Initialize the library.");
 
-        timeEditBind(m);
-        timelineWidgetBind(m);
-        viewportBind(m);
+            playbackButtons(m);
+            timeEdit(m);
+            timelineWidget(m);
+            viewport(m);
+        }
     }
 }
 

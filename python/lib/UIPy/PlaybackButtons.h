@@ -9,6 +9,7 @@ namespace tl
 {
     namespace python
     {
-        void viewport(pybind11::module_&);
+        void playbackButtons(pybind11::module_&);
     }
 }
+

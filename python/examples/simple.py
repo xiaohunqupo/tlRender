@@ -15,44 +15,56 @@ class MainWindow(ftk.MainWindow):
 
         self.fileOpenAction = ftk.Action(
             "Open",
-            self._openFile)
+            "FileOpen",
+            ftk.Key.O,
+            ftk.KeyModifier.Control,
+            lambda: context.getSystemByName("ftk::FileBrowserSystem").open(self, app.open))
+
+        self.exitAction = ftk.Action(
+            "Exit",
+            ftk.Key.Q,
+            ftk.KeyModifier.Control,
+            lambda: app.exit())
+
         self.fileMenu = ftk.Menu(context)
         self.fileMenu.addAction(self.fileOpenAction)
+        self.fileMenu.addDivider();
+        self.fileMenu.addAction(self.exitAction)
+
         self.menuBar = ftk.MenuBar(context)
         self.menuBar.addMenu("File", self.fileMenu)
 
         layout = ftk.VerticalLayout(context)
-        self.viewport = tl.Viewport(context, layout)
-        self.widget = tl.TimelineWidget(context, layout)
         self.setWidget(layout)
+        self.viewport = tl.Viewport(context, layout)
+        hLayout = ftk.HorizontalLayout(context, layout)
+        self.playbackButtons = tl.PlaybackButtons(context, hLayout)
+        self.widget = tl.TimelineWidget(context, layout)
 
     def setPlayer(self, player):
         self.viewport.setPlayer(player)
         self.widget.setPlayer(player)
 
-    def _openFile(self):
-        fileBrowserSystem = context.getSystemByName("ftk::FileBrowserSystem")
-        fileBrowserSystem.open(
-            self,
-            self._openFile2)
-
 class App(ftk.App):
     def __init__(self, context, argv):
         ftk.App.__init__(self, context, argv, "simple", "Simple example")
 
-        self.timeline = tl.Timeline(
-            context,
-            #ftk.Path("/home/darby/Desktop/ASC_StEM2_178_8K_ST2084_1000nits_Rec2020_Stereo.mov"))
-            ftk.Path("/home/darby/Dev/tlRender/tlRender/etc/SampleData/TransitionOverlay.otio"))
+        # \bug
+        self.displayScale = 2
+
+        self.player = None
+        self.window = MainWindow(context, self)
+
+    def open(self, path):
+        self.timeline = tl.Timeline(context, path)
         self.player = tl.Player(context, self.timeline)
         #self.player.playback = tl.Playback.Forward
-
-        self.window = MainWindow(context, self)
         self.window.setPlayer(self.player)
 
     def tick(self):
         super().tick()
-        self.player.tick()
+        if self.player:
+            self.player.tick()
 
 context = ftk.Context()
 tl.uiInit(context)

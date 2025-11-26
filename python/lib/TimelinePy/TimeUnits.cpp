@@ -14,18 +14,22 @@ namespace py = pybind11;
 
 namespace tl
 {
-    void timeUnitsBind(py::module_& m)
+    namespace python
     {
-        py::enum_<timeline::TimeUnits>(m, "TimeUnits")
-            .value("Frames", timeline::TimeUnits::Frames)
-            .value("Seconds", timeline::TimeUnits::Seconds)
-            .value("Timecode", timeline::TimeUnits::Timecode);
+        void timeUnits(py::module_& m)
+        {
+            py::enum_<timeline::TimeUnits>(m, "TimeUnits")
+                .value("Frames", timeline::TimeUnits::Frames)
+                .value("Seconds", timeline::TimeUnits::Seconds)
+                .value("Timecode", timeline::TimeUnits::Timecode);
 
-        py::class_<timeline::ITimeUnitsModel, std::shared_ptr<timeline::ITimeUnitsModel> >(m, "ITimeUnitsModel")
-            .def("getLabel", &timeline::ITimeUnitsModel::getLabel, py::arg("time"));
+            py::class_<timeline::ITimeUnitsModel, std::shared_ptr<timeline::ITimeUnitsModel> >(m, "ITimeUnitsModel")
+                .def("getLabel", &timeline::ITimeUnitsModel::getLabel, py::arg("time"));
 
-        py::class_<timeline::TimeUnitsModel, timeline::ITimeUnitsModel, std::shared_ptr<timeline::TimeUnitsModel> >(m, "TimeUnitsModel")
-            .def(py::init(&timeline::TimeUnitsModel::create), py::arg("context"))
-            .def_property("timeUnits", &timeline::TimeUnitsModel::getTimeUnits, &timeline::TimeUnitsModel::setTimeUnits);
+            py::class_<timeline::TimeUnitsModel, timeline::ITimeUnitsModel, std::shared_ptr<timeline::TimeUnitsModel> >(m, "TimeUnitsModel")
+                .def(py::init(&timeline::TimeUnitsModel::create), py::arg("context"))
+                .def_property("timeUnits", &timeline::TimeUnitsModel::getTimeUnits, &timeline::TimeUnitsModel::setTimeUnits);
+        }
     }
 }
+

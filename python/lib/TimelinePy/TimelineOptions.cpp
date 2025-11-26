@@ -12,16 +12,19 @@ namespace py = pybind11;
 
 namespace tl
 {
-    void timelineOptionsBind(py::module_& m)
+    namespace python
     {
-        py::enum_<timeline::ImageSeqAudio>(m, "ImageSeqAudio")
-            .value("None", timeline::ImageSeqAudio::None)
-            .value("Ext", timeline::ImageSeqAudio::Ext)
-            .value("FileName", timeline::ImageSeqAudio::FileName);
+        void timelineOptions(py::module_& m)
+        {
+            py::enum_<timeline::ImageSeqAudio>(m, "ImageSeqAudio")
+                .value("None", timeline::ImageSeqAudio::None)
+                .value("Ext", timeline::ImageSeqAudio::Ext)
+                .value("FileName", timeline::ImageSeqAudio::FileName);
 
-        py::class_<timeline::Options>(m, "Options")
-            .def_readwrite("time", &timeline::Options::imageSeqAudio)
-            .def(pybind11::self == pybind11::self)
-            .def(pybind11::self != pybind11::self);
+            py::class_<timeline::Options>(m, "Options")
+                .def_readwrite("time", &timeline::Options::imageSeqAudio)
+                .def(pybind11::self == pybind11::self)
+                .def(pybind11::self != pybind11::self);
+        }
     }
 }
