@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <tlRender/Timeline/Player.h>
+#include <tlRender/Timeline/TimeUnits.h>
 
 #include <ftk/UI/IWidget.h>
 
@@ -11,34 +11,27 @@ namespace tl
 {
     namespace timelineui
     {
-        //! Playback buttons.
-        class PlaybackButtons : public ftk::IWidget
+        //! Time units widget.
+        class TimeUnitsWidget : public ftk::IWidget
         {
-            FTK_NON_COPYABLE(PlaybackButtons);
+            FTK_NON_COPYABLE(TimeUnitsWidget);
 
         protected:
             void _init(
                 const std::shared_ptr<ftk::Context>&,
+                const std::shared_ptr<timeline::TimeUnitsModel>&,
                 const std::shared_ptr<IWidget>& parent);
 
-            PlaybackButtons();
+            TimeUnitsWidget();
 
         public:
-            virtual ~PlaybackButtons();
+            virtual ~TimeUnitsWidget();
 
             //! Create a new widget.
-            static std::shared_ptr<PlaybackButtons> create(
+            static std::shared_ptr<TimeUnitsWidget> create(
                 const std::shared_ptr<ftk::Context>&,
+                const std::shared_ptr<timeline::TimeUnitsModel>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
-
-            //! Get the playback.
-            timeline::Playback getPlayback() const;
-
-            //! Set the playback.
-            void setPlayback(timeline::Playback);
-
-            //! Set the callback.
-            void setCallback(const std::function<void(timeline::Playback)>&);
 
             void setGeometry(const ftk::Box2I&) override;
             void sizeHintEvent(const ftk::SizeHintEvent&) override;

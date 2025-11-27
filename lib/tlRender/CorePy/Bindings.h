@@ -9,7 +9,6 @@ namespace tl
 {
     namespace python
     {
-        void playbackButtons(pybind11::module_&);
+        void coreBind(pybind11::module_&);
     }
 }
-

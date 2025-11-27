@@ -18,6 +18,7 @@ if(TLRENDER_QT6 OR TLRENDER_QT5)
 endif()
 
 if(TLRENDER_PYTHON)
+    add_subdirectory(CorePy)
     add_subdirectory(TimelinePy)
     add_subdirectory(UIPy)
     add_subdirectory(tlRenderPy)

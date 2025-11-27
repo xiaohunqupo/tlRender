@@ -1,5 +1,6 @@
 set(HEADERS
     Bindings.h
+    CompareOptions.h
     Player.h
     PlayerOptions.h
     TimeUnits.h
@@ -8,6 +9,7 @@ set(HEADERS
 set(HEADERS_PRIVATE)
 set(SOURCE
     Bindings.cpp
+    CompareOptions.cpp
     Player.cpp
     PlayerOptions.cpp
     TimeUnits.cpp
@@ -23,4 +25,4 @@ install(TARGETS tlTimelinePy
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
-    PUBLIC_HEADER DESTINATION include/tlRender/tlRenderPy)
+    PUBLIC_HEADER DESTINATION include/tlRender/tlTimelinePy)

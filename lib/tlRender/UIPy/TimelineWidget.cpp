@@ -14,7 +14,7 @@ namespace py = pybind11;
 namespace tl
 {
     namespace python
-        {
+    {
         void timelineWidget(py::module_& m)
         {
             py::class_<timelineui::TimelineWidget, ftk::IWidget, std::shared_ptr<timelineui::TimelineWidget> >(m, "TimelineWidget")
@@ -23,6 +23,14 @@ namespace tl
                         const std::shared_ptr<ftk::Context>&,
                         const std::shared_ptr<ftk::IWidget>&>(&timelineui::TimelineWidget::create)),
                     py::arg("context"),
+                    py::arg("parent") = nullptr)
+                .def(
+                    py::init(py::overload_cast<
+                        const std::shared_ptr<ftk::Context>&,
+                        const std::shared_ptr<timeline::ITimeUnitsModel>&,
+                        const std::shared_ptr<ftk::IWidget>&>(&timelineui::TimelineWidget::create)),
+                    py::arg("context"),
+                    py::arg("timeUnitsModel"),
                     py::arg("parent") = nullptr)
                 .def("setPlayer", &timelineui::TimelineWidget::setPlayer);
         }

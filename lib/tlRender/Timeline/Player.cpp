@@ -232,6 +232,11 @@ namespace tl
             return _p->timeRange;
         }
 
+        OTIO_NS::RationalTime Player::getDuration() const
+        {
+            return _p->timeRange.duration();
+        }
+
         const io::Info& Player::getIOInfo() const
         {
             return _p->ioInfo;

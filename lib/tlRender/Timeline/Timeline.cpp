@@ -204,6 +204,11 @@ namespace tl
             return _p->timeRange;
         }
 
+        OTIO_NS::RationalTime Timeline::getDuration() const
+        {
+            return _p->timeRange.duration();
+        }
+
         const io::Info& Timeline::getIOInfo() const
         {
             return _p->ioInfo;

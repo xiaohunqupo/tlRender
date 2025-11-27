@@ -4,10 +4,10 @@ set(HEADERS
     IBasicItem.h
     IItem.h
     Init.h
-    PlaybackButtons.h
     ThumbnailSystem.h
     TimeEdit.h
     TimeLabel.h
+    TimeUnitsWidget.h
     TimelineItem.h
     TimelineWidget.h
     TransitionItem.h
@@ -22,10 +22,10 @@ set(SOURCE
     IBasicItem.cpp
     IItem.cpp
     Init.cpp
-    PlaybackButtons.cpp
     ThumbnailSystem.cpp
     TimeEdit.cpp
     TimeLabel.cpp
+    TimeUnitsWidget.cpp
     TimelineItem.cpp
     TimelineWidget.cpp
     TransitionItem.cpp

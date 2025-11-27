@@ -9,6 +9,7 @@ namespace tl
 {
     namespace python
     {
-        void timeUnits(pybind11::module_&);
+        void timeUnitsWidget(pybind11::module_&);
     }
 }
+

@@ -8,3 +8,4 @@ doc/doxygen
 .vscode
 .DS_Store
 .cache
+__pycache__

@@ -3,6 +3,7 @@
 
 #include <tlRender/TimelinePy/Bindings.h>
 
+#include <tlRender/TimelinePy/CompareOptions.h>
 #include <tlRender/TimelinePy/Player.h>
 #include <tlRender/TimelinePy/PlayerOptions.h>
 #include <tlRender/TimelinePy/TimeUnits.h>
@@ -27,6 +28,7 @@ namespace tl
                 py::arg("context"),
                 "Initialize the library.");
 
+            compareOptions(m);
             timeUnits(m);
             timelineOptions(m);
             timeline(m);

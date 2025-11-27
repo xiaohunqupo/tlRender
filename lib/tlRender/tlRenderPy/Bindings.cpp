@@ -1,8 +1,13 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the feather-tk project.
 
-#include <tlRender/TimelinePy/Bindings.h>
 #include <tlRender/UIPy/Bindings.h>
+
+#include <tlRender/TimelinePy/Bindings.h>
+
+#include <tlRender/CorePy/Bindings.h>
+
+#include <opentimelineio/version.h>
 
 #include <pybind11/pybind11.h>
 
@@ -12,11 +17,17 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(tlRenderPy, m)
 {
-    //py::module_::import("opentimelineio");
-    //py::module_::import("opentimelineio.opentime");
+    m.doc() = "tlRender is an open source library for building playback and review applications for visual effects, film, and animation.";
+
+    py::module_::import("opentimelineio");
     //py::object rt = (py::object)py::module_::import("opentimelineio.opentime").attr("RationalTime");
     py::module_::import("ftkPy");
-    m.doc() = "tlRender is an open source library for building playback and review applications for visual effects, film, and animation.";
+
+    //! \bug This is a workaround until we can use the OTIO bindings.
+    py::class_<OTIO_NS::RationalTime>(m, "RationalTime");
+    py::class_<OTIO_NS::TimeRange>(m, "TimeRange");
+
+    tl::python::coreBind(m);
     tl::python::timelineBind(m);
     tl::python::uiBind(m);
 }

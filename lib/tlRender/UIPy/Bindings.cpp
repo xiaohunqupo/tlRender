@@ -3,8 +3,9 @@
 
 #include <tlRender/UIPy/Bindings.h>
 
-#include <tlRender/UIPy/PlaybackButtons.h>
 #include <tlRender/UIPy/TimeEdit.h>
+#include <tlRender/UIPy/TimeLabel.h>
+#include <tlRender/UIPy/TimeUnitsWidget.h>
 #include <tlRender/UIPy/TimelineWidget.h>
 #include <tlRender/UIPy/Viewport.h>
 
@@ -26,8 +27,9 @@ namespace tl
                 py::arg("context"),
                 "Initialize the library.");
 
-            playbackButtons(m);
             timeEdit(m);
+            timeLabel(m);
+            timeUnitsWidget(m);
             timelineWidget(m);
             viewport(m);
         }

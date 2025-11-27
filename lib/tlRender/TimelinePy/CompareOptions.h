@@ -9,6 +9,6 @@ namespace tl
 {
     namespace python
     {
-        void timeUnits(pybind11::module_&);
+        void compareOptions(pybind11::module_&);
     }
 }
