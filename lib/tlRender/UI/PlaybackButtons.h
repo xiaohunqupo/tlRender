@@ -31,6 +31,9 @@ namespace tl
                 const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
+            //! Get the playback.
+            timeline::Playback getPlayback() const;
+
             //! Set the playback.
             void setPlayback(timeline::Playback);
 

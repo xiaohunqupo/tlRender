@@ -8,6 +8,7 @@
 #include <ftk/Core/Context.h>
 
 #include <pybind11/stl.h>
+#include <pybind11/functional.h>
 
 namespace py = pybind11;
 
@@ -24,7 +25,7 @@ namespace tl
                         const std::shared_ptr<ftk::IWidget>&>(&timelineui::PlaybackButtons::create)),
                     py::arg("context"),
                     py::arg("parent") = nullptr)
-                .def("setPlayback", &timelineui::PlaybackButtons::setPlayback)
+                .def_property("playback", &timelineui::PlaybackButtons::getPlayback, &timelineui::PlaybackButtons::setPlayback)
                 .def("setCallback", &timelineui::PlaybackButtons::setCallback);
         }
     }

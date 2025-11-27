@@ -6,10 +6,15 @@
 
 #include <pybind11/pybind11.h>
 
+#include <iostream>
+
 namespace py = pybind11;
 
 PYBIND11_MODULE(tlRenderPy, m)
 {
+    //py::module_::import("opentimelineio");
+    //py::module_::import("opentimelineio.opentime");
+    //py::object rt = (py::object)py::module_::import("opentimelineio.opentime").attr("RationalTime");
     py::module_::import("ftkPy");
     m.doc() = "tlRender is an open source library for building playback and review applications for visual effects, film, and animation.";
     tl::python::timelineBind(m);

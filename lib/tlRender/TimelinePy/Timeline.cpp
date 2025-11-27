@@ -25,7 +25,8 @@ namespace tl
                         const timeline::Options&>(&timeline::Timeline::create)),
                     py::arg("context"),
                     py::arg("path"),
-                    py::arg("options") = timeline::Options());
+                    py::arg("options") = timeline::Options())
+                .def_property_readonly("otio", &timeline::Timeline::getTimeline);
         }
     }
 }

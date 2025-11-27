@@ -27,12 +27,20 @@ namespace tl
             FTK_P();
 
             p.buttonGroup = ftk::ButtonGroup::create(context, ftk::ButtonGroupType::Radio);
+            std::map<timeline::Playback, std::string> tooltips =
+            {
+                { timeline::Playback::Stop, "Stop playback" },
+                { timeline::Playback::Forward, "Start forward playback" },
+                { timeline::Playback::Reverse, "Start reverse playback" },
+            };
             for (auto playback : timeline::getPlaybackEnums())
             {
                 p.buttons[playback] = ftk::ToolButton::create(context);
                 p.buttons[playback]->setIcon("Playback" + getLabel(playback));
+                p.buttons[playback]->setTooltip(tooltips[playback]);
                 p.buttonGroup->addButton(p.buttons[playback]);
             }
+            p.buttons[timeline::Playback::Stop]->setChecked(true);
 
             p.layout = ftk::HorizontalLayout::create(context, shared_from_this());
             p.layout->setSpacingRole(ftk::SizeRole::SpacingTool);
@@ -67,6 +75,21 @@ namespace tl
         {
             auto out = std::shared_ptr<PlaybackButtons>(new PlaybackButtons);
             out->_init(context, parent);
+            return out;
+        }
+
+        timeline::Playback PlaybackButtons::getPlayback() const
+        {
+            FTK_P();
+            timeline::Playback out = timeline::Playback::Stop;
+            for (auto i : p.buttons)
+            {
+                if (i.second->isChecked())
+                {
+                    out = i.first;
+                    break;
+                }
+            }
             return out;
         }
 

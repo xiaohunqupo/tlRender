@@ -5,9 +5,11 @@
 
 #include <tlRender/Timeline/Player.h>
 
+#include <ftk/CorePy/ObservableValue.h>
 #include <ftk/Core/Context.h>
 
 #include <pybind11/stl.h>
+#include <pybind11/functional.h>
 
 namespace py = pybind11;
 
@@ -22,6 +24,9 @@ namespace tl
                 .value("Forward", timeline::Playback::Forward)
                 .value("Reverse", timeline::Playback::Reverse);
 
+            ftk::python::observableValue<timeline::Playback>(m, "Playback");
+            ftk::python::observableValue<OTIO_NS::RationalTime>(m, "RationalTime");
+
             py::class_<timeline::Player, std::shared_ptr<timeline::Player> >(m, "Player")
                 .def(
                     py::init(py::overload_cast<
@@ -32,6 +37,10 @@ namespace tl
                     py::arg("timeline"),
                     py::arg("options") = timeline::PlayerOptions())
                 .def_property("playback", &timeline::Player::getPlayback, &timeline::Player::setPlayback)
+                .def_property_readonly("observePlayback", &timeline::Player::observePlayback)
+                .def_property("currentTime", &timeline::Player::getCurrentTime, &timeline::Player::seek)
+                .def_property_readonly("observeCurrentTime", &timeline::Player::observeCurrentTime)
+                .def_property_readonly("observeSeek", &timeline::Player::observeSeek)
                 .def("tick", &timeline::Player::tick);
         }
     }
