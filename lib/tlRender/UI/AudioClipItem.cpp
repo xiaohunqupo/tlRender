@@ -194,7 +194,7 @@ namespace tl
             {
                 sizeHint.h += _displayOptions.waveformHeight;
             }
-            _setSizeHint(sizeHint);
+            setSizeHint(sizeHint);
         }
 
         void AudioClipItem::clipEvent(const ftk::Box2I& clipRect, bool clipped)

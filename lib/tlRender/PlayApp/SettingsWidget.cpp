@@ -104,7 +104,7 @@ namespace tl
         void CacheSettingsWidget::sizeHintEvent(const ftk::SizeHintEvent& event)
         {
             IWidget::sizeHintEvent(event);
-            _setSizeHint(_layout->getSizeHint());
+            setSizeHint(_layout->getSizeHint());
         }
 
         void SettingsWidget::_init(
@@ -143,7 +143,7 @@ namespace tl
         void SettingsWidget::sizeHintEvent(const ftk::SizeHintEvent& event)
         {
             IWidget::sizeHintEvent(event);
-            _setSizeHint(_layout->getSizeHint());
+            setSizeHint(_layout->getSizeHint());
         }
     }
 }

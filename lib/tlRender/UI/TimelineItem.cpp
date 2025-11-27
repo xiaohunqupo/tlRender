@@ -390,7 +390,7 @@ namespace tl
                 }
             }
 
-            _setSizeHint(ftk::Size2I(
+            setSizeHint(ftk::Size2I(
                 _timeRange.duration().rescaled_to(1.0).value() * _scale,
                 p.size.margin +
                 p.size.fontMetrics.lineHeight +

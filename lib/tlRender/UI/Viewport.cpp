@@ -546,7 +546,7 @@ namespace tl
         void Viewport::sizeHintEvent(const ftk::SizeHintEvent& event)
         {
             const int sa = event.style->getSizeRole(ftk::SizeRole::ScrollArea, event.displayScale);
-            _setSizeHint(ftk::Size2I(sa, sa));
+            setSizeHint(ftk::Size2I(sa, sa));
         }
 
         void Viewport::drawEvent(const ftk::Box2I& drawRect, const ftk::DrawEvent& event)

@@ -150,7 +150,7 @@ namespace tl
         void TimeEdit::sizeHintEvent(const ftk::SizeHintEvent& event)
         {
             IWidget::sizeHintEvent(event);
-            _setSizeHint(_p->layout->getSizeHint());
+            setSizeHint(_p->layout->getSizeHint());
         }
 
         void TimeEdit::keyPressEvent(ftk::KeyEvent& event)

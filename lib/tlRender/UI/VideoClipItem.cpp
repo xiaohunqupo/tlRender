@@ -196,7 +196,7 @@ namespace tl
             {
                 sizeHint.h += _displayOptions.thumbnailHeight;
             }
-            _setSizeHint(sizeHint);
+            setSizeHint(sizeHint);
         }
 
         void VideoClipItem::clipEvent(const ftk::Box2I& clipRect, bool clipped)

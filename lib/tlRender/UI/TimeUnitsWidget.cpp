@@ -70,7 +70,7 @@ namespace tl
         void TimeUnitsWidget::sizeHintEvent(const ftk::SizeHintEvent& event)
         {
             IWidget::sizeHintEvent(event);
-            _setSizeHint(_p->comboBox->getSizeHint());
+            setSizeHint(_p->comboBox->getSizeHint());
         }
     }
 }

@@ -155,7 +155,7 @@ namespace tl
         void PlaybackBar::sizeHintEvent(const ftk::SizeHintEvent& event)
         {
             IWidget::sizeHintEvent(event);
-            _setSizeHint(_layout->getSizeHint());
+            setSizeHint(_layout->getSizeHint());
         }
     }
 }

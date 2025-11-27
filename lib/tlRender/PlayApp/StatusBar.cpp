@@ -70,7 +70,7 @@ namespace tl
         void StatusBar::sizeHintEvent(const ftk::SizeHintEvent& event)
         {
             IWidget::sizeHintEvent(event);
-            _setSizeHint(_layout->getSizeHint());
+            setSizeHint(_layout->getSizeHint());
         }
 
         void StatusBar::_logUpdate(const std::vector<ftk::LogItem>& value)

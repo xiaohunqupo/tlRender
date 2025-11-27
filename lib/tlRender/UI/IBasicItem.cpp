@@ -155,7 +155,7 @@ namespace tl
                     p.size.margin * 2;
             }
             sizeHint.h += p.size.border * 4;
-            _setSizeHint(sizeHint);
+            setSizeHint(sizeHint);
         }
 
         void IBasicItem::clipEvent(const ftk::Box2I& clipRect, bool clipped)

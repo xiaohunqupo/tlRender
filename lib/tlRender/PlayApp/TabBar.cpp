@@ -83,7 +83,7 @@ namespace tl
         void TabBar::sizeHintEvent(const ftk::SizeHintEvent& event)
         {
             IWidget::sizeHintEvent(event);
-            _setSizeHint(_tabBar->getSizeHint());
+            setSizeHint(_tabBar->getSizeHint());
         }
     }
 }

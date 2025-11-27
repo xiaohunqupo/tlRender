@@ -426,7 +426,7 @@ namespace tl
         void TimelineWidget::sizeHintEvent(const ftk::SizeHintEvent& event)
         {
             FTK_P();
-            _setSizeHint(p.scrollWidget->getSizeHint());
+            setSizeHint(p.scrollWidget->getSizeHint());
             p.sizeInit |= event.displayScale != p.displayScale;
             p.displayScale = event.displayScale;
         }

@@ -150,7 +150,7 @@ namespace tl
             sizeHint.h =
                 p.size.fontMetrics.lineHeight +
                 p.size.margin * 2;
-            _setSizeHint(sizeHint);
+            setSizeHint(sizeHint);
         }
 
         void TimeLabel::clipEvent(const ftk::Box2I& clipRect, bool clipped)
