@@ -23,9 +23,13 @@ PYBIND11_MODULE(tlRenderPy, m)
     //py::object rt = (py::object)py::module_::import("opentimelineio.opentime").attr("RationalTime");
     py::module_::import("ftkPy");
 
-    //! \bug This is a workaround until we can use the OTIO bindings.
+#if defined(_WINDOWS)
+#elif defined(__APPLE__)
+#else // _WINDOWS
+    //! \bug This is a workaround until we can get the OTIO bindings working.
     py::class_<OTIO_NS::RationalTime>(m, "RationalTime");
     py::class_<OTIO_NS::TimeRange>(m, "TimeRange");
+#endif // _WINDOWS
 
     tl::python::coreBind(m);
     tl::python::timelineBind(m);
