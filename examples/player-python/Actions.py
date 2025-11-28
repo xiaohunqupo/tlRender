@@ -77,7 +77,7 @@ class PlaybackActions:
         self.actions["Prev"] = ftk.Action(
             "Previous Frame",
             "FramePrev",
-            ftk.Key.Up,
+            ftk.Key.Left,
             0,
             self._prevCallback)
         self.actions["Prev"].tooltip = "Go to the previous frame"
@@ -85,7 +85,7 @@ class PlaybackActions:
         self.actions["Next"] = ftk.Action(
             "Next Frame",
             "FrameNext",
-            ftk.Key.Up,
+            ftk.Key.Right,
             0,
             self._nextCallback)
         self.actions["Next"].tooltip = "Go to the next frame"
@@ -93,7 +93,7 @@ class PlaybackActions:
         self.actions["End"] = ftk.Action(
             "End Frame",
             "FrameEnd",
-            ftk.Key.Up,
+            ftk.Key.Down,
             0,
             self._endCallback)
         self.actions["End"].tooltip = "Go to the end frame"
