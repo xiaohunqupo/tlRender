@@ -7,7 +7,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      FTK_API: GL_4_1
       TLRENDER_NET: OFF
       TLRENDER_OCIO: ON
       TLRENDER_JPEG: ON
@@ -26,6 +25,8 @@ jobs:
       TLRENDER_EXAMPLES: ON
       TLRENDER_TESTS: ON
       TLRENDER_GCOV: ON
+      FTK_API: GL_4_1
+      BUILD_SHARED_LIBS: OFF
 
     steps:
     - uses: actions/checkout@v4
@@ -61,7 +62,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      FTK_API: GL_4_1
       TLRENDER_NET: OFF
       TLRENDER_OCIO: OFF
       TLRENDER_JPEG: OFF
@@ -77,6 +77,8 @@ jobs:
       TLRENDER_QT5: OFF
       TLRENDER_PYTHON: OFF
       TLRENDER_TESTS: ON
+      FTK_API: GL_4_1
+      BUILD_SHARED_LIBS: OFF
 
     steps:
     - uses: actions/checkout@v4
@@ -106,7 +108,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      FTK_API: GLES_2
       TLRENDER_NET: OFF
       TLRENDER_OCIO: OFF
       TLRENDER_JPEG: ON
@@ -122,6 +123,8 @@ jobs:
       TLRENDER_QT5: OFF
       TLRENDER_PYTHON: OFF
       TLRENDER_TESTS: ON
+      FTK_API: GLES_2
+      BUILD_SHARED_LIBS: OFF
 
     steps:
     - uses: actions/checkout@v4
@@ -151,7 +154,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      FTK_API: GL_4_1
       TLRENDER_NET: ON
       TLRENDER_OCIO: ON
       TLRENDER_JPEG: ON
@@ -169,6 +171,8 @@ jobs:
       TLRENDER_PROGRAMS: ON
       TLRENDER_EXAMPLES: OFF
       TLRENDER_TESTS: OFF
+      FTK_API: GL_4_1
+      BUILD_SHARED_LIBS: OFF
 
     steps:
     - uses: actions/checkout@v4
@@ -203,7 +207,6 @@ jobs:
     runs-on: macos-latest
 
     env:
-      FTK_API: GL_4_1
       TLRENDER_NET: OFF
       TLRENDER_OCIO: ON
       TLRENDER_JPEG: ON
@@ -222,6 +225,8 @@ jobs:
       TLRENDER_EXAMPLES: ON
       TLRENDER_TESTS: ON
       TLRENDER_GCOV: OFF
+      FTK_API: GL_4_1
+      BUILD_SHARED_LIBS: OFF
       CMAKE_OSX_DEPLOYMENT_TARGET: 14
       CMAKE_OSX_ARCHITECTURES: arm64
 
@@ -257,7 +262,6 @@ jobs:
     runs-on: macos-latest
 
     env:
-      FTK_API: GL_4_1
       TLRENDER_NET: ON
       TLRENDER_OCIO: ON
       TLRENDER_JPEG: ON
@@ -275,6 +279,8 @@ jobs:
       TLRENDER_PROGRAMS: ON
       TLRENDER_EXAMPLES: OFF
       TLRENDER_TESTS: OFF
+      BUILD_SHARED_LIBS: OFF
+      FTK_API: GL_4_1
       CMAKE_OSX_DEPLOYMENT_TARGET: 10.15
       CMAKE_OSX_ARCHITECTURES: arm64
 
@@ -318,7 +324,6 @@ jobs:
     runs-on: windows-latest
 
     env:
-      FTK_API: GL_4_1
       TLRENDER_NET: OFF
       TLRENDER_OCIO: ON
       TLRENDER_JPEG: ON
@@ -336,6 +341,8 @@ jobs:
       TLRENDER_PROGRAMS: ON
       TLRENDER_EXAMPLES: ON
       TLRENDER_TESTS: ON
+      BUILD_SHARED_LIBS: OFF
+      FTK_API: GL_4_1
 
     steps:
     - uses: actions/checkout@v4
@@ -370,7 +377,6 @@ jobs:
     #runs-on: windows-2019
 
     env:
-      FTK_API: GL_4_1
       TLRENDER_NET: ON
       TLRENDER_OCIO: ON
       TLRENDER_JPEG: ON
@@ -388,6 +394,8 @@ jobs:
       TLRENDER_PROGRAMS: ON
       TLRENDER_EXAMPLES: OFF
       TLRENDER_TESTS: OFF
+      BUILD_SHARED_LIBS: OFF
+      FTK_API: GL_4_1
 
     steps:
     - uses: actions/checkout@v4

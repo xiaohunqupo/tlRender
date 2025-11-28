@@ -69,6 +69,7 @@ class PlaybackBar(ftk.IWidget):
             self._player.currentTime = value
 
     def _currentTimeUpdate(self, value):
+        print(value)
         self._currentTimeEdit.value = value
 
     def _speedCallback(self, value):

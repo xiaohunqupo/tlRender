@@ -7,8 +7,6 @@ if [ "$#" -eq 1 ]; then
     BUILD_TYPE=$1
 fi
 
-export FTK_API=GL_4_1
-
 export TLRENDER_NET=OFF
 export TLRENDER_OCIO=ON
 export TLRENDER_JPEG=ON
@@ -29,5 +27,7 @@ export TLRENDER_PROGRAMS=ON
 export TLRENDER_EXAMPLES=ON
 export TLRENDER_TESTS=ON
 export TLRENDER_GCOV=OFF
+export FTK_API=GL_4_1
+export BUILD_SHARED_LIBS=OFF
 
 sh tlRender/etc/Linux/linux-build-gha.sh $BUILD_TYPE
