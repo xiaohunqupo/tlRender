@@ -5,17 +5,21 @@ import opentimelineio as otio
 import ftkPy as ftk
 import tlRenderPy as tl
 
+import weakref
+
 class FileActions:
 
     def __init__(self, context, app, mainWindow):
-        
+
+        appWeak = weakref.ref(app)
+        mainWindowWeak = weakref.ref(mainWindow)
         self.actions = {}
         self.actions["Open"] = ftk.Action(
             "Open",
             "FileOpen",
             ftk.Key.O,
             ftk.KeyModifier.Control,
-            lambda: context.getSystemByName("ftk::FileBrowserSystem").open(mainWindow, app.open))
+            lambda: context.getSystemByName("ftk::FileBrowserSystem").open(mainWindowWeak(), appWeak().open))
         self.actions["Open"].tooltip = "Open an image sequence, movie, or timeline file"
 
         self.actions["Close"] = ftk.Action(
@@ -23,23 +27,32 @@ class FileActions:
             "FileClose",
             ftk.Key.E,
             ftk.KeyModifier.Control,
-            lambda: app.close())
+            lambda: appWeak().close())
         self.actions["Close"].tooltip = "Close the current file"
+
+        self.actions["Reload"] = ftk.Action(
+            "Reload",
+            "FileReload",
+            ftk.Key.R,
+            ftk.KeyModifier.Control,
+            lambda: appWeak().reload())
+        self.actions["Reload"].tooltip = "Reload the current file"
 
         self.actions["Exit"] = ftk.Action(
             "Exit",
             ftk.Key.Q,
             ftk.KeyModifier.Control,
-            lambda: app.exit())
+            lambda: appWeak().exit())
 
         self.playerObserver = tl.ValueObserverPlayer(app.observePlayer(), self._actionsUpdate)
 
     def _actionsUpdate(self, player):
         self.actions["Close"].enabled = player != None
+        self.actions["Reload"].enabled = player != None
 
 class PlaybackActions:
 
-    def __init__(self, context, app, mainWindow):
+    def __init__(self, context, app):
         
         self.actions = {}
         self.actions["Stop"] = ftk.Action(

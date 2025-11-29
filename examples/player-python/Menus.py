@@ -9,6 +9,7 @@ def createFileMenu(context, actions):
     menu = ftk.Menu(context)
     menu.addAction(actions.actions["Open"])
     menu.addAction(actions.actions["Close"])
+    menu.addAction(actions.actions["Reload"])
     menu.addDivider();
     menu.addAction(actions.actions["Exit"])
     return menu
