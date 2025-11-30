@@ -5,24 +5,74 @@ import opentimelineio as otio
 import ftkPy as ftk
 import tlRenderPy as tl
 
-def createFileMenu(context, actions):
-    menu = ftk.Menu(context)
-    menu.addAction(actions.actions["Open"])
-    menu.addAction(actions.actions["Close"])
-    menu.addAction(actions.actions["Reload"])
-    menu.addDivider();
-    menu.addAction(actions.actions["Exit"])
-    return menu
+import os
+import weakref
 
-def createPlaybackMenu(context, actions):
-    menu = ftk.Menu(context)
-    menu.addAction(actions.actions["Stop"])
-    menu.addAction(actions.actions["Forward"])
-    menu.addAction(actions.actions["Reverse"])
-    menu.addDivider();
-    menu.addAction(actions.actions["Start"])
-    menu.addAction(actions.actions["Prev"])
-    menu.addAction(actions.actions["Next"])
-    menu.addAction(actions.actions["End"])
-    return menu
+class File(ftk.Menu):
 
+    def __init__(self, context, app, actions, parent = None):
+        ftk.Menu.__init__(self, context, parent)
+
+        self._app = weakref.ref(app)
+        
+        self.addAction(actions.actions["Open"])
+        self.addAction(actions.actions["Close"])
+        self.addAction(actions.actions["Reload"])
+        self.recentMenu = self.addSubMenu("Recent")
+        self.addDivider();
+        self.addAction(actions.actions["Exit"])
+        
+        self.recentObserver = ftk.ListObserverPath(
+            app.getRecentFilesModel().observeRecent,
+            self._recentUpdate)
+
+    def _recentCallback(self, recent):
+        if (self._app):
+            self._app().open(ftk.Path(str(recent)))
+
+    def _recentUpdate(self, recentList):
+        self.recentMenu.clear()
+        for recent in reversed(recentList):
+            action = ftk.Action(
+                os.path.basename(recent),
+                lambda captured = recent: self._recentCallback(captured))
+            self.recentMenu.addAction(action)
+
+class CompareMenu(ftk.Menu):
+
+    def __init__(self, context, app, actions, parent = None):
+        ftk.Menu.__init__(self, context, parent)
+
+class Playback(ftk.Menu):
+
+    def __init__(self, context, app, actions, parent = None):
+        ftk.Menu.__init__(self, context, parent)
+
+        self.addAction(actions.actions["Stop"])
+        self.addAction(actions.actions["Forward"])
+        self.addAction(actions.actions["Reverse"])
+        self.addAction(actions.actions["TogglePlayback"])
+        self.addDivider();
+        self.addAction(actions.actions["Start"])
+        self.addAction(actions.actions["Prev"])
+        self.addAction(actions.actions["Next"])
+        self.addAction(actions.actions["End"])
+        self.addDivider();
+        self.addAction(actions.actions["SetInPoint"])
+        self.addAction(actions.actions["ResetInPoint"])
+        self.addAction(actions.actions["SetOutPoint"])
+        self.addAction(actions.actions["ResetOutPoint"])
+
+class View(ftk.Menu):
+
+    def __init__(self, context, app, actions, parent = None):
+        ftk.Menu.__init__(self, context, parent)
+
+class Window(ftk.Menu):
+
+    def __init__(self, context, app, actions, parent = None):
+        ftk.Menu.__init__(self, context, parent)
+
+        self.addAction(actions.actions["FullScreen"])
+        self.addDivider();
+        self.addAction(actions.actions["Settings"])

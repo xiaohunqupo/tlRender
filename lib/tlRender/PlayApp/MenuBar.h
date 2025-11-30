@@ -44,13 +44,13 @@ namespace tl
 
         private:
             int _playerIndex = -1;
-            std::vector<std::shared_ptr<ftk::Action> > _filesActions;
-            std::shared_ptr<ftk::Menu> _filesMenu;
-            std::vector<std::shared_ptr<ftk::Action> > _recentFilesActions;
-            std::shared_ptr<ftk::Menu> _recentFilesMenu;
+            std::vector<std::shared_ptr<ftk::Action> > _activeActions;
+            std::shared_ptr<ftk::Menu> _activeMenu;
+            std::vector<std::shared_ptr<ftk::Action> > _recentActions;
+            std::shared_ptr<ftk::Menu> _recentMenu;
             std::shared_ptr<ftk::ListObserver<std::shared_ptr<timeline::Player> > > _playersObserver;
             std::shared_ptr<ftk::ValueObserver<int> > _playerIndexObserver;
-            std::shared_ptr<ftk::ListObserver<std::filesystem::path> > _recentFilesObserver;
+            std::shared_ptr<ftk::ListObserver<std::filesystem::path> > _recentObserver;
         };
 
         //! Compare menu.

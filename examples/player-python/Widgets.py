@@ -5,7 +5,7 @@ import opentimelineio as otio
 import ftkPy as ftk
 import tlRenderPy as tl
 
-import Actions
+import PlaybackActions
 
 class PlaybackBar(ftk.IWidget):
 
@@ -55,7 +55,9 @@ class PlaybackBar(ftk.IWidget):
 
         self._speedEdit.setCallback(self._speedCallback)
 
-        self._playerObserver = tl.ValueObserverPlayer(app.observePlayer(), self._widgetUpdate)
+        self._playerObserver = tl.ValueObserverPlayer(
+            app.getDocumentModel().observePlayer(),
+            self._widgetUpdate)
 
     def setGeometry(self, value):
         ftk.IWidget.setGeometry(self, value)

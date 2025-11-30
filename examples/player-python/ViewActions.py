@@ -1,18 +1,15 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright Contributors to the feather-tk project.
 
-import sys
 import opentimelineio as otio
 import ftkPy as ftk
 import tlRenderPy as tl
 
-import App
+import weakref
 
-context = ftk.Context()
-tl.uiInit(context)
-app = App.App(context, sys.argv)
-if app.exitValue != 0:
-    sys.exit(app.exitValue)
-app.run()
-app = None
+class Actions:
 
+    def __init__(self, context, app):
+
+        appWeak = weakref.ref(app)
+        self.actions = {}

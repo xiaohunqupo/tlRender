@@ -43,6 +43,7 @@ namespace tl
                 .value("JumpForward10s", timeline::TimeAction::JumpForward10s);
 
             ftk::python::observableValue<timeline::Playback>(m, "Playback");
+            ftk::python::observableValue<timeline::PlayerCacheOptions>(m, "PlayerCacheOptions");
             ftk::python::observableValue<OTIO_NS::RationalTime>(m, "RationalTime");
             ftk::python::observableValue<std::shared_ptr<timeline::Player> >(m, "Player");
 
@@ -72,7 +73,7 @@ namespace tl
                 .def_property_readonly("observeSpeed", &timeline::Player::observeSpeed)
                 .def_property("playback", &timeline::Player::getPlayback, &timeline::Player::setPlayback)
                 .def_property_readonly("observePlayback", &timeline::Player::observePlayback)
-                .def("isStopped", &timeline::Player::isStopped)
+                .def_property_readonly("isStopped", &timeline::Player::isStopped)
                 .def("stop", &timeline::Player::stop)
                 .def("forward", &timeline::Player::forward)
                 .def("reverse", &timeline::Player::reverse)

@@ -31,9 +31,9 @@ namespace tl
             addAction(actions["Close"]);
             addAction(actions["CloseAll"]);
             addAction(actions["Reload"]);
-            _recentFilesMenu = addSubMenu("Recent Files");
+            _recentMenu = addSubMenu("Recent");
             addDivider();
-            _filesMenu = addSubMenu("Files");
+            _activeMenu = addSubMenu("Active");
             addAction(actions["Next"]);
             addAction(actions["Prev"]);
             addDivider();
@@ -44,8 +44,8 @@ namespace tl
                 app->getFilesModel()->observePlayers(),
                 [this, appWeak](const std::vector<std::shared_ptr<timeline::Player> >& players)
                 {
-                    _filesActions.clear();
-                    _filesMenu->clear();
+                    _activeActions.clear();
+                    _activeMenu->clear();
                     for (size_t i = 0; i < players.size(); ++i)
                     {
                         auto action = ftk::Action::create(
@@ -59,8 +59,8 @@ namespace tl
                                 close();
                             });
                         action->setChecked(i == _playerIndex);
-                        _filesActions.push_back(action);
-                        _filesMenu->addAction(action);
+                        _activeActions.push_back(action);
+                        _activeMenu->addAction(action);
                     }
                 });
 
@@ -69,18 +69,18 @@ namespace tl
                 [this](int value)
                 {
                     _playerIndex = value;
-                    for (size_t i = 0; i < _filesActions.size(); ++i)
+                    for (size_t i = 0; i < _activeActions.size(); ++i)
                     {
-                        _filesActions[i]->setChecked(i == value);
+                        _activeActions[i]->setChecked(i == value);
                     }
                 });
 
-            _recentFilesObserver = ftk::ListObserver<std::filesystem::path>::create(
+            _recentObserver = ftk::ListObserver<std::filesystem::path>::create(
                 app->getRecentFilesModel()->observeRecent(),
                 [this, appWeak](const std::vector<std::filesystem::path>& value)
                 {
-                    _recentFilesActions.clear();
-                    _recentFilesMenu->clear();
+                    _recentActions.clear();
+                    _recentMenu->clear();
                     for (auto i = value.rbegin(); i != value.rend(); ++i)
                     {
                         const std::filesystem::path path = *i;
@@ -93,8 +93,8 @@ namespace tl
                                     app->open(path);
                                 }
                             });
-                        _recentFilesActions.push_back(action);
-                        _recentFilesMenu->addAction(action);
+                        _recentActions.push_back(action);
+                        _recentMenu->addAction(action);
                     }
                 });
         }

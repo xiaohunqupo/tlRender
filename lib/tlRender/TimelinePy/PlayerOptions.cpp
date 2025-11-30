@@ -18,13 +18,27 @@ namespace tl
         void playerOptions(py::module_& m)
         {
             py::class_<timeline::PlayerCacheOptions>(m, "PlayerCacheOptions")
+                .def(py::init())
                 .def_readwrite("videoGB", &timeline::PlayerCacheOptions::videoGB)
                 .def_readwrite("audioGB", &timeline::PlayerCacheOptions::audioGB)
                 .def_readwrite("readBehind", &timeline::PlayerCacheOptions::readBehind)
+                .def("to_json",
+                    [](timeline::PlayerCacheOptions& self)
+                    {
+                        nlohmann::json json;
+                        to_json(json, self);
+                        return json.dump();
+                    })
+                .def("from_json",
+                    [](timeline::PlayerCacheOptions& self, const std::string& value)
+                    {
+                        from_json(nlohmann::json().parse(value), self);
+                    })
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
-                py::class_<timeline::PlayerOptions>(m, "PlayerOptions")
+            py::class_<timeline::PlayerOptions>(m, "PlayerOptions")
+                .def(py::init())
                 .def_readwrite("audioDevice", &timeline::PlayerOptions::audioDevice)
                 .def_readwrite("cache", &timeline::PlayerOptions::cache)
                 .def_readwrite("videoRequestMax", &timeline::PlayerOptions::videoRequestMax)

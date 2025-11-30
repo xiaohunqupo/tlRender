@@ -38,7 +38,6 @@ namespace tl
                     if (_player)
                     {
                         _player->forward();
-                        _playback = timeline::Playback::Forward;
                     }
                 });
             _actions["Forward"]->setTooltip("Start forward playback.");
@@ -53,7 +52,6 @@ namespace tl
                     if (_player)
                     {
                         _player->reverse();
-                        _playback = timeline::Playback::Reverse;
                     }
                 });
             _actions["Reverse"]->setTooltip("Start reverse playback.");
@@ -78,7 +76,7 @@ namespace tl
                 });
 
             _actions["Start"] = ftk::Action::create(
-                "Goto Start",
+                "Start Frame",
                 "FrameStart",
                 ftk::Key::Home,
                 0,
@@ -92,7 +90,7 @@ namespace tl
             _actions["Start"]->setTooltip("Go to the start frame.");
 
             _actions["Prev"] = ftk::Action::create(
-                "Goto Previous",
+                "Previous Frame",
                 "FramePrev",
                 ftk::Key::Left,
                 0,
@@ -106,7 +104,7 @@ namespace tl
             _actions["Prev"]->setTooltip("Go to the previous frame.");
 
             _actions["Next"] = ftk::Action::create(
-                "Goto Next",
+                "Next Frame",
                 "FrameNext",
                 ftk::Key::Right,
                 0,
@@ -120,7 +118,7 @@ namespace tl
             _actions["Next"]->setTooltip("Go to the next frame.");
 
             _actions["End"] = ftk::Action::create(
-                "Goto End",
+                "End Frame",
                 "FrameEnd",
                 ftk::Key::End,
                 0,
@@ -197,6 +195,7 @@ namespace tl
                             value->observePlayback(),
                             [this](timeline::Playback value)
                             {
+                                _playback = value;
                                 _actions["Stop"]->setChecked(timeline::Playback::Stop == value);
                                 _actions["Forward"]->setChecked(timeline::Playback::Forward == value);
                                 _actions["Reverse"]->setChecked(timeline::Playback::Reverse == value);

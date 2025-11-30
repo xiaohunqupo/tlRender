@@ -22,6 +22,7 @@ namespace tl
                 .value("FileName", timeline::ImageSeqAudio::FileName);
 
             py::class_<timeline::Options>(m, "Options")
+                .def(py::init())
                 .def_readwrite("imageSeqAudio", &timeline::Options::imageSeqAudio)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);

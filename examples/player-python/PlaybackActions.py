@@ -7,53 +7,12 @@ import tlRenderPy as tl
 
 import weakref
 
-class FileActions:
-
-    def __init__(self, context, app, mainWindow):
-
-        appWeak = weakref.ref(app)
-        mainWindowWeak = weakref.ref(mainWindow)
-        self.actions = {}
-        self.actions["Open"] = ftk.Action(
-            "Open",
-            "FileOpen",
-            ftk.Key.O,
-            ftk.KeyModifier.Control,
-            lambda: context.getSystemByName("ftk::FileBrowserSystem").open(mainWindowWeak(), appWeak().open))
-        self.actions["Open"].tooltip = "Open an image sequence, movie, or timeline file"
-
-        self.actions["Close"] = ftk.Action(
-            "Close",
-            "FileClose",
-            ftk.Key.E,
-            ftk.KeyModifier.Control,
-            lambda: appWeak().close())
-        self.actions["Close"].tooltip = "Close the current file"
-
-        self.actions["Reload"] = ftk.Action(
-            "Reload",
-            "FileReload",
-            ftk.Key.R,
-            ftk.KeyModifier.Control,
-            lambda: appWeak().reload())
-        self.actions["Reload"].tooltip = "Reload the current file"
-
-        self.actions["Exit"] = ftk.Action(
-            "Exit",
-            ftk.Key.Q,
-            ftk.KeyModifier.Control,
-            lambda: appWeak().exit())
-
-        self.playerObserver = tl.ValueObserverPlayer(app.observePlayer(), self._actionsUpdate)
-
-    def _actionsUpdate(self, player):
-        self.actions["Close"].enabled = player != None
-        self.actions["Reload"].enabled = player != None
-
-class PlaybackActions:
+class Actions:
 
     def __init__(self, context, app):
         
+        self._playback = tl.Playback.Forward
+
         self.actions = {}
         self.actions["Stop"] = ftk.Action(
             "Stop",
@@ -78,6 +37,13 @@ class PlaybackActions:
             0,
             self._reverseCallback)
         self.actions["Reverse"].tooltip = "Start reverse playback"
+
+        self.actions["TogglePlayback"] = ftk.Action(
+            "Toggle Playback",
+            ftk.Key.Space,
+            0,
+            self._togglePlaybackCallback)
+        self.actions["TogglePlayback"].tooltip = "Toggle playback direction"
 
         self.actions["Start"] = ftk.Action(
             "Start Frame",
@@ -111,7 +77,37 @@ class PlaybackActions:
             self._endCallback)
         self.actions["End"].tooltip = "Go to the end frame"
 
-        self.playerObserver = tl.ValueObserverPlayer(app.observePlayer(), self._actionsUpdate)
+        self.actions["SetInPoint"] = ftk.Action(
+            "Set In Point",
+            ftk.Key.I,
+            0,
+            self._setInPointCallback)
+        self.actions["SetInPoint"].tooltip = "Set the in point to the current frame"
+
+        self.actions["ResetInPoint"] = ftk.Action(
+            "Reset In Point",
+            ftk.Key.I,
+            ftk.KeyModifier.Shift,
+            self._resetInPointCallback)
+        self.actions["ResetInPoint"].tooltip = "Reset the in point to the start frame"
+
+        self.actions["SetOutPoint"] = ftk.Action(
+            "Set Out Point",
+            ftk.Key.O,
+            0,
+            self._setOutPointCallback)
+        self.actions["SetOutPoint"].tooltip = "Set the out point to the current frame"
+
+        self.actions["ResetOutPoint"] = ftk.Action(
+            "Reset Out Point",
+            ftk.Key.O,
+            ftk.KeyModifier.Shift,
+            self._resetOutPointCallback)
+        self.actions["ResetOutPoint"].tooltip = "Reset the out point to the end frame"
+
+        self._playerObserver = tl.ValueObserverPlayer(
+            app.getDocumentModel().observePlayer(),
+            self._playerUpdate)
 
     def _stopCallback(self):
         if self._player:
@@ -124,6 +120,13 @@ class PlaybackActions:
     def _reverseCallback(self):
         if self._player:
             self._player.reverse()
+
+    def _togglePlaybackCallback(self):
+        if self._player:
+            if self._player.isStopped:
+                self._player.playback = self._playback
+            else:
+                self._player.stop()
 
     def _startCallback(self):
         if self._player:
@@ -141,8 +144,33 @@ class PlaybackActions:
         if self._player:
             self._player.timeAction(tl.TimeAction.End)
 
-    def _actionsUpdate(self, player):
+    def _setInPointCallback(self):
+        if self._player:
+            self._player.setInPoint()
+
+    def _resetInPointCallback(self):
+        if self._player:
+            self._player.resetInPoint()
+
+    def _setOutPointCallback(self):
+        if self._player:
+            self._player.setOutPoint()
+
+    def _resetOutPointCallback(self):
+        if self._player:
+            self._player.resetOutPoint()
+
+    def _playerUpdate(self, player):
+        
         self._player = player
+        
+        if player:
+            self._playbackObserver = tl.ValueObserverPlayback(
+                player.observePlayback,
+                self._playbackUpdate)
+        else:
+            self._playbackObserver = None
+        
         self.actions["Stop"].enabled = player != None
         self.actions["Forward"].enabled = player != None
         self.actions["Reverse"].enabled = player != None
@@ -150,3 +178,12 @@ class PlaybackActions:
         self.actions["Prev"].enabled = player != None
         self.actions["Next"].enabled = player != None
         self.actions["End"].enabled = player != None
+
+    def _playbackUpdate(self, playback):
+
+        if playback != tl.Playback.Stop:
+            self._playback = playback
+
+        self.actions["Stop"].checked = tl.Playback.Stop == playback
+        self.actions["Forward"].checked = tl.Playback.Forward == playback
+        self.actions["Reverse"].checked = tl.Playback.Reverse == playback

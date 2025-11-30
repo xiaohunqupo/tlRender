@@ -31,6 +31,7 @@ namespace tl
                 .value("Absolute", timeline::CompareTime::Absolute);
 
             py::class_<timeline::CompareOptions>(m, "CompareOptions")
+                .def(py::init())
                 .def_readwrite("compare", &timeline::CompareOptions::compare)
                 .def_readwrite("wipeCenter", &timeline::CompareOptions::wipeCenter)
                 .def_readwrite("wipeRotation", &timeline::CompareOptions::wipeRotation)

@@ -17,7 +17,7 @@ namespace tl
         {
             auto mainWindowWeak = std::weak_ptr<MainWindow>(mainWindow);
             _actions["FullScreen"] = ftk::Action::create(
-                "FullScreen",
+                "Full Screen",
                 "WindowFullScreen",
                 ftk::Key::U,
                 static_cast<int>(ftk::commandKeyModifier),
