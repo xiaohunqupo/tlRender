@@ -19,6 +19,7 @@ endif()
 
 if(TLRENDER_PYTHON)
     add_subdirectory(CorePy)
+    add_subdirectory(IOPy)
     add_subdirectory(TimelinePy)
     add_subdirectory(UIPy)
     add_subdirectory(tlRenderPy)

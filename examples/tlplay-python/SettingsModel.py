@@ -7,16 +7,16 @@ import tlRenderPy as tl
 
 import json
 
-class SettingsModel(ftk.Settings):
+class Model(ftk.Settings):
 
     def __init__(self, context):
         docPath = ftk.getUserPath(ftk.UserPath.Documents)
         settingsPath = ftk.getSettingsPath(ftk.Path(docPath, "tlRender").get(), "player-python.json")
         ftk.Settings.__init__(self, context, settingsPath)
 
-        cacheOptions = tl.PlayerCacheOptions()
+        cacheOptions = tl.timeline.PlayerCacheOptions()
         cacheOptions.from_json(self.getJSON("/Cache")[1])
-        self._cache = tl.ObservableValuePlayerCacheOptions(cacheOptions)
+        self._cache = tl.timeline.ObservableValuePlayerCacheOptions(cacheOptions)
 
     def __del__(self):
         self.setJSON("/Cache", self._cache.get().to_json())

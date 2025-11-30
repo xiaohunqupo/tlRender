@@ -12,16 +12,16 @@ class Model:
     
         self._app = weakref.ref(app)
 
-        self._player = tl.ObservableValuePlayer(None)
+        self._player = tl.timeline.ObservableValuePlayer(None)
 
-        self._cacheObserver = tl.ValueObserverPlayerCacheOptions(
+        self._cacheObserver = tl.timeline.ValueObserverPlayerCacheOptions(
             app.getSettingsModel().observeCache(), self._cacheUpdate)
 
     def open(self, path):
-        timeline = tl.Timeline(self._app().context, path)
-        options = tl.PlayerOptions()
+        timeline = tl.timeline.Timeline(self._app().context, path)
+        options = tl.timeline.PlayerOptions()
         options.cache = self._app().getSettingsModel().observeCache().get()
-        self._player.setAlways(tl.Player(self._app().context, timeline, options))
+        self._player.setAlways(tl.timeline.Player(self._app().context, timeline, options))
 
     def close(self):
         if self._player.get():
@@ -30,10 +30,10 @@ class Model:
     def reload(self, path):
         if self._player.get():
             path = self._player.get().path
-            timeline = tl.Timeline(self._app().context, path)
-            options = tl.PlayerOptions()
+            timeline = tl.timeline.Timeline(self._app().context, path)
+            options = tl.timeline.PlayerOptions()
             options.cache = self._settingsModel.observeCache().get()
-            self._player.setAlways(tl.Player(self.context, timeline, options))
+            self._player.setAlways(tl.timeline.Player(self.context, timeline, options))
 
     def observePlayer(self):
         return self._player

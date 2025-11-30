@@ -9,7 +9,7 @@ import tlRenderPy as tl
 import App
 
 context = ftk.Context()
-tl.uiInit(context)
+tl.ui.init(context)
 app = App.App(context, sys.argv)
 if app.exitValue != 0:
     sys.exit(app.exitValue)

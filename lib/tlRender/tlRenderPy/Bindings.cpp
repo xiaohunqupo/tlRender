@@ -2,9 +2,8 @@
 // Copyright Contributors to the feather-tk project.
 
 #include <tlRender/UIPy/Bindings.h>
-
 #include <tlRender/TimelinePy/Bindings.h>
-
+#include <tlRender/IOPy/Bindings.h>
 #include <tlRender/CorePy/Bindings.h>
 
 #include <opentimelineio/version.h>
@@ -23,6 +22,7 @@ PYBIND11_MODULE(tlRenderPy, m)
     py::module_::import("ftkPy");
 
     tl::python::coreBind(m);
+    tl::python::ioBind(m);
     tl::python::timelineBind(m);
     tl::python::uiBind(m);
 }

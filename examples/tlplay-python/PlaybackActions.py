@@ -11,7 +11,7 @@ class Actions:
 
     def __init__(self, context, app):
         
-        self._playback = tl.Playback.Forward
+        self._playback = tl.timeline.Playback.Forward
 
         self.actions = {}
         self.actions["Stop"] = ftk.Action(
@@ -105,7 +105,7 @@ class Actions:
             self._resetOutPointCallback)
         self.actions["ResetOutPoint"].tooltip = "Reset the out point to the end frame"
 
-        self._playerObserver = tl.ValueObserverPlayer(
+        self._playerObserver = tl.timeline.ValueObserverPlayer(
             app.getDocumentModel().observePlayer(),
             self._playerUpdate)
 
@@ -130,19 +130,19 @@ class Actions:
 
     def _startCallback(self):
         if self._player:
-            self._player.timeAction(tl.TimeAction.Start)
+            self._player.timeAction(tl.timeline.TimeAction.Start)
 
     def _prevCallback(self):
         if self._player:
-            self._player.timeAction(tl.TimeAction.FramePrev)
+            self._player.timeAction(tl.timeline.TimeAction.FramePrev)
 
     def _nextCallback(self):
         if self._player:
-            self._player.timeAction(tl.TimeAction.FrameNext)
+            self._player.timeAction(tl.timeline.TimeAction.FrameNext)
 
     def _endCallback(self):
         if self._player:
-            self._player.timeAction(tl.TimeAction.End)
+            self._player.timeAction(tl.timeline.TimeAction.End)
 
     def _setInPointCallback(self):
         if self._player:
@@ -165,7 +165,7 @@ class Actions:
         self._player = player
         
         if player:
-            self._playbackObserver = tl.ValueObserverPlayback(
+            self._playbackObserver = tl.timeline.ValueObserverPlayback(
                 player.observePlayback,
                 self._playbackUpdate)
         else:
@@ -174,16 +174,21 @@ class Actions:
         self.actions["Stop"].enabled = player != None
         self.actions["Forward"].enabled = player != None
         self.actions["Reverse"].enabled = player != None
+        self.actions["TogglePlayback"].enabled = player != None
         self.actions["Start"].enabled = player != None
         self.actions["Prev"].enabled = player != None
         self.actions["Next"].enabled = player != None
         self.actions["End"].enabled = player != None
+        self.actions["SetInPoint"].enabled = player != None
+        self.actions["ResetInPoint"].enabled = player != None
+        self.actions["SetOutPoint"].enabled = player != None
+        self.actions["ResetOutPoint"].enabled = player != None
 
     def _playbackUpdate(self, playback):
 
-        if playback != tl.Playback.Stop:
+        if playback != tl.timeline.Playback.Stop:
             self._playback = playback
 
-        self.actions["Stop"].checked = tl.Playback.Stop == playback
-        self.actions["Forward"].checked = tl.Playback.Forward == playback
-        self.actions["Reverse"].checked = tl.Playback.Reverse == playback
+        self.actions["Stop"].checked = tl.timeline.Playback.Stop == playback
+        self.actions["Forward"].checked = tl.timeline.Playback.Forward == playback
+        self.actions["Reverse"].checked = tl.timeline.Playback.Reverse == playback

@@ -13,15 +13,15 @@ import pathlib
 
 class App(ftk.App):
     def __init__(self, context, argv):
-        cmdLineInput = ftk.CmdLineValueArgString("Input", "Timeline file", True)
-        ftk.App.__init__(self, context, argv, "player", "Python player example", [ cmdLineInput ])
+        cmdLineInput = ftk.CmdLineValueArgString("Input", "Input file", True)
+        ftk.App.__init__(self, context, argv, "tlplay-python", "Python player example", [ cmdLineInput ])
 
         # \bug
         self.displayScale = 2
 
-        self._settingsModel = SettingsModel.SettingsModel(context)
+        self._settingsModel = SettingsModel.Model(context)
 
-        self._timeUnitsModel = tl.TimeUnitsModel(context)
+        self._timeUnitsModel = tl.timeline.TimeUnitsModel(context)
 
         self._recentFilesModel = ftk.RecentFilesModel(context)
         self._recentFilesModel.recent = self._settingsModel.getStringList("/Files/Recent")[1]

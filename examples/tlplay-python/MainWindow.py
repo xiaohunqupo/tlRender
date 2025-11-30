@@ -8,10 +8,11 @@ import tlRenderPy as tl
 import FileActions
 import Menus
 import PlaybackActions
+import PlaybackBar
 import SettingsWidget
+import StatusBar
 import ToolBars
 import ViewActions
-import Widgets
 import WindowActions
 
 class MainWindow(ftk.MainWindow):
@@ -36,11 +37,13 @@ class MainWindow(ftk.MainWindow):
         self._fileToolBar = ToolBars.File(context, self._fileActions)
         self._windowToolBar = ToolBars.Window(context, self._windowActions)
 
-        self._viewport = tl.Viewport(context)
+        self._viewport = tl.ui.Viewport(context)
 
-        self._playbackBar = Widgets.PlaybackBar(context, app, self._playbackActions)
+        self._playbackBar = PlaybackBar.Widget(context, app, self._playbackActions)
 
-        self._timelineWidget = tl.TimelineWidget(context, app.getTimeUnitsModel())
+        self._timelineWidget = tl.ui.TimelineWidget(context, app.getTimeUnitsModel())
+
+        self._statusBar = StatusBar.Widget(context, app, self)
 
         self._settingsWidget = SettingsWidget.Widget(context, app)
         self._settingsWidget.hide()
@@ -65,8 +68,10 @@ class MainWindow(ftk.MainWindow):
         self._playbackBar.parent = vLayout
         ftk.Divider(context, ftk.Orientation.Vertical, vLayout)
         self._timelineWidget.parent = vLayout
+        ftk.Divider(context, ftk.Orientation.Vertical, self._layout)
+        self._statusBar.parent = self._layout
 
-        self.playerObserver = tl.ValueObserverPlayer(
+        self.playerObserver = tl.timeline.ValueObserverPlayer(
             app.getDocumentModel().observePlayer(),
             self._widgetUpdate)
 

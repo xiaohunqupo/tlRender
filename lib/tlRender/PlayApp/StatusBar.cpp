@@ -21,7 +21,7 @@ namespace tl
             IWidget::_init(context, "StatusBar", parent);
 
             _layout = ftk::HorizontalLayout::create(context, shared_from_this());
-            _layout->setSpacingRole(ftk::SizeRole::None);
+            _layout->setSpacingRole(ftk::SizeRole::SpacingSmall);
 
             _labels["Log"] = ftk::Label::create(context, _layout);
             _labels["Log"]->setHStretch(ftk::Stretch::Expanding);

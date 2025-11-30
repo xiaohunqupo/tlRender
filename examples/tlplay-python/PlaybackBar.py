@@ -7,10 +7,10 @@ import tlRenderPy as tl
 
 import PlaybackActions
 
-class PlaybackBar(ftk.IWidget):
+class Widget(ftk.IWidget):
 
     def __init__(self, context, app, actions, parent = None):
-        ftk.IWidget.__init__(self, context, "PlaybackBar", parent)
+        ftk.IWidget.__init__(self, context, "PlaybackBar.Widget", parent)
 
         self._player = None
 
@@ -27,10 +27,10 @@ class PlaybackBar(ftk.IWidget):
         button.repeatClick = True
         self._frameToolBar.addAction(actions.actions["End"])
 
-        self._currentTimeEdit = tl.TimeEdit(context, app.getTimeUnitsModel())
+        self._currentTimeEdit = tl.ui.TimeEdit(context, app.getTimeUnitsModel())
         self._currentTimeEdit.tooltip = "Current time"
 
-        self._durationLabel = tl.TimeLabel(context, app.getTimeUnitsModel())
+        self._durationLabel = tl.ui.TimeLabel(context, app.getTimeUnitsModel())
         self._durationLabel.tooltip = "Playback duration"
 
         self._speedEdit = ftk.DoubleEdit(context)
@@ -39,7 +39,7 @@ class PlaybackBar(ftk.IWidget):
         self._speedEdit.largeStep = 10.0
         self._speedEdit.tooltip = "Playback speed"
 
-        self._timeUnitsWidget = tl.TimeUnitsWidget(context, app.getTimeUnitsModel())
+        self._timeUnitsWidget = tl.ui.TimeUnitsWidget(context, app.getTimeUnitsModel())
         self._timeUnitsWidget.tooltip = "Time units"
 
         self._layout = ftk.HorizontalLayout(context, self)
@@ -55,7 +55,7 @@ class PlaybackBar(ftk.IWidget):
 
         self._speedEdit.setCallback(self._speedCallback)
 
-        self._playerObserver = tl.ValueObserverPlayer(
+        self._playerObserver = tl.timeline.ValueObserverPlayer(
             app.getDocumentModel().observePlayer(),
             self._widgetUpdate)
 
@@ -84,7 +84,7 @@ class PlaybackBar(ftk.IWidget):
         self._player = player
         if player:
             self._durationLabel.value = player.duration
-            self._currentTimeObserver = tl.ValueObserverRationalTime(
+            self._currentTimeObserver = tl.timeline.ValueObserverRationalTime(
                 player.observeCurrentTime,
                 self._currentTimeUpdate)
             self._speedObserver = ftk.ValueObserverD(

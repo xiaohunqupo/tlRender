@@ -44,7 +44,7 @@ class Actions:
             ftk.commandKeyModifier,
             lambda: appWeak().exit())
 
-        self._playerObserver = tl.ValueObserverPlayer(
+        self._playerObserver = tl.timeline.ValueObserverPlayer(
             app.getDocumentModel().observePlayer(),
             self._playerUpdate)
 

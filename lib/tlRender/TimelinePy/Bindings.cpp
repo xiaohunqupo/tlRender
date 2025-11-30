@@ -22,18 +22,20 @@ namespace tl
     {
         void timelineBind(py::module_& m)
         {
-            m.def(
+            auto mTimeline = m.def_submodule("timeline", "Timeline");
+            
+            mTimeline.def(
                 "init",
                 &timeline::init,
                 py::arg("context"),
                 "Initialize the library.");
 
-            compareOptions(m);
-            timeUnits(m);
-            timelineOptions(m);
-            timeline(m);
-            playerOptions(m);
-            player(m);
+            compareOptions(mTimeline);
+            timeUnits(mTimeline);
+            timelineOptions(mTimeline);
+            timeline(mTimeline);
+            playerOptions(mTimeline);
+            player(mTimeline);
         }
     }
 }

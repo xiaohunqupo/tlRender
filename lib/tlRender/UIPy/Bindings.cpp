@@ -21,17 +21,19 @@ namespace tl
         {
         void uiBind(py::module_& m)
         {
-            m.def(
-                "uiInit",
+            auto mUI = m.def_submodule("ui", "User interface");
+            
+            mUI.def(
+                "init",
                 &timelineui::init,
                 py::arg("context"),
                 "Initialize the library.");
 
-            timeEdit(m);
-            timeLabel(m);
-            timeUnitsWidget(m);
-            timelineWidget(m);
-            viewport(m);
+            timeEdit(mUI);
+            timeLabel(mUI);
+            timeUnitsWidget(mUI);
+            timelineWidget(mUI);
+            viewport(mUI);
         }
     }
 }

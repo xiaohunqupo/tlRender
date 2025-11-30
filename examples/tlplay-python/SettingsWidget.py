@@ -37,7 +37,7 @@ class CacheWidget(ftk.IWidget):
         self._audioEdit.setCallback(self._audioCallback)
         self._readBehindEdit.setCallback(self._readBehindCallback)
 
-        self._cacheObserver = tl.ValueObserverPlayerCacheOptions(
+        self._cacheObserver = tl.timeline.ValueObserverPlayerCacheOptions(
             app.getSettingsModel().observeCache(), self._cacheUpdate)
 
     def setGeometry(self, value):
