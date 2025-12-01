@@ -64,7 +64,7 @@ namespace tl
                     }
                 });
 
-            _playerIndexObserver = ftk::ValueObserver<int>::create(
+            _playerIndexObserver = ftk::Observer<int>::create(
                 app->getFilesModel()->observePlayerIndex(),
                 [this](int value)
                 {
@@ -153,7 +153,7 @@ namespace tl
                     }
                 });
 
-            _bPlayerIndexObserver = ftk::ValueObserver<int>::create(
+            _bPlayerIndexObserver = ftk::Observer<int>::create(
                 app->getFilesModel()->observeBPlayerIndex(),
                 [this](int value)
                 {

@@ -44,7 +44,7 @@ namespace tl
             std::shared_ptr<ftk::DoubleEdit> _audioEdit;
             std::shared_ptr<ftk::DoubleEdit> _readBehindEdit;
             std::shared_ptr<ftk::FormLayout> _layout;
-            std::shared_ptr<ftk::ValueObserver<timeline::PlayerCacheOptions> > _cacheObserver;
+            std::shared_ptr<ftk::Observer<timeline::PlayerCacheOptions> > _cacheObserver;
         };
 
         //! Settings widget.

@@ -7,7 +7,7 @@
 #include <tlRender/Core/ISystem.h>
 
 #include <ftk/Core/ObservableList.h>
-#include <ftk/Core/ObservableValue.h>
+#include <ftk/Core/Observable.h>
 
 namespace tl
 {
@@ -60,7 +60,7 @@ namespace tl
             DeviceInfo getDefaultDevice() const;
 
             //! Observe the default audio device.
-            std::shared_ptr<ftk::IObservableValue<DeviceInfo> > observeDefaultDevice() const;
+            std::shared_ptr<ftk::IObservable<DeviceInfo> > observeDefaultDevice() const;
 
             void tick() override;
             std::chrono::milliseconds getTickTime() const override;

@@ -72,7 +72,7 @@ namespace tl
                     }
                 });
 
-            _cacheObserver = ftk::ValueObserver<timeline::PlayerCacheOptions>::create(
+            _cacheObserver = ftk::Observer<timeline::PlayerCacheOptions>::create(
                 app->getSettingsModel()->observeCache(),
                 [this](const timeline::PlayerCacheOptions& value)
                 {

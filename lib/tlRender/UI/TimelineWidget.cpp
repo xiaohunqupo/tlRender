@@ -22,19 +22,19 @@ namespace tl
         {
             std::shared_ptr<ItemData> itemData;
             std::shared_ptr<timeline::Player> player;
-            std::shared_ptr<ftk::ObservableValue<bool> > editable;
-            std::shared_ptr<ftk::ObservableValue<bool> > frameView;
+            std::shared_ptr<ftk::Observable<bool> > editable;
+            std::shared_ptr<ftk::Observable<bool> > frameView;
             std::function<void(bool)> frameViewCallback;
-            std::shared_ptr<ftk::ObservableValue<bool> > scrollBarsVisible;
-            std::shared_ptr<ftk::ObservableValue<bool> > autoScroll;
+            std::shared_ptr<ftk::Observable<bool> > scrollBarsVisible;
+            std::shared_ptr<ftk::Observable<bool> > autoScroll;
             std::pair<int, ftk::KeyModifier> scrollBinding = std::make_pair(1, ftk::KeyModifier::Control);
             float mouseWheelScale = 1.1F;
-            std::shared_ptr<ftk::ObservableValue<bool> > stopOnScrub;
-            std::shared_ptr<ftk::ObservableValue<bool> > scrub;
-            std::shared_ptr<ftk::ObservableValue<OTIO_NS::RationalTime> > timeScrub;
+            std::shared_ptr<ftk::Observable<bool> > stopOnScrub;
+            std::shared_ptr<ftk::Observable<bool> > scrub;
+            std::shared_ptr<ftk::Observable<OTIO_NS::RationalTime> > timeScrub;
             std::vector<int> frameMarkers;
-            std::shared_ptr<ftk::ObservableValue<ItemOptions> > itemOptions;
-            std::shared_ptr<ftk::ObservableValue<DisplayOptions> > displayOptions;
+            std::shared_ptr<ftk::Observable<ItemOptions> > itemOptions;
+            std::shared_ptr<ftk::Observable<DisplayOptions> > displayOptions;
             OTIO_NS::TimeRange timeRange = time::invalidTimeRange;
             timeline::Playback playback = timeline::Playback::Stop;
             OTIO_NS::RationalTime currentTime = time::invalidTime;
@@ -61,10 +61,10 @@ namespace tl
             };
             MouseData mouse;
 
-            std::shared_ptr<ftk::ValueObserver<timeline::Playback> > playbackObserver;
-            std::shared_ptr<ftk::ValueObserver<OTIO_NS::RationalTime> > currentTimeObserver;
-            std::shared_ptr<ftk::ValueObserver<bool> > scrubObserver;
-            std::shared_ptr<ftk::ValueObserver<OTIO_NS::RationalTime> > timeScrubObserver;
+            std::shared_ptr<ftk::Observer<timeline::Playback> > playbackObserver;
+            std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > currentTimeObserver;
+            std::shared_ptr<ftk::Observer<bool> > scrubObserver;
+            std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > timeScrubObserver;
         };
 
         void TimelineWidget::_init(
@@ -80,15 +80,15 @@ namespace tl
                 timeUnitsModel :
                 timeline::TimeUnitsModel::create(context);
 
-            p.editable = ftk::ObservableValue<bool>::create(false);
-            p.frameView = ftk::ObservableValue<bool>::create(true);
-            p.scrollBarsVisible = ftk::ObservableValue<bool>::create(true);
-            p.autoScroll = ftk::ObservableValue<bool>::create(true);
-            p.stopOnScrub = ftk::ObservableValue<bool>::create(true);
-            p.scrub = ftk::ObservableValue<bool>::create(false);
-            p.timeScrub = ftk::ObservableValue<OTIO_NS::RationalTime>::create(time::invalidTime);
-            p.itemOptions = ftk::ObservableValue<ItemOptions>::create();
-            p.displayOptions = ftk::ObservableValue<DisplayOptions>::create();
+            p.editable = ftk::Observable<bool>::create(false);
+            p.frameView = ftk::Observable<bool>::create(true);
+            p.scrollBarsVisible = ftk::Observable<bool>::create(true);
+            p.autoScroll = ftk::Observable<bool>::create(true);
+            p.stopOnScrub = ftk::Observable<bool>::create(true);
+            p.scrub = ftk::Observable<bool>::create(false);
+            p.timeScrub = ftk::Observable<OTIO_NS::RationalTime>::create(time::invalidTime);
+            p.itemOptions = ftk::Observable<ItemOptions>::create();
+            p.displayOptions = ftk::Observable<DisplayOptions>::create();
 
             p.window = ftk::gl::Window::create(
                 context,
@@ -166,14 +166,14 @@ namespace tl
             {
                 p.timeRange = p.player->getTimeRange();
 
-                p.playbackObserver = ftk::ValueObserver<timeline::Playback>::create(
+                p.playbackObserver = ftk::Observer<timeline::Playback>::create(
                     p.player->observePlayback(),
                     [this](timeline::Playback value)
                     {
                         _p->playback = value;
                     });
 
-                p.currentTimeObserver = ftk::ValueObserver<OTIO_NS::RationalTime>::create(
+                p.currentTimeObserver = ftk::Observer<OTIO_NS::RationalTime>::create(
                     p.player->observeCurrentTime(),
                     [this](const OTIO_NS::RationalTime& value)
                     {
@@ -220,7 +220,7 @@ namespace tl
             return _p->frameView->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<bool> > TimelineWidget::observeFrameView() const
+        std::shared_ptr<ftk::IObservable<bool> > TimelineWidget::observeFrameView() const
         {
             return _p->frameView;
         }
@@ -242,7 +242,7 @@ namespace tl
             return _p->scrollBarsVisible->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<bool> > TimelineWidget::observeScrollBarsVisible() const
+        std::shared_ptr<ftk::IObservable<bool> > TimelineWidget::observeScrollBarsVisible() const
         {
             return _p->scrollBarsVisible;
         }
@@ -261,7 +261,7 @@ namespace tl
             return _p->autoScroll->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<bool> > TimelineWidget::observeAutoScroll() const
+        std::shared_ptr<ftk::IObservable<bool> > TimelineWidget::observeAutoScroll() const
         {
             return _p->autoScroll;
         }
@@ -290,7 +290,7 @@ namespace tl
             return _p->stopOnScrub->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<bool> > TimelineWidget::observeStopOnScrub() const
+        std::shared_ptr<ftk::IObservable<bool> > TimelineWidget::observeStopOnScrub() const
         {
             return _p->stopOnScrub;
         }
@@ -307,12 +307,12 @@ namespace tl
             }
         }
 
-        std::shared_ptr<ftk::IObservableValue<bool> > TimelineWidget::observeScrub() const
+        std::shared_ptr<ftk::IObservable<bool> > TimelineWidget::observeScrub() const
         {
             return _p->scrub;
         }
 
-        std::shared_ptr<ftk::IObservableValue<OTIO_NS::RationalTime> > TimelineWidget::observeTimeScrub() const
+        std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > TimelineWidget::observeTimeScrub() const
         {
             return _p->timeScrub;
         }
@@ -339,7 +339,7 @@ namespace tl
             return _p->itemOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<ItemOptions> > TimelineWidget::observeItemOptions() const
+        std::shared_ptr<ftk::IObservable<ItemOptions> > TimelineWidget::observeItemOptions() const
         {
             return _p->itemOptions;
         }
@@ -361,7 +361,7 @@ namespace tl
             return _p->displayOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<DisplayOptions> > TimelineWidget::observeDisplayOptions() const
+        std::shared_ptr<ftk::IObservable<DisplayOptions> > TimelineWidget::observeDisplayOptions() const
         {
             return _p->displayOptions;
         }
@@ -706,7 +706,7 @@ namespace tl
                     p.scrollWidget->setScrollPos(scrollPos);
                     p.scrollWidget->setWidget(p.timelineItem);
 
-                    p.scrubObserver = ftk::ValueObserver<bool>::create(
+                    p.scrubObserver = ftk::Observer<bool>::create(
                         p.timelineItem->observeScrub(),
                         [this](bool value)
                         {
@@ -714,7 +714,7 @@ namespace tl
                             _scrollUpdate();
                         });
 
-                    p.timeScrubObserver = ftk::ValueObserver<OTIO_NS::RationalTime>::create(
+                    p.timeScrubObserver = ftk::Observer<OTIO_NS::RationalTime>::create(
                         p.timelineItem->observeTimeScrub(),
                         [this](const OTIO_NS::RationalTime& value)
                         {

@@ -53,10 +53,10 @@ namespace tl
             std::shared_ptr<timelineui::TimeLabel> _durationLabel;
             std::shared_ptr<ftk::DoubleEdit> _speedEdit;
             std::shared_ptr<ftk::ComboBox> _timeUnitsComboBox;
-            std::shared_ptr<ftk::ValueObserver<std::shared_ptr<timeline::Player> > > _playerObserver;
-            std::shared_ptr<ftk::ValueObserver<OTIO_NS::RationalTime> > _currentTimeObserver;
-            std::shared_ptr<ftk::ValueObserver<double> > _speedObserver;
-            std::shared_ptr<ftk::ValueObserver<timeline::TimeUnits> > _timeUnitsObserver;
+            std::shared_ptr<ftk::Observer<std::shared_ptr<timeline::Player> > > _playerObserver;
+            std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > _currentTimeObserver;
+            std::shared_ptr<ftk::Observer<double> > _speedObserver;
+            std::shared_ptr<ftk::Observer<timeline::TimeUnits> > _timeUnitsObserver;
         };
     }
 }

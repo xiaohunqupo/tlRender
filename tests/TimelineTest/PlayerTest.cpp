@@ -119,7 +119,7 @@ namespace tl
             _print(ftk::Format("Speed: {0}").arg(speed));
 
             // Test the playback speed.
-            auto speedObserver = ftk::ValueObserver<double>::create(
+            auto speedObserver = ftk::Observer<double>::create(
                 player->observeSpeed(),
                 [&speed](double value)
                 {
@@ -132,7 +132,7 @@ namespace tl
 
             // Test the playback mode.
             Playback playback = Playback::Stop;
-            auto playbackObserver = ftk::ValueObserver<Playback>::create(
+            auto playbackObserver = ftk::Observer<Playback>::create(
                 player->observePlayback(),
                 [&playback](Playback value)
                 {
@@ -144,7 +144,7 @@ namespace tl
 
             // Test the playback loop mode.
             Loop loop = Loop::Loop;
-            auto loopObserver = ftk::ValueObserver<Loop>::create(
+            auto loopObserver = ftk::Observer<Loop>::create(
                 player->observeLoop(),
                 [&loop](Loop value)
                 {
@@ -157,7 +157,7 @@ namespace tl
             // Test the current time.
             player->setPlayback(Playback::Stop);
             OTIO_NS::RationalTime currentTime = time::invalidTime;
-            auto currentTimeObserver = ftk::ValueObserver<OTIO_NS::RationalTime>::create(
+            auto currentTimeObserver = ftk::Observer<OTIO_NS::RationalTime>::create(
                 player->observeCurrentTime(),
                 [&currentTime](const OTIO_NS::RationalTime& value)
                 {
@@ -192,7 +192,7 @@ namespace tl
 
             // Test the in/out points.
             OTIO_NS::TimeRange inOutRange = time::invalidTimeRange;
-            auto inOutRangeObserver = ftk::ValueObserver<OTIO_NS::TimeRange>::create(
+            auto inOutRangeObserver = ftk::Observer<OTIO_NS::TimeRange>::create(
                 player->observeInOutRange(),
                 [&inOutRange](const OTIO_NS::TimeRange& value)
                 {
@@ -220,7 +220,7 @@ namespace tl
 
             // Test the I/O options.
             io::Options ioOptions;
-            auto ioOptionsObserver = ftk::ValueObserver<io::Options>::create(
+            auto ioOptionsObserver = ftk::Observer<io::Options>::create(
                 player->observeIOOptions(),
                 [&ioOptions](const io::Options& value)
                 {
@@ -236,7 +236,7 @@ namespace tl
             // Test the video layers.
             int videoLayer = 0;
             std::vector<int> compareVideoLayers;
-            auto videoLayerObserver = ftk::ValueObserver<int>::create(
+            auto videoLayerObserver = ftk::Observer<int>::create(
                 player->observeVideoLayer(),
                 [&videoLayer](int value)
                 {
@@ -261,7 +261,7 @@ namespace tl
 
             // Test audio.
             float volume = 1.F;
-            auto volumeObserver = ftk::ValueObserver<float>::create(
+            auto volumeObserver = ftk::Observer<float>::create(
                 player->observeVolume(),
                 [&volume](float value)
                 {
@@ -273,7 +273,7 @@ namespace tl
             player->setVolume(1.F);
 
             bool mute = false;
-            auto muteObserver = ftk::ValueObserver<bool>::create(
+            auto muteObserver = ftk::Observer<bool>::create(
                 player->observeMute(),
                 [&mute](bool value)
                 {
@@ -298,7 +298,7 @@ namespace tl
             player->setChannelMute({ false, false });
 
             double audioOffset = 0.0;
-            auto audioOffsetObserver = ftk::ValueObserver<double>::create(
+            auto audioOffsetObserver = ftk::Observer<double>::create(
                 player->observeAudioOffset(),
                 [&audioOffset](double value)
                 {
@@ -312,7 +312,7 @@ namespace tl
             // Test frames.
             {
                 PlayerCacheOptions cacheOptions;
-                auto cacheOptionsObserver = ftk::ValueObserver<PlayerCacheOptions>::create(
+                auto cacheOptionsObserver = ftk::Observer<PlayerCacheOptions>::create(
                     player->observeCacheOptions(),
                     [&cacheOptions](const PlayerCacheOptions& value)
                     {
@@ -345,7 +345,7 @@ namespace tl
                             _print(ss.str());
                         }
                     });
-                auto cacheInfoObserver = ftk::ValueObserver<PlayerCacheInfo>::create(
+                auto cacheInfoObserver = ftk::Observer<PlayerCacheInfo>::create(
                     player->observeCacheInfo(),
                     [this](const PlayerCacheInfo& value)
                     {

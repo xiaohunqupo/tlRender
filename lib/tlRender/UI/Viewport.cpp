@@ -21,29 +21,29 @@ namespace tl
     {
         struct Viewport::Private
         {
-            std::shared_ptr<ftk::ObservableValue<timeline::CompareOptions> > compareOptions;
-            std::shared_ptr<ftk::ObservableValue<timeline::OCIOOptions> > ocioOptions;
-            std::shared_ptr<ftk::ObservableValue<timeline::LUTOptions> > lutOptions;
+            std::shared_ptr<ftk::Observable<timeline::CompareOptions> > compareOptions;
+            std::shared_ptr<ftk::Observable<timeline::OCIOOptions> > ocioOptions;
+            std::shared_ptr<ftk::Observable<timeline::LUTOptions> > lutOptions;
             std::shared_ptr<ftk::ObservableList<ftk::ImageOptions> > imageOptions;
             std::shared_ptr<ftk::ObservableList<timeline::DisplayOptions> > displayOptions;
-            std::shared_ptr<ftk::ObservableValue<timeline::BackgroundOptions> > bgOptions;
-            std::shared_ptr<ftk::ObservableValue<timeline::ForegroundOptions> > fgOptions;
-            std::shared_ptr<ftk::ObservableValue<ftk::ImageType> > colorBuffer;
+            std::shared_ptr<ftk::Observable<timeline::BackgroundOptions> > bgOptions;
+            std::shared_ptr<ftk::Observable<timeline::ForegroundOptions> > fgOptions;
+            std::shared_ptr<ftk::Observable<ftk::ImageType> > colorBuffer;
             std::shared_ptr<timeline::Player> player;
             std::vector<timeline::VideoData> videoData;
-            std::shared_ptr<ftk::ObservableValue<ftk::V2I> > viewPos;
-            std::shared_ptr<ftk::ObservableValue<double> > viewZoom;
-            std::shared_ptr<ftk::ObservableValue<std::pair<ftk::V2I, double> > > viewPosZoom;
-            std::shared_ptr<ftk::ObservableValue<bool> > frameView;
-            std::shared_ptr<ftk::ObservableValue<bool> > framed;
-            std::shared_ptr<ftk::ObservableValue<double> > fps;
+            std::shared_ptr<ftk::Observable<ftk::V2I> > viewPos;
+            std::shared_ptr<ftk::Observable<double> > viewZoom;
+            std::shared_ptr<ftk::Observable<std::pair<ftk::V2I, double> > > viewPosZoom;
+            std::shared_ptr<ftk::Observable<bool> > frameView;
+            std::shared_ptr<ftk::Observable<bool> > framed;
+            std::shared_ptr<ftk::Observable<double> > fps;
             struct FpsData
             {
                 std::chrono::steady_clock::time_point timer;
                 size_t frameCount = 0;
             };
             std::optional<FpsData> fpsData;
-            std::shared_ptr<ftk::ObservableValue<size_t> > droppedFrames;
+            std::shared_ptr<ftk::Observable<size_t> > droppedFrames;
             struct DroppedFramesData
             {
                 bool init = true;
@@ -74,7 +74,7 @@ namespace tl
             };
             MouseData mouse;
 
-            std::shared_ptr<ftk::ValueObserver<timeline::Playback> > playbackObserver;
+            std::shared_ptr<ftk::Observer<timeline::Playback> > playbackObserver;
             std::shared_ptr<ftk::ListObserver<timeline::VideoData> > videoDataObserver;
         };
 
@@ -88,24 +88,24 @@ namespace tl
             setHStretch(ftk::Stretch::Expanding);
             setVStretch(ftk::Stretch::Expanding);
 
-            p.compareOptions = ftk::ObservableValue<timeline::CompareOptions>::create();
-            p.ocioOptions = ftk::ObservableValue<timeline::OCIOOptions>::create();
-            p.lutOptions = ftk::ObservableValue<timeline::LUTOptions>::create();
+            p.compareOptions = ftk::Observable<timeline::CompareOptions>::create();
+            p.ocioOptions = ftk::Observable<timeline::OCIOOptions>::create();
+            p.lutOptions = ftk::Observable<timeline::LUTOptions>::create();
             p.imageOptions = ftk::ObservableList<ftk::ImageOptions>::create();
             p.displayOptions = ftk::ObservableList<timeline::DisplayOptions>::create();
-            p.bgOptions = ftk::ObservableValue<timeline::BackgroundOptions>::create();
-            p.fgOptions = ftk::ObservableValue<timeline::ForegroundOptions>::create();
-            p.compareOptions = ftk::ObservableValue<timeline::CompareOptions>::create();
-            p.colorBuffer = ftk::ObservableValue<ftk::ImageType>::create(
+            p.bgOptions = ftk::Observable<timeline::BackgroundOptions>::create();
+            p.fgOptions = ftk::Observable<timeline::ForegroundOptions>::create();
+            p.compareOptions = ftk::Observable<timeline::CompareOptions>::create();
+            p.colorBuffer = ftk::Observable<ftk::ImageType>::create(
                 ftk::ImageType::RGBA_U8);
-            p.viewPos = ftk::ObservableValue<ftk::V2I>::create();
-            p.viewZoom = ftk::ObservableValue<double>::create(1.0);
-            p.viewPosZoom = ftk::ObservableValue<std::pair<ftk::V2I, double> >::create(
+            p.viewPos = ftk::Observable<ftk::V2I>::create();
+            p.viewZoom = ftk::Observable<double>::create(1.0);
+            p.viewPosZoom = ftk::Observable<std::pair<ftk::V2I, double> >::create(
                 std::make_pair(ftk::V2I(), 1.0));
-            p.frameView = ftk::ObservableValue<bool>::create(true);
-            p.framed = ftk::ObservableValue<bool>::create(false);
-            p.fps = ftk::ObservableValue<double>::create(0.0);
-            p.droppedFrames = ftk::ObservableValue<size_t>::create(0);
+            p.frameView = ftk::Observable<bool>::create(true);
+            p.framed = ftk::Observable<bool>::create(false);
+            p.fps = ftk::Observable<double>::create(0.0);
+            p.droppedFrames = ftk::Observable<size_t>::create(0);
         }
 
         Viewport::Viewport() :
@@ -129,7 +129,7 @@ namespace tl
             return _p->compareOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<timeline::CompareOptions> > Viewport::observeCompareOptions() const
+        std::shared_ptr<ftk::IObservable<timeline::CompareOptions> > Viewport::observeCompareOptions() const
         {
             return _p->compareOptions;
         }
@@ -149,7 +149,7 @@ namespace tl
             return _p->ocioOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<timeline::OCIOOptions> > Viewport::observeOCIOOptions() const
+        std::shared_ptr<ftk::IObservable<timeline::OCIOOptions> > Viewport::observeOCIOOptions() const
         {
             return _p->ocioOptions;
         }
@@ -169,7 +169,7 @@ namespace tl
             return _p->lutOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<timeline::LUTOptions> > Viewport::observeLUTOptions() const
+        std::shared_ptr<ftk::IObservable<timeline::LUTOptions> > Viewport::observeLUTOptions() const
         {
             return _p->lutOptions;
         }
@@ -229,7 +229,7 @@ namespace tl
             return _p->bgOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<timeline::BackgroundOptions> > Viewport::observeBackgroundOptions() const
+        std::shared_ptr<ftk::IObservable<timeline::BackgroundOptions> > Viewport::observeBackgroundOptions() const
         {
             return _p->bgOptions;
         }
@@ -249,7 +249,7 @@ namespace tl
             return _p->fgOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<timeline::ForegroundOptions> > Viewport::observeForegroundOptions() const
+        std::shared_ptr<ftk::IObservable<timeline::ForegroundOptions> > Viewport::observeForegroundOptions() const
         {
             return _p->fgOptions;
         }
@@ -269,7 +269,7 @@ namespace tl
             return _p->colorBuffer->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<ftk::ImageType> > Viewport::observeColorBuffer() const
+        std::shared_ptr<ftk::IObservable<ftk::ImageType> > Viewport::observeColorBuffer() const
         {
             return _p->colorBuffer;
         }
@@ -304,7 +304,7 @@ namespace tl
 
             if (p.player)
             {
-                p.playbackObserver = ftk::ValueObserver<timeline::Playback>::create(
+                p.playbackObserver = ftk::Observer<timeline::Playback>::create(
                     p.player->observePlayback(),
                     [this](timeline::Playback value)
                     {
@@ -365,7 +365,7 @@ namespace tl
             return _p->viewPos->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<ftk::V2I> > Viewport::observeViewPos() const
+        std::shared_ptr<ftk::IObservable<ftk::V2I> > Viewport::observeViewPos() const
         {
             return _p->viewPos;
         }
@@ -375,7 +375,7 @@ namespace tl
             return _p->viewZoom->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<double> > Viewport::observeViewZoom() const
+        std::shared_ptr<ftk::IObservable<double> > Viewport::observeViewZoom() const
         {
             return _p->viewZoom;
         }
@@ -385,7 +385,7 @@ namespace tl
             return _p->viewPosZoom->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<std::pair<ftk::V2I, double> > > Viewport::observeViewPosAndZoom() const
+        std::shared_ptr<ftk::IObservable<std::pair<ftk::V2I, double> > > Viewport::observeViewPosAndZoom() const
         {
             return _p->viewPosZoom;
         }
@@ -423,12 +423,12 @@ namespace tl
             return _p->frameView->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<bool> > Viewport::observeFrameView() const
+        std::shared_ptr<ftk::IObservable<bool> > Viewport::observeFrameView() const
         {
             return _p->frameView;
         }
 
-        std::shared_ptr<ftk::IObservableValue<bool> > Viewport::observeFramed() const
+        std::shared_ptr<ftk::IObservable<bool> > Viewport::observeFramed() const
         {
             return _p->framed;
         }
@@ -470,7 +470,7 @@ namespace tl
             return _p->fps->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<double> > Viewport::observeFPS() const
+        std::shared_ptr<ftk::IObservable<double> > Viewport::observeFPS() const
         {
             return _p->fps;
         }
@@ -480,7 +480,7 @@ namespace tl
             return _p->droppedFrames->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<size_t> > Viewport::observeDroppedFrames() const
+        std::shared_ptr<ftk::IObservable<size_t> > Viewport::observeDroppedFrames() const
         {
             return _p->droppedFrames;
         }

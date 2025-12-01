@@ -5,7 +5,7 @@
 
 #include <tlRender/UI/Viewport.h>
 
-#include <ftk/CorePy/ObservableValue.h>
+#include <ftk/CorePy/Observable.h>
 #include <ftk/Core/Context.h>
 
 #include <pybind11/stl.h>
@@ -18,7 +18,7 @@ namespace tl
     {
         void viewport(py::module_& m)
         {
-            ftk::python::observableValue<std::pair<ftk::V2I, double> >(m, "ViewPosAndZoom");
+            ftk::python::observable<std::pair<ftk::V2I, double> >(m, "ViewPosAndZoom");
             
             py::class_<timelineui::Viewport, ftk::IWidget, std::shared_ptr<timelineui::Viewport> >(m, "Viewport")
                 .def(

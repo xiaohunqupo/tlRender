@@ -63,7 +63,7 @@ namespace tl
             bool hasFrameView() const;
             
             //! Observe whether the view is framed automatically.
-            std::shared_ptr<ftk::IObservableValue<bool> > observeFrameView() const;
+            std::shared_ptr<ftk::IObservable<bool> > observeFrameView() const;
 
             //! Set whether the view is framed automatically.
             void setFrameView(bool);
@@ -72,7 +72,7 @@ namespace tl
             bool areScrollBarsVisible() const;
 
             //! Observe whether the scroll bars are visible.
-            std::shared_ptr<ftk::IObservableValue<bool> > observeScrollBarsVisible() const;
+            std::shared_ptr<ftk::IObservable<bool> > observeScrollBarsVisible() const;
 
             //! Set whether the scroll bars are visible.
             void setScrollBarsVisible(bool);
@@ -81,7 +81,7 @@ namespace tl
             bool hasAutoScroll() const;
 
             //! Observe whether auto-scroll is enabled.
-            std::shared_ptr<ftk::IObservableValue<bool> > observeAutoScroll() const;
+            std::shared_ptr<ftk::IObservable<bool> > observeAutoScroll() const;
 
             //! Set whether auto-scroll is enabled.
             void setAutoScroll(bool);
@@ -101,16 +101,16 @@ namespace tl
             bool hasStopOnScrub() const;
 
             //! Observe whether to stop playback when scrubbing.
-            std::shared_ptr<ftk::IObservableValue<bool> > observeStopOnScrub() const;
+            std::shared_ptr<ftk::IObservable<bool> > observeStopOnScrub() const;
 
             //! Set whether to stop playback when scrubbing.
             void setStopOnScrub(bool);
 
             //! Observe whether scrubbing is in progress.
-            std::shared_ptr<ftk::IObservableValue<bool> > observeScrub() const;
+            std::shared_ptr<ftk::IObservable<bool> > observeScrub() const;
 
             //! Observe time scrubbing.
-            std::shared_ptr<ftk::IObservableValue<OTIO_NS::RationalTime> > observeTimeScrub() const;
+            std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > observeTimeScrub() const;
 
             ///@}
 
@@ -132,7 +132,7 @@ namespace tl
             const ItemOptions& getItemOptions() const;
 
             //! Observe the item options.
-            std::shared_ptr<ftk::IObservableValue<ItemOptions> > observeItemOptions() const;
+            std::shared_ptr<ftk::IObservable<ItemOptions> > observeItemOptions() const;
 
             //! Set the item options.
             void setItemOptions(const ItemOptions&);
@@ -141,7 +141,7 @@ namespace tl
             const DisplayOptions& getDisplayOptions() const;
 
             //! Observe the display options.
-            std::shared_ptr<ftk::IObservableValue<DisplayOptions> > observeDisplayOptions() const;
+            std::shared_ptr<ftk::IObservable<DisplayOptions> > observeDisplayOptions() const;
 
             //! Set the display options.
             void setDisplayOptions(const DisplayOptions&);

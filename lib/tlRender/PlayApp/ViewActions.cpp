@@ -73,7 +73,7 @@ namespace tl
                 });
             _actions["ZoomOut"]->setTooltip("Zoom the view out.");
 
-            _frameObserver = ftk::ValueObserver<bool>::create(
+            _frameObserver = ftk::Observer<bool>::create(
                 viewport->observeFrameView(),
                 [this](bool value)
                 {

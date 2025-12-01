@@ -22,7 +22,7 @@ namespace tl
             std::shared_ptr<ftk::IncButtons> incButtons;
             std::shared_ptr<ftk::HorizontalLayout> layout;
 
-            std::shared_ptr<ftk::ValueObserver<timeline::TimeUnits> > timeUnitsObserver;
+            std::shared_ptr<ftk::Observer<timeline::TimeUnits> > timeUnitsObserver;
         };
 
         void TimeEdit::_init(
@@ -77,7 +77,7 @@ namespace tl
                     _commitValue(_p->value + OTIO_NS::RationalTime(-1.0, _p->value.rate()));
                 });
 
-            p.timeUnitsObserver = ftk::ValueObserver<timeline::TimeUnits>::create(
+            p.timeUnitsObserver = ftk::Observer<timeline::TimeUnits>::create(
                 p.timeUnitsModel->observeTimeUnits(),
                 [this](timeline::TimeUnits)
                 {

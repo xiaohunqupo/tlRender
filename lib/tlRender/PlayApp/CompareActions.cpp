@@ -74,7 +74,7 @@ namespace tl
                     }
                 });
 
-            _compareObserver = ftk::ValueObserver<timeline::Compare>::create(
+            _compareObserver = ftk::Observer<timeline::Compare>::create(
                 app->getFilesModel()->observeCompare(),
                 [this](timeline::Compare value)
                 {

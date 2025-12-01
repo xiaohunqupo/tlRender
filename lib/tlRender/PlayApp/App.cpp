@@ -148,7 +148,7 @@ namespace tl
                 _context,
                 std::dynamic_pointer_cast<App>(shared_from_this()));
 
-            _playerObserver = ftk::ValueObserver<std::shared_ptr<timeline::Player> >::create(
+            _playerObserver = ftk::Observer<std::shared_ptr<timeline::Player> >::create(
                 _filesModel->observePlayer(),
                 [this](const std::shared_ptr<timeline::Player>& value)
                 {

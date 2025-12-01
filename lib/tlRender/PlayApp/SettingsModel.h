@@ -38,14 +38,14 @@ namespace tl
             const timeline::PlayerCacheOptions& getCache() const;
 
             //! Observe the cache settings.
-            std::shared_ptr<ftk::IObservableValue<timeline::PlayerCacheOptions> > observeCache() const;
+            std::shared_ptr<ftk::IObservable<timeline::PlayerCacheOptions> > observeCache() const;
 
             //! Set the cache settings.
             void setCache(const timeline::PlayerCacheOptions&);
 
         private:
             std::shared_ptr<ftk::Settings> _settings;
-            std::shared_ptr<ftk::ObservableValue<timeline::PlayerCacheOptions> > _cache;
+            std::shared_ptr<ftk::Observable<timeline::PlayerCacheOptions> > _cache;
         };
     }
 }

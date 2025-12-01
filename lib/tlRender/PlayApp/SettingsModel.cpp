@@ -15,7 +15,7 @@ namespace tl
 
             timeline::PlayerCacheOptions cache;
             _settings->getT("/Cache", cache);
-            _cache = ftk::ObservableValue<timeline::PlayerCacheOptions>::create(cache);
+            _cache = ftk::Observable<timeline::PlayerCacheOptions>::create(cache);
         }
 
         SettingsModel::~SettingsModel()
@@ -42,7 +42,7 @@ namespace tl
             return _cache->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<timeline::PlayerCacheOptions> > SettingsModel::observeCache() const
+        std::shared_ptr<ftk::IObservable<timeline::PlayerCacheOptions> > SettingsModel::observeCache() const
         {
             return _cache;
         }

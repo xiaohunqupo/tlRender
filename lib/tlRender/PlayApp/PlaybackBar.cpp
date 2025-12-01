@@ -86,7 +86,7 @@ namespace tl
                     }
                 });
 
-            _playerObserver = ftk::ValueObserver<std::shared_ptr<timeline::Player> >::create(
+            _playerObserver = ftk::Observer<std::shared_ptr<timeline::Player> >::create(
                 app->getFilesModel()->observePlayer(),
                 [this](const std::shared_ptr<timeline::Player>& value)
                 {
@@ -96,14 +96,14 @@ namespace tl
                     {
                         _durationLabel->setValue(value->getTimeRange().duration());
 
-                        _currentTimeObserver = ftk::ValueObserver<OTIO_NS::RationalTime>::create(
+                        _currentTimeObserver = ftk::Observer<OTIO_NS::RationalTime>::create(
                             value->observeCurrentTime(),
                             [this](const OTIO_NS::RationalTime& value)
                             {
                                 _currentTimeEdit->setValue(value);
                             });
 
-                        _speedObserver = ftk::ValueObserver<double>::create(
+                        _speedObserver = ftk::Observer<double>::create(
                             value->observeSpeed(),
                             [this](double value)
                             {
@@ -124,7 +124,7 @@ namespace tl
                     _speedEdit->setEnabled(value.get());
                 });
 
-            _timeUnitsObserver = ftk::ValueObserver<timeline::TimeUnits>::create(
+            _timeUnitsObserver = ftk::Observer<timeline::TimeUnits>::create(
                 app->getTimeUnitsModel()->observeTimeUnits(),
                 [this](timeline::TimeUnits value)
                 {

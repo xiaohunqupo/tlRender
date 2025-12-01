@@ -183,7 +183,7 @@ namespace tl
                 });
             _actions["ResetOutPoint"]->setTooltip("Reset the playback out point.");
 
-            _playerObserver = ftk::ValueObserver<std::shared_ptr<timeline::Player> >::create(
+            _playerObserver = ftk::Observer<std::shared_ptr<timeline::Player> >::create(
                 app->getFilesModel()->observePlayer(),
                 [this](const std::shared_ptr<timeline::Player>& value)
                 {
@@ -191,7 +191,7 @@ namespace tl
 
                     if (value)
                     {
-                        _playbackObserver = ftk::ValueObserver<timeline::Playback>::create(
+                        _playbackObserver = ftk::Observer<timeline::Playback>::create(
                             value->observePlayback(),
                             [this](timeline::Playback value)
                             {

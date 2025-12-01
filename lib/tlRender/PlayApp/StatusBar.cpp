@@ -40,7 +40,7 @@ namespace tl
                     _logUpdate(value);
                 });
 
-            _playerObserver = ftk::ValueObserver<std::shared_ptr<timeline::Player> >::create(
+            _playerObserver = ftk::Observer<std::shared_ptr<timeline::Player> >::create(
                 app->getFilesModel()->observePlayer(),
                 [this](const std::shared_ptr<timeline::Player>& value)
                 {

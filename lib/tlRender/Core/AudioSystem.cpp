@@ -59,7 +59,7 @@ namespace tl
             bool init = false;
             std::vector<std::string> drivers;
             std::shared_ptr<ftk::ObservableList<DeviceInfo> > devices;
-            std::shared_ptr<ftk::ObservableValue<DeviceInfo> > defaultDevice;
+            std::shared_ptr<ftk::Observable<DeviceInfo> > defaultDevice;
 
             struct Mutex
             {
@@ -120,7 +120,7 @@ namespace tl
             const DeviceInfo defaultDevice = _getDefaultDevice();
 
             p.devices = ftk::ObservableList<DeviceInfo>::create(devices);
-            p.defaultDevice = ftk::ObservableValue<DeviceInfo>::create(defaultDevice);
+            p.defaultDevice = ftk::Observable<DeviceInfo>::create(defaultDevice);
 
             p.mutex.devices = devices;
             p.mutex.defaultDevice = defaultDevice;
@@ -185,7 +185,7 @@ namespace tl
             return _p->defaultDevice->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<DeviceInfo> > System::observeDefaultDevice() const
+        std::shared_ptr<ftk::IObservable<DeviceInfo> > System::observeDefaultDevice() const
         {
             return _p->defaultDevice;
         }

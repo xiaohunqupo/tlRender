@@ -142,7 +142,7 @@ namespace tl
             double getSpeed() const;
 
             //! Observe the playback speed.
-            std::shared_ptr<ftk::IObservableValue<double> > observeSpeed() const;
+            std::shared_ptr<ftk::IObservable<double> > observeSpeed() const;
 
             //! Set the playback speed.
             void setSpeed(double);
@@ -151,7 +151,7 @@ namespace tl
             Playback getPlayback() const;
 
             //! Observe the playback mode.
-            std::shared_ptr<ftk::IObservableValue<Playback> > observePlayback() const;
+            std::shared_ptr<ftk::IObservable<Playback> > observePlayback() const;
 
             //! Set the playback mode.
             void setPlayback(Playback);
@@ -172,7 +172,7 @@ namespace tl
             Loop getLoop() const;
 
             //! Observe the playback loop mode.
-            std::shared_ptr<ftk::IObservableValue<Loop> > observeLoop() const;
+            std::shared_ptr<ftk::IObservable<Loop> > observeLoop() const;
 
             //! Set the playback loop mode.
             void setLoop(Loop);
@@ -186,10 +186,10 @@ namespace tl
             const OTIO_NS::RationalTime& getCurrentTime() const;
 
             //! Observe the current time.
-            std::shared_ptr<ftk::IObservableValue<OTIO_NS::RationalTime> > observeCurrentTime() const;
+            std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > observeCurrentTime() const;
 
             //! Observe seeking.
-            std::shared_ptr<ftk::IObservableValue<OTIO_NS::RationalTime> > observeSeek() const;
+            std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > observeSeek() const;
 
             //! Seek to the given time.
             void seek(const OTIO_NS::RationalTime&);
@@ -218,7 +218,7 @@ namespace tl
             const OTIO_NS::TimeRange& getInOutRange() const;
 
             //! Observe the in/out points range.
-            std::shared_ptr<ftk::IObservableValue<OTIO_NS::TimeRange> > observeInOutRange() const;
+            std::shared_ptr<ftk::IObservable<OTIO_NS::TimeRange> > observeInOutRange() const;
 
             //! Set the in/out points range.
             void setInOutRange(const OTIO_NS::TimeRange&);
@@ -253,7 +253,7 @@ namespace tl
             CompareTime getCompareTime() const;
 
             //! Observe the comparison time mode.
-            std::shared_ptr<ftk::IObservableValue<CompareTime> > observeCompareTime() const;
+            std::shared_ptr<ftk::IObservable<CompareTime> > observeCompareTime() const;
 
             //! Set the comparison time mode.
             void setCompareTime(CompareTime);
@@ -267,7 +267,7 @@ namespace tl
             const io::Options& getIOOptions() const;
 
             //! Observe the I/O options.
-            std::shared_ptr<ftk::IObservableValue<io::Options> > observeIOOptions() const;
+            std::shared_ptr<ftk::IObservable<io::Options> > observeIOOptions() const;
 
             //! Set the I/O options.
             void setIOOptions(const io::Options&);
@@ -281,7 +281,7 @@ namespace tl
             int getVideoLayer() const;
 
             //! Observer the video layer.
-            std::shared_ptr<ftk::IObservableValue<int> > observeVideoLayer() const;
+            std::shared_ptr<ftk::IObservable<int> > observeVideoLayer() const;
 
             //! Set the video layer.
             void setVideoLayer(int);
@@ -310,7 +310,7 @@ namespace tl
             const audio::DeviceID& getAudioDevice() const;
 
             //! Observe the audio devices.
-            std::shared_ptr<ftk::IObservableValue<audio::DeviceID> > observeAudioDevice() const;
+            std::shared_ptr<ftk::IObservable<audio::DeviceID> > observeAudioDevice() const;
 
             //! Set the audio device.
             void setAudioDevice(const audio::DeviceID&);
@@ -319,7 +319,7 @@ namespace tl
             float getVolume() const;
 
             //! Observe the audio volume.
-            std::shared_ptr<ftk::IObservableValue<float> > observeVolume() const;
+            std::shared_ptr<ftk::IObservable<float> > observeVolume() const;
 
             //! Set the audio volume.
             void setVolume(float);
@@ -328,7 +328,7 @@ namespace tl
             bool isMuted() const;
 
             //! Observe the audio mute.
-            std::shared_ptr<ftk::IObservableValue<bool> > observeMute() const;
+            std::shared_ptr<ftk::IObservable<bool> > observeMute() const;
 
             //! Set the audio mute.
             void setMute(bool);
@@ -346,7 +346,7 @@ namespace tl
             double getAudioOffset() const;
 
             //! Observe the audio sync offset (in seconds).
-            std::shared_ptr<ftk::IObservableValue<double> > observeAudioOffset() const;
+            std::shared_ptr<ftk::IObservable<double> > observeAudioOffset() const;
 
             //! Set the audio sync offset (in seconds).
             void setAudioOffset(double);
@@ -366,13 +366,13 @@ namespace tl
             const PlayerCacheOptions& getCacheOptions() const;
 
             //! Observe the cache options.
-            std::shared_ptr<ftk::IObservableValue<PlayerCacheOptions> > observeCacheOptions() const;
+            std::shared_ptr<ftk::IObservable<PlayerCacheOptions> > observeCacheOptions() const;
 
             //! Set the cache options.
             void setCacheOptions(const PlayerCacheOptions&);
 
             //! Observe the cache information.
-            std::shared_ptr<ftk::IObservableValue<PlayerCacheInfo> > observeCacheInfo() const;
+            std::shared_ptr<ftk::IObservable<PlayerCacheInfo> > observeCacheInfo() const;
 
             //! Clear the cache.
             void clearCache();

@@ -128,7 +128,7 @@ namespace tl
         struct IItem::Private
         {
             ftk::ColorRole selectRole = ftk::ColorRole::None;
-            std::shared_ptr<ftk::ValueObserver<bool> > timeUnitsObserver;
+            std::shared_ptr<ftk::Observer<bool> > timeUnitsObserver;
         };
 
         void IItem::_init(
@@ -154,7 +154,7 @@ namespace tl
             _displayOptions = displayOptions;
             _data = data;
 
-            p.timeUnitsObserver = ftk::ValueObserver<bool>::create(
+            p.timeUnitsObserver = ftk::Observer<bool>::create(
                 data->timeUnitsModel->observeTimeUnitsChanged(),
                 [this](bool)
                 {

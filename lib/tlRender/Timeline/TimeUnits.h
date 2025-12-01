@@ -5,7 +5,7 @@
 
 #include <tlRender/Core/Time.h>
 
-#include <ftk/Core/ObservableValue.h>
+#include <ftk/Core/Observable.h>
 
 namespace ftk
 {
@@ -58,13 +58,13 @@ namespace tl
             virtual ~ITimeUnitsModel() = 0;
 
             //! Observer when the time units are changed.
-            std::shared_ptr<ftk::IObservableValue<bool> > observeTimeUnitsChanged() const;
+            std::shared_ptr<ftk::IObservable<bool> > observeTimeUnitsChanged() const;
 
             //! Get a time label in the current time units.
             virtual std::string getLabel(const OTIO_NS::RationalTime&) const = 0;
 
         protected:
-            std::shared_ptr<ftk::ObservableValue<bool> > _timeUnitsChanged;
+            std::shared_ptr<ftk::Observable<bool> > _timeUnitsChanged;
         };
 
         //! Time units model.
@@ -88,7 +88,7 @@ namespace tl
             TimeUnits getTimeUnits() const;
 
             //! Observer the time units.
-            std::shared_ptr<ftk::IObservableValue<TimeUnits> > observeTimeUnits() const;
+            std::shared_ptr<ftk::IObservable<TimeUnits> > observeTimeUnits() const;
             
             //! Set the time units.
             void setTimeUnits(TimeUnits);

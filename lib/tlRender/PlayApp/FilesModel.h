@@ -42,28 +42,28 @@ namespace tl
             void prev();
 
             std::shared_ptr<ftk::IObservableList<std::shared_ptr<timeline::Player> > > observePlayers() const;
-            std::shared_ptr<ftk::IObservableValue<std::shared_ptr<timeline::Player> > > observePlayer() const;
-            std::shared_ptr<ftk::IObservableValue<int> > observePlayerIndex() const;
+            std::shared_ptr<ftk::IObservable<std::shared_ptr<timeline::Player> > > observePlayer() const;
+            std::shared_ptr<ftk::IObservable<int> > observePlayerIndex() const;
 
             void setB(int);
             void setCompare(timeline::Compare);
 
-            std::shared_ptr<ftk::IObservableValue<std::shared_ptr<timeline::Player> > > observeBPlayer() const;
-            std::shared_ptr<ftk::IObservableValue<int> > observeBPlayerIndex() const;
-            std::shared_ptr<ftk::IObservableValue<timeline::Compare> > observeCompare() const;
+            std::shared_ptr<ftk::IObservable<std::shared_ptr<timeline::Player> > > observeBPlayer() const;
+            std::shared_ptr<ftk::IObservable<int> > observeBPlayerIndex() const;
+            std::shared_ptr<ftk::IObservable<timeline::Compare> > observeCompare() const;
 
             void tick();
 
         private:
             std::weak_ptr<ftk::Context> _context;
             std::shared_ptr<ftk::ObservableList<std::shared_ptr<timeline::Player> > > _players;
-            std::shared_ptr<ftk::ObservableValue<std::shared_ptr<timeline::Player> > > _player;
-            std::shared_ptr<ftk::ObservableValue<int> > _playerIndex;
-            std::shared_ptr<ftk::ObservableValue<std::shared_ptr<timeline::Player> > > _bPlayer;
-            std::shared_ptr<ftk::ObservableValue<int> > _bPlayerIndex;
-            std::shared_ptr<ftk::ObservableValue<timeline::Compare> > _compare;
+            std::shared_ptr<ftk::Observable<std::shared_ptr<timeline::Player> > > _player;
+            std::shared_ptr<ftk::Observable<int> > _playerIndex;
+            std::shared_ptr<ftk::Observable<std::shared_ptr<timeline::Player> > > _bPlayer;
+            std::shared_ptr<ftk::Observable<int> > _bPlayerIndex;
+            std::shared_ptr<ftk::Observable<timeline::Compare> > _compare;
             timeline::PlayerCacheOptions _cacheOptions;
-            std::shared_ptr<ftk::ValueObserver<timeline::PlayerCacheOptions> > _cacheObserver;
+            std::shared_ptr<ftk::Observer<timeline::PlayerCacheOptions> > _cacheObserver;
         };
     }
 }

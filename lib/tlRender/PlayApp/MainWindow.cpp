@@ -116,7 +116,7 @@ namespace tl
             ftk::Divider::create(context, ftk::Orientation::Vertical, vLayout);
             _statusBar->setParent(vLayout);
 
-            _playerObserver = ftk::ValueObserver<std::shared_ptr<timeline::Player> >::create(
+            _playerObserver = ftk::Observer<std::shared_ptr<timeline::Player> >::create(
                 app->getFilesModel()->observePlayer(),
                 [this](const std::shared_ptr<timeline::Player>& value)
                 {
@@ -124,7 +124,7 @@ namespace tl
                     _timelineWidget->setPlayer(value);
                 });
 
-            _compareObserver = ftk::ValueObserver<timeline::Compare>::create(
+            _compareObserver = ftk::Observer<timeline::Compare>::create(
                 app->getFilesModel()->observeCompare(),
                 [this](timeline::Compare value)
                 {

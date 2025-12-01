@@ -72,7 +72,7 @@ namespace tl
             std::shared_ptr<bmd::OutputDevice> _bmdOutputDevice;
 #endif // TLRENDER_BMD
 
-            std::shared_ptr<ftk::ValueObserver<std::shared_ptr<timeline::Player> > > _playerObserver;
+            std::shared_ptr<ftk::Observer<std::shared_ptr<timeline::Player> > > _playerObserver;
         };
     }
 }

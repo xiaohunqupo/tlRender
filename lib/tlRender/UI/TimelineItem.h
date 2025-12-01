@@ -69,10 +69,10 @@ namespace tl
             void setStopOnScrub(bool);
 
             //! Observe whether scrubbing is in progress.
-            std::shared_ptr<ftk::IObservableValue<bool> > observeScrub() const;
+            std::shared_ptr<ftk::IObservable<bool> > observeScrub() const;
 
             //! Observe time scrubbing.
-            std::shared_ptr<ftk::IObservableValue<OTIO_NS::RationalTime> > observeTimeScrub() const;
+            std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > observeTimeScrub() const;
 
             //! Set the frame markers.
             void setFrameMarkers(const std::vector<int>&);

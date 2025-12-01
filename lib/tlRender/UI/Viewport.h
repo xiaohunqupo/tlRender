@@ -39,7 +39,7 @@ namespace tl
             const timeline::CompareOptions& getCompareOptions() const;
 
             //! Observe the comparison options.
-            std::shared_ptr<ftk::IObservableValue<timeline::CompareOptions> > observeCompareOptions() const;
+            std::shared_ptr<ftk::IObservable<timeline::CompareOptions> > observeCompareOptions() const;
 
             //! Set the comparison options.
             void setCompareOptions(const timeline::CompareOptions&);
@@ -48,7 +48,7 @@ namespace tl
             const timeline::OCIOOptions& getOCIOOptions() const;
 
             //! Observe the OpenColorIO options.
-            std::shared_ptr<ftk::IObservableValue<timeline::OCIOOptions> > observeOCIOOptions() const;
+            std::shared_ptr<ftk::IObservable<timeline::OCIOOptions> > observeOCIOOptions() const;
 
             //! Set the OpenColorIO options.
             void setOCIOOptions(const timeline::OCIOOptions&);
@@ -57,7 +57,7 @@ namespace tl
             const timeline::LUTOptions& getLUTOptions() const;
 
             //! Observe the LUT options.
-            std::shared_ptr<ftk::IObservableValue<timeline::LUTOptions> > observeLUTOptions() const;
+            std::shared_ptr<ftk::IObservable<timeline::LUTOptions> > observeLUTOptions() const;
 
             //! Set the LUT options.
             void setLUTOptions(const timeline::LUTOptions&);
@@ -84,7 +84,7 @@ namespace tl
             const timeline::BackgroundOptions& getBackgroundOptions() const;
 
             //! Observe the background options.
-            std::shared_ptr<ftk::IObservableValue<timeline::BackgroundOptions> > observeBackgroundOptions() const;
+            std::shared_ptr<ftk::IObservable<timeline::BackgroundOptions> > observeBackgroundOptions() const;
 
             //! Set the background options.
             void setBackgroundOptions(const timeline::BackgroundOptions&);
@@ -93,7 +93,7 @@ namespace tl
             const timeline::ForegroundOptions& getForegroundOptions() const;
 
             //! Observe the foreground options.
-            std::shared_ptr<ftk::IObservableValue<timeline::ForegroundOptions> > observeForegroundOptions() const;
+            std::shared_ptr<ftk::IObservable<timeline::ForegroundOptions> > observeForegroundOptions() const;
 
             //! Set the foreground options.
             void setForegroundOptions(const timeline::ForegroundOptions&);
@@ -102,7 +102,7 @@ namespace tl
             ftk::ImageType getColorBuffer() const;
 
             //! Observe the color buffer type.
-            std::shared_ptr<ftk::IObservableValue<ftk::ImageType> > observeColorBuffer() const;
+            std::shared_ptr<ftk::IObservable<ftk::ImageType> > observeColorBuffer() const;
 
             //! Set the color buffer type.
             void setColorBuffer(ftk::ImageType);
@@ -117,19 +117,19 @@ namespace tl
             const ftk::V2I& getViewPos() const;
 
             //! Observe the view position.
-            std::shared_ptr<ftk::IObservableValue<ftk::V2I> > observeViewPos() const;
+            std::shared_ptr<ftk::IObservable<ftk::V2I> > observeViewPos() const;
 
             //! Get the view zoom.
             double getViewZoom() const;
 
             //! Observe the view zoom.
-            std::shared_ptr<ftk::IObservableValue<double> > observeViewZoom() const;
+            std::shared_ptr<ftk::IObservable<double> > observeViewZoom() const;
 
             //! Get the view position and zoom.
             std::pair<ftk::V2I, double> getViewPosAndZoom() const;
 
             //! Observe the view position and zoom.
-            std::shared_ptr<ftk::IObservableValue<std::pair<ftk::V2I, double> > > observeViewPosAndZoom() const;
+            std::shared_ptr<ftk::IObservable<std::pair<ftk::V2I, double> > > observeViewPosAndZoom() const;
 
             //! Set the view position and zoom.
             void setViewPosAndZoom(const ftk::V2I&, double);
@@ -141,10 +141,10 @@ namespace tl
             bool hasFrameView() const;
 
             //! Observe whether the view is framed automatically.
-            std::shared_ptr<ftk::IObservableValue<bool> > observeFrameView() const;
+            std::shared_ptr<ftk::IObservable<bool> > observeFrameView() const;
 
             //! Observe when the view is framed.
-            std::shared_ptr<ftk::IObservableValue<bool> > observeFramed() const;
+            std::shared_ptr<ftk::IObservable<bool> > observeFramed() const;
 
             //! Set whether the view is framed automatically.
             void setFrameView(bool);
@@ -162,13 +162,13 @@ namespace tl
             double getFPS() const;
 
             //! Observe the frames per second.
-            std::shared_ptr<ftk::IObservableValue<double> > observeFPS() const;
+            std::shared_ptr<ftk::IObservable<double> > observeFPS() const;
 
             //! Get the number of dropped frames during playback.
             size_t getDroppedFrames() const;
 
             //! Observe the number of dropped frames during playback.
-            std::shared_ptr<ftk::IObservableValue<size_t> > observeDroppedFrames() const;
+            std::shared_ptr<ftk::IObservable<size_t> > observeDroppedFrames() const;
             
             //! Sample a color from the viewport.
             ftk::Color4F getColorSample(const ftk::V2I&);

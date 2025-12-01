@@ -62,7 +62,7 @@ namespace tl
                 });
             _actions["Settings"]->setTooltip("Toggle the settings.");
 
-            _fullScreenObserver = ftk::ValueObserver<bool>::create(
+            _fullScreenObserver = ftk::Observer<bool>::create(
                 mainWindow->observeFullScreen(),
                 [this](bool value)
                 {

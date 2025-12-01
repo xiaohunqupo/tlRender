@@ -5,7 +5,7 @@
 
 #include <tlRender/Timeline/Player.h>
 
-#include <ftk/CorePy/ObservableValue.h>
+#include <ftk/CorePy/Observable.h>
 #include <ftk/Core/Context.h>
 
 #include <pybind11/stl.h>
@@ -42,10 +42,10 @@ namespace tl
                 .value("JumpForward1s", timeline::TimeAction::JumpForward1s)
                 .value("JumpForward10s", timeline::TimeAction::JumpForward10s);
 
-            ftk::python::observableValue<timeline::Playback>(m, "Playback");
-            ftk::python::observableValue<timeline::PlayerCacheOptions>(m, "PlayerCacheOptions");
-            ftk::python::observableValue<OTIO_NS::RationalTime>(m, "RationalTime");
-            ftk::python::observableValue<std::shared_ptr<timeline::Player> >(m, "Player");
+            ftk::python::observable<timeline::Playback>(m, "Playback");
+            ftk::python::observable<timeline::PlayerCacheOptions>(m, "PlayerCacheOptions");
+            ftk::python::observable<OTIO_NS::RationalTime>(m, "RationalTime");
+            ftk::python::observable<std::shared_ptr<timeline::Player> >(m, "Player");
 
             py::class_<timeline::Player, std::shared_ptr<timeline::Player> >(m, "Player")
                 .def(

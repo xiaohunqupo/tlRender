@@ -51,8 +51,8 @@ namespace tl
 
             p.player = player;
 
-            p.scrub = ftk::ObservableValue<bool>::create(false);
-            p.timeScrub = ftk::ObservableValue<OTIO_NS::RationalTime>::create(time::invalidTime);
+            p.scrub = ftk::Observable<bool>::create(false);
+            p.timeScrub = ftk::Observable<OTIO_NS::RationalTime>::create(time::invalidTime);
 
             p.thumbnailGenerator = ThumbnailGenerator::create(
                 context->getSystem<ThumbnailSystem>()->getCache(),
@@ -166,7 +166,7 @@ namespace tl
             _tracksUpdate();
             _textUpdate();
 
-            p.currentTimeObserver = ftk::ValueObserver<OTIO_NS::RationalTime>::create(
+            p.currentTimeObserver = ftk::Observer<OTIO_NS::RationalTime>::create(
                 p.player->observeCurrentTime(),
                 [this](const OTIO_NS::RationalTime& value)
                 {
@@ -174,7 +174,7 @@ namespace tl
                     setDrawUpdate();
                 });
 
-            p.inOutRangeObserver = ftk::ValueObserver<OTIO_NS::TimeRange>::create(
+            p.inOutRangeObserver = ftk::Observer<OTIO_NS::TimeRange>::create(
                 p.player->observeInOutRange(),
                 [this](const OTIO_NS::TimeRange value)
                 {
@@ -182,7 +182,7 @@ namespace tl
                     setDrawUpdate();
                 });
 
-            p.cacheInfoObserver = ftk::ValueObserver<timeline::PlayerCacheInfo>::create(
+            p.cacheInfoObserver = ftk::Observer<timeline::PlayerCacheInfo>::create(
                 p.player->observeCacheInfo(),
                 [this](const timeline::PlayerCacheInfo& value)
                 {
@@ -228,12 +228,12 @@ namespace tl
             _p->stopOnScrub = value;
         }
 
-        std::shared_ptr<ftk::IObservableValue<bool> > TimelineItem::observeScrub() const
+        std::shared_ptr<ftk::IObservable<bool> > TimelineItem::observeScrub() const
         {
             return _p->scrub;
         }
 
-        std::shared_ptr<ftk::IObservableValue<OTIO_NS::RationalTime> > TimelineItem::observeTimeScrub() const
+        std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > TimelineItem::observeTimeScrub() const
         {
             return _p->timeScrub;
         }

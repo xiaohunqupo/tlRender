@@ -19,8 +19,8 @@ namespace tl
             OTIO_NS::TimeRange inOutRange = time::invalidTimeRange;
             timeline::PlayerCacheInfo cacheInfo;
             bool stopOnScrub = true;
-            std::shared_ptr<ftk::ObservableValue<bool> > scrub;
-            std::shared_ptr<ftk::ObservableValue<OTIO_NS::RationalTime> > timeScrub;
+            std::shared_ptr<ftk::Observable<bool> > scrub;
+            std::shared_ptr<ftk::Observable<OTIO_NS::RationalTime> > timeScrub;
             std::vector<int> frameMarkers;
             std::shared_ptr<ThumbnailGenerator> thumbnailGenerator;
 
@@ -60,9 +60,9 @@ namespace tl
             };
             MouseMode mouseMode = MouseMode::None;
 
-            std::shared_ptr<ftk::ValueObserver<OTIO_NS::RationalTime> > currentTimeObserver;
-            std::shared_ptr<ftk::ValueObserver<OTIO_NS::TimeRange> > inOutRangeObserver;
-            std::shared_ptr<ftk::ValueObserver<timeline::PlayerCacheInfo> > cacheInfoObserver;
+            std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > currentTimeObserver;
+            std::shared_ptr<ftk::Observer<OTIO_NS::TimeRange> > inOutRangeObserver;
+            std::shared_ptr<ftk::Observer<timeline::PlayerCacheInfo> > cacheInfoObserver;
         };
     }
 }

@@ -89,29 +89,29 @@ namespace tl
             p.ioInfo = timeline->getIOInfo();
 
             // Create observers.
-            p.speed = ftk::ObservableValue<double>::create(p.timeRange.duration().rate());
-            p.playback = ftk::ObservableValue<Playback>::create(Playback::Stop);
-            p.loop = ftk::ObservableValue<Loop>::create(Loop::Loop);
-            p.currentTime = ftk::ObservableValue<OTIO_NS::RationalTime>::create(
+            p.speed = ftk::Observable<double>::create(p.timeRange.duration().rate());
+            p.playback = ftk::Observable<Playback>::create(Playback::Stop);
+            p.loop = ftk::Observable<Loop>::create(Loop::Loop);
+            p.currentTime = ftk::Observable<OTIO_NS::RationalTime>::create(
                 playerOptions.currentTime != time::invalidTime ?
                 playerOptions.currentTime :
                 p.timeRange.start_time());
-            p.seek = ftk::ObservableValue<OTIO_NS::RationalTime>::create(p.currentTime->get());
-            p.inOutRange = ftk::ObservableValue<OTIO_NS::TimeRange>::create(p.timeRange);
+            p.seek = ftk::Observable<OTIO_NS::RationalTime>::create(p.currentTime->get());
+            p.inOutRange = ftk::Observable<OTIO_NS::TimeRange>::create(p.timeRange);
             p.compare = ftk::ObservableList<std::shared_ptr<Timeline> >::create();
-            p.compareTime = ftk::ObservableValue<CompareTime>::create(CompareTime::Relative);
-            p.ioOptions = ftk::ObservableValue<io::Options>::create();
-            p.videoLayer = ftk::ObservableValue<int>::create(0);
+            p.compareTime = ftk::Observable<CompareTime>::create(CompareTime::Relative);
+            p.ioOptions = ftk::Observable<io::Options>::create();
+            p.videoLayer = ftk::Observable<int>::create(0);
             p.compareVideoLayers = ftk::ObservableList<int>::create();
             p.currentVideoData = ftk::ObservableList<VideoData>::create();
-            p.audioDevice = ftk::ObservableValue<audio::DeviceID>::create(playerOptions.audioDevice);
-            p.volume = ftk::ObservableValue<float>::create(1.F);
-            p.mute = ftk::ObservableValue<bool>::create(false);
+            p.audioDevice = ftk::Observable<audio::DeviceID>::create(playerOptions.audioDevice);
+            p.volume = ftk::Observable<float>::create(1.F);
+            p.mute = ftk::Observable<bool>::create(false);
             p.channelMute = ftk::ObservableList<bool>::create();
-            p.audioOffset = ftk::ObservableValue<double>::create(0.0);
+            p.audioOffset = ftk::Observable<double>::create(0.0);
             p.currentAudioData = ftk::ObservableList<AudioData>::create();
-            p.cacheOptions = ftk::ObservableValue<PlayerCacheOptions>::create(playerOptions.cache);
-            p.cacheInfo = ftk::ObservableValue<PlayerCacheInfo>::create();
+            p.cacheOptions = ftk::Observable<PlayerCacheOptions>::create(playerOptions.cache);
+            p.cacheInfo = ftk::Observable<PlayerCacheInfo>::create();
             auto audioSystem = context->getSystem<audio::System>();
             auto weak = std::weak_ptr<Player>(shared_from_this());
             p.audioDevicesObserver = ftk::ListObserver<audio::DeviceInfo>::create(
@@ -126,7 +126,7 @@ namespace tl
                         }
                     }
                 });
-            p.defaultAudioDeviceObserver = ftk::ValueObserver<audio::DeviceInfo>::create(
+            p.defaultAudioDeviceObserver = ftk::Observer<audio::DeviceInfo>::create(
                 audioSystem->observeDefaultDevice(),
                 [weak](const audio::DeviceInfo&)
                 {
@@ -252,7 +252,7 @@ namespace tl
             return _p->speed->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<double> > Player::observeSpeed() const
+        std::shared_ptr<ftk::IObservable<double> > Player::observeSpeed() const
         {
             return _p->speed;
         }
@@ -279,7 +279,7 @@ namespace tl
             return _p->playback->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<Playback> > Player::observePlayback() const
+        std::shared_ptr<ftk::IObservable<Playback> > Player::observePlayback() const
         {
             return _p->playback;
         }
@@ -393,7 +393,7 @@ namespace tl
             return _p->loop->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<Loop> > Player::observeLoop() const
+        std::shared_ptr<ftk::IObservable<Loop> > Player::observeLoop() const
         {
             return _p->loop;
         }
@@ -408,12 +408,12 @@ namespace tl
             return _p->currentTime->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<OTIO_NS::RationalTime> > Player::observeCurrentTime() const
+        std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > Player::observeCurrentTime() const
         {
             return _p->currentTime;
         }
 
-        std::shared_ptr<ftk::IObservableValue<OTIO_NS::RationalTime> > Player::observeSeek() const
+        std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > Player::observeSeek() const
         {
             return _p->seek;
         }
@@ -526,7 +526,7 @@ namespace tl
             return _p->inOutRange->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<OTIO_NS::TimeRange> > Player::observeInOutRange() const
+        std::shared_ptr<ftk::IObservable<OTIO_NS::TimeRange> > Player::observeInOutRange() const
         {
             return _p->inOutRange;
         }
@@ -605,7 +605,7 @@ namespace tl
             return _p->compareTime->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<CompareTime> > Player::observeCompareTime() const
+        std::shared_ptr<ftk::IObservable<CompareTime> > Player::observeCompareTime() const
         {
             return _p->compareTime;
         }
@@ -627,7 +627,7 @@ namespace tl
             return _p->ioOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<io::Options> > Player::observeIOOptions() const
+        std::shared_ptr<ftk::IObservable<io::Options> > Player::observeIOOptions() const
         {
             return _p->ioOptions;
         }
@@ -649,7 +649,7 @@ namespace tl
             return _p->videoLayer->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<int> > Player::observeVideoLayer() const
+        std::shared_ptr<ftk::IObservable<int> > Player::observeVideoLayer() const
         {
             return _p->videoLayer;
         }
@@ -703,7 +703,7 @@ namespace tl
             return _p->cacheOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<PlayerCacheOptions> > Player::observeCacheOptions() const
+        std::shared_ptr<ftk::IObservable<PlayerCacheOptions> > Player::observeCacheOptions() const
         {
             return _p->cacheOptions;
         }
@@ -718,7 +718,7 @@ namespace tl
             }
         }
 
-        std::shared_ptr<ftk::IObservableValue<PlayerCacheInfo> > Player::observeCacheInfo() const
+        std::shared_ptr<ftk::IObservable<PlayerCacheInfo> > Player::observeCacheInfo() const
         {
             return _p->cacheInfo;
         }

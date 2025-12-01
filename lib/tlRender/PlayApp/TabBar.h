@@ -43,7 +43,7 @@ namespace tl
         private:
             std::shared_ptr<ftk::TabBar> _tabBar;
             std::shared_ptr<ftk::ListObserver<std::shared_ptr<timeline::Player> > > _playersObserver;
-            std::shared_ptr<ftk::ValueObserver<int> > _playerIndexObserver;
+            std::shared_ptr<ftk::Observer<int> > _playerIndexObserver;
         };
     }
 }

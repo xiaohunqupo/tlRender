@@ -17,7 +17,7 @@ namespace tl
             return _p->audioDevice->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<audio::DeviceID> > Player::observeAudioDevice() const
+        std::shared_ptr<ftk::IObservable<audio::DeviceID> > Player::observeAudioDevice() const
         {
             return _p->audioDevice;
         }
@@ -39,7 +39,7 @@ namespace tl
             return _p->volume->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<float> > Player::observeVolume() const
+        std::shared_ptr<ftk::IObservable<float> > Player::observeVolume() const
         {
             return _p->volume;
         }
@@ -59,7 +59,7 @@ namespace tl
             return _p->mute->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<bool> > Player::observeMute() const
+        std::shared_ptr<ftk::IObservable<bool> > Player::observeMute() const
         {
             return _p->mute;
         }
@@ -99,7 +99,7 @@ namespace tl
             return _p->audioOffset->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<double> > Player::observeAudioOffset() const
+        std::shared_ptr<ftk::IObservable<double> > Player::observeAudioOffset() const
         {
             return _p->audioOffset;
         }

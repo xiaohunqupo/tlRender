@@ -47,7 +47,7 @@ namespace tl
             std::map<std::string, std::shared_ptr<ftk::Label> > _labels;
             std::shared_ptr<ftk::Timer> _logTimer;
             std::shared_ptr<ftk::ListObserver<ftk::LogItem> > _logObserver;
-            std::shared_ptr<ftk::ValueObserver<std::shared_ptr<timeline::Player> > > _playerObserver;
+            std::shared_ptr<ftk::Observer<std::shared_ptr<timeline::Player> > > _playerObserver;
         };
     }
 }

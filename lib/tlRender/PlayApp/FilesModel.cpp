@@ -15,13 +15,13 @@ namespace tl
         {
             _context = context;
             _players = ftk::ObservableList<std::shared_ptr<timeline::Player> >::create();
-            _player = ftk::ObservableValue<std::shared_ptr<timeline::Player> >::create();
-            _playerIndex = ftk::ObservableValue<int>::create(-1);
-            _bPlayer = ftk::ObservableValue<std::shared_ptr<timeline::Player> >::create();
-            _bPlayerIndex = ftk::ObservableValue<int>::create(-1);
-            _compare = ftk::ObservableValue<timeline::Compare>::create(timeline::Compare::A);
+            _player = ftk::Observable<std::shared_ptr<timeline::Player> >::create();
+            _playerIndex = ftk::Observable<int>::create(-1);
+            _bPlayer = ftk::Observable<std::shared_ptr<timeline::Player> >::create();
+            _bPlayerIndex = ftk::Observable<int>::create(-1);
+            _compare = ftk::Observable<timeline::Compare>::create(timeline::Compare::A);
 
-            _cacheObserver = ftk::ValueObserver<timeline::PlayerCacheOptions>::create(
+            _cacheObserver = ftk::Observer<timeline::PlayerCacheOptions>::create(
                 settingsModel->observeCache(),
                 [this](const timeline::PlayerCacheOptions& value)
                 {
@@ -189,12 +189,12 @@ namespace tl
             return _players;
         }
 
-        std::shared_ptr<ftk::IObservableValue<std::shared_ptr<timeline::Player> > > FilesModel::observePlayer() const
+        std::shared_ptr<ftk::IObservable<std::shared_ptr<timeline::Player> > > FilesModel::observePlayer() const
         {
             return _player;
         }
 
-        std::shared_ptr<ftk::IObservableValue<int> > FilesModel::observePlayerIndex() const
+        std::shared_ptr<ftk::IObservable<int> > FilesModel::observePlayerIndex() const
         {
             return _playerIndex;
         }
@@ -224,17 +224,17 @@ namespace tl
             _compare->setIfChanged(value);
         }
 
-        std::shared_ptr<ftk::IObservableValue<std::shared_ptr<timeline::Player> > > FilesModel::observeBPlayer() const
+        std::shared_ptr<ftk::IObservable<std::shared_ptr<timeline::Player> > > FilesModel::observeBPlayer() const
         {
             return _bPlayer;
         }
 
-        std::shared_ptr<ftk::IObservableValue<int> > FilesModel::observeBPlayerIndex() const
+        std::shared_ptr<ftk::IObservable<int> > FilesModel::observeBPlayerIndex() const
         {
             return _bPlayerIndex;
         }
 
-        std::shared_ptr<ftk::IObservableValue<timeline::Compare> > FilesModel::observeCompare() const
+        std::shared_ptr<ftk::IObservable<timeline::Compare> > FilesModel::observeCompare() const
         {
             return _compare;
         }

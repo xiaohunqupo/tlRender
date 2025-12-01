@@ -15,7 +15,7 @@ namespace tl
 
             std::shared_ptr<ftk::ComboBox> comboBox;
 
-            std::shared_ptr<ftk::ValueObserver<timeline::TimeUnits> > timeUnitsObserver;
+            std::shared_ptr<ftk::Observer<timeline::TimeUnits> > timeUnitsObserver;
         };
 
         void TimeUnitsWidget::_init(
@@ -36,7 +36,7 @@ namespace tl
                     _p->model->setTimeUnits(static_cast<timeline::TimeUnits>(index));
                 });
 
-            p.timeUnitsObserver = ftk::ValueObserver<timeline::TimeUnits>::create(
+            p.timeUnitsObserver = ftk::Observer<timeline::TimeUnits>::create(
                 p.model->observeTimeUnits(),
                 [this](timeline::TimeUnits value)
                 {

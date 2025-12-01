@@ -53,7 +53,7 @@ namespace tl
                     _tabBar->setCurrentTab(index);
                 });
 
-            _playerIndexObserver = ftk::ValueObserver<int>::create(
+            _playerIndexObserver = ftk::Observer<int>::create(
                 app->getFilesModel()->observePlayerIndex(),
                 [this](int value)
                 {

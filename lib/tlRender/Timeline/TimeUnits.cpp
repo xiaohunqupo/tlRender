@@ -118,7 +118,7 @@ namespace tl
 
         void ITimeUnitsModel::_init(const std::shared_ptr<ftk::Context>& context)
         {
-            _timeUnitsChanged = ftk::ObservableValue<bool>::create();
+            _timeUnitsChanged = ftk::Observable<bool>::create();
         }
 
         ITimeUnitsModel::ITimeUnitsModel()
@@ -127,21 +127,21 @@ namespace tl
         ITimeUnitsModel::~ITimeUnitsModel()
         {}
 
-        std::shared_ptr<ftk::IObservableValue<bool> > ITimeUnitsModel::observeTimeUnitsChanged() const
+        std::shared_ptr<ftk::IObservable<bool> > ITimeUnitsModel::observeTimeUnitsChanged() const
         {
             return _timeUnitsChanged;
         }
 
         struct TimeUnitsModel::Private
         {
-            std::shared_ptr<ftk::ObservableValue<TimeUnits> > timeUnits;
+            std::shared_ptr<ftk::Observable<TimeUnits> > timeUnits;
         };
 
         void TimeUnitsModel::_init(const std::shared_ptr<ftk::Context>& context)
         {
             FTK_P();
             ITimeUnitsModel::_init(context);
-            p.timeUnits = ftk::ObservableValue<TimeUnits>::create(TimeUnits::Timecode);
+            p.timeUnits = ftk::Observable<TimeUnits>::create(TimeUnits::Timecode);
         }
 
         TimeUnitsModel::TimeUnitsModel() :
@@ -164,7 +164,7 @@ namespace tl
             return _p->timeUnits->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<TimeUnits> > TimeUnitsModel::observeTimeUnits() const
+        std::shared_ptr<ftk::IObservable<TimeUnits> > TimeUnitsModel::observeTimeUnits() const
         {
             return _p->timeUnits;
         }

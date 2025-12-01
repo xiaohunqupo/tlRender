@@ -7,7 +7,7 @@
 #include <tlRender/Timeline/TimelineOptions.h>
 #include <tlRender/Timeline/Video.h>
 
-#include <ftk/Core/ObservableValue.h>
+#include <ftk/Core/Observable.h>
 #include <ftk/Core/Path.h>
 
 #include <opentimelineio/timeline.h>
