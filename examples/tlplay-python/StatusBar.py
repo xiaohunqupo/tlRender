@@ -10,22 +10,28 @@ class Widget(ftk.IWidget):
     def __init__(self, context, app, actions, parent = None):
         ftk.IWidget.__init__(self, context, "StatusBar.Widget", parent)
 
-        self._errorLabel = ftk.Label(context)
-        self._errorLabel.hStretch = ftk.Stretch.Expanding
-        self._errorLabel.marginRole = ftk.SizeRole.MarginInside
+        self._logLabel = ftk.Label(context)
+        self._logLabel.hStretch = ftk.Stretch.Expanding
+        self._logLabel.marginRole = ftk.SizeRole.MarginInside
 
         self._infoLabel = ftk.Label(context)
         self._infoLabel.marginRole = ftk.SizeRole.MarginInside
 
         self._layout = ftk.HorizontalLayout(context, self)
         self._layout.spacingRole = ftk.SizeRole.SpacingSmall
-        self._errorLabel.parent = self._layout
+        self._logLabel.parent = self._layout
         ftk.Divider(context, ftk.Orientation.Horizontal, self._layout)
         self._infoLabel.parent = self._layout
 
+        self._logObserver = ftk.ListObserverLogItem(
+            context.getSystemByName("ftk::LogSystem").observeLogItems,
+            self._logUpdate)
+
         self._playerObserver = tl.timeline.ValueObserverPlayer(
             app.getDocumentModel().observePlayer(),
-            self._playerUpdate)
+            self._infoUpdate)
+
+        self._logTimer = ftk.Timer(context)
 
     def setGeometry(self, value):
         ftk.IWidget.setGeometry(self, value)
@@ -34,19 +40,48 @@ class Widget(ftk.IWidget):
     def sizeHintEvent(self, event):
         self.setSizeHint(self._layout.sizeHint)
 
-    def _playerUpdate(self, player):
+    def _logUpdate(self, logItems):
+        if logItems:
+            text = ""
+            for item in logItems:
+                pieces = []
+                if ftk.LogType.Error == item.type:
+                    pieces = item.toString().split('\n')
+                if pieces:
+                    text = pieces[0]
+            self._logLabel.text = text
+            if text:
+                self._logTimer.start(5.0, self._clearLog)
+
+    def _clearLog(self):
+        self._logLabel.text = ""
+
+    def _infoUpdate(self, player):
         text = []
         tooltip = []
         if player:
             path = player.path
             text.append(path.fileName)
+            tooltip.append(path.get())
+
             ioInfo = player.ioInfo
             if ioInfo.video:
-                video = ioInfo.video[0]
-                text.append("{}x{}:{:.2f}".format(
-                    video.size.w,
-                    video.size.h,
-                    video.aspect))
-            tooltip.append(path.get())
-        self._infoLabel.text = " ".join(text)
+                videoInfo = ioInfo.video[0]
+                s = "video: {}x{}:{:.2f} {}".format(
+                    videoInfo.size.w,
+                    videoInfo.size.h,
+                    videoInfo.aspect,
+                    videoInfo.type)
+                text.append(s)
+                tooltip.append(s)
+
+            if ioInfo.audio.isValid:
+                s = "audio: {} {} {}".format(
+                    ioInfo.audio.channelCount,
+                    ioInfo.audio.dataType,
+                    ioInfo.audio.sampleRate)
+                text.append(s)
+                tooltip.append(s)
+
+        self._infoLabel.text = ", ".join(text)
         self._infoLabel.tooltip = "\n".join(tooltip)

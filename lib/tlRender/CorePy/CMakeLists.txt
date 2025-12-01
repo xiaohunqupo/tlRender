@@ -1,8 +1,10 @@
 set(HEADERS
+    Audio.h
     Bindings.h
     Time.h)
 set(HEADERS_PRIVATE)
 set(SOURCE
+    Audio.cpp
     Bindings.cpp
     Time.cpp)
 

@@ -20,7 +20,7 @@ class Actions:
             ftk.Key.O,
             ftk.commandKeyModifier,
             lambda: context.getSystemByName("ftk::FileBrowserSystem").open(mainWindowWeak(), appWeak().open))
-        self.actions["Open"].tooltip = "Open an image sequence, movie, or timeline file"
+        self.actions["Open"].tooltip = "Open an image sequence, movie, or timeline file."
 
         self.actions["Close"] = ftk.Action(
             "Close",
@@ -28,7 +28,7 @@ class Actions:
             ftk.Key.E,
             ftk.commandKeyModifier,
             lambda: appWeak().close())
-        self.actions["Close"].tooltip = "Close the current file"
+        self.actions["Close"].tooltip = "Close the current file."
 
         self.actions["Reload"] = ftk.Action(
             "Reload",
@@ -36,7 +36,7 @@ class Actions:
             ftk.Key.R,
             ftk.commandKeyModifier,
             lambda: appWeak().reload())
-        self.actions["Reload"].tooltip = "Reload the current file"
+        self.actions["Reload"].tooltip = "Reload the current file."
 
         self.actions["Exit"] = ftk.Action(
             "Exit",

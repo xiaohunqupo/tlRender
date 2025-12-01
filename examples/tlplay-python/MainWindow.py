@@ -18,13 +18,17 @@ import WindowActions
 class MainWindow(ftk.MainWindow):
 
     def __init__(self, context, app):
-        ftk.MainWindow.__init__(self, context, app, ftk.Size2I(1920, 1080))
+        ftk.MainWindow.__init__(self, context, app, ftk.Size2I(1280, 960))
         
         self.settingsToggle = ftk.ObservableValueBool(False)
 
+        self._viewport = tl.ui.Viewport(context)
+
+        self._timelineWidget = tl.ui.TimelineWidget(context, app.getTimeUnitsModel())
+
         self._fileActions = FileActions.Actions(context, app, self)
         self._playbackActions = PlaybackActions.Actions(context, app)
-        self._viewActions = ViewActions.Actions(context, app)
+        self._viewActions = ViewActions.Actions(context, app, self)
         self._windowActions = WindowActions.Actions(context, app, self)
 
         self._menuBar = ftk.MenuBar(context)
@@ -35,13 +39,10 @@ class MainWindow(ftk.MainWindow):
         self.menuBar = self._menuBar
 
         self._fileToolBar = ToolBars.File(context, self._fileActions)
+        self._viewToolBar = ToolBars.View(context, self._viewActions)
         self._windowToolBar = ToolBars.Window(context, self._windowActions)
 
-        self._viewport = tl.ui.Viewport(context)
-
         self._playbackBar = PlaybackBar.Widget(context, app, self._playbackActions)
-
-        self._timelineWidget = tl.ui.TimelineWidget(context, app.getTimeUnitsModel())
 
         self._statusBar = StatusBar.Widget(context, app, self)
 
@@ -54,6 +55,8 @@ class MainWindow(ftk.MainWindow):
         hLayout = ftk.HorizontalLayout(context, self._layout)
         hLayout.spacingRole = ftk.SizeRole.SpacingSmall
         self._fileToolBar.parent = hLayout
+        ftk.Divider(context, ftk.Orientation.Horizontal, hLayout)
+        self._viewToolBar.parent = hLayout
         ftk.Divider(context, ftk.Orientation.Horizontal, hLayout)
         self._windowToolBar.parent = hLayout
         ftk.Divider(context, ftk.Orientation.Vertical, self._layout)
@@ -75,10 +78,13 @@ class MainWindow(ftk.MainWindow):
             app.getDocumentModel().observePlayer(),
             self._widgetUpdate)
 
-    def setSettings(self, value):
+    def getViewport(self):
+        return self._viewport
+
+    def setSettingsVisible(self, value):
         if self.settingsToggle.setIfChanged(value):
             self._settingsWidget.setVisible(value)
 
     def _widgetUpdate(self, player):
-        self._viewport.setPlayer(player)
-        self._timelineWidget.setPlayer(player)
+        self._viewport.player = player
+        self._timelineWidget.player = player

@@ -29,7 +29,7 @@ namespace tl
                         viewport->setFrameView(value);
                     }
                 });
-            _actions["Frame"]->setTooltip("Toggle whether the view is automatically framed.");
+            _actions["Frame"]->setTooltip("Toggle whether to automatically frame the view.");
 
             _actions["ZoomReset"] = ftk::Action::create(
                 "Zoom Reset",
@@ -43,7 +43,7 @@ namespace tl
                         viewport->viewZoomReset();
                     }
                 });
-            _actions["ZoomReset"]->setTooltip("Reset the view zoom to 1:1.");
+            _actions["ZoomReset"]->setTooltip("Reset the view zoom.");
 
             _actions["ZoomIn"] = ftk::Action::create(
                 "Zoom In",

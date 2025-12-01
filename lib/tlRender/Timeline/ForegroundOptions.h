@@ -37,7 +37,7 @@ namespace tl
         //! Foreground options.
         struct ForegroundOptions
         {
-            Grid grid;
+            Grid    grid;
             Outline outline;
 
             bool operator == (const ForegroundOptions&) const;

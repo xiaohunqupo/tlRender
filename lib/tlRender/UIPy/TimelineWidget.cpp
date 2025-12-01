@@ -32,7 +32,10 @@ namespace tl
                     py::arg("context"),
                     py::arg("timeUnitsModel"),
                     py::arg("parent") = nullptr)
-                .def("setPlayer", &timelineui::TimelineWidget::setPlayer);
+                .def_property(
+                    "player",
+                    &timelineui::TimelineWidget::getPlayer,
+                    &timelineui::TimelineWidget::setPlayer);
         }
     }
 }

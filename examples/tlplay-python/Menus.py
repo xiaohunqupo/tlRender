@@ -38,11 +38,6 @@ class File(ftk.Menu):
                 lambda captured = recent: self._recentCallback(captured))
             self.recentMenu.addAction(action)
 
-class CompareMenu(ftk.Menu):
-
-    def __init__(self, context, app, actions, parent = None):
-        ftk.Menu.__init__(self, context, parent)
-
 class Playback(ftk.Menu):
 
     def __init__(self, context, app, actions, parent = None):
@@ -67,6 +62,11 @@ class View(ftk.Menu):
 
     def __init__(self, context, app, actions, parent = None):
         ftk.Menu.__init__(self, context, parent)
+
+        self.addAction(actions.actions["Frame"])
+        self.addAction(actions.actions["ZoomReset"])
+        self.addAction(actions.actions["ZoomIn"])
+        self.addAction(actions.actions["ZoomOut"])
 
 class Window(ftk.Menu):
 

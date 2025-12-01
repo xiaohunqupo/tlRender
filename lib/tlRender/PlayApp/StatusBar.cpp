@@ -100,36 +100,39 @@ namespace tl
 
         void StatusBar::_infoUpdate(const std::shared_ptr<timeline::Player>& player)
         {
-            std::string text;
+            std::vector<std::string> text;
+            std::vector<std::string> tooltip;
             if (player)
             {
-                std::vector<std::string> pieces;
                 const auto& path = player->getPath();
-                pieces.push_back(path.getFileName());
+                text.push_back(path.getFileName());
+                tooltip.push_back(path.get());
 
                 const auto& ioInfo = player->getIOInfo();
                 if (!ioInfo.video.empty())
                 {
                     const auto& videoInfo = ioInfo.video.front();
-                    pieces.push_back(ftk::Format("video: {1}x{2}:{3} {4}").
+                    const std::string s = ftk::Format("video: {1}x{2}:{3} {4}").
                         arg(videoInfo.size.w).
                         arg(videoInfo.size.h).
                         arg(videoInfo.getAspect(), 2).
-                        arg(videoInfo.type));
+                        arg(videoInfo.type);
+                    text.push_back(s);
+                    tooltip.push_back(s);
                 }
 
                 if (ioInfo.audio.isValid())
                 {
-                    pieces.push_back(ftk::Format("audio: {1} {2} {3}").
+                    const std::string s = ftk::Format("audio: {1} {2} {3}").
                         arg(ioInfo.audio.channelCount).
                         arg(ioInfo.audio.dataType).
-                        arg(ioInfo.audio.sampleRate));
+                        arg(ioInfo.audio.sampleRate);
+                    text.push_back(s);
+                    tooltip.push_back(s);
                 }
-
-                text = ftk::join(pieces, ", ");
             }
-            _labels["Info"]->setText(text);
-            _labels["Info"]->setTooltip(text);
+            _labels["Info"]->setText(ftk::join(text, ", "));
+            _labels["Info"]->setTooltip(ftk::join(tooltip, "\n"));
         }
     }
 }

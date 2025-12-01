@@ -3,6 +3,7 @@
 
 #include <tlRender/CorePy/Bindings.h>
 
+#include <tlRender/CorePy/Audio.h>
 #include <tlRender/CorePy/Time.h>
 
 #include <tlRender/Core/Init.h>
@@ -23,6 +24,7 @@ namespace tl
                 py::arg("context"),
                 "Initialize the library.");
 
+            audio(m);
             time(m);
         }
     }

@@ -28,19 +28,19 @@ class Widget(ftk.IWidget):
         self._frameToolBar.addAction(actions.actions["End"])
 
         self._currentTimeEdit = tl.ui.TimeEdit(context, app.getTimeUnitsModel())
-        self._currentTimeEdit.tooltip = "Current time"
+        self._currentTimeEdit.tooltip = "Current time."
 
         self._durationLabel = tl.ui.TimeLabel(context, app.getTimeUnitsModel())
-        self._durationLabel.tooltip = "Playback duration"
+        self._durationLabel.tooltip = "Playback duration."
 
         self._speedEdit = ftk.DoubleEdit(context)
         self._speedEdit.range = ftk.RangeD(1.0, 99999.0)
         self._speedEdit.step = 1.0
         self._speedEdit.largeStep = 10.0
-        self._speedEdit.tooltip = "Playback speed"
+        self._speedEdit.tooltip = "Playback speed."
 
         self._timeUnitsWidget = tl.ui.TimeUnitsWidget(context, app.getTimeUnitsModel())
-        self._timeUnitsWidget.tooltip = "Time units"
+        self._timeUnitsWidget.tooltip = "Time units."
 
         self._layout = ftk.HorizontalLayout(context, self)
         self._layout.marginRole = ftk.SizeRole.MarginInside

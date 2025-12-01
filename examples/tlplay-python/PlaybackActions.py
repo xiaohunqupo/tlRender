@@ -20,7 +20,7 @@ class Actions:
             ftk.Key.K,
             0,
             self._stopCallback)
-        self.actions["Stop"].tooltip = "Stop playback"
+        self.actions["Stop"].tooltip = "Stop playback."
 
         self.actions["Forward"] = ftk.Action(
             "Forward",
@@ -28,7 +28,7 @@ class Actions:
             ftk.Key.L,
             0,
             self._forwardCallback)
-        self.actions["Forward"].tooltip = "Start forward playback"
+        self.actions["Forward"].tooltip = "Start forward playback."
 
         self.actions["Reverse"] = ftk.Action(
             "Reverse",
@@ -36,14 +36,14 @@ class Actions:
             ftk.Key.J,
             0,
             self._reverseCallback)
-        self.actions["Reverse"].tooltip = "Start reverse playback"
+        self.actions["Reverse"].tooltip = "Start reverse playback."
 
         self.actions["TogglePlayback"] = ftk.Action(
             "Toggle Playback",
             ftk.Key.Space,
             0,
             self._togglePlaybackCallback)
-        self.actions["TogglePlayback"].tooltip = "Toggle playback direction"
+        self.actions["TogglePlayback"].tooltip = "Toggle playback direction."
 
         self.actions["Start"] = ftk.Action(
             "Start Frame",
@@ -51,7 +51,7 @@ class Actions:
             ftk.Key.Up,
             0,
             self._startCallback)
-        self.actions["Start"].tooltip = "Go to the start frame"
+        self.actions["Start"].tooltip = "Go to the start frame."
 
         self.actions["Prev"] = ftk.Action(
             "Previous Frame",
@@ -59,7 +59,7 @@ class Actions:
             ftk.Key.Left,
             0,
             self._prevCallback)
-        self.actions["Prev"].tooltip = "Go to the previous frame"
+        self.actions["Prev"].tooltip = "Go to the previous frame."
 
         self.actions["Next"] = ftk.Action(
             "Next Frame",
@@ -67,7 +67,7 @@ class Actions:
             ftk.Key.Right,
             0,
             self._nextCallback)
-        self.actions["Next"].tooltip = "Go to the next frame"
+        self.actions["Next"].tooltip = "Go to the next frame."
 
         self.actions["End"] = ftk.Action(
             "End Frame",
@@ -75,35 +75,35 @@ class Actions:
             ftk.Key.Down,
             0,
             self._endCallback)
-        self.actions["End"].tooltip = "Go to the end frame"
+        self.actions["End"].tooltip = "Go to the end frame."
 
         self.actions["SetInPoint"] = ftk.Action(
             "Set In Point",
             ftk.Key.I,
             0,
             self._setInPointCallback)
-        self.actions["SetInPoint"].tooltip = "Set the in point to the current frame"
+        self.actions["SetInPoint"].tooltip = "Set the in point to the current frame."
 
         self.actions["ResetInPoint"] = ftk.Action(
             "Reset In Point",
             ftk.Key.I,
             ftk.KeyModifier.Shift,
             self._resetInPointCallback)
-        self.actions["ResetInPoint"].tooltip = "Reset the in point to the start frame"
+        self.actions["ResetInPoint"].tooltip = "Reset the in point to the start frame."
 
         self.actions["SetOutPoint"] = ftk.Action(
             "Set Out Point",
             ftk.Key.O,
             0,
             self._setOutPointCallback)
-        self.actions["SetOutPoint"].tooltip = "Set the out point to the current frame"
+        self.actions["SetOutPoint"].tooltip = "Set the out point to the current frame."
 
         self.actions["ResetOutPoint"] = ftk.Action(
             "Reset Out Point",
             ftk.Key.O,
             ftk.KeyModifier.Shift,
             self._resetOutPointCallback)
-        self.actions["ResetOutPoint"].tooltip = "Reset the out point to the end frame"
+        self.actions["ResetOutPoint"].tooltip = "Reset the out point to the end frame."
 
         self._playerObserver = tl.timeline.ValueObserverPlayer(
             app.getDocumentModel().observePlayer(),

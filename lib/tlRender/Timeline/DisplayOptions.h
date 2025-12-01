@@ -15,13 +15,13 @@ namespace tl
         struct Color
         {
         public:
-            bool            enabled    = false;
+            bool     enabled    = false;
             ftk::V3F add        = ftk::V3F(0.F, 0.F, 0.F);
             ftk::V3F brightness = ftk::V3F(1.F, 1.F, 1.F);
             ftk::V3F contrast   = ftk::V3F(1.F, 1.F, 1.F);
             ftk::V3F saturation = ftk::V3F(1.F, 1.F, 1.F);
-            float           tint       = 0.F;
-            bool            invert     = false;
+            float    tint       = 0.F;
+            bool     invert     = false;
 
             bool operator == (const Color&) const;
             bool operator != (const Color&) const;

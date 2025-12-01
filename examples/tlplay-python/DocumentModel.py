@@ -18,6 +18,7 @@ class Model:
             app.getSettingsModel().observeCache(), self._cacheUpdate)
 
     def open(self, path):
+        # \todo Add exception handling
         timeline = tl.timeline.Timeline(self._app().context, path)
         options = tl.timeline.PlayerOptions()
         options.cache = self._app().getSettingsModel().observeCache().get()
@@ -30,6 +31,7 @@ class Model:
     def reload(self, path):
         if self._player.get():
             path = self._player.get().path
+            # \todo Add exception handling
             timeline = tl.timeline.Timeline(self._app().context, path)
             options = tl.timeline.PlayerOptions()
             options.cache = self._settingsModel.observeCache().get()
@@ -45,4 +47,4 @@ class Model:
     def _cacheUpdate(self, value):
         if self._player.get():
             self._player.get().cacheOptions = value
-        
+

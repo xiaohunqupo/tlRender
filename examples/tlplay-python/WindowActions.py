@@ -12,7 +12,6 @@ class Actions:
     def __init__(self, context, app, mainWindow):
 
         self._mainWindowWeak = weakref.ref(mainWindow)
-
         self.actions = {}
         self.actions["FullScreen"] = ftk.Action(
             "Full Screen",
@@ -20,13 +19,13 @@ class Actions:
             ftk.Key.U,
             ftk.commandKeyModifier,
             checkedCallback=self._fullScreenCallback)
-        self.actions["FullScreen"].tooltip = "Toggle the window full screen"
+        self.actions["FullScreen"].tooltip = "Toggle the window full screen."
 
         self.actions["Settings"] = ftk.Action(
             "Settings",
             "Settings",
             checkedCallback=self._settingsCallback)
-        self.actions["Settings"].tooltip = "Toggle the settings"
+        self.actions["Settings"].tooltip = "Toggle the settings."
 
         self._settingsToggleObserver = ftk.ValueObserverBool(mainWindow.settingsToggle, self._settingsUpdate)
 
@@ -39,4 +38,4 @@ class Actions:
 
     def _settingsCallback(self, value):
         if self._mainWindowWeak:
-            self._mainWindowWeak().setSettings(value)
+            self._mainWindowWeak().setSettingsVisible(value)

@@ -9,7 +9,49 @@ import weakref
 
 class Actions:
 
-    def __init__(self, context, app):
+    def __init__(self, context, app, mainWindow):
 
-        appWeak = weakref.ref(app)
+        self._mainWindowWeak = weakref.ref(mainWindow)
         self.actions = {}
+        self.actions["Frame"] = ftk.Action(
+            "Frame",
+            "ViewFrame",
+            ftk.Key.Backspace,
+            0,
+            checkedCallback=self._frameCallback)
+        self.actions["Frame"].tooltip = "Toggle whether to automatically frame the view."
+
+        self.actions["ZoomReset"] = ftk.Action(
+            "Zoom Reset",
+            "ViewZoomReset",
+            ftk.Key._0,
+            0,
+            callback=lambda: self._mainWindowWeak().getViewport().viewZoomReset())
+        self.actions["ZoomReset"].tooltip = "Reset the view zoom."
+
+        self.actions["ZoomIn"] = ftk.Action(
+            "Zoom In",
+            "ViewZoomIn",
+            ftk.Key.Equals,
+            0,
+            callback=lambda: self._mainWindowWeak().getViewport().viewZoomIn())
+        self.actions["ZoomIn"].tooltip = "Zoom the view in."
+
+        self.actions["ZoomOut"] = ftk.Action(
+            "Zoom Out",
+            "ViewZoomOut",
+            ftk.Key.Minus,
+            0,
+            callback=lambda: self._mainWindowWeak().getViewport().viewZoomOut())
+        self.actions["ZoomOut"].tooltip = "Zoom the view out."
+
+        self._frameObserver = ftk.ValueObserverBool(
+            mainWindow.getViewport().observeFrameView,
+            self._frameUpdate)
+
+    def _frameCallback(self, value):
+        self._mainWindowWeak().getViewport().frameView = value
+
+    def _frameUpdate(self, value):
+        self.actions["Frame"].checked = value
+

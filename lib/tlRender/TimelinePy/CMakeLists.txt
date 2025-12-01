@@ -1,6 +1,10 @@
 set(HEADERS
+    BackgroundOptions.h
     Bindings.h
+    ColorOptions.h
     CompareOptions.h
+    DisplayOptions.h
+    ForegroundOptions.h
     Player.h
     PlayerOptions.h
     TimeUnits.h
@@ -8,8 +12,12 @@ set(HEADERS
     TimelineOptions.h)
 set(HEADERS_PRIVATE)
 set(SOURCE
+    BackgroundOptions.cpp
     Bindings.cpp
+    ColorOptions.cpp
     CompareOptions.cpp
+    DisplayOptions.cpp
+    ForegroundOptions.cpp
     Player.cpp
     PlayerOptions.cpp
     TimeUnits.cpp
