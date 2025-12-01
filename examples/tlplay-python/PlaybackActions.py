@@ -105,7 +105,7 @@ class Actions:
             self._resetOutPointCallback)
         self.actions["ResetOutPoint"].tooltip = "Reset the out point to the end frame."
 
-        self._playerObserver = tl.timeline.ValueObserverPlayer(
+        self._playerObserver = tl.timeline.PlayerObserver(
             app.getDocumentModel().observePlayer(),
             self._playerUpdate)
 
@@ -165,7 +165,7 @@ class Actions:
         self._player = player
         
         if player:
-            self._playbackObserver = tl.timeline.ValueObserverPlayback(
+            self._playbackObserver = tl.timeline.PlaybackObserver(
                 player.observePlayback,
                 self._playbackUpdate)
         else:

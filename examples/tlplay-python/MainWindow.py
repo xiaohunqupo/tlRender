@@ -15,13 +15,32 @@ import ToolBars
 import ViewActions
 import WindowActions
 
+import weakref
+
 class MainWindow(ftk.MainWindow):
 
     def __init__(self, context, app):
         ftk.MainWindow.__init__(self, context, app, ftk.Size2I(1280, 960))
-        
-        self.settingsToggle = ftk.ObservableValueBool(False)
 
+        # Get settings.
+        settingsToggle = False
+        splitter = 0.8
+        splitter2 = 0.8
+        self._settingsModel = app.getSettingsModel()
+        settings = self._settingsModel.getBool("/MainWindow/SettingsVisible")
+        if settings[0]:
+            settingsToggle = settings[1]
+        settings = self._settingsModel.getDouble("/MainWindow/Splitter")
+        if settings[0]:
+            splitter = settings[1]
+        settings = self._settingsModel.getDouble("/MainWindow/Splitter2")
+        if settings[0]:
+            splitter2 = settings[1]
+
+        # Create observables.
+        self.settingsToggle = ftk.ObservableBool(settingsToggle)
+
+        # Create widgets and actions.
         self._viewport = tl.ui.Viewport(context)
 
         self._timelineWidget = tl.ui.TimelineWidget(context, app.getTimeUnitsModel())
@@ -47,8 +66,9 @@ class MainWindow(ftk.MainWindow):
         self._statusBar = StatusBar.Widget(context, app, self)
 
         self._settingsWidget = SettingsWidget.Widget(context, app)
-        self._settingsWidget.hide()
+        self._settingsWidget.setVisible(settingsToggle)
 
+        # Layout widgets.
         self._layout = ftk.VerticalLayout(context)
         self._layout.spacingRole = ftk.SizeRole._None
         self.setWidget(self._layout)
@@ -61,9 +81,9 @@ class MainWindow(ftk.MainWindow):
         self._windowToolBar.parent = hLayout
         ftk.Divider(context, ftk.Orientation.Vertical, self._layout)
         self._splitter = ftk.Splitter(context, ftk.Orientation.Vertical, self._layout)
-        self._splitter.split = .8
+        self._splitter.split = splitter
         self._splitter2 = ftk.Splitter(context, ftk.Orientation.Horizontal, self._splitter)
-        self._splitter2.split = .8
+        self._splitter2.split = splitter2
         self._viewport.parent = self._splitter2
         self._settingsWidget.parent = self._splitter2
         vLayout = ftk.VerticalLayout(context, self._splitter)
@@ -74,9 +94,18 @@ class MainWindow(ftk.MainWindow):
         ftk.Divider(context, ftk.Orientation.Vertical, self._layout)
         self._statusBar.parent = self._layout
 
-        self.playerObserver = tl.timeline.ValueObserverPlayer(
+        # Create observers.
+        selfWeak = weakref.ref(self)
+        self.playerObserver = tl.timeline.PlayerObserver(
             app.getDocumentModel().observePlayer(),
-            self._widgetUpdate)
+            lambda value: selfWeak()._widgetUpdate(value))
+
+    def __del__(self):
+        self._settingsModel.setBool(
+            "/MainWindow/SettingsVisible",
+            self.settingsToggle.get())
+        self._settingsModel.setDouble("/MainWindow/Splitter", self._splitter.split)
+        self._settingsModel.setDouble("/MainWindow/Splitter2", self._splitter2.split)
 
     def getViewport(self):
         return self._viewport

@@ -12,9 +12,9 @@ class Model:
     
         self._app = weakref.ref(app)
 
-        self._player = tl.timeline.ObservableValuePlayer(None)
+        self._player = tl.timeline.ObservablePlayer(None)
 
-        self._cacheObserver = tl.timeline.ValueObserverPlayerCacheOptions(
+        self._cacheObserver = tl.timeline.PlayerCacheOptionsObserver(
             app.getSettingsModel().observeCache(), self._cacheUpdate)
 
     def open(self, path):

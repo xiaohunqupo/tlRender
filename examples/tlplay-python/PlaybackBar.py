@@ -55,7 +55,7 @@ class Widget(ftk.IWidget):
 
         self._speedEdit.setCallback(self._speedCallback)
 
-        self._playerObserver = tl.timeline.ValueObserverPlayer(
+        self._playerObserver = tl.timeline.PlayerObserver(
             app.getDocumentModel().observePlayer(),
             self._widgetUpdate)
 
@@ -84,10 +84,10 @@ class Widget(ftk.IWidget):
         self._player = player
         if player:
             self._durationLabel.value = player.duration
-            self._currentTimeObserver = tl.timeline.ValueObserverRationalTime(
+            self._currentTimeObserver = tl.timeline.RationalTimeObserver(
                 player.observeCurrentTime,
                 self._currentTimeUpdate)
-            self._speedObserver = ftk.ValueObserverD(
+            self._speedObserver = ftk.DoubleObserver(
                 player.observeSpeed,
                 self._speedUpdate)
         else:

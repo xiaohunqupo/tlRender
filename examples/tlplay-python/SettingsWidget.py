@@ -26,7 +26,7 @@ class CacheWidget(ftk.IWidget):
 
         self._readBehindEdit = ftk.FloatEdit(context)
         self._readBehindEdit.range = ftk.RangeF(0.0, 2.0)
-
+        
         self._layout = ftk.FormLayout(context, self)
         self._layout.spacingRole = ftk.SizeRole.SpacingSmall
         self._layout.addRow("Video cache (GB):", self._videoEdit)
@@ -37,7 +37,7 @@ class CacheWidget(ftk.IWidget):
         self._audioEdit.setCallback(self._audioCallback)
         self._readBehindEdit.setCallback(self._readBehindCallback)
 
-        self._cacheObserver = tl.timeline.ValueObserverPlayerCacheOptions(
+        self._cacheObserver = tl.timeline.PlayerCacheOptionsObserver(
             app.getSettingsModel().observeCache(), self._cacheUpdate)
 
     def setGeometry(self, value):
@@ -70,6 +70,35 @@ class CacheWidget(ftk.IWidget):
         self._audioEdit.value = value.audioGB;
         self._readBehindEdit.value = value.readBehind;
 
+class FileBrowserWidget(ftk.IWidget):
+
+    def __init__(self, context, app, parent = None):
+        ftk.IWidget.__init__(self, context, "FileBrowserWidget", parent)
+        
+        self._app = weakref.ref(app)
+        
+        self._nativeCheckBox = ftk.CheckBox(context)
+        fileBrowserSystem = context.getSystemByName("ftk::FileBrowserSystem")
+        self._nativeCheckBox.checked = fileBrowserSystem.nativeFileDialog
+        
+        self._layout = ftk.FormLayout(context, self)
+        self._layout.spacingRole = ftk.SizeRole.SpacingSmall
+        self._layout.addRow("Native file browser:", self._nativeCheckBox)
+
+        self._nativeCheckBox.setCheckedCallback(self._nativeCallback)
+
+    def setGeometry(self, value):
+        ftk.IWidget.setGeometry(self, value)
+        self._layout.setGeometry(value)
+    
+    def sizeHintEvent(self, event):
+        self.setSizeHint(self._layout.sizeHint)
+
+    def _nativeCallback(self, value):
+        if self._app:
+            fileBrowserSystem = self.context.getSystemByName("ftk::FileBrowserSystem")
+            fileBrowserSystem.nativeFileDialog = value
+
 class Widget(ftk.IWidget):
 
     def __init__(self, context, app, parent = None):
@@ -81,6 +110,9 @@ class Widget(ftk.IWidget):
 
         cacheGroupBox = ftk.GroupBox(context, "Cache", layout)
         self._cacheWidget = CacheWidget(context, app, cacheGroupBox)
+
+        fileBrowserGroupBox = ftk.GroupBox(context, "File Browser", layout)
+        self._fileBrowserWidget = FileBrowserWidget(context, app, fileBrowserGroupBox)
 
         self._scrollWidget = ftk.ScrollWidget(context, ftk.ScrollType.Both, self)
         self._scrollWidget.border = False

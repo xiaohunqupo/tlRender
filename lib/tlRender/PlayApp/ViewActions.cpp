@@ -4,6 +4,7 @@
 #include "ViewActions.h"
 
 #include "App.h"
+#include "FilesModel.h"
 
 #include <tlRender/UI/Viewport.h>
 
@@ -78,6 +79,16 @@ namespace tl
                 [this](bool value)
                 {
                     _actions["Frame"]->setChecked(value);
+                });
+
+            _playerObserver = ftk::Observer<std::shared_ptr<timeline::Player> >::create(
+                app->getFilesModel()->observePlayer(),
+                [this](const std::shared_ptr<timeline::Player>& value)
+                {
+                    _actions["Frame"]->setEnabled(value.get());
+                    _actions["ZoomReset"]->setEnabled(value.get());
+                    _actions["ZoomIn"]->setEnabled(value.get());
+                    _actions["ZoomOut"]->setEnabled(value.get());
                 });
         }
 

@@ -22,7 +22,7 @@ class File(ftk.Menu):
         self.addDivider();
         self.addAction(actions.actions["Exit"])
         
-        self.recentObserver = ftk.ListObserverPath(
+        self.recentObserver = ftk.PathListObserver(
             app.getRecentFilesModel().observeRecent,
             self._recentUpdate)
 

@@ -15,8 +15,10 @@ class Model(ftk.Settings):
         ftk.Settings.__init__(self, context, settingsPath)
 
         cacheOptions = tl.timeline.PlayerCacheOptions()
-        cacheOptions.from_json(self.getJSON("/Cache")[1])
-        self._cache = tl.timeline.ObservableValuePlayerCacheOptions(cacheOptions)
+        settings = self.getJSON("/Cache")
+        if settings[0]:
+            cacheOptions.from_json(settings[1])
+        self._cache = tl.timeline.ObservablePlayerCacheOptions(cacheOptions)
 
     def __del__(self):
         self.setJSON("/Cache", self._cache.get().to_json())

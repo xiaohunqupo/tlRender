@@ -23,11 +23,11 @@ class Widget(ftk.IWidget):
         ftk.Divider(context, ftk.Orientation.Horizontal, self._layout)
         self._infoLabel.parent = self._layout
 
-        self._logObserver = ftk.ListObserverLogItem(
+        self._logObserver = ftk.LogItemListObserver(
             context.getSystemByName("ftk::LogSystem").observeLogItems,
             self._logUpdate)
 
-        self._playerObserver = tl.timeline.ValueObserverPlayer(
+        self._playerObserver = tl.timeline.PlayerObserver(
             app.getDocumentModel().observePlayer(),
             self._infoUpdate)
 

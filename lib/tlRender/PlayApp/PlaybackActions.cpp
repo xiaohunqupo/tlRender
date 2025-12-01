@@ -226,8 +226,7 @@ namespace tl
         }
 
         PlaybackActions::~PlaybackActions()
-        {
-        }
+        {}
 
         std::shared_ptr<PlaybackActions> PlaybackActions::create(
             const std::shared_ptr<ftk::Context>& context,

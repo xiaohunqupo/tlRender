@@ -45,7 +45,11 @@ class Actions:
             callback=lambda: self._mainWindowWeak().getViewport().viewZoomOut())
         self.actions["ZoomOut"].tooltip = "Zoom the view out."
 
-        self._frameObserver = ftk.ValueObserverBool(
+        self._playerObserver = tl.timeline.PlayerObserver(
+            app.getDocumentModel().observePlayer(),
+            self._playerUpdate)
+
+        self._frameObserver = ftk.BoolObserver(
             mainWindow.getViewport().observeFrameView,
             self._frameUpdate)
 
@@ -54,4 +58,10 @@ class Actions:
 
     def _frameUpdate(self, value):
         self.actions["Frame"].checked = value
+
+    def _playerUpdate(self, player):
+        self.actions["Frame"].enabled = player != None
+        self.actions["ZoomReset"].enabled = player != None
+        self.actions["ZoomIn"].enabled = player != None
+        self.actions["ZoomOut"].enabled = player != None
 

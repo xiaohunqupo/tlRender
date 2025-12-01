@@ -27,7 +27,9 @@ class Actions:
             checkedCallback=self._settingsCallback)
         self.actions["Settings"].tooltip = "Toggle the settings."
 
-        self._settingsToggleObserver = ftk.ValueObserverBool(mainWindow.settingsToggle, self._settingsUpdate)
+        self._settingsToggleObserver = ftk.BoolObserver(
+            mainWindow.settingsToggle,
+            self._settingsUpdate)
 
     def _fullScreenCallback(self, value):
         if self._mainWindowWeak:
