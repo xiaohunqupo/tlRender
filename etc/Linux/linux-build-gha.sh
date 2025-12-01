@@ -4,8 +4,6 @@ set -x
 
 BUILD_TYPE=$1
 
-JOBS=4
-
 cmake \
     -S tlRender/etc/SuperBuild \
     -B sbuild-$BUILD_TYPE \

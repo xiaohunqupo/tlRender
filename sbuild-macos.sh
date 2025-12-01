@@ -7,6 +7,7 @@ if [ "$#" -eq 1 ]; then
     BUILD_TYPE=$1
 fi
 
+export JOBS=4
 export TLRENDER_NET=OFF
 export TLRENDER_OCIO=ON
 export TLRENDER_JPEG=ON
