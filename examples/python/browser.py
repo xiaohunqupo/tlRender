@@ -110,9 +110,10 @@ class MainWindow(ftk.MainWindow):
             # Create the timeline and player.
             #
             # \todo Add exception handling.
-            timeline = tl.timeline.Timeline(self.context, path)
-            options = tl.timeline.PlayerOptions()
-            self._player = tl.timeline.Player(self.context, timeline, options)
+            timelineOptions = tl.timeline.Options()
+            timeline = tl.timeline.Timeline(self.context, path, timelineOptions)
+            playerOptions = tl.timeline.PlayerOptions()
+            self._player = tl.timeline.Player(self.context, timeline, playerOptions)
             self._viewport.player = self._player
             self._playButton.checked = False
             self._timelineWidget.player = self._player

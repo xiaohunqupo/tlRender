@@ -24,6 +24,14 @@ namespace tl
             py::class_<timeline::Options>(m, "Options")
                 .def(py::init())
                 .def_readwrite("imageSeqAudio", &timeline::Options::imageSeqAudio)
+                .def_readwrite("imageSeqAudioExts", &timeline::Options::imageSeqAudioExts)
+                .def_readwrite("imageSeqAudioFileName", &timeline::Options::imageSeqAudioFileName)
+                .def_readwrite("compat", &timeline::Options::compat)
+                .def_readwrite("videoRequestMax", &timeline::Options::videoRequestMax)
+                .def_readwrite("audioRequestMax", &timeline::Options::audioRequestMax)
+                .def_readwrite("requestTimeout", &timeline::Options::requestTimeout)
+                .def_readwrite("ioOptions", &timeline::Options::ioOptions)
+                .def_readwrite("pathOptions", &timeline::Options::pathOptions)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
         }
