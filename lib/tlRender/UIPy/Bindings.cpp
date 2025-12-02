@@ -3,6 +3,7 @@
 
 #include <tlRender/UIPy/Bindings.h>
 
+#include <tlRender/UIPy/IItem.h>
 #include <tlRender/UIPy/TimeEdit.h>
 #include <tlRender/UIPy/TimeLabel.h>
 #include <tlRender/UIPy/TimeUnitsWidget.h>
@@ -29,6 +30,7 @@ namespace tl
                 py::arg("context"),
                 "Initialize the library.");
 
+            iItem(mUI);
             timeEdit(mUI);
             timeLabel(mUI);
             timeUnitsWidget(mUI);

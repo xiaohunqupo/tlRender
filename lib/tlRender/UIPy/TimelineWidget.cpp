@@ -32,10 +32,20 @@ namespace tl
                     py::arg("context"),
                     py::arg("timeUnitsModel"),
                     py::arg("parent") = nullptr)
+                .def_property_readonly(
+                    "timeUnitsModel",
+                    &timelineui::TimelineWidget::getTimeUnitsModel)
                 .def_property(
                     "player",
                     &timelineui::TimelineWidget::getPlayer,
-                    &timelineui::TimelineWidget::setPlayer);
+                    &timelineui::TimelineWidget::setPlayer)
+                .def_property(
+                    "displayOptions",
+                    &timelineui::TimelineWidget::getDisplayOptions,
+                    &timelineui::TimelineWidget::setDisplayOptions)
+                .def_property_readonly(
+                    "observeDisplayOptions",
+                    &timelineui::TimelineWidget::observeDisplayOptions);
         }
     }
 }

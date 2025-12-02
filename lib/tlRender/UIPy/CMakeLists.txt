@@ -1,5 +1,6 @@
 set(HEADERS
     Bindings.h
+    IItem.h
     TimeEdit.h
     TimeLabel.h
     TimeUnitsWidget.h
@@ -8,6 +9,7 @@ set(HEADERS
 set(HEADERS_PRIVATE)
 set(SOURCE
     Bindings.cpp
+    IItem.cpp
     TimeEdit.cpp
     TimeLabel.cpp
     TimeUnitsWidget.cpp
