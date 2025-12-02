@@ -193,6 +193,9 @@ endif()
 if(TLRENDER_FFMPEG)
     if(WIN32)
         set(FFmpeg_FOUND TRUE)
+        add_library(FFmpeg::avutil STATIC IMPORTED)
+        set_property(TARGET FFmpeg::avutil PROPERTY
+             IMPORTED_LOCATION "${CMAKE_INSTALL_PREFIX}/lib/avutil.lib")
         add_library(FFmpeg::avdevice STATIC IMPORTED)
         set_property(TARGET FFmpeg::avdevice PROPERTY
              IMPORTED_LOCATION "${CMAKE_INSTALL_PREFIX}/lib/avdevice.lib")
@@ -208,9 +211,6 @@ if(TLRENDER_FFMPEG)
         add_library(FFmpeg::swscale STATIC IMPORTED)
         set_property(TARGET FFmpeg::swscale PROPERTY
              IMPORTED_LOCATION "${CMAKE_INSTALL_PREFIX}/lib/swscale.lib")
-        add_library(FFmpeg::avutil STATIC IMPORTED)
-        set_property(TARGET FFmpeg::avutil PROPERTY
-             IMPORTED_LOCATION "${CMAKE_INSTALL_PREFIX}/lib/avutil.lib")
         add_library(FFmpeg::FFmpeg INTERFACE IMPORTED)
         set_property(TARGET FFmpeg::FFmpeg PROPERTY
             INTERFACE_LINK_LIBRARIES
@@ -253,7 +253,9 @@ if(TLRENDER_FFMPEG)
         find_package(PkgConfig REQUIRED)
         pkg_check_modules(
             swresample REQUIRED IMPORTED_TARGET
-            libswresample
+            libswresample)
+        pkg_check_modules(
+            avutil REQUIRED IMPORTED_TARGET
             libavutil)
         pkg_check_modules(
             FFmpeg REQUIRED IMPORTED_TARGET
@@ -265,6 +267,7 @@ if(TLRENDER_FFMPEG)
             libavutil)
         add_library(FFmpeg::FFmpeg ALIAS PkgConfig::FFmpeg)
         add_library(FFmpeg::swresample ALIAS PkgConfig::swresample)
+        add_library(FFmpeg::avutil ALIAS PkgConfig::avutil)
     endif()
     if(FFmpeg_FOUND)
         add_definitions(-DTLRENDER_FFMPEG)
