@@ -16,7 +16,7 @@ namespace tl
     {
         class App;
 
-        //! Tab bar.
+        //! This widget provides tabs for the open documents.
         class TabBar : public ftk::IWidget
         {
             FTK_NON_COPYABLE(TabBar);

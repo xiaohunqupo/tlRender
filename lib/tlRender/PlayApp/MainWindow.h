@@ -29,7 +29,7 @@ namespace tl
         class ViewActions;
         class WindowActions;
 
-        //! Main window.
+        //! The main window creates the widgets and actions.
         class MainWindow : public ftk::Window
         {
             FTK_NON_COPYABLE(MainWindow);

@@ -11,7 +11,7 @@ namespace tl
 {
     namespace play
     {
-        //! Settings model.
+        //! This model provides settings that are saved and restored.
         class SettingsModel : public std::enable_shared_from_this<SettingsModel>
         {
             FTK_NON_COPYABLE(SettingsModel);

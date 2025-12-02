@@ -9,7 +9,9 @@ import os
 import weakref
 
 class File(ftk.Menu):
-
+    """
+    File menu.
+    """
     def __init__(self, context, app, actions, parent = None):
         ftk.Menu.__init__(self, context, parent)
 
@@ -22,13 +24,14 @@ class File(ftk.Menu):
         self.addDivider();
         self.addAction(actions.actions["Exit"])
         
+        selfWeak = weakref.ref(self)
         self.recentObserver = ftk.PathListObserver(
             app.getRecentFilesModel().observeRecent,
-            self._recentUpdate)
+            lambda recentList: selfWeak()._recentUpdate(recentList))
 
     def _recentCallback(self, recent):
         if (self._app):
-            self._app().open(ftk.Path(str(recent)))
+            self._app().getDocumentModel().open(ftk.Path(str(recent)))
 
     def _recentUpdate(self, recentList):
         self.recentMenu.clear()
@@ -39,7 +42,9 @@ class File(ftk.Menu):
             self.recentMenu.addAction(action)
 
 class Playback(ftk.Menu):
-
+    """
+    Playback menu.
+    """
     def __init__(self, context, app, actions, parent = None):
         ftk.Menu.__init__(self, context, parent)
 
@@ -59,7 +64,9 @@ class Playback(ftk.Menu):
         self.addAction(actions.actions["ResetOutPoint"])
 
 class View(ftk.Menu):
-
+    """
+    View menu.
+    """
     def __init__(self, context, app, actions, parent = None):
         ftk.Menu.__init__(self, context, parent)
 
@@ -69,7 +76,9 @@ class View(ftk.Menu):
         self.addAction(actions.actions["ZoomOut"])
 
 class Window(ftk.Menu):
-
+    """
+    Window menu.
+    """
     def __init__(self, context, app, actions, parent = None):
         ftk.Menu.__init__(self, context, parent)
 

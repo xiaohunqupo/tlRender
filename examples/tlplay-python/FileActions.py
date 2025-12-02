@@ -8,7 +8,9 @@ import tlRenderPy as tl
 import weakref
 
 class Actions:
-
+    """
+    This class provides file actions.
+    """
     def __init__(self, context, app, mainWindow):
 
         appWeak = weakref.ref(app)
@@ -19,7 +21,9 @@ class Actions:
             "FileOpen",
             ftk.Key.O,
             ftk.commandKeyModifier,
-            lambda: context.getSystemByName("ftk::FileBrowserSystem").open(mainWindowWeak(), appWeak().open))
+            lambda: context.getSystemByName("ftk::FileBrowserSystem").open(
+                mainWindowWeak(),
+                appWeak().getDocumentModel().open))
         self.actions["Open"].tooltip = "Open an image sequence, movie, or timeline file."
 
         self.actions["Close"] = ftk.Action(
@@ -27,7 +31,7 @@ class Actions:
             "FileClose",
             ftk.Key.E,
             ftk.commandKeyModifier,
-            lambda: appWeak().close())
+            lambda: appWeak().getDocumentModel().close())
         self.actions["Close"].tooltip = "Close the current file."
 
         self.actions["Reload"] = ftk.Action(
@@ -35,7 +39,7 @@ class Actions:
             "FileReload",
             ftk.Key.R,
             ftk.commandKeyModifier,
-            lambda: appWeak().reload())
+            lambda: appWeak().getDocumentModel().reload())
         self.actions["Reload"].tooltip = "Reload the current file."
 
         self.actions["Exit"] = ftk.Action(
@@ -44,9 +48,10 @@ class Actions:
             ftk.commandKeyModifier,
             lambda: appWeak().exit())
 
+        selfWeak = weakref.ref(self)
         self._playerObserver = tl.timeline.PlayerObserver(
             app.getDocumentModel().observePlayer(),
-            self._playerUpdate)
+            lambda player: selfWeak()._playerUpdate(player))
 
     def _playerUpdate(self, player):
         self.actions["Close"].enabled = player != None

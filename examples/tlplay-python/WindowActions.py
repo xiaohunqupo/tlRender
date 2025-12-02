@@ -8,7 +8,9 @@ import tlRenderPy as tl
 import weakref
 
 class Actions:
-
+    """
+    This class provides window actions.
+    """
     def __init__(self, context, app, mainWindow):
 
         self._mainWindowWeak = weakref.ref(mainWindow)
@@ -27,9 +29,10 @@ class Actions:
             checkedCallback=self._settingsCallback)
         self.actions["Settings"].tooltip = "Toggle the settings."
 
+        selfWeak = weakref.ref(self)
         self._settingsToggleObserver = ftk.BoolObserver(
             mainWindow.settingsToggle,
-            self._settingsUpdate)
+            lambda value: selfWeak()._settingsUpdate(value))
 
     def _fullScreenCallback(self, value):
         if self._mainWindowWeak:

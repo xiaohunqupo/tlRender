@@ -10,7 +10,7 @@ namespace tl
 {
     namespace play
     {
-        //! Recent files model.
+        //! This model tracks the recent files.
         class RecentFilesModel : public ftk::RecentFilesModel
         {
             FTK_NON_COPYABLE(RecentFilesModel);

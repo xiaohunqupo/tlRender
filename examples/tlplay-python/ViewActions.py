@@ -8,7 +8,9 @@ import tlRenderPy as tl
 import weakref
 
 class Actions:
-
+    """
+    This class provides view actions.
+    """
     def __init__(self, context, app, mainWindow):
 
         self._mainWindowWeak = weakref.ref(mainWindow)
@@ -45,13 +47,14 @@ class Actions:
             callback=lambda: self._mainWindowWeak().getViewport().viewZoomOut())
         self.actions["ZoomOut"].tooltip = "Zoom the view out."
 
+        selfWeak = weakref.ref(self)
         self._playerObserver = tl.timeline.PlayerObserver(
             app.getDocumentModel().observePlayer(),
-            self._playerUpdate)
+            lambda player: selfWeak()._playerUpdate(player))
 
         self._frameObserver = ftk.BoolObserver(
             mainWindow.getViewport().observeFrameView,
-            self._frameUpdate)
+            lambda value: selfWeak()._frameUpdate(value))
 
     def _frameCallback(self, value):
         self._mainWindowWeak().getViewport().frameView = value

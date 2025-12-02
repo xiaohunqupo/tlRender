@@ -13,7 +13,7 @@ namespace tl
     {
         class App;
 
-        //! Playback actions.
+        //! This class provides compare actions.
         class PlaybackActions : public std::enable_shared_from_this<PlaybackActions>
         {
             FTK_NON_COPYABLE(PlaybackActions);

@@ -20,7 +20,7 @@ namespace tl
     {
         class App;
 
-        //! Playback tool bar.
+        //! This widget provides playback controls and other time related widgets.
         class PlaybackBar : public ftk::IWidget
         {
             FTK_NON_COPYABLE(PlaybackBar);

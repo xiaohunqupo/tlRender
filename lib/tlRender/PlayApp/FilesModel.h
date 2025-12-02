@@ -11,7 +11,7 @@ namespace tl
     {
         class SettingsModel;
 
-        //! Files model.
+        //! This model handles opening and closing files.
         class FilesModel : public std::enable_shared_from_this<FilesModel>
         {
             FTK_NON_COPYABLE(FilesModel);

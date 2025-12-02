@@ -15,7 +15,7 @@ namespace tl
     {
         class App;
 
-        //! Cache settings widget.
+        //! This widget provides the timeline player cache settings.
         class CacheSettingsWidget : public ftk::IWidget
         {
             FTK_NON_COPYABLE(CacheSettingsWidget);
@@ -47,7 +47,7 @@ namespace tl
             std::shared_ptr<ftk::Observer<timeline::PlayerCacheOptions> > _cacheObserver;
         };
 
-        //! Settings widget.
+        //! This widget provides the settings.
         class SettingsWidget : public ftk::IWidget
         {
             FTK_NON_COPYABLE(SettingsWidget);

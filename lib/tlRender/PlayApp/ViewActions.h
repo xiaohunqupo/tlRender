@@ -13,7 +13,7 @@ namespace tl
     {
         class App;
 
-        //! View actions.
+        //! This class provides view actions.
         class ViewActions : public std::enable_shared_from_this<ViewActions>
         {
             FTK_NON_COPYABLE(ViewActions);

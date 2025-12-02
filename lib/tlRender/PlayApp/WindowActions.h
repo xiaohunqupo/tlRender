@@ -12,7 +12,7 @@ namespace tl
         class App;
         class MainWindow;
 
-        //! Window actions.
+        //! This class provides window actions.
         class WindowActions : public std::enable_shared_from_this<WindowActions>
         {
             FTK_NON_COPYABLE(WindowActions);

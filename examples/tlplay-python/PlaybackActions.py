@@ -8,7 +8,9 @@ import tlRenderPy as tl
 import weakref
 
 class Actions:
-
+    """
+    This class provides playback actions.
+    """
     def __init__(self, context, app):
         
         self._playback = tl.timeline.Playback.Forward
@@ -105,9 +107,10 @@ class Actions:
             self._resetOutPointCallback)
         self.actions["ResetOutPoint"].tooltip = "Reset the out point to the end frame."
 
+        selfWeak = weakref.ref(self)
         self._playerObserver = tl.timeline.PlayerObserver(
             app.getDocumentModel().observePlayer(),
-            self._playerUpdate)
+            lambda player: selfWeak()._playerUpdate(player))
 
     def _stopCallback(self):
         if self._player:
@@ -165,9 +168,10 @@ class Actions:
         self._player = player
         
         if player:
+            selfWeak = weakref.ref(self)
             self._playbackObserver = tl.timeline.PlaybackObserver(
                 player.observePlayback,
-                self._playbackUpdate)
+                lambda value: selfWeak()._playbackUpdate(value))
         else:
             self._playbackObserver = None
         

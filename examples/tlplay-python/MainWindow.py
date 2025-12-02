@@ -18,11 +18,13 @@ import WindowActions
 import weakref
 
 class MainWindow(ftk.MainWindow):
-
+    """
+    The main window creates the widgets and actions.
+    """
     def __init__(self, context, app):
         ftk.MainWindow.__init__(self, context, app, ftk.Size2I(1280, 960))
 
-        # Get settings.
+        # Restore settings.
         settingsToggle = False
         splitter = 0.8
         splitter2 = 0.8
@@ -40,16 +42,17 @@ class MainWindow(ftk.MainWindow):
         # Create observables.
         self.settingsToggle = ftk.ObservableBool(settingsToggle)
 
-        # Create widgets and actions.
+        # Create the main widgets.
         self._viewport = tl.ui.Viewport(context)
-
         self._timelineWidget = tl.ui.TimelineWidget(context, app.getTimeUnitsModel())
 
+        # Create the actions.
         self._fileActions = FileActions.Actions(context, app, self)
         self._playbackActions = PlaybackActions.Actions(context, app)
         self._viewActions = ViewActions.Actions(context, app, self)
         self._windowActions = WindowActions.Actions(context, app, self)
 
+        # Create the menu bar.
         self._menuBar = ftk.MenuBar(context)
         self._menuBar.addMenu("File", Menus.File(context, app, self._fileActions))
         self._menuBar.addMenu("Playback", Menus.Playback(context, app, self._playbackActions))
@@ -57,14 +60,14 @@ class MainWindow(ftk.MainWindow):
         self._menuBar.addMenu("Window", Menus.Window(context, app, self._windowActions))
         self.menuBar = self._menuBar
 
+        # Create the tool bars.
         self._fileToolBar = ToolBars.File(context, self._fileActions)
         self._viewToolBar = ToolBars.View(context, self._viewActions)
         self._windowToolBar = ToolBars.Window(context, self._windowActions)
-
         self._playbackBar = PlaybackBar.Widget(context, app, self._playbackActions)
-
         self._statusBar = StatusBar.Widget(context, app, self)
 
+        # Create the settings widget.
         self._settingsWidget = SettingsWidget.Widget(context, app)
         self._settingsWidget.setVisible(settingsToggle)
 
@@ -98,9 +101,11 @@ class MainWindow(ftk.MainWindow):
         selfWeak = weakref.ref(self)
         self.playerObserver = tl.timeline.PlayerObserver(
             app.getDocumentModel().observePlayer(),
-            lambda value: selfWeak()._widgetUpdate(value))
+            lambda player: selfWeak()._widgetUpdate(player))
 
     def __del__(self):
+    
+        # Save settings.
         self._settingsModel.setBool(
             "/MainWindow/SettingsVisible",
             self.settingsToggle.get())
@@ -108,9 +113,15 @@ class MainWindow(ftk.MainWindow):
         self._settingsModel.setDouble("/MainWindow/Splitter2", self._splitter2.split)
 
     def getViewport(self):
+        """
+        Get the viewport.
+        """
         return self._viewport
 
     def setSettingsVisible(self, value):
+        """
+        Set whether the settings widget is visible.
+        """
         if self.settingsToggle.setIfChanged(value):
             self._settingsWidget.setVisible(value)
 

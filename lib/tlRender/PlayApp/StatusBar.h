@@ -15,7 +15,7 @@ namespace tl
     {
         class App;
 
-        //! Status bar.
+        //! This widget displays errors and other information.
         class StatusBar : public ftk::IWidget
         {
             FTK_NON_COPYABLE(StatusBar);

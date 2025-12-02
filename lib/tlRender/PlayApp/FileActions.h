@@ -13,7 +13,7 @@ namespace tl
     {
         class App;
 
-        //! File actions.
+        //! This class provides file actions.
         class FileActions : public std::enable_shared_from_this<FileActions>
         {
             FTK_NON_COPYABLE(FileActions);

@@ -7,8 +7,12 @@ import tlRenderPy as tl
 
 import PlaybackActions
 
-class Widget(ftk.IWidget):
+import weakref
 
+class Widget(ftk.IWidget):
+    """
+    This widget provides playback controls and other time related widgets.
+    """
     def __init__(self, context, app, actions, parent = None):
         ftk.IWidget.__init__(self, context, "PlaybackBar.Widget", parent)
 
@@ -55,9 +59,10 @@ class Widget(ftk.IWidget):
 
         self._speedEdit.setCallback(self._speedCallback)
 
+        selfWeak = weakref.ref(self)
         self._playerObserver = tl.timeline.PlayerObserver(
             app.getDocumentModel().observePlayer(),
-            self._widgetUpdate)
+            lambda player: selfWeak()._playerUpdate(player))
 
     def setGeometry(self, value):
         ftk.IWidget.setGeometry(self, value)
@@ -80,16 +85,17 @@ class Widget(ftk.IWidget):
     def _speedUpdate(self, value):
         self._speedEdit.value = value
 
-    def _widgetUpdate(self, player):
+    def _playerUpdate(self, player):
         self._player = player
         if player:
             self._durationLabel.value = player.duration
+            selfWeak = weakref.ref(self)
             self._currentTimeObserver = tl.timeline.RationalTimeObserver(
                 player.observeCurrentTime,
-                self._currentTimeUpdate)
+                lambda value: selfWeak()._currentTimeUpdate(value))
             self._speedObserver = ftk.DoubleObserver(
                 player.observeSpeed,
-                self._speedUpdate)
+                lambda value: selfWeak()._speedUpdate(value))
         else:
             self._currentTimeEdit.value = tl.invalidTime
             self._durationLabel.value = tl.invalidTime

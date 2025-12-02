@@ -8,7 +8,9 @@ import tlRenderPy as tl
 import weakref
 
 class CacheWidget(ftk.IWidget):
-
+    """
+    This widget provides the timeline player cache settings.
+    """
     def __init__(self, context, app, parent = None):
         ftk.IWidget.__init__(self, context, "CacheWidget", parent)
         
@@ -37,8 +39,10 @@ class CacheWidget(ftk.IWidget):
         self._audioEdit.setCallback(self._audioCallback)
         self._readBehindEdit.setCallback(self._readBehindCallback)
 
+        selfWeak = weakref.ref(self)
         self._cacheObserver = tl.timeline.PlayerCacheOptionsObserver(
-            app.getSettingsModel().observeCache(), self._cacheUpdate)
+            app.getSettingsModel().observeCache(),
+            lambda value: selfWeak()._cacheUpdate(value))
 
     def setGeometry(self, value):
         ftk.IWidget.setGeometry(self, value)
@@ -71,7 +75,9 @@ class CacheWidget(ftk.IWidget):
         self._readBehindEdit.value = value.readBehind;
 
 class FileBrowserWidget(ftk.IWidget):
-
+    """
+    This widget provides the file browser settings.
+    """
     def __init__(self, context, app, parent = None):
         ftk.IWidget.__init__(self, context, "FileBrowserWidget", parent)
         
@@ -100,7 +106,9 @@ class FileBrowserWidget(ftk.IWidget):
             fileBrowserSystem.nativeFileDialog = value
 
 class Widget(ftk.IWidget):
-
+    """
+    This widget provides the settings.
+    """
     def __init__(self, context, app, parent = None):
         ftk.IWidget.__init__(self, context, "SettingsWidget", parent)
         

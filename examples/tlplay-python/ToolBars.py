@@ -6,7 +6,9 @@ import ftkPy as ftk
 import tlRenderPy as tl
 
 class File(ftk.ToolBar):
-
+    """
+    File tool bar.
+    """
     def __init__(self, context, actions, parent = None):
         ftk.ToolBar.__init__(self, context, ftk.Orientation.Horizontal, parent)
 
@@ -14,7 +16,9 @@ class File(ftk.ToolBar):
         self.addAction(actions.actions["Close"])
 
 class View(ftk.ToolBar):
-
+    """
+    View tool bar.
+    """
     def __init__(self, context, actions, parent = None):
         ftk.ToolBar.__init__(self, context, ftk.Orientation.Horizontal, parent)
 
@@ -24,7 +28,9 @@ class View(ftk.ToolBar):
         self.addAction(actions.actions["ZoomOut"])
 
 class Window(ftk.ToolBar):
-
+    """
+    Window tool bar.
+    """
     def __init__(self, context, actions, parent = None):
         ftk.ToolBar.__init__(self, context, ftk.Orientation.Horizontal, parent)
 

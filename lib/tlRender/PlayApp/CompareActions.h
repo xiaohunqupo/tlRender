@@ -13,7 +13,7 @@ namespace tl
     {
         class App;
 
-        //! Compare actions.
+        //! This class provides compare actions.
         class CompareActions : public std::enable_shared_from_this<CompareActions>
         {
             FTK_NON_COPYABLE(CompareActions);

@@ -5,8 +5,12 @@ import opentimelineio as otio
 import ftkPy as ftk
 import tlRenderPy as tl
 
-class Widget(ftk.IWidget):
+import weakref
 
+class Widget(ftk.IWidget):
+    """
+    This widget displays errors and other information.
+    """
     def __init__(self, context, app, actions, parent = None):
         ftk.IWidget.__init__(self, context, "StatusBar.Widget", parent)
 
@@ -23,13 +27,14 @@ class Widget(ftk.IWidget):
         ftk.Divider(context, ftk.Orientation.Horizontal, self._layout)
         self._infoLabel.parent = self._layout
 
+        selfWeak = weakref.ref(self)
         self._logObserver = ftk.LogItemListObserver(
             context.getSystemByName("ftk::LogSystem").observeLogItems,
-            self._logUpdate)
+            lambda logItems: selfWeak()._logUpdate(logItems))
 
         self._playerObserver = tl.timeline.PlayerObserver(
             app.getDocumentModel().observePlayer(),
-            self._infoUpdate)
+            lambda player: selfWeak()._infoUpdate(player))
 
         self._logTimer = ftk.Timer(context)
 
