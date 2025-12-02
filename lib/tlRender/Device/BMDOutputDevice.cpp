@@ -51,18 +51,18 @@ namespace tl
         struct OutputDevice::Private
         {
             std::weak_ptr<ftk::LogSystem> logSystem;
-            std::shared_ptr<ftk::ObservableValue<DeviceConfig> > config;
-            std::shared_ptr<ftk::ObservableValue<bool> > enabled;
-            std::shared_ptr<ftk::ObservableValue<bool> > active;
-            std::shared_ptr<ftk::ObservableValue<ftk::Size2I> > size;
-            std::shared_ptr<ftk::ObservableValue<FrameRate> > frameRate;
-            std::shared_ptr<ftk::ObservableValue<int> > videoFrameDelay;
+            std::shared_ptr<ftk::Observable<DeviceConfig> > config;
+            std::shared_ptr<ftk::Observable<bool> > enabled;
+            std::shared_ptr<ftk::Observable<bool> > active;
+            std::shared_ptr<ftk::Observable<ftk::Size2I> > size;
+            std::shared_ptr<ftk::Observable<FrameRate> > frameRate;
+            std::shared_ptr<ftk::Observable<int> > videoFrameDelay;
 
             std::shared_ptr<timeline::Player> player;
-            std::shared_ptr<ftk::ValueObserver<timeline::Playback> > playbackObserver;
-            std::shared_ptr<ftk::ValueObserver<double> > speedObserver;
-            std::shared_ptr<ftk::ValueObserver<OTIO_NS::RationalTime> > currentTimeObserver;
-            std::shared_ptr<ftk::ValueObserver<OTIO_NS::RationalTime> > seekObserver;
+            std::shared_ptr<ftk::Observer<timeline::Playback> > playbackObserver;
+            std::shared_ptr<ftk::Observer<double> > speedObserver;
+            std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > currentTimeObserver;
+            std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > seekObserver;
             std::shared_ptr<ftk::ListObserver<timeline::VideoData> > videoObserver;
             std::shared_ptr<ftk::ListObserver<timeline::AudioData> > audioObserver;
 
@@ -135,12 +135,12 @@ namespace tl
             FTK_P();
 
             p.logSystem = context->getLogSystem();
-            p.config = ftk::ObservableValue<DeviceConfig>::create();
-            p.enabled = ftk::ObservableValue<bool>::create(false);
-            p.active = ftk::ObservableValue<bool>::create(false);
-            p.size = ftk::ObservableValue<ftk::Size2I>::create();
-            p.frameRate = ftk::ObservableValue<FrameRate>::create();
-            p.videoFrameDelay = ftk::ObservableValue<int>::create(bmd::videoFrameDelay);
+            p.config = ftk::Observable<DeviceConfig>::create();
+            p.enabled = ftk::Observable<bool>::create(false);
+            p.active = ftk::Observable<bool>::create(false);
+            p.size = ftk::Observable<ftk::Size2I>::create();
+            p.frameRate = ftk::Observable<FrameRate>::create();
+            p.videoFrameDelay = ftk::Observable<int>::create(bmd::videoFrameDelay);
 
             p.window = ftk::gl::Window::create(
                 context,
@@ -191,7 +191,7 @@ namespace tl
             return _p->config->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<DeviceConfig> > OutputDevice::observeConfig() const
+        std::shared_ptr<ftk::IObservable<DeviceConfig> > OutputDevice::observeConfig() const
         {
             return _p->config;
         }
@@ -214,7 +214,7 @@ namespace tl
             return _p->enabled->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<bool> > OutputDevice::observeEnabled() const
+        std::shared_ptr<ftk::IObservable<bool> > OutputDevice::observeEnabled() const
         {
             return _p->enabled;
         }
@@ -237,7 +237,7 @@ namespace tl
             return _p->active->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<bool> > OutputDevice::observeActive() const
+        std::shared_ptr<ftk::IObservable<bool> > OutputDevice::observeActive() const
         {
             return _p->active;
         }
@@ -247,7 +247,7 @@ namespace tl
             return _p->size->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<ftk::Size2I> > OutputDevice::observeSize() const
+        std::shared_ptr<ftk::IObservable<ftk::Size2I> > OutputDevice::observeSize() const
         {
             return _p->size;
         }
@@ -257,7 +257,7 @@ namespace tl
             return _p->frameRate->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<FrameRate> > OutputDevice::observeFrameRate() const
+        std::shared_ptr<ftk::IObservable<FrameRate> > OutputDevice::observeFrameRate() const
         {
             return _p->frameRate;
         }
@@ -267,7 +267,7 @@ namespace tl
             return _p->videoFrameDelay->get();
         }
 
-        std::shared_ptr<ftk::IObservableValue<int> > OutputDevice::observeVideoFrameDelay() const
+        std::shared_ptr<ftk::IObservable<int> > OutputDevice::observeVideoFrameDelay() const
         {
             return _p->videoFrameDelay;
         }
@@ -436,7 +436,7 @@ namespace tl
             if (p.player)
             {
                 auto weak = std::weak_ptr<OutputDevice>(shared_from_this());
-                p.playbackObserver = ftk::ValueObserver<timeline::Playback>::create(
+                p.playbackObserver = ftk::Observer<timeline::Playback>::create(
                     p.player->observePlayback(),
                     [weak](timeline::Playback value)
                     {
@@ -450,7 +450,7 @@ namespace tl
                         }
                     },
                     ftk::ObserverAction::Suppress);
-                p.speedObserver = ftk::ValueObserver<double>::create(
+                p.speedObserver = ftk::Observer<double>::create(
                     p.player->observeSpeed(),
                     [weak](double value)
                     {
@@ -464,7 +464,7 @@ namespace tl
                         }
                     },
                     ftk::ObserverAction::Suppress);
-                p.currentTimeObserver = ftk::ValueObserver<OTIO_NS::RationalTime>::create(
+                p.currentTimeObserver = ftk::Observer<OTIO_NS::RationalTime>::create(
                     p.player->observeCurrentTime(),
                     [weak](const OTIO_NS::RationalTime& value)
                     {
@@ -478,7 +478,7 @@ namespace tl
                         }
                     },
                     ftk::ObserverAction::Suppress);
-                p.seekObserver = ftk::ValueObserver<OTIO_NS::RationalTime>::create(
+                p.seekObserver = ftk::Observer<OTIO_NS::RationalTime>::create(
                     p.player->observeSeek(),
                     [weak](const OTIO_NS::RationalTime&)
                     {

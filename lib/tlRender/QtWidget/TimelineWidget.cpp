@@ -20,9 +20,9 @@ namespace tl
         {
             std::shared_ptr<timelineui::TimelineWidget> timelineWidget;
 
-            std::shared_ptr<ftk::ValueObserver<bool> > frameViewObserver;
-            std::shared_ptr<ftk::ValueObserver<bool> > scrubObserver;
-            std::shared_ptr<ftk::ValueObserver<OTIO_NS::RationalTime> > timeScrubObserver;
+            std::shared_ptr<ftk::Observer<bool> > frameViewObserver;
+            std::shared_ptr<ftk::Observer<bool> > scrubObserver;
+            std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > timeScrubObserver;
         };
 
         TimelineWidget::TimelineWidget(
@@ -38,21 +38,21 @@ namespace tl
             p.timelineWidget = timelineui::TimelineWidget::create(context, timeUnitsModel);
             setWidget(p.timelineWidget);
 
-            p.frameViewObserver = ftk::ValueObserver<bool>::create(
+            p.frameViewObserver = ftk::Observer<bool>::create(
                 p.timelineWidget->observeFrameView(),
                 [this](bool value)
                 {
                     Q_EMIT frameViewChanged(value);
                 });
 
-            p.scrubObserver = ftk::ValueObserver<bool>::create(
+            p.scrubObserver = ftk::Observer<bool>::create(
                 p.timelineWidget->observeScrub(),
                 [this](bool value)
                 {
                     Q_EMIT scrubChanged(value);
                 });
 
-            p.timeScrubObserver = ftk::ValueObserver<OTIO_NS::RationalTime>::create(
+            p.timeScrubObserver = ftk::Observer<OTIO_NS::RationalTime>::create(
                 p.timelineWidget->observeTimeScrub(),
                 [this](const OTIO_NS::RationalTime& value)
                 {

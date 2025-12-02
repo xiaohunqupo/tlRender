@@ -40,7 +40,7 @@ namespace tl
             ftk::VideoLevels videoLevels = ftk::VideoLevels::LegalRange;
             HDRMode hdrMode = HDRMode::FromFile;
             image::HDRData hdrData;
-            std::shared_ptr<ftk::ObservableValue<DevicesModelData> > data;
+            std::shared_ptr<ftk::Observable<DevicesModelData> > data;
             std::shared_ptr<ftk::ListObserver<DeviceInfo> > deviceInfoObserver;
         };
 
@@ -49,7 +49,7 @@ namespace tl
         {
             FTK_P();
 
-            p.data = ftk::ObservableValue<DevicesModelData>::create();
+            p.data = ftk::Observable<DevicesModelData>::create();
 
             _update();
 
@@ -80,7 +80,7 @@ namespace tl
             return out;
         }
 
-        std::shared_ptr<ftk::IObservableValue<DevicesModelData> > DevicesModel::observeData() const
+        std::shared_ptr<ftk::IObservable<DevicesModelData> > DevicesModel::observeData() const
         {
             return _p->data;
         }

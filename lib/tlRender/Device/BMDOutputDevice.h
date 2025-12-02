@@ -42,7 +42,7 @@ namespace tl
             DeviceConfig getConfig() const;
 
             //! Observe the device configuration.
-            std::shared_ptr<ftk::IObservableValue<DeviceConfig> > observeConfig() const;
+            std::shared_ptr<ftk::IObservable<DeviceConfig> > observeConfig() const;
 
             //! Set the device configuration.
             void setConfig(const DeviceConfig&);
@@ -51,7 +51,7 @@ namespace tl
             bool isEnabled() const;
 
             //! Observe whether the device is enabled.
-            std::shared_ptr<ftk::IObservableValue<bool> > observeEnabled() const;
+            std::shared_ptr<ftk::IObservable<bool> > observeEnabled() const;
 
             //! Set whether the device is enabled.
             void setEnabled(bool);
@@ -60,25 +60,25 @@ namespace tl
             bool isActive() const;
 
             //! Observe whether the device is active.
-            std::shared_ptr<ftk::IObservableValue<bool> > observeActive() const;
+            std::shared_ptr<ftk::IObservable<bool> > observeActive() const;
 
             //! Get the video size.
             const ftk::Size2I& getSize() const;
 
             //! Observe the video size.
-            std::shared_ptr<ftk::IObservableValue<ftk::Size2I> > observeSize() const;
+            std::shared_ptr<ftk::IObservable<ftk::Size2I> > observeSize() const;
 
             //! Get the frame rate.
             const FrameRate& getFrameRate() const;
 
             //! Observe the frame rate.
-            std::shared_ptr<ftk::IObservableValue<FrameRate> > observeFrameRate() const;
+            std::shared_ptr<ftk::IObservable<FrameRate> > observeFrameRate() const;
 
             //! Get the video frame delay.
             int getVideoFrameDelay() const;
 
             //! Observe the video frame delay.
-            std::shared_ptr<ftk::IObservableValue<int> > observeVideoFrameDelay() const;
+            std::shared_ptr<ftk::IObservable<int> > observeVideoFrameDelay() const;
 
             //! Set the view.
             void setView(

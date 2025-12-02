@@ -6,7 +6,7 @@
 #include <tlRender/Device/BMDData.h>
 
 #include <ftk/Core/Image.h>
-#include <ftk/Core/ObservableValue.h>
+#include <ftk/Core/Observable.h>
 
 #include <memory>
 #include <string>
@@ -56,7 +56,7 @@ namespace tl
                 const std::shared_ptr<ftk::Context>&);
 
             //! Observe the model data.
-            std::shared_ptr<ftk::IObservableValue<DevicesModelData> > observeData() const;
+            std::shared_ptr<ftk::IObservable<DevicesModelData> > observeData() const;
 
             //! Set the device index.
             void setDeviceIndex(int);

@@ -26,25 +26,25 @@ namespace tl
             std::shared_ptr<timeline::Player> player;
             std::unique_ptr<QTimer> timer;
 
-            std::shared_ptr<ftk::ValueObserver<double> > speedObserver;
-            std::shared_ptr<ftk::ValueObserver<timeline::Playback> > playbackObserver;
-            std::shared_ptr<ftk::ValueObserver<timeline::Loop> > loopObserver;
-            std::shared_ptr<ftk::ValueObserver<OTIO_NS::RationalTime> > currentTimeObserver;
-            std::shared_ptr<ftk::ValueObserver<OTIO_NS::TimeRange> > inOutRangeObserver;
+            std::shared_ptr<ftk::Observer<double> > speedObserver;
+            std::shared_ptr<ftk::Observer<timeline::Playback> > playbackObserver;
+            std::shared_ptr<ftk::Observer<timeline::Loop> > loopObserver;
+            std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > currentTimeObserver;
+            std::shared_ptr<ftk::Observer<OTIO_NS::TimeRange> > inOutRangeObserver;
             std::shared_ptr<ftk::ListObserver<std::shared_ptr<timeline::Timeline> > > compareObserver;
-            std::shared_ptr<ftk::ValueObserver<timeline::CompareTime> > compareTimeObserver;
-            std::shared_ptr<ftk::ValueObserver<io::Options> > ioOptionsObserver;
-            std::shared_ptr<ftk::ValueObserver<int> > videoLayerObserver;
+            std::shared_ptr<ftk::Observer<timeline::CompareTime> > compareTimeObserver;
+            std::shared_ptr<ftk::Observer<io::Options> > ioOptionsObserver;
+            std::shared_ptr<ftk::Observer<int> > videoLayerObserver;
             std::shared_ptr<ftk::ListObserver<int> > compareVideoLayersObserver;
             std::shared_ptr<ftk::ListObserver<timeline::VideoData> > currentVideoObserver;
-            std::shared_ptr<ftk::ValueObserver<audio::DeviceID> > audioDeviceObserver;
-            std::shared_ptr<ftk::ValueObserver<float> > volumeObserver;
-            std::shared_ptr<ftk::ValueObserver<bool> > muteObserver;
+            std::shared_ptr<ftk::Observer<audio::DeviceID> > audioDeviceObserver;
+            std::shared_ptr<ftk::Observer<float> > volumeObserver;
+            std::shared_ptr<ftk::Observer<bool> > muteObserver;
             std::shared_ptr<ftk::ListObserver<bool> > channelMuteObserver;
-            std::shared_ptr<ftk::ValueObserver<double> > audioOffsetObserver;
+            std::shared_ptr<ftk::Observer<double> > audioOffsetObserver;
             std::shared_ptr<ftk::ListObserver<timeline::AudioData> > currentAudioObserver;
-            std::shared_ptr<ftk::ValueObserver<timeline::PlayerCacheOptions> > cacheOptionsObserver;
-            std::shared_ptr<ftk::ValueObserver<timeline::PlayerCacheInfo> > cacheInfoObserver;
+            std::shared_ptr<ftk::Observer<timeline::PlayerCacheOptions> > cacheOptionsObserver;
+            std::shared_ptr<ftk::Observer<timeline::PlayerCacheInfo> > cacheInfoObserver;
         };
 
         void PlayerObject::_init(
@@ -55,35 +55,35 @@ namespace tl
 
             p.player = player;
 
-            p.speedObserver = ftk::ValueObserver<double>::create(
+            p.speedObserver = ftk::Observer<double>::create(
                 p.player->observeSpeed(),
                 [this](double value)
                 {
                     Q_EMIT speedChanged(value);
                 });
 
-            p.playbackObserver = ftk::ValueObserver<timeline::Playback>::create(
+            p.playbackObserver = ftk::Observer<timeline::Playback>::create(
                 p.player->observePlayback(),
                 [this](timeline::Playback value)
                 {
                     Q_EMIT playbackChanged(value);
                 });
 
-            p.loopObserver = ftk::ValueObserver<timeline::Loop>::create(
+            p.loopObserver = ftk::Observer<timeline::Loop>::create(
                 p.player->observeLoop(),
                 [this](timeline::Loop value)
                 {
                     Q_EMIT loopChanged(value);
                 });
 
-            p.currentTimeObserver = ftk::ValueObserver<OTIO_NS::RationalTime>::create(
+            p.currentTimeObserver = ftk::Observer<OTIO_NS::RationalTime>::create(
                 p.player->observeCurrentTime(),
                 [this](const OTIO_NS::RationalTime& value)
                 {
                     Q_EMIT currentTimeChanged(value);
                 });
 
-            p.inOutRangeObserver = ftk::ValueObserver<OTIO_NS::TimeRange>::create(
+            p.inOutRangeObserver = ftk::Observer<OTIO_NS::TimeRange>::create(
                 p.player->observeInOutRange(),
                 [this](const OTIO_NS::TimeRange value)
                 {
@@ -97,21 +97,21 @@ namespace tl
                     Q_EMIT compareChanged(value);
                 });
 
-            p.compareTimeObserver = ftk::ValueObserver<timeline::CompareTime>::create(
+            p.compareTimeObserver = ftk::Observer<timeline::CompareTime>::create(
                 p.player->observeCompareTime(),
                 [this](timeline::CompareTime value)
                 {
                     Q_EMIT compareTimeChanged(value);
                 });
 
-            p.ioOptionsObserver = ftk::ValueObserver<io::Options>::create(
+            p.ioOptionsObserver = ftk::Observer<io::Options>::create(
                 p.player->observeIOOptions(),
                 [this](const io::Options& value)
                 {
                     Q_EMIT ioOptionsChanged(value);
                 });
 
-            p.videoLayerObserver = ftk::ValueObserver<int>::create(
+            p.videoLayerObserver = ftk::Observer<int>::create(
                 p.player->observeVideoLayer(),
                 [this](int value)
                 {
@@ -133,21 +133,21 @@ namespace tl
                 },
                 ftk::ObserverAction::Suppress);
 
-            p.audioDeviceObserver = ftk::ValueObserver<audio::DeviceID>::create(
+            p.audioDeviceObserver = ftk::Observer<audio::DeviceID>::create(
                 p.player->observeAudioDevice(),
                 [this](const audio::DeviceID& value)
                 {
                     Q_EMIT audioDeviceChanged(value);
                 });
 
-            p.volumeObserver = ftk::ValueObserver<float>::create(
+            p.volumeObserver = ftk::Observer<float>::create(
                 p.player->observeVolume(),
                 [this](float value)
                 {
                     Q_EMIT volumeChanged(value);
                 });
 
-            p.muteObserver = ftk::ValueObserver<bool>::create(
+            p.muteObserver = ftk::Observer<bool>::create(
                 p.player->observeMute(),
                 [this](bool value)
                 {
@@ -161,7 +161,7 @@ namespace tl
                     Q_EMIT channelMuteChanged(value);
                 });
 
-            p.audioOffsetObserver = ftk::ValueObserver<double>::create(
+            p.audioOffsetObserver = ftk::Observer<double>::create(
                 p.player->observeAudioOffset(),
                 [this](double value)
                 {
@@ -175,14 +175,14 @@ namespace tl
                     Q_EMIT currentAudioChanged(value);
                 });
 
-            p.cacheOptionsObserver = ftk::ValueObserver<timeline::PlayerCacheOptions>::create(
+            p.cacheOptionsObserver = ftk::Observer<timeline::PlayerCacheOptions>::create(
                 p.player->observeCacheOptions(),
                 [this](const timeline::PlayerCacheOptions& value)
                 {
                     Q_EMIT cacheOptionsChanged(value);
                 });
 
-            p.cacheInfoObserver = ftk::ValueObserver<timeline::PlayerCacheInfo>::create(
+            p.cacheInfoObserver = ftk::Observer<timeline::PlayerCacheInfo>::create(
                 p.player->observeCacheInfo(),
                 [this](const timeline::PlayerCacheInfo& value)
                 {
