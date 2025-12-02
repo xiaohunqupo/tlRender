@@ -7,34 +7,41 @@ namespace tl
 {
     namespace play
     {
-        void SettingsModel::_init(
+        SettingsModel::SettingsModel(
             const std::shared_ptr<ftk::Context>& context,
-            const std::filesystem::path& path)
+            const std::filesystem::path& path) :
+            Settings(context, path, false)
         {
-            _settings = ftk::Settings::create(context, path);
+            // Restore file browser settings.
+            ftk::FileBrowserOptions fileBrowserOptions;
+            getT("/FileBrowser", fileBrowserOptions);
+            _fileBrowserSystem = context->getSystem<ftk::FileBrowserSystem>();
+            _fileBrowserSystem->getModel()->setOptions(fileBrowserOptions);
+            bool nativeFileDialog = false;
+            get("/NativeFileDialog", nativeFileDialog);
+            _fileBrowserSystem->setNativeFileDialog(nativeFileDialog);
 
+            // Restore timeline player cache settings.
             timeline::PlayerCacheOptions cache;
-            _settings->getT("/Cache", cache);
+            getT("/Cache", cache);
             _cache = ftk::Observable<timeline::PlayerCacheOptions>::create(cache);
         }
-
+        
         SettingsModel::~SettingsModel()
         {
-            _settings->setT("/Cache", _cache->get());
+            // Save file browser settings.
+            setT("/FileBrowser", _fileBrowserSystem->getModel()->getOptions());
+            set("/NativeFileDialog", _fileBrowserSystem->isNativeFileDialog());
+
+            // Save timeline player cache settings.
+            setT("/Cache", _cache->get());
         }
 
         std::shared_ptr<SettingsModel> SettingsModel::create(
             const std::shared_ptr<ftk::Context>& context,
             const std::filesystem::path& path)
         {
-            auto out = std::shared_ptr<SettingsModel>(new SettingsModel);
-            out->_init(context, path);
-            return out;
-        }
-
-        const std::shared_ptr<ftk::Settings>& SettingsModel::getSettings() const
-        {
-            return _settings;
+            return std::shared_ptr<SettingsModel>(new SettingsModel(context, path));
         }
 
         const timeline::PlayerCacheOptions& SettingsModel::getCache() const

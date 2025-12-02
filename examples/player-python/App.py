@@ -19,7 +19,7 @@ class App(ftk.App):
     def __init__(self, context, argv):
         
         # Command line arguments.
-        cmdLineInput = ftk.CmdLineValueArgString("Input", "Input file", True)
+        self._cmdLineInput = ftk.CmdLineValueArgString("Input", "Input file", True)
         
         ftk.App.__init__(
             self,
@@ -27,41 +27,7 @@ class App(ftk.App):
             argv,
             "player-python",
             "Python player example",
-            [ cmdLineInput ])
-
-        # \bug Set the display scale manually.
-        self.displayScale = 2
-
-        # Create the settings model.
-        self._settingsModel = SettingsModel.Model(context)
-
-        # Create the time units model.
-        self._timeUnitsModel = tl.timeline.TimeUnitsModel(context)
-        settings = self._settingsModel.getString("/TimeUnits")
-        if settings[0]:
-            self._timeUnitsModel.timeUnits = tl.timeline.timeUnitsFromString(settings[1])[1]
-
-        # Create the recent files model.
-        self._recentFilesModel = ftk.RecentFilesModel(context)
-        self._recentFilesModel.recent = self._settingsModel.getStringList("/Files/Recent")[1]
-        fileBrowserSystem = context.getSystemByName("ftk::FileBrowserSystem")
-        fileBrowserSystem.recentFilesModel = self._recentFilesModel
-
-        # Create the document model.
-        self._documentModel = DocumentModel.Model(self.context, self)
-        
-        # Create the main window.
-        self._window = MainWindow.MainWindow(context, self)
-        
-        # Create an observer to update the recent files.
-        selfWeak = weakref.ref(self)
-        self._playerObserver = tl.timeline.PlayerObserver(
-            self._documentModel.observePlayer(),
-            lambda player: selfWeak()._playerUpdate(player))
-
-        # Open command line inputs.
-        if cmdLineInput.hasValue:
-            self._documentModel.open(ftk.Path(cmdLineInput.value))
+            [ self._cmdLineInput ])
 
     def __del__(self):
         
@@ -99,6 +65,47 @@ class App(ftk.App):
     def tick(self):
         super().tick()
         self._documentModel.tick()
+
+    def run(self):
+
+        # \bug Set the display scale manually.
+        self.displayScale = 2
+
+        # Create the settings model.
+        self._settingsModel = SettingsModel.Model(self.context)
+
+        # Create the time units model.
+        self._timeUnitsModel = tl.timeline.TimeUnitsModel(self.context)
+        settings = self._settingsModel.getString("/TimeUnits")
+        if settings[0]:
+            self._timeUnitsModel.timeUnits = tl.timeline.timeUnitsFromString(settings[1])[1]
+
+        # Create the recent files model.
+        self._recentFilesModel = ftk.RecentFilesModel(self.context)
+        self._recentFilesModel.recent = self._settingsModel.getStringList("/Files/Recent")[1]
+
+        # Create the document model.
+        self._documentModel = DocumentModel.Model(self.context, self)
+        
+        # Initialize the file browser.
+        fileBrowserSystem = self.context.getSystemByName("ftk::FileBrowserSystem")
+        fileBrowserSystem.model.exts = tl.timeline.getExts(self.context)
+        fileBrowserSystem.recentFilesModel = self._recentFilesModel
+
+        # Create the main window.
+        self._window = MainWindow.MainWindow(self.context, self)
+        
+        # Create an observer to update the recent files.
+        selfWeak = weakref.ref(self)
+        self._playerObserver = tl.timeline.PlayerObserver(
+            self._documentModel.observePlayer(),
+            lambda player: selfWeak()._playerUpdate(player))
+
+        # Open command line inputs.
+        if self._cmdLineInput.hasValue:
+            self._documentModel.open(ftk.Path(self._cmdLineInput.value))
+
+        super().run()
 
     def _playerUpdate(self, player):
         if player:

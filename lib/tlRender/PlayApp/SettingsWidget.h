@@ -5,6 +5,7 @@
 
 #include <tlRender/Timeline/Player.h>
 
+#include <ftk/UI/CheckBox.h>
 #include <ftk/UI/DoubleEdit.h>
 #include <ftk/UI/FormLayout.h>
 #include <ftk/UI/RowLayout.h>
@@ -43,6 +44,36 @@ namespace tl
             std::shared_ptr<ftk::DoubleEdit> _videoEdit;
             std::shared_ptr<ftk::DoubleEdit> _audioEdit;
             std::shared_ptr<ftk::DoubleEdit> _readBehindEdit;
+            std::shared_ptr<ftk::FormLayout> _layout;
+            std::shared_ptr<ftk::Observer<timeline::PlayerCacheOptions> > _cacheObserver;
+        };
+
+        //! This widget provides the file browser settings.
+        class FileBrowserSettingsWidget : public ftk::IWidget
+        {
+            FTK_NON_COPYABLE(FileBrowserSettingsWidget);
+
+        protected:
+            void _init(
+                const std::shared_ptr<ftk::Context>&,
+                const std::shared_ptr<App>&,
+                const std::shared_ptr<IWidget>& parent);
+
+            FileBrowserSettingsWidget() = default;
+
+        public:
+            ~FileBrowserSettingsWidget();
+
+            static std::shared_ptr<FileBrowserSettingsWidget> create(
+                const std::shared_ptr<ftk::Context>&,
+                const std::shared_ptr<App>&,
+                const std::shared_ptr<IWidget>& parent = nullptr);
+
+            void setGeometry(const ftk::Box2I&) override;
+            void sizeHintEvent(const ftk::SizeHintEvent&) override;
+
+        private:
+            std::shared_ptr<ftk::CheckBox> _nativeCheckBox;
             std::shared_ptr<ftk::FormLayout> _layout;
             std::shared_ptr<ftk::Observer<timeline::PlayerCacheOptions> > _cacheObserver;
         };

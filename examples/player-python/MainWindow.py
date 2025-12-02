@@ -25,13 +25,13 @@ class MainWindow(ftk.MainWindow):
         ftk.MainWindow.__init__(self, context, app, ftk.Size2I(1280, 960))
 
         # Restore settings.
-        settingsToggle = False
+        settingsVisible = False
         splitter = 0.8
         splitter2 = 0.8
         self._settingsModel = app.getSettingsModel()
         settings = self._settingsModel.getBool("/MainWindow/SettingsVisible")
         if settings[0]:
-            settingsToggle = settings[1]
+            settingsVisible = settings[1]
         settings = self._settingsModel.getDouble("/MainWindow/Splitter")
         if settings[0]:
             splitter = settings[1]
@@ -39,11 +39,10 @@ class MainWindow(ftk.MainWindow):
         if settings[0]:
             splitter2 = settings[1]
 
-        # Create observables.
-        self.settingsToggle = ftk.ObservableBool(settingsToggle)
-
-        # Create the main widgets.
+        # Create the viewport.
         self._viewport = tl.ui.Viewport(context)
+        
+        # Create the timeline.
         self._timelineWidget = tl.ui.TimelineWidget(context, app.getTimeUnitsModel())
 
         # Create the actions.
@@ -69,7 +68,8 @@ class MainWindow(ftk.MainWindow):
 
         # Create the settings widget.
         self._settingsWidget = SettingsWidget.Widget(context, app)
-        self._settingsWidget.setVisible(settingsToggle)
+        self._settingsWidget.setVisible(settingsVisible)
+        self.settingsVisible = ftk.ObservableBool(settingsVisible)
 
         # Layout widgets.
         self._layout = ftk.VerticalLayout(context)
@@ -108,7 +108,7 @@ class MainWindow(ftk.MainWindow):
         # Save settings.
         self._settingsModel.setBool(
             "/MainWindow/SettingsVisible",
-            self.settingsToggle.get())
+            self.settingsVisible.get())
         self._settingsModel.setDouble("/MainWindow/Splitter", self._splitter.split)
         self._settingsModel.setDouble("/MainWindow/Splitter2", self._splitter2.split)
 
@@ -122,7 +122,7 @@ class MainWindow(ftk.MainWindow):
         """
         Set whether the settings widget is visible.
         """
-        if self.settingsToggle.setIfChanged(value):
+        if self.settingsVisible.setIfChanged(value):
             self._settingsWidget.setVisible(value)
 
     def _widgetUpdate(self, player):

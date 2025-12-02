@@ -9,6 +9,7 @@
 #include <tlRender/TimelinePy/TimeUnits.h>
 #include <tlRender/TimelinePy/Timeline.h>
 #include <tlRender/TimelinePy/TimelineOptions.h>
+#include <tlRender/TimelinePy/Util.h>
 
 #include <tlRender/Timeline/Init.h>
 
@@ -36,6 +37,7 @@ namespace tl
             timeline(mTimeline);
             playerOptions(mTimeline);
             player(mTimeline);
+            util(mTimeline);
         }
     }
 }

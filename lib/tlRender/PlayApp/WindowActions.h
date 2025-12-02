@@ -38,6 +38,7 @@ namespace tl
         private:
             std::map<std::string, std::shared_ptr<ftk::Action> > _actions;
             std::shared_ptr<ftk::Observer<bool> > _fullScreenObserver;
+            std::shared_ptr<ftk::Observer<bool> > _settingsVisibleObserver;
         };
     }
 }

@@ -30,8 +30,8 @@ class Actions:
         self.actions["Settings"].tooltip = "Toggle the settings."
 
         selfWeak = weakref.ref(self)
-        self._settingsToggleObserver = ftk.BoolObserver(
-            mainWindow.settingsToggle,
+        self._settingsVisibleObserver = ftk.BoolObserver(
+            mainWindow.settingsVisible,
             lambda value: selfWeak()._settingsUpdate(value))
 
     def _fullScreenCallback(self, value):

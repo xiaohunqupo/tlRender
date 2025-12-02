@@ -22,6 +22,7 @@ namespace tl
             const std::shared_ptr<ftk::Context>& context,
             std::vector<std::string>& argv)
         {
+            // Command line arguments.
             _cmdLine.inputs = ftk::CmdLineListArg<std::string>::create(
                 "input",
                 "One or more timelines, movies, or image sequences.",
@@ -36,7 +37,11 @@ namespace tl
         }
 
         App::~App()
-        {}
+        {
+            _settingsModel->set(
+                "/TimeUnits",
+                timeline::to_string(_timeUnitsModel->getTimeUnits()));
+        }
 
         std::shared_ptr<App> App::create(
             const std::shared_ptr<ftk::Context>& context,
@@ -119,22 +124,34 @@ namespace tl
 
         void App::run()
         {
-            _context->getSystem<ftk::FileBrowserSystem>()->setNativeFileDialog(false);
-
+            // Create the settings model.
             _settingsModel = SettingsModel::create(
                 _context,
                 ftk::getSettingsPath("tlRender", "tlplay.json"));
 
+            // Create the time units model.
             _timeUnitsModel = timeline::TimeUnitsModel::create(_context);
+            std::string settings;
+            if (_settingsModel->get("/TimeUnits", settings))
+            {
+                timeline::TimeUnits timeUnits = timeline::TimeUnits::Timecode;
+                timeline::from_string(settings, timeUnits);
+                _timeUnitsModel->setTimeUnits(timeUnits);
+            }
 
-            _recentFilesModel = RecentFilesModel::create(_context, _settingsModel->getSettings());
+            // Create the recent files model.
+            _recentFilesModel = RecentFilesModel::create(_context, _settingsModel);
+
+            // Create the files model.
+            _filesModel = FilesModel::create(_context, _settingsModel);
+
+            // Initialize the file browser.
             auto fileBrowserSystem = _context->getSystem<ftk::FileBrowserSystem>();
             fileBrowserSystem->getModel()->setExts(timeline::getExts(_context));
             fileBrowserSystem->setRecentFilesModel(_recentFilesModel);
 
-            _filesModel = FilesModel::create(_context, _settingsModel);
-
 #if defined(TLRENDER_BMD)
+            // Initialize the BMD output device.
             _bmdOutputDevice = bmd::OutputDevice::create(_context);
             bmd::DeviceConfig bmdConfig;
             bmdConfig.deviceIndex = 0;
@@ -144,18 +161,20 @@ namespace tl
             _bmdOutputDevice->setEnabled(true);
 #endif // TLRENDER_BMD
 
+            // Create the main window.
             _window = MainWindow::create(
                 _context,
                 std::dynamic_pointer_cast<App>(shared_from_this()));
 
+            // Create an observer to update the BMD output device.
+#if defined(TLRENDER_BMD)
             _playerObserver = ftk::Observer<std::shared_ptr<timeline::Player> >::create(
                 _filesModel->observePlayer(),
                 [this](const std::shared_ptr<timeline::Player>& value)
                 {
-#if defined(TLRENDER_BMD)
                     _bmdOutputDevice->setPlayer(value);
-#endif // TLRENDER_BMD
                 });
+#endif // TLRENDER_BMD
 
             for (const auto& input : _cmdLine.inputs->getList())
             {

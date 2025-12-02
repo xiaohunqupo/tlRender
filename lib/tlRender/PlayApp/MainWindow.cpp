@@ -10,6 +10,7 @@
 #include "MenuBar.h"
 #include "PlaybackActions.h"
 #include "PlaybackBar.h"
+#include "SettingsModel.h"
 #include "SettingsWidget.h"
 #include "StatusBar.h"
 #include "TabBar.h"
@@ -32,7 +33,18 @@ namespace tl
             ftk::Window::_init(context, app, "tlplay", ftk::Size2I(1920, 1080));
 
             _app = app;
+            
+            // Restore settings.
+            bool settingsVisible = false;
+            double splitter = 0.8;
+            double splitter2 = 0.8;
+            _settingsModel = app->getSettingsModel();
+            _settingsModel->get("/MainWindow/SettingsVisible", settingsVisible);
+            _settingsVisible = ftk::Observable<bool>::create(settingsVisible);
+            _settingsModel->get("/MainWindow/Splitter", splitter);
+            _settingsModel->get("/MainWindow/Splitter2", splitter2);
 
+            // Create the viewport.
             _viewport = timelineui::Viewport::create(context);
             timeline::BackgroundOptions bgOptions;
             bgOptions.type = timeline::Background::Gradient;
@@ -49,38 +61,7 @@ namespace tl
             displayOptions.imageFilters.magnify = ftk::ImageFilter::Nearest;
             _viewport->setDisplayOptions({ displayOptions });
 
-            _fileActions = FileActions::create(context, app);
-            _compareActions = CompareActions::create(context, app);
-            _playbackActions = PlaybackActions::create(context, app);
-            _viewActions = ViewActions::create(context, app, _viewport);
-            _windowActions = WindowActions::create(
-                context,
-                app,
-                std::dynamic_pointer_cast<MainWindow>(shared_from_this()));
-
-            _menuBar = MenuBar::create(
-                context,
-                app,
-                _fileActions,
-                _compareActions,
-                _playbackActions,
-                _viewActions,
-                _windowActions);
-
-            auto toolBars = ToolBars::create(
-                context,
-                _fileActions,
-                _compareActions,
-                _viewActions,
-                _windowActions);
-
-            _tabBar = TabBar::create(context, app);
-
-            _playbackBar = PlaybackBar::create(
-                context,
-                app,
-                _playbackActions->getActions());
-
+            // Create the timeline.
             _timelineWidget = timelineui::TimelineWidget::create(
                 context,
                 app->getTimeUnitsModel());
@@ -90,11 +71,47 @@ namespace tl
             _timelineWidget->setDisplayOptions(timelineDisplayOptions);
             _timelineWidget->setVStretch(ftk::Stretch::Expanding);
 
+            // Create the actions.
+            _fileActions = FileActions::create(context, app);
+            _compareActions = CompareActions::create(context, app);
+            _playbackActions = PlaybackActions::create(context, app);
+            _viewActions = ViewActions::create(context, app, _viewport);
+            _windowActions = WindowActions::create(
+                context,
+                app,
+                std::dynamic_pointer_cast<MainWindow>(shared_from_this()));
+
+            // Create the menu bar.
+            _menuBar = MenuBar::create(
+                context,
+                app,
+                _fileActions,
+                _compareActions,
+                _playbackActions,
+                _viewActions,
+                _windowActions);
+
+            // Create the tool bars.
+            auto toolBars = ToolBars::create(
+                context,
+                _fileActions,
+                _compareActions,
+                _viewActions,
+                _windowActions);
+            _playbackBar = PlaybackBar::create(
+                context,
+                app,
+                _playbackActions->getActions());
             _statusBar = StatusBar::create(context, app);
 
-            _settingsWidget = SettingsWidget::create(context, app);
-            _settingsWidget->hide();
+            // Crate the tab bar.
+            _tabBar = TabBar::create(context, app);
 
+            // Crate the settings widget.
+            _settingsWidget = SettingsWidget::create(context, app);
+            _settingsWidget->setVisible(settingsVisible);
+
+            // Layout widgets.
             _layout = ftk::VerticalLayout::create(context, shared_from_this());
             _layout->setSpacingRole(ftk::SizeRole::None);
             _menuBar->setParent(_layout);
@@ -102,7 +119,9 @@ namespace tl
             toolBars->setParent(_layout);
             ftk::Divider::create(context, ftk::Orientation::Vertical, _layout);
             _splitter = ftk::Splitter::create(context, ftk::Orientation::Vertical, _layout);
+            _splitter->setSplit(splitter);
             _splitter2 = ftk::Splitter::create(context, ftk::Orientation::Horizontal, _splitter);
+            _splitter2->setSplit(splitter2);
             auto vLayout = ftk::VerticalLayout::create(context, _splitter2);
             vLayout->setSpacingRole(ftk::SizeRole::None);
             _tabBar->setParent(vLayout);
@@ -116,6 +135,7 @@ namespace tl
             ftk::Divider::create(context, ftk::Orientation::Vertical, vLayout);
             _statusBar->setParent(vLayout);
 
+            // Create observers.
             _playerObserver = ftk::Observer<std::shared_ptr<timeline::Player> >::create(
                 app->getFilesModel()->observePlayer(),
                 [this](const std::shared_ptr<timeline::Player>& value)
@@ -135,7 +155,14 @@ namespace tl
         }
 
         MainWindow::~MainWindow()
-        {}
+        {
+            // Save settings.
+            _settingsModel->set(
+                "/MainWindow/SettingsVisible",
+                _settingsVisible->get());
+            _settingsModel->set("/MainWindow/Splitter", _splitter->getSplit());
+            _settingsModel->set("/MainWindow/Splitter2", _splitter2->getSplit());
+        }
 
         std::shared_ptr<MainWindow> MainWindow::create(
             const std::shared_ptr<ftk::Context>& context,
@@ -151,9 +178,17 @@ namespace tl
             return _viewport;
         }
 
-        void MainWindow::showSettings(bool value)
+        std::shared_ptr<ftk::IObservable<bool> > MainWindow::observeSettingsVisible() const
         {
-            _settingsWidget->setVisible(value);
+            return _settingsVisible;
+        }
+
+        void MainWindow::setSettingsVisible(bool value)
+        {
+            if (_settingsVisible->setIfChanged(value))
+            {
+                _settingsWidget->setVisible(value);
+            }
         }
 
         void MainWindow::keyPressEvent(ftk::KeyEvent& event)

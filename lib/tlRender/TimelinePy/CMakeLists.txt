@@ -9,7 +9,8 @@ set(HEADERS
     PlayerOptions.h
     TimeUnits.h
     Timeline.h
-    TimelineOptions.h)
+    TimelineOptions.h
+    Util.h)
 set(HEADERS_PRIVATE)
 set(SOURCE
     BackgroundOptions.cpp
@@ -22,7 +23,8 @@ set(SOURCE
     PlayerOptions.cpp
     TimeUnits.cpp
     Timeline.cpp
-    TimelineOptions.cpp)
+    TimelineOptions.cpp
+    Util.cpp)
 
 add_library(tlTimelinePy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
 target_link_libraries(tlTimelinePy tlTimeline Python3::Python)

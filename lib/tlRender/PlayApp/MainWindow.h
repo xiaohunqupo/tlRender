@@ -23,6 +23,7 @@ namespace tl
         class MenuBar;
         class PlaybackActions;
         class PlaybackBar;
+        class SettingsModel;
         class SettingsWidget;
         class StatusBar;
         class TabBar;
@@ -50,7 +51,8 @@ namespace tl
 
             const std::shared_ptr<timelineui::Viewport>& getViewport() const;
 
-            void showSettings(bool);
+            std::shared_ptr<ftk::IObservable<bool> > observeSettingsVisible() const;
+            void setSettingsVisible(bool);
 
             void keyPressEvent(ftk::KeyEvent&) override;
             void keyReleaseEvent(ftk::KeyEvent&) override;
@@ -60,6 +62,7 @@ namespace tl
 
         private:
             std::weak_ptr<App> _app;
+            std::shared_ptr<SettingsModel> _settingsModel;
 
             std::shared_ptr<timelineui::Viewport> _viewport;
             std::shared_ptr<FileActions> _fileActions;
@@ -73,6 +76,7 @@ namespace tl
             std::shared_ptr<timelineui::TimelineWidget> _timelineWidget;
             std::shared_ptr<StatusBar> _statusBar;
             std::shared_ptr<SettingsWidget> _settingsWidget;
+            std::shared_ptr<ftk::Observable<bool> > _settingsVisible;
             std::shared_ptr<ftk::Splitter> _splitter;
             std::shared_ptr<ftk::Splitter> _splitter2;
             std::shared_ptr<ftk::VerticalLayout> _layout;

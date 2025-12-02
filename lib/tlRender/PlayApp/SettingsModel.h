@@ -5,6 +5,7 @@
 
 #include <tlRender/Timeline/Player.h>
 
+#include <ftk/UI/FileBrowser.h>
 #include <ftk/UI/Settings.h>
 
 namespace tl
@@ -12,16 +13,14 @@ namespace tl
     namespace play
     {
         //! This model provides settings that are saved and restored.
-        class SettingsModel : public std::enable_shared_from_this<SettingsModel>
+        class SettingsModel : public ftk::Settings
         {
             FTK_NON_COPYABLE(SettingsModel);
 
         protected:
-            void _init(
+            SettingsModel(
                 const std::shared_ptr<ftk::Context>&,
                 const std::filesystem::path&);
-
-            SettingsModel() = default;
 
         public:
             ~SettingsModel();
@@ -30,9 +29,6 @@ namespace tl
             static std::shared_ptr<SettingsModel> create(
                 const std::shared_ptr<ftk::Context>&,
                 const std::filesystem::path&);
-
-            //! Get the settings.
-            const std::shared_ptr<ftk::Settings>& getSettings() const;
 
             //! Get the cache settings.
             const timeline::PlayerCacheOptions& getCache() const;
@@ -44,7 +40,7 @@ namespace tl
             void setCache(const timeline::PlayerCacheOptions&);
 
         private:
-            std::shared_ptr<ftk::Settings> _settings;
+            std::shared_ptr<ftk::FileBrowserSystem> _fileBrowserSystem;
             std::shared_ptr<ftk::Observable<timeline::PlayerCacheOptions> > _cache;
         };
     }

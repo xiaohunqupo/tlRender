@@ -28,8 +28,7 @@ namespace tl
         }
 
         FileToolBar::~FileToolBar()
-        {
-        }
+        {}
 
         std::shared_ptr<FileToolBar> FileToolBar::create(
             const std::shared_ptr<ftk::Context>& context,
@@ -55,8 +54,7 @@ namespace tl
         }
 
         CompareToolBar::~CompareToolBar()
-        {
-        }
+        {}
 
         std::shared_ptr<CompareToolBar> CompareToolBar::create(
             const std::shared_ptr<ftk::Context>& context,
@@ -82,8 +80,7 @@ namespace tl
         }
 
         ViewToolBar::~ViewToolBar()
-        {
-        }
+        {}
 
         std::shared_ptr<ViewToolBar> ViewToolBar::create(
             const std::shared_ptr<ftk::Context>& context,
@@ -107,8 +104,7 @@ namespace tl
         }
 
         WindowToolBar::~WindowToolBar()
-        {
-        }
+        {}
 
         std::shared_ptr<WindowToolBar> WindowToolBar::create(
             const std::shared_ptr<ftk::Context>& context,
@@ -141,8 +137,7 @@ namespace tl
         }
 
         ToolBars::~ToolBars()
-        {
-        }
+        {}
 
         std::shared_ptr<ToolBars> ToolBars::create(
             const std::shared_ptr<ftk::Context>& context,

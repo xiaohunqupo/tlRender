@@ -107,6 +107,54 @@ namespace tl
             setSizeHint(_layout->getSizeHint());
         }
 
+        void FileBrowserSettingsWidget::_init(
+            const std::shared_ptr<ftk::Context>& context,
+            const std::shared_ptr<App>& app,
+            const std::shared_ptr<IWidget>& parent)
+        {
+            IWidget::_init(context, "FileBrowserSettingsWidget", parent);
+
+            _nativeCheckBox = ftk::CheckBox::create(context);
+            auto fileBrowserSystem = context->getSystem<ftk::FileBrowserSystem>();
+            _nativeCheckBox->setChecked(fileBrowserSystem->isNativeFileDialog());
+
+            _layout = ftk::FormLayout::create(context, shared_from_this());
+            _layout->setSpacingRole(ftk::SizeRole::SpacingSmall);
+            _layout->addRow("Native file browser:", _nativeCheckBox);
+
+            _nativeCheckBox->setCheckedCallback(
+                [this](bool value)
+                {
+                    auto fileBrowserSystem = getContext()->getSystem<ftk::FileBrowserSystem>();
+                    fileBrowserSystem->setNativeFileDialog(value);
+                });
+        }
+
+        FileBrowserSettingsWidget::~FileBrowserSettingsWidget()
+        {}
+
+        std::shared_ptr<FileBrowserSettingsWidget> FileBrowserSettingsWidget::create(
+            const std::shared_ptr<ftk::Context>& context,
+            const std::shared_ptr<App>& app,
+            const std::shared_ptr<IWidget>& parent)
+        {
+            auto out = std::shared_ptr<FileBrowserSettingsWidget>(new FileBrowserSettingsWidget);
+            out->_init(context, app, parent);
+            return out;
+        }
+
+        void FileBrowserSettingsWidget::setGeometry(const ftk::Box2I& value)
+        {
+            IWidget::setGeometry(value);
+            _layout->setGeometry(value);
+        }
+
+        void FileBrowserSettingsWidget::sizeHintEvent(const ftk::SizeHintEvent& event)
+        {
+            IWidget::sizeHintEvent(event);
+            setSizeHint(_layout->getSizeHint());
+        }
+
         void SettingsWidget::_init(
             const std::shared_ptr<ftk::Context>& context,
             const std::shared_ptr<App>& app,
@@ -118,11 +166,12 @@ namespace tl
             _layout->setSpacingRole(ftk::SizeRole::SpacingSmall);
             auto groupBox = ftk::GroupBox::create(context, "Cache", _layout);
             CacheSettingsWidget::create(context, app, groupBox);
+            groupBox = ftk::GroupBox::create(context, "File Browser", _layout);
+            FileBrowserSettingsWidget::create(context, app, groupBox);
         }
 
         SettingsWidget::~SettingsWidget()
-        {
-        }
+        {}
 
         std::shared_ptr<SettingsWidget> SettingsWidget::create(
             const std::shared_ptr<ftk::Context>& context,

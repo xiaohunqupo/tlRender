@@ -57,7 +57,7 @@ namespace tl
                 {
                     if (auto mainWindow = mainWindowWeak.lock())
                     {
-                        mainWindow->showSettings(value);
+                        mainWindow->setSettingsVisible(value);
                     }
                 });
             _actions["Settings"]->setTooltip("Toggle the settings.");
@@ -68,11 +68,17 @@ namespace tl
                 {
                     _actions["FullScreen"]->setChecked(value);
                 });
+
+            _settingsVisibleObserver = ftk::Observer<bool>::create(
+                mainWindow->observeSettingsVisible(),
+                [this](bool value)
+                {
+                    _actions["Settings"]->setChecked(value);
+                });
         }
 
         WindowActions::~WindowActions()
-        {
-        }
+        {}
 
         std::shared_ptr<WindowActions> WindowActions::create(
             const std::shared_ptr<ftk::Context>& context,
