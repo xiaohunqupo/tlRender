@@ -25,7 +25,7 @@ class App(ftk.App):
             self,
             context,
             argv,
-            "tlplay-python",
+            "player-python",
             "Python player example",
             [ cmdLineInput ])
 
