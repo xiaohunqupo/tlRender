@@ -8,7 +8,6 @@
 #include "FileActions.h"
 #include "FilesModel.h"
 #include "PlaybackActions.h"
-#include "RecentFilesModel.h"
 #include "ViewActions.h"
 #include "WindowActions.h"
 

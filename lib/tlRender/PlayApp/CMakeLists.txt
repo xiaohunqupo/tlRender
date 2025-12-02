@@ -7,7 +7,6 @@ set(HEADERS
     MenuBar.h
     PlaybackActions.h
     PlaybackBar.h
-    RecentFilesModel.h
     SettingsModel.h
     SettingsWidget.h
     StatusBar.h
@@ -25,7 +24,6 @@ set(SOURCE
     MenuBar.cpp
     PlaybackActions.cpp
     PlaybackBar.cpp
-    RecentFilesModel.cpp
     SettingsModel.cpp
     SettingsWidget.cpp
     StatusBar.cpp

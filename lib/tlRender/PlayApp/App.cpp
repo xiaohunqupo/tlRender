@@ -5,7 +5,6 @@
 
 #include "FilesModel.h"
 #include "MainWindow.h"
-#include "RecentFilesModel.h"
 #include "SettingsModel.h"
 
 #include <tlRender/Timeline/Util.h>
@@ -38,6 +37,14 @@ namespace tl
 
         App::~App()
         {
+            std::vector<std::string> recentFiles;
+            for (const auto& i : _recentFilesModel->getRecent())
+            {
+                recentFiles.push_back(i.u8string());
+            }
+            _settingsModel->set("/Files/Recent", recentFiles);
+            _settingsModel->set("/Files/RecentMax", _recentFilesModel->getRecentMax());
+
             _settingsModel->set(
                 "/TimeUnits",
                 timeline::to_string(_timeUnitsModel->getTimeUnits()));
@@ -62,7 +69,7 @@ namespace tl
             return _timeUnitsModel;
         }
 
-        const std::shared_ptr<RecentFilesModel>& App::getRecentFilesModel() const
+        const std::shared_ptr<ftk::RecentFilesModel>& App::getRecentFilesModel() const
         {
             return _recentFilesModel;
         }
@@ -140,7 +147,22 @@ namespace tl
             }
 
             // Create the recent files model.
-            _recentFilesModel = RecentFilesModel::create(_context, _settingsModel);
+            _recentFilesModel = ftk::RecentFilesModel::create(_context);
+            std::vector<std::string> recentFiles;
+            if (_settingsModel->get("/Files/Recent", recentFiles))
+            {
+                std::vector<std::filesystem::path> recentPaths;
+                for (const auto& i : recentFiles)
+                {
+                    recentPaths.push_back(std::filesystem::u8path(i));
+                }
+                _recentFilesModel->setRecent(recentPaths);
+            }
+            size_t recentFilesMax = 10;
+            if (_settingsModel->get("/Files/RecentMax", recentFilesMax))
+            {
+                _recentFilesModel->setRecentMax(recentFilesMax);
+            }
 
             // Create the files model.
             _filesModel = FilesModel::create(_context, _settingsModel);

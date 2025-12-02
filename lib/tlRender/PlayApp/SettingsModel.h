@@ -40,7 +40,7 @@ namespace tl
             void setCache(const timeline::PlayerCacheOptions&);
 
         private:
-            std::shared_ptr<ftk::FileBrowserSystem> _fileBrowserSystem;
+            std::weak_ptr<ftk::FileBrowserSystem> _fileBrowserSystem;
             std::shared_ptr<ftk::Observable<timeline::PlayerCacheOptions> > _cache;
         };
     }

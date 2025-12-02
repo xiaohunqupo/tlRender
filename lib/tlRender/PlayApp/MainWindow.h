@@ -62,7 +62,7 @@ namespace tl
 
         private:
             std::weak_ptr<App> _app;
-            std::shared_ptr<SettingsModel> _settingsModel;
+            std::weak_ptr<SettingsModel> _settingsModel;
 
             std::shared_ptr<timelineui::Viewport> _viewport;
             std::shared_ptr<FileActions> _fileActions;

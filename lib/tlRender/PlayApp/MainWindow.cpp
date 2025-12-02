@@ -38,11 +38,12 @@ namespace tl
             bool settingsVisible = false;
             double splitter = 0.8;
             double splitter2 = 0.8;
-            _settingsModel = app->getSettingsModel();
-            _settingsModel->get("/MainWindow/SettingsVisible", settingsVisible);
+            auto settingsModel = app->getSettingsModel();
+            settingsModel->get("/MainWindow/SettingsVisible", settingsVisible);
             _settingsVisible = ftk::Observable<bool>::create(settingsVisible);
-            _settingsModel->get("/MainWindow/Splitter", splitter);
-            _settingsModel->get("/MainWindow/Splitter2", splitter2);
+            settingsModel->get("/MainWindow/Splitter", splitter);
+            settingsModel->get("/MainWindow/Splitter2", splitter2);
+            _settingsModel = settingsModel;
 
             // Create the viewport.
             _viewport = timelineui::Viewport::create(context);
@@ -157,11 +158,14 @@ namespace tl
         MainWindow::~MainWindow()
         {
             // Save settings.
-            _settingsModel->set(
-                "/MainWindow/SettingsVisible",
-                _settingsVisible->get());
-            _settingsModel->set("/MainWindow/Splitter", _splitter->getSplit());
-            _settingsModel->set("/MainWindow/Splitter2", _splitter2->getSplit());
+            if (auto settingsModel = _settingsModel.lock())
+            {
+                settingsModel->set(
+                    "/MainWindow/SettingsVisible",
+                    _settingsVisible->get());
+                settingsModel->set("/MainWindow/Splitter", _splitter->getSplit());
+                settingsModel->set("/MainWindow/Splitter2", _splitter2->getSplit());
+            }
         }
 
         std::shared_ptr<MainWindow> MainWindow::create(

@@ -15,11 +15,12 @@ namespace tl
             // Restore file browser settings.
             ftk::FileBrowserOptions fileBrowserOptions;
             getT("/FileBrowser", fileBrowserOptions);
-            _fileBrowserSystem = context->getSystem<ftk::FileBrowserSystem>();
-            _fileBrowserSystem->getModel()->setOptions(fileBrowserOptions);
+            auto fileBrowserSystem = context->getSystem<ftk::FileBrowserSystem>();
+            fileBrowserSystem->getModel()->setOptions(fileBrowserOptions);
             bool nativeFileDialog = false;
             get("/NativeFileDialog", nativeFileDialog);
-            _fileBrowserSystem->setNativeFileDialog(nativeFileDialog);
+            fileBrowserSystem->setNativeFileDialog(nativeFileDialog);
+            _fileBrowserSystem = fileBrowserSystem;
 
             // Restore timeline player cache settings.
             timeline::PlayerCacheOptions cache;
@@ -30,8 +31,11 @@ namespace tl
         SettingsModel::~SettingsModel()
         {
             // Save file browser settings.
-            setT("/FileBrowser", _fileBrowserSystem->getModel()->getOptions());
-            set("/NativeFileDialog", _fileBrowserSystem->isNativeFileDialog());
+            if (auto fileBrowserSystem = _fileBrowserSystem.lock())
+            {
+                setT("/FileBrowser", fileBrowserSystem->getModel()->getOptions());
+                set("/NativeFileDialog", fileBrowserSystem->isNativeFileDialog());
+            }
 
             // Save timeline player cache settings.
             setT("/Cache", _cache->get());

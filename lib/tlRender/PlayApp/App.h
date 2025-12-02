@@ -11,6 +11,7 @@
 #endif // TLRENDER_BMD
 
 #include <ftk/UI/App.h>
+#include <ftk/UI/RecentFilesModel.h>
 #include <ftk/Core/CmdLine.h>
 
 namespace tl
@@ -19,7 +20,6 @@ namespace tl
     {
         class FilesModel;
         class MainWindow;
-        class RecentFilesModel;
         class SettingsModel;
 
         //! Application.
@@ -43,7 +43,7 @@ namespace tl
 
             const std::shared_ptr<SettingsModel>& getSettingsModel() const;
             const std::shared_ptr<timeline::TimeUnitsModel>& getTimeUnitsModel() const;
-            const std::shared_ptr<RecentFilesModel>& getRecentFilesModel() const;
+            const std::shared_ptr<ftk::RecentFilesModel>& getRecentFilesModel() const;
             const std::shared_ptr<FilesModel>& getFilesModel() const;
 
             void open(const std::filesystem::path&);
@@ -63,7 +63,7 @@ namespace tl
 
             std::shared_ptr<SettingsModel> _settingsModel;
             std::shared_ptr<timeline::TimeUnitsModel> _timeUnitsModel;
-            std::shared_ptr<RecentFilesModel> _recentFilesModel;
+            std::shared_ptr<ftk::RecentFilesModel> _recentFilesModel;
             std::shared_ptr<FilesModel> _filesModel;
 
             std::shared_ptr<MainWindow> _window;
