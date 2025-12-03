@@ -38,11 +38,30 @@ class MainWindow(ftk.MainWindow):
         # Create the viewport.
         self._viewport = tl.ui.Viewport(context)
         
-        # Create the playback button.
+        # Create the playback buttons.
         self._playButton = ftk.ToolButton(context)
         self._playButton.icon = "PlaybackForward"
         self._playButton.checkable = True
-        
+        self._playButton.tooltip = "Toggle playback."
+
+        self._startButton = ftk.ToolButton(context)
+        self._startButton.icon = "FrameStart"
+        self._startButton.tooltip = "Go to the start frame."
+
+        self._prevButton = ftk.ToolButton(context)
+        self._prevButton.icon = "FramePrev"
+        self._prevButton.repeatClick = True
+        self._prevButton.tooltip = "Go to the previous frame."
+
+        self._nextButton = ftk.ToolButton(context)
+        self._nextButton.icon = "FrameNext"
+        self._nextButton.repeatClick = True
+        self._nextButton.tooltip = "Go to the next frame."
+
+        self._endButton = ftk.ToolButton(context)
+        self._endButton.icon = "FrameEnd"
+        self._endButton.tooltip = "Go to the end frame."
+
         # Create the timeline.
         self._timelineWidget = tl.ui.TimelineWidget(context)
         self._timelineWidget.backgroundColor = ftk.ColorRole.Red
@@ -80,8 +99,15 @@ class MainWindow(ftk.MainWindow):
         hLayout.marginRole = ftk.SizeRole.MarginInside
         hLayout.spacingRole = ftk.SizeRole.SpacingTool
         self._playButton.parent = hLayout
+        self._startButton.parent = hLayout
+        self._prevButton.parent = hLayout
+        self._nextButton.parent = hLayout
+        self._endButton.parent = hLayout
         ftk.Divider(context, ftk.Orientation.Vertical, layout)
         self._timelineWidget.parent = layout
+
+        # Update the widget.
+        self._widgetUpdate()
 
         # Setup callbacks.
         selfWeak = weakref.ref(self)
@@ -93,19 +119,23 @@ class MainWindow(ftk.MainWindow):
 
         self._playButton.setCheckedCallback(
             lambda value: selfWeak()._playbackCallback(value))
+        self._startButton.setClickedCallback(
+            lambda: selfWeak()._player.timeAction(tl.timeline.TimeAction.Start))
+        self._prevButton.setClickedCallback(
+            lambda: selfWeak()._player.timeAction(tl.timeline.TimeAction.FramePrev))
+        self._nextButton.setClickedCallback(
+            lambda: selfWeak()._player.timeAction(tl.timeline.TimeAction.FrameNext))
+        self._endButton.setClickedCallback(
+            lambda: selfWeak()._player.timeAction(tl.timeline.TimeAction.End))
 
         self._pathObserver = ftk.PathObserver(
-            self._fileBrowserModel.observePath(),
+            self._fileBrowserModel.observePath,
             lambda path: selfWeak()._pathUpdate(path))
 
     def tickEvent(self, parentsVisible, parentsEnabled, event):
         super().tickEvent(parentsVisible, parentsEnabled, event)
         if self._player:
             self._player.tick()
-
-    def _pathUpdate(self, path):
-        self._fileBrowserModel.path = path
-        self._fileBrowserPathWidget.path = path
 
     def _selectCallback(self, path):
         
@@ -134,6 +164,8 @@ class MainWindow(ftk.MainWindow):
                 self._player.observePlayback,
                 lambda value: selfWeak()._playbackUpdate(value))
 
+        self._widgetUpdate()
+
     def _playbackCallback(self, value):
         if self._player:
             if value:
@@ -141,11 +173,22 @@ class MainWindow(ftk.MainWindow):
             else:
                 self._player.playback = tl.timeline.Playback.Stop
 
+    def _pathUpdate(self, path):
+        self._fileBrowserModel.path = path
+        self._fileBrowserPathWidget.path = path
+
     def _playbackUpdate(self, value):
         if value == tl.timeline.Playback.Forward:
             self._playButton.checked = True
         else:
             self._playButton.checked = False
+
+    def _widgetUpdate(self):
+        self._playButton.enabled = self._player != None
+        self._startButton.enabled = self._player != None
+        self._prevButton.enabled = self._player != None
+        self._nextButton.enabled = self._player != None
+        self._endButton.enabled = self._player != None
 
 # Create the application.
 context = ftk.Context()
