@@ -118,6 +118,9 @@ if(@TLRENDER_FFMPEG@)
             swresample REQUIRED IMPORTED_TARGET
             libswresample)
         pkg_check_modules(
+            avutil REQUIRED IMPORTED_TARGET
+            libavutil)
+        pkg_check_modules(
             FFmpeg REQUIRED IMPORTED_TARGET
             libavdevice
             libavformat
@@ -127,6 +130,7 @@ if(@TLRENDER_FFMPEG@)
             libavutil)
         add_library(FFmpeg::FFmpeg ALIAS PkgConfig::FFmpeg)
         add_library(FFmpeg::swresample ALIAS PkgConfig::swresample)
+        add_library(FFmpeg::avutil ALIAS PkgConfig::avutil)
     endif()
     if(FFmpeg_FOUND)
         add_definitions(-DTLRENDER_FFMPEG)
