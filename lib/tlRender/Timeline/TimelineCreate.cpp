@@ -70,9 +70,7 @@ namespace tl
                     if (out.isEmpty())
                     {
                         ftk::DirListOptions listOptions;
-                        listOptions.filterExt.insert(
-                            imageSeqAudioExts.begin(),
-                            imageSeqAudioExts.end());
+                        listOptions.filterExt = imageSeqAudioExts;
                         const auto entries = ftk::dirList(path.getDir(), listOptions);
                         if (!entries.empty())
                         {
@@ -299,14 +297,21 @@ namespace tl
                 auto ioSystem = context->getSystem<io::ReadSystem>();
 
                 // Is the input a sequence?
-                if (!path.isSeq() && path.hasNum() || path.hasSeqWildcard())
+                const std::vector<std::string> seqExts = getExts(
+                    context,
+                    static_cast<int>(io::FileType::Seq));
+                const bool hasSeqExt = std::find(
+                    seqExts.begin(),
+                    seqExts.end(),
+                    ftk::toLower(path.getExt())) != seqExts.end();
+                if (hasSeqExt && (path.hasNum() && !path.isSeq() || path.hasSeqWildcard()))
                 {
                     ftk::expandSeq(
                         std::filesystem::u8path(path.get()),
                         path,
                         options.pathOptions);
                 }
-                if (path.isSeq())
+                if (hasSeqExt && path.isSeq())
                 {
                     if (audioPath.isEmpty())
                     {

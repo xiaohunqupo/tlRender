@@ -403,16 +403,16 @@ namespace tl
         {
             FTK_P();
             p.infoThread.running = false;
+            p.thumbnailThread.running = false;
+            p.waveformThread.running = false;
             if (p.infoThread.thread.joinable())
             {
                 p.infoThread.thread.join();
             }
-            p.thumbnailThread.running = false;
             if (p.thumbnailThread.thread.joinable())
             {
                 p.thumbnailThread.thread.join();
             }
-            p.waveformThread.running = false;
             if (p.waveformThread.thread.joinable())
             {
                 p.waveformThread.thread.join();
@@ -752,7 +752,10 @@ namespace tl
                                     request->time :
                                     info.videoTime.start_time();
                                 const auto videoData = read->readVideo(time, request->options).get();
-                                if (p.thumbnailThread.render && p.thumbnailThread.buffer && videoData.image)
+                                if (p.thumbnailThread.render &&
+                                    p.thumbnailThread.buffer &&
+                                    videoData.image &&
+                                    p.thumbnailThread.running)
                                 {
                                     ftk::gl::OffscreenBufferBinding binding(p.thumbnailThread.buffer);
                                     p.thumbnailThread.render->begin(size);
@@ -1018,7 +1021,7 @@ namespace tl
                                         OTIO_NS::RationalTime(0.0, 1.0),
                                         OTIO_NS::RationalTime(1.0, 1.0));
                                 const auto audioData = read->readAudio(timeRange, request->options).get();
-                                if (audioData.audio)
+                                if (audioData.audio && p.waveformThread.running)
                                 {
                                     auto resample = audio::AudioResample::create(
                                         audioData.audio->getInfo(),
@@ -1029,8 +1032,7 @@ namespace tl
                             }
                         }
                         catch (const std::exception&)
-                        {
-                        }
+                        {}
                     }
                 }
                 request->promise.set_value(mesh);

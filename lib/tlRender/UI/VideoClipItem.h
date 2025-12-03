@@ -46,6 +46,7 @@ namespace tl
             void setScale(double) override;
             void setDisplayOptions(const DisplayOptions&) override;
 
+            void setGeometry(const ftk::Box2I&) override;
             void tickEvent(
                 bool,
                 bool,

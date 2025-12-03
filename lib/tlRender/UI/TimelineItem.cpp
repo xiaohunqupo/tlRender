@@ -419,7 +419,7 @@ namespace tl
                 p.size.border * 4;
             event.render->drawRect(
                 ftk::Box2I(g.min.x, y, g.w(), h),
-                event.style->getColorRole(ftk::ColorRole::Window));
+                event.style->getColorRole(ftk::ColorRole::Base));
 
             y = y + h;
             h = p.size.border;

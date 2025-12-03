@@ -135,6 +135,16 @@ namespace tl
             }
         }
 
+        void AudioClipItem::setGeometry(const ftk::Box2I& value)
+        {
+            const ftk::Size2I size = getGeometry().size();
+            IBasicItem::setGeometry(value);
+            if (size != value.size())
+            {
+                _cancelRequests();
+            }
+        }
+
         void AudioClipItem::tickEvent(
             bool parentsVisible,
             bool parentsEnabled,

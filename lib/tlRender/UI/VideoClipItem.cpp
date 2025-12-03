@@ -139,12 +139,22 @@ namespace tl
             }
         }
 
+        void VideoClipItem::setGeometry(const ftk::Box2I& value)
+        {
+            const ftk::Size2I size = getGeometry().size();
+            IBasicItem::setGeometry(value);
+            if (size != value.size())
+            {
+                _cancelRequests();
+            }
+        }
+
         void VideoClipItem::tickEvent(
             bool parentsVisible,
             bool parentsEnabled,
             const ftk::TickEvent& event)
         {
-            IWidget::tickEvent(parentsVisible, parentsEnabled, event);
+            IBasicItem::tickEvent(parentsVisible, parentsEnabled, event);
             FTK_P();
 
             // Check if the I/O information is finished.

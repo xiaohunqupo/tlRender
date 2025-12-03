@@ -195,7 +195,10 @@ namespace tl
                             value->observePlayback(),
                             [this](timeline::Playback value)
                             {
-                                _playback = value;
+                                if (value != timeline::Playback::Stop)
+                                {
+                                    _playback = value;
+                                }
                                 _actions["Stop"]->setChecked(timeline::Playback::Stop == value);
                                 _actions["Forward"]->setChecked(timeline::Playback::Forward == value);
                                 _actions["Reverse"]->setChecked(timeline::Playback::Reverse == value);
