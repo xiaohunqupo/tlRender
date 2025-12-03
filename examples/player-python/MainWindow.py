@@ -38,6 +38,7 @@ class MainWindow(ftk.MainWindow):
         settings = self._settingsModel.getDouble("/MainWindow/Splitter2")
         if settings[0]:
             splitter2 = settings[1]
+        self._settingsVisible = ftk.ObservableBool(settingsVisible)
 
         # Create the viewport.
         self._viewport = tl.ui.Viewport(context)
@@ -69,7 +70,6 @@ class MainWindow(ftk.MainWindow):
         # Create the settings widget.
         self._settingsWidget = SettingsWidget.Widget(context, app)
         self._settingsWidget.setVisible(settingsVisible)
-        self.settingsVisible = ftk.ObservableBool(settingsVisible)
 
         # Layout widgets.
         self._layout = ftk.VerticalLayout(context)
@@ -108,7 +108,7 @@ class MainWindow(ftk.MainWindow):
         # Save settings.
         self._settingsModel.setBool(
             "/MainWindow/SettingsVisible",
-            self.settingsVisible.get())
+            self._settingsVisible.get())
         self._settingsModel.setDouble("/MainWindow/Splitter", self._splitter.split)
         self._settingsModel.setDouble("/MainWindow/Splitter2", self._splitter2.split)
 
@@ -118,11 +118,14 @@ class MainWindow(ftk.MainWindow):
         """
         return self._viewport
 
+    def getSettingsVisible(self):
+        return self._settingsVisible
+
     def setSettingsVisible(self, value):
         """
         Set whether the settings widget is visible.
         """
-        if self.settingsVisible.setIfChanged(value):
+        if self._settingsVisible.setIfChanged(value):
             self._settingsWidget.setVisible(value)
 
     def _widgetUpdate(self, player):

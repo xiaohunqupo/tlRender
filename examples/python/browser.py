@@ -26,6 +26,9 @@ class MainWindow(ftk.MainWindow):
 
         # Create the file browser view.
         self._fileBrowserModel = ftk.FileBrowserModel(context)
+        fileBrowserOptions = ftk.FileBrowserOptions()
+        fileBrowserOptions.dirList.seqExts = tl.timeline.getExts(context, tl.io.FileType.Seq)
+        self._fileBrowserModel.options = fileBrowserOptions
         self._fileBrowserModel.path = path
         self._fileBrowserView = ftk.FileBrowserView(
             context,
@@ -42,10 +45,12 @@ class MainWindow(ftk.MainWindow):
         
         # Create the timeline.
         self._timelineWidget = tl.ui.TimelineWidget(context)
+        self._timelineWidget.backgroundColor = ftk.ColorRole.Red
         self._timelineWidget.vStretch = ftk.Stretch.Expanding
         timelineDisplayOptions = tl.ui.DisplayOptions()
         timelineDisplayOptions.minimize = False
         timelineDisplayOptions.thumbnailHeight = 300
+        timelineDisplayOptions.waveformWidth = 50
         timelineDisplayOptions.waveformHeight = 150
         self._timelineWidget.displayOptions = timelineDisplayOptions
 
@@ -104,8 +109,15 @@ class MainWindow(ftk.MainWindow):
 
     def _selectCallback(self, path):
         
+        self._player = None
+        self._viewport.player = None
+        self._playButton.checked = False
+        self._timelineWidget.player = None
+        self._playbackObserver = None
+
         # Check for a valid file extension.
-        if os.path.splitext(path.get())[1] in self._exts:
+        ext = os.path.splitext(path.get())[1]
+        if ext and ext.lower() in self._exts:
         
             # Create the timeline and player.
             #
@@ -115,7 +127,6 @@ class MainWindow(ftk.MainWindow):
             playerOptions = tl.timeline.PlayerOptions()
             self._player = tl.timeline.Player(self.context, timeline, playerOptions)
             self._viewport.player = self._player
-            self._playButton.checked = False
             self._timelineWidget.player = self._player
 
             selfWeak = weakref.ref(self)

@@ -31,7 +31,7 @@ class Actions:
 
         selfWeak = weakref.ref(self)
         self._settingsVisibleObserver = ftk.BoolObserver(
-            mainWindow.settingsVisible,
+            mainWindow.getSettingsVisible(),
             lambda value: selfWeak()._settingsUpdate(value))
 
     def _fullScreenCallback(self, value):
