@@ -1,7 +1,7 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Build Status](https://github.com/grizzlypeak3d/tlRender/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/grizzlypeak3d/tlRender/actions/workflows/ci-workflow.yml)
 
-# ![tlRender Icon](etc/Icons/tlRender_32.png)&nbsptlRender
+# ![tlRender Icon](etc/Icons/tlRender_32.png)&nbsp;tlRender
 
 tlRender is an open source library for building playback and review
 applications for visual effects, film, and animation.
