@@ -19,6 +19,7 @@
 #include "WindowActions.h"
 
 #include <ftk/UI/Divider.h>
+#include <ftk/UI/IconSystem.h>
 #include <ftk/UI/Menu.h>
 #include <ftk/UI/ToolBar.h>
 
@@ -31,6 +32,9 @@ namespace tl
             const std::shared_ptr<App>& app)
         {
             ftk::Window::_init(context, app, "tlplay", ftk::Size2I(1920, 1080));
+
+            auto iconSystem = context->getSystem<ftk::IconSystem>();
+            setIcon(iconSystem->get("tlRender", 1.0));
 
             _app = app;
             
