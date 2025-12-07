@@ -406,7 +406,7 @@ namespace tl
                     if (p.vbos["video"])
                     {
                         p.vbos["video"]->copy(convert(
-                            ftk::mesh(boxes[0]),
+                            ftk::mesh(boxes[0], true),
                             p.vbos["video"]->getType()));
                     }
                     if (p.vaos["video"])
@@ -563,7 +563,7 @@ namespace tl
                     if (p.vbos["video"])
                     {
                         p.vbos["video"]->copy(convert(
-                            ftk::mesh(boxes[0]),
+                            ftk::mesh(boxes[0], true),
                             p.vbos["video"]->getType()));
                     }
                     if (p.vaos["video"])
