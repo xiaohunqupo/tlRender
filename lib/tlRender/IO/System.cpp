@@ -40,9 +40,9 @@ namespace tl
         {
             FTK_P();
 
+            auto logSystem = context->getLogSystem();
             if (auto context = _context.lock())
             {
-                auto logSystem = context->getLogSystem();
 #if defined(TLRENDER_EXR)
                 _plugins.push_back(exr::ReadPlugin::create(logSystem));
 #endif // TLRENDER_EXR
@@ -65,6 +65,7 @@ namespace tl
             {
                 p.names.push_back(plugin->getName());
             }
+            logSystem->print("tl::io::ReadSystem", "Plugins: " + ftk::join(p.names, ", "));
         }
 
         ReadSystem::~ReadSystem()
@@ -189,9 +190,9 @@ namespace tl
         {
             FTK_P();
 
+            auto logSystem = context->getLogSystem();
             if (auto context = _context.lock())
             {
-                auto logSystem = context->getLogSystem();
 #if defined(TLRENDER_EXR)
                 _plugins.push_back(exr::WritePlugin::create(logSystem));
 #endif // TLRENDER_EXR
@@ -207,6 +208,7 @@ namespace tl
             {
                 p.names.push_back(plugin->getName());
             }
+            logSystem->print("tl::io::WriteSystem", "Plugins: " + ftk::join(p.names, ", "));
         }
 
         WriteSystem::~WriteSystem()
