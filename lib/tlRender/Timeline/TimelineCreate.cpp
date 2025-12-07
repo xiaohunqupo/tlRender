@@ -289,9 +289,21 @@ namespace tl
             const Options& options)
         {
             OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> out;
+
             std::string error;
             ftk::Path path = inputPath;
             ftk::Path audioPath = inputAudioPath;
+
+            auto logSystem = context->getLogSystem();
+            logSystem->print(
+                "tl::timeline::create",
+                ftk::Format(
+                    "\n"
+                    "    Path: {0}\n"
+                    "    Audio path: {1}").
+                arg(path.get()).
+                arg(audioPath.get()));
+
             try
             {
                 auto ioSystem = context->getSystem<io::ReadSystem>();
@@ -304,6 +316,7 @@ namespace tl
                     seqExts.begin(),
                     seqExts.end(),
                     ftk::toLower(path.getExt())) != seqExts.end();
+
                 if (hasSeqExt && (path.hasNum() && !path.isSeq() || path.hasSeqWildcard()))
                 {
                     ftk::expandSeq(
@@ -326,11 +339,10 @@ namespace tl
                     }
                 }
 
-                // Is the input a video or audio file?
+                // Read the file.
                 if (auto read = ioSystem->read(path, options.ioOptions))
                 {
                     const auto info = read->getInfo().get();
-
                     OTIO_NS::RationalTime startTime = time::invalidTime;
                     OTIO_NS::Track* videoTrack = nullptr;
                     OTIO_NS::Track* audioTrack = nullptr;
@@ -443,16 +455,6 @@ namespace tl
             {
                 error = e.what();
             }
-
-            auto logSystem = context->getLogSystem();
-            logSystem->print(
-                "tl::timeline::create",
-                ftk::Format(
-                    "\n"
-                    "    Create from path: {0}\n"
-                    "    Audio path: {1}").
-                arg(path.get()).
-                arg(audioPath.get()));
 
             // Is the input an OTIO file?
             if (!out)
