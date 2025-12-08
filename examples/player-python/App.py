@@ -33,7 +33,7 @@ class App(ftk.App):
         
         # Save time units settings.
         self._settingsModel.setString("/TimeUnits",
-            tl.timeline.timeUnitsToString(self._timeUnitsModel.timeUnits))
+            tl.timeline.to_string(self._timeUnitsModel.timeUnits))
 
         # Save recent files settings.
         self._settingsModel.setStringList("/Files/Recent", self._recentFilesModel.recent)
@@ -78,7 +78,7 @@ class App(ftk.App):
         self._timeUnitsModel = tl.timeline.TimeUnitsModel(self.context)
         settings = self._settingsModel.getString("/TimeUnits")
         if settings[0]:
-            self._timeUnitsModel.timeUnits = tl.timeline.timeUnitsFromString(settings[1])[1]
+            tl.timeline.from_string(settings[1], self._timeUnitsModel.timeUnits)
 
         # Create the recent files model.
         self._recentFilesModel = ftk.RecentFilesModel(self.context)

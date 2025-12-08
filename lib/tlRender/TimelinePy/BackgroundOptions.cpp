@@ -5,6 +5,8 @@
 
 #include <tlRender/Timeline/BackgroundOptions.h>
 
+#include <ftk/CorePy/Util.h>
+
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
 
@@ -16,17 +18,20 @@ namespace tl
     {
         void backgroundOptions(py::module_& m)
         {
-            py::enum_<timeline::Background>(m, "Background")
-                .value("Solid", timeline::Background::Solid)
-                .value("Checkers", timeline::Background::Checkers)
-                .value("Gradient", timeline::Background::Gradient);
+            using namespace timeline;
+            
+            py::enum_<Background>(m, "Background")
+                .value("Solid", Background::Solid)
+                .value("Checkers", Background::Checkers)
+                .value("Gradient", Background::Gradient);
+            FTK_ENUM_BIND(m, Background);
 
-            py::class_<timeline::BackgroundOptions>(m, "BackgroundOptions")
+            py::class_<BackgroundOptions>(m, "BackgroundOptions")
                 .def(py::init())
-                .def_readwrite("type", &timeline::BackgroundOptions::type)
-                .def_readwrite("solidColor", &timeline::BackgroundOptions::solidColor)
-                .def_readwrite("checkersColor", &timeline::BackgroundOptions::checkersColor)
-                .def_readwrite("gradientColor", &timeline::BackgroundOptions::gradientColor)
+                .def_readwrite("type", &BackgroundOptions::type)
+                .def_readwrite("solidColor", &BackgroundOptions::solidColor)
+                .def_readwrite("checkersColor", &BackgroundOptions::checkersColor)
+                .def_readwrite("gradientColor", &BackgroundOptions::gradientColor)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
         }

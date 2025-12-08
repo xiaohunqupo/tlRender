@@ -5,6 +5,8 @@
 
 #include <tlRender/Timeline/CompareOptions.h>
 
+#include <ftk/CorePy/Util.h>
+
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
 
@@ -16,26 +18,30 @@ namespace tl
     {
         void compareOptions(py::module_& m)
         {
-            py::enum_<timeline::Compare>(m, "Compare")
-                .value("A", timeline::Compare::A)
-                .value("B", timeline::Compare::B)
-                .value("Wipe", timeline::Compare::Wipe)
-                .value("Overlay", timeline::Compare::Overlay)
-                .value("Difference", timeline::Compare::Difference)
-                .value("Horizontal", timeline::Compare::Horizontal)
-                .value("Vertical", timeline::Compare::Vertical)
-                .value("Tile", timeline::Compare::Tile);
+            using namespace timeline;
+            
+            py::enum_<Compare>(m, "Compare")
+                .value("A", Compare::A)
+                .value("B", Compare::B)
+                .value("Wipe", Compare::Wipe)
+                .value("Overlay", Compare::Overlay)
+                .value("Difference", Compare::Difference)
+                .value("Horizontal", Compare::Horizontal)
+                .value("Vertical", Compare::Vertical)
+                .value("Tile", Compare::Tile);
+            FTK_ENUM_BIND(m, Compare);
 
-            py::enum_<timeline::CompareTime>(m, "CompareTime")
-                .value("Relative", timeline::CompareTime::Relative)
-                .value("Absolute", timeline::CompareTime::Absolute);
+            py::enum_<CompareTime>(m, "CompareTime")
+                .value("Relative", CompareTime::Relative)
+                .value("Absolute", CompareTime::Absolute);
+            FTK_ENUM_BIND(m, CompareTime);
 
-            py::class_<timeline::CompareOptions>(m, "CompareOptions")
+            py::class_<CompareOptions>(m, "CompareOptions")
                 .def(py::init())
-                .def_readwrite("compare", &timeline::CompareOptions::compare)
-                .def_readwrite("wipeCenter", &timeline::CompareOptions::wipeCenter)
-                .def_readwrite("wipeRotation", &timeline::CompareOptions::wipeRotation)
-                .def_readwrite("overlay", &timeline::CompareOptions::overlay)
+                .def_readwrite("compare", &CompareOptions::compare)
+                .def_readwrite("wipeCenter", &CompareOptions::wipeCenter)
+                .def_readwrite("wipeRotation", &CompareOptions::wipeRotation)
+                .def_readwrite("overlay", &CompareOptions::overlay)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
         }

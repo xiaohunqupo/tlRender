@@ -76,14 +76,14 @@ class Widget(ftk.IWidget):
                     videoInfo.size.w,
                     videoInfo.size.h,
                     videoInfo.aspect,
-                    videoInfo.type)
+                    ftk.to_string(videoInfo.type))
                 text.append(s)
                 tooltip.append(s)
 
             if ioInfo.audio.isValid:
                 s = "audio: {} {} {}".format(
                     ioInfo.audio.channelCount,
-                    ioInfo.audio.dataType,
+                    tl.audio.to_string(ioInfo.audio.dataType),
                     ioInfo.audio.sampleRate)
                 text.append(s)
                 tooltip.append(s)

@@ -5,6 +5,8 @@
 
 #include <tlRender/Core/Audio.h>
 
+#include <ftk/CorePy/Util.h>
+
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
 
@@ -16,49 +18,52 @@ namespace tl
     {
         void audio(py::module_& m)
         {
+            using namespace audio;
+
             auto mAudio = m.def_submodule("audio", "Audio");
             
-            py::enum_<audio::DataType>(mAudio, "DataType")
-                .value("_None", audio::DataType::None)
-                .value("S8", audio::DataType::S8)
-                .value("S16", audio::DataType::S16)
-                .value("S32", audio::DataType::S32)
-                .value("F32", audio::DataType::F32)
-                .value("F64", audio::DataType::F64);
+            py::enum_<DataType>(mAudio, "DataType")
+                .value("_None", DataType::None)
+                .value("S8", DataType::S8)
+                .value("S16", DataType::S16)
+                .value("S32", DataType::S32)
+                .value("F32", DataType::F32)
+                .value("F64", DataType::F64);
+            FTK_ENUM_BIND(mAudio, DataType);
             
-            /*mAudio.attr("S8Range") = audio::S8Range;
-            mAudio.attr("S16Range") = audio::S16Range;
-            mAudio.attr("S32Range") = audio::S32Range;
-            mAudio.attr("F32Range") = audio::F32Range;
-            mAudio.attr("F64Range") = audio::F64Range;*/
+            /*mAudio.attr("S8Range") = S8Range;
+            mAudio.attr("S16Range") = S16Range;
+            mAudio.attr("S32Range") = S32Range;
+            mAudio.attr("F32Range") = F32Range;
+            mAudio.attr("F64Range") = F64Range;*/
             
-            mAudio.def("getByteCount", &audio::getByteCount);
-            mAudio.def("getIntType", &audio::getIntType);
-            mAudio.def("getFloatType", &audio::getFloatType);
+            mAudio.def("getByteCount", &getByteCount);
+            mAudio.def("getIntType", &getIntType);
+            mAudio.def("getFloatType", &getFloatType);
             
-            py::class_<audio::Info>(mAudio, "Info")
+            py::class_<Info>(mAudio, "Info")
                 .def(py::init())
-                .def_readwrite("name", &audio::Info::name)
-                .def_readwrite("channelCount", &audio::Info::channelCount)
-                .def_readwrite("dataType", &audio::Info::dataType)
-                .def_readwrite("sampleRate", &audio::Info::sampleRate)
-                .def_property_readonly("isValid", &audio::Info::isValid)
-                .def_property_readonly("byteCount", &audio::Info::getByteCount)
+                .def_readwrite("name", &Info::name)
+                .def_readwrite("channelCount", &Info::channelCount)
+                .def_readwrite("dataType", &Info::dataType)
+                .def_readwrite("sampleRate", &Info::sampleRate)
+                .def_property_readonly("isValid", &Info::isValid)
+                .def_property_readonly("byteCount", &Info::getByteCount)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
             
-            py::class_<audio::Audio, std::shared_ptr<audio::Audio> >(mAudio, "Audio")
-                .def(py::init(&audio::Audio::create),
+            py::class_<Audio, std::shared_ptr<Audio> >(mAudio, "Audio")
+                .def(py::init(&Audio::create),
                     py::arg("info"),
                     py::arg("sampleCount"))
-                .def_property_readonly("info", &audio::Audio::getInfo)
-                .def_property_readonly("channelCount", &audio::Audio::getChannelCount)
-                .def_property_readonly("dataType", &audio::Audio::getDataType)
-                .def_property_readonly("sampleRate", &audio::Audio::getSampleRate)
-                .def_property_readonly("sampleCount", &audio::Audio::getSampleCount)
-                .def_property_readonly("isValid", &audio::Audio::isValid)
-                .def_property_readonly("byteCount", &audio::Audio::getByteCount)
-                .def("zero", &audio::Audio::zero);
+                .def_property_readonly("info", &Audio::getInfo)
+                .def_property_readonly("channelCount", &Audio::getChannelCount)
+                .def_property_readonly("dataType", &Audio::getDataType)
+                .def_property_readonly("sampleRate", &Audio::getSampleRate)
+                .def_property_readonly("sampleCount", &Audio::getSampleCount)
+                .def_property_readonly("isValid", &Audio::isValid)
+                .def_property_readonly("byteCount", &Audio::getByteCount)
+                .def("zero", &Audio::zero);
         }
     }
 }

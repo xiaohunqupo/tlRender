@@ -16,18 +16,15 @@ namespace tl
     {
         void io(py::module_& m)
         {
-            py::enum_<io::FileType>(m, "FileType")
-                .value("Unknown", io::FileType::Unknown)
-                .value("Media", io::FileType::Media)
-                .value("Seq", io::FileType::Seq);
+            using namespace io;
 
-            py::class_<io::Info>(m, "Info")
+            py::class_<Info>(m, "Info")
                 .def(py::init())
-                .def_readwrite("video", &io::Info::video)
-                .def_readwrite("videoTime", &io::Info::videoTime)
-                .def_readwrite("audio", &io::Info::audio)
-                .def_readwrite("audioTime", &io::Info::audioTime)
-                .def_readwrite("tags", &io::Info::tags)
+                .def_readwrite("video", &Info::video)
+                .def_readwrite("videoTime", &Info::videoTime)
+                .def_readwrite("audio", &Info::audio)
+                .def_readwrite("audioTime", &Info::audioTime)
+                .def_readwrite("tags", &Info::tags)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
         }
