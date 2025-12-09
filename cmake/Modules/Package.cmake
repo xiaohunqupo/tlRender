@@ -3,7 +3,7 @@ if(Darwin STREQUAL SYSTEM_NAME)
     set(SYSTEM_NAME macOS)
 endif()
 set(CPACK_PACKAGE_FILE_NAME
-    ${CMAKE_PROJECT_NAME}-${CMAKE_PROJECT_VERSION}-${SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR})
+    ${CMAKE_PROJECT_NAME}-${TLRENDER_VERSION_FULL}-${SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR})
 set(CPACK_PACKAGE_DESCRIPTION "tlRender is an open source library for building playback and review applications for visual effects, film, and animation.")
 set(CPACK_RESOURCE_FILE_LICENSE ${PROJECT_SOURCE_DIR}/LICENSE.txt)
 set(CPACK_PACKAGE_EXECUTABLES tlplay)
