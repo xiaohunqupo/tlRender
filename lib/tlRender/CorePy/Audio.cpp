@@ -40,6 +40,31 @@ namespace tl
             mAudio.def("getByteCount", &getByteCount);
             mAudio.def("getIntType", &getIntType);
             mAudio.def("getFloatType", &getFloatType);
+
+            mAudio.def("S8ToS16", &S8ToS16);
+            mAudio.def("S8ToS32", &S8ToS32);
+            mAudio.def("S8ToF32", &S8ToF32);
+            mAudio.def("S8ToF64", &S8ToF64);
+
+            mAudio.def("S16ToS8", &S16ToS8);
+            mAudio.def("S16ToS32", &S16ToS32);
+            mAudio.def("S16ToF32", &S16ToF32);
+            mAudio.def("S16ToF64", &S16ToF64);
+
+            mAudio.def("S32ToS8", &S32ToS8);
+            mAudio.def("S32ToS16", &S32ToS16);
+            mAudio.def("S32ToF32", &S32ToF32);
+            mAudio.def("S32ToF64", &S32ToF64);
+
+            mAudio.def("F32ToS8", &F32ToS8);
+            mAudio.def("F32ToS16", &F32ToS16);
+            mAudio.def("F32ToS32", &F32ToS32);
+            mAudio.def("F32ToF64", &F32ToF64);
+
+            mAudio.def("F64ToS8", &F64ToS8);
+            mAudio.def("F64ToS16", &F64ToS16);
+            mAudio.def("F64ToS32", &F64ToS32);
+            mAudio.def("F64ToF32", &F64ToF32);
             
             py::class_<Info>(mAudio, "Info")
                 .def(py::init())

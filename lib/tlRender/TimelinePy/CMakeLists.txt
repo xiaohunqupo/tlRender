@@ -1,4 +1,5 @@
 set(HEADERS
+    Audio.h
     BackgroundOptions.h
     Bindings.h
     ColorOptions.h
@@ -10,9 +11,12 @@ set(HEADERS
     TimeUnits.h
     Timeline.h
     TimelineOptions.h
-    Util.h)
+    Transition.h
+    Util.h
+    Video.h)
 set(HEADERS_PRIVATE)
 set(SOURCE
+    Audio.cpp
     BackgroundOptions.cpp
     Bindings.cpp
     ColorOptions.cpp
@@ -24,7 +28,9 @@ set(SOURCE
     TimeUnits.cpp
     Timeline.cpp
     TimelineOptions.cpp
-    Util.cpp)
+    Transition.cpp
+    Util.cpp
+    Video.cpp)
 
 add_library(tlTimelinePy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
 target_link_libraries(tlTimelinePy tlTimeline Python3::Python)

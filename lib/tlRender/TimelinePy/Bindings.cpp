@@ -3,13 +3,16 @@
 
 #include <tlRender/TimelinePy/Bindings.h>
 
+#include <tlRender/TimelinePy/Audio.h>
 #include <tlRender/TimelinePy/CompareOptions.h>
 #include <tlRender/TimelinePy/Player.h>
 #include <tlRender/TimelinePy/PlayerOptions.h>
 #include <tlRender/TimelinePy/TimeUnits.h>
 #include <tlRender/TimelinePy/Timeline.h>
 #include <tlRender/TimelinePy/TimelineOptions.h>
+#include <tlRender/TimelinePy/Transition.h>
 #include <tlRender/TimelinePy/Util.h>
+#include <tlRender/TimelinePy/Video.h>
 
 #include <tlRender/Timeline/Init.h>
 
@@ -31,13 +34,16 @@ namespace tl
                 py::arg("context"),
                 "Initialize the library.");
 
+            audio(mTimeline);
             compareOptions(mTimeline);
             timeUnits(mTimeline);
             timelineOptions(mTimeline);
             timeline(mTimeline);
             playerOptions(mTimeline);
             player(mTimeline);
+            transition(mTimeline);
             util(mTimeline);
+            video(mTimeline);
         }
     }
 }

@@ -90,18 +90,26 @@ namespace tl
                 const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline>&,
                 const Options& = Options());
 
-            //! Create a new timeline from a file name. The file name can point
-            //! to an .otio file, movie file, or image sequence.
-            static std::shared_ptr<Timeline> create(
-                const std::shared_ptr<ftk::Context>&,
-                const std::string&,
-                const Options& = Options());
-
             //! Create a new timeline from a path. The path can point to an
             //! .otio file, movie file, or image sequence.
             static std::shared_ptr<Timeline> create(
                 const std::shared_ptr<ftk::Context>&,
                 const ftk::Path&,
+                const Options& = Options());
+
+            //! Create a new timeline from a path and audio path. The path can
+            //! point to an .otio file, movie file, or image sequence.
+            static std::shared_ptr<Timeline> create(
+                const std::shared_ptr<ftk::Context>&,
+                const ftk::Path& path,
+                const ftk::Path& audioPath,
+                const Options& = Options());
+
+            //! Create a new timeline from a file name. The file name can point
+            //! to an .otio file, movie file, or image sequence.
+            static std::shared_ptr<Timeline> create(
+                const std::shared_ptr<ftk::Context>&,
+                const std::string&,
                 const Options& = Options());
 
             //! Create a new timeline from a file name and audio file name.
@@ -111,14 +119,6 @@ namespace tl
                 const std::shared_ptr<ftk::Context>&,
                 const std::string& fileName,
                 const std::string& audioFilename,
-                const Options& = Options());
-
-            //! Create a new timeline from a path and audio path. The path can
-            //! point to an .otio file, movie file, or image sequence.
-            static std::shared_ptr<Timeline> create(
-                const std::shared_ptr<ftk::Context>&,
-                const ftk::Path& path,
-                const ftk::Path& audioPath,
                 const Options& = Options());
 
             //! Get the context.

@@ -11,6 +11,7 @@
 
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
+#include <pybind11/operators.h>
 
 namespace py = pybind11;
 
@@ -21,7 +22,16 @@ namespace tl
         void player(py::module_& m)
         {
             using namespace timeline;
-            
+
+            py::class_<PlayerCacheInfo>(m, "PlayerCacheInfo")
+                .def(py::init())
+                .def_readwrite("videoPercentage", &PlayerCacheInfo::videoPercentage)
+                .def_readwrite("audioPercentage", &PlayerCacheInfo::audioPercentage)
+                .def_readwrite("video", &PlayerCacheInfo::video)
+                .def_readwrite("audio", &PlayerCacheInfo::audio)
+                .def(pybind11::self == pybind11::self)
+                .def(pybind11::self != pybind11::self);
+
             py::enum_<Playback>(m, "Playback")
                 .value("Stop", Playback::Stop)
                 .value("Forward", Playback::Forward)

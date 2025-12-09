@@ -17,16 +17,49 @@ namespace tl
     {
         void timeline(py::module_& m)
         {
-            py::class_<timeline::Timeline, std::shared_ptr<timeline::Timeline> >(m, "Timeline")
-                .def(
-                    py::init(py::overload_cast<
+            using namespace timeline;
+
+            py::class_<Timeline, std::shared_ptr<Timeline> >(m, "Timeline")
+                .def(py::init(py::overload_cast<
                         const std::shared_ptr<ftk::Context>&,
                         const ftk::Path&,
-                        const timeline::Options&>(&timeline::Timeline::create)),
+                        const Options&>(&Timeline::create)),
                     py::arg("context"),
                     py::arg("path"),
-                    py::arg("options") = timeline::Options())
-                .def_property_readonly("otio", &timeline::Timeline::getTimeline);
+                    py::arg("options") = Options())
+                .def(py::init(py::overload_cast<
+                        const std::shared_ptr<ftk::Context>&,
+                        const ftk::Path&,
+                        const ftk::Path&,
+                        const Options&>(&Timeline::create)),
+                    py::arg("context"),
+                    py::arg("path"),
+                    py::arg("audioPath"),
+                    py::arg("options") = Options())
+                .def(py::init(py::overload_cast<
+                        const std::shared_ptr<ftk::Context>&,
+                        const std::string&,
+                        const Options&>(&Timeline::create)),
+                    py::arg("context"),
+                    py::arg("fileName"),
+                    py::arg("options") = Options())
+                .def(py::init(py::overload_cast<
+                        const std::shared_ptr<ftk::Context>&,
+                        const std::string&,
+                        const std::string&,
+                        const Options&>(&Timeline::create)),
+                    py::arg("context"),
+                    py::arg("fileName"),
+                    py::arg("audioFileName"),
+                    py::arg("options") = Options())
+                .def_property_readonly("context", &Timeline::getContext)
+                .def_property_readonly("timeline", &Timeline::getTimeline)
+                .def_property_readonly("path", &Timeline::getPath)
+                .def_property_readonly("audioPath", &Timeline::getAudioPath)
+                .def_property_readonly("options", &Timeline::getOptions)
+                .def_property_readonly("timeRange", &Timeline::getTimeRange)
+                .def_property_readonly("duration", &Timeline::getDuration)
+                .def_property_readonly("ioInfo", &Timeline::getIOInfo);
         }
     }
 }

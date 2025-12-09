@@ -496,41 +496,11 @@ namespace tl
 
         std::shared_ptr<Timeline> Timeline::create(
             const std::shared_ptr<ftk::Context>& context,
-            const std::string& fileName,
-            const Options& options)
-        {
-            auto out = std::shared_ptr<Timeline>(new Timeline);
-            auto otioTimeline = timeline::create(
-                context,
-                ftk::Path(fileName, options.pathOptions),
-                options);
-            out->_init(context, otioTimeline, options);
-            return out;
-        }
-
-        std::shared_ptr<Timeline> Timeline::create(
-            const std::shared_ptr<ftk::Context>& context,
             const ftk::Path& path,
             const Options& options)
         {
             auto out = std::shared_ptr<Timeline>(new Timeline);
             auto otioTimeline = timeline::create(context, path, options);
-            out->_init(context, otioTimeline, options);
-            return out;
-        }
-
-        std::shared_ptr<Timeline> Timeline::create(
-            const std::shared_ptr<ftk::Context>& context,
-            const std::string& fileName,
-            const std::string& audioFileName,
-            const Options& options)
-        {
-            auto out = std::shared_ptr<Timeline>(new Timeline);
-            auto otioTimeline = timeline::create(
-                context,
-                ftk::Path(fileName, options.pathOptions),
-                ftk::Path(audioFileName, options.pathOptions),
-                options);
             out->_init(context, otioTimeline, options);
             return out;
         }
@@ -546,6 +516,36 @@ namespace tl
                 context,
                 path,
                 audioPath,
+                options);
+            out->_init(context, otioTimeline, options);
+            return out;
+        }
+
+        std::shared_ptr<Timeline> Timeline::create(
+            const std::shared_ptr<ftk::Context>& context,
+            const std::string& fileName,
+            const Options& options)
+        {
+            auto out = std::shared_ptr<Timeline>(new Timeline);
+            auto otioTimeline = timeline::create(
+                context,
+                ftk::Path(fileName, options.pathOptions),
+                options);
+            out->_init(context, otioTimeline, options);
+            return out;
+        }
+
+        std::shared_ptr<Timeline> Timeline::create(
+            const std::shared_ptr<ftk::Context>& context,
+            const std::string& fileName,
+            const std::string& audioFileName,
+            const Options& options)
+        {
+            auto out = std::shared_ptr<Timeline>(new Timeline);
+            auto otioTimeline = timeline::create(
+                context,
+                ftk::Path(fileName, options.pathOptions),
+                ftk::Path(audioFileName, options.pathOptions),
                 options);
             out->_init(context, otioTimeline, options);
             return out;
