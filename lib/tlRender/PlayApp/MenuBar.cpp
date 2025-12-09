@@ -89,7 +89,7 @@ namespace tl
                             {
                                 if (auto app = appWeak.lock())
                                 {
-                                    app->open(path);
+                                    app->open(ftk::Path(path.u8string()));
                                 }
                             });
                         _recentActions.push_back(action);

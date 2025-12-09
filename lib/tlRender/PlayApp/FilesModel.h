@@ -31,7 +31,7 @@ namespace tl
                 const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<SettingsModel>&);
 
-            void open(const std::filesystem::path&);
+            void open(const ftk::Path&);
             void open();
             void close();
             void close(int);

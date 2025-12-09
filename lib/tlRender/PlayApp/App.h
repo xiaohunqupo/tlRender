@@ -46,7 +46,7 @@ namespace tl
             const std::shared_ptr<ftk::RecentFilesModel>& getRecentFilesModel() const;
             const std::shared_ptr<FilesModel>& getFilesModel() const;
 
-            void open(const std::filesystem::path&);
+            void open(const ftk::Path&);
             void open();
             void reload();
 

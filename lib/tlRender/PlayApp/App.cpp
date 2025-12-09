@@ -79,7 +79,7 @@ namespace tl
             return _filesModel;
         }
 
-        void App::open(const std::filesystem::path& path)
+        void App::open(const ftk::Path& path)
         {
             try
             {
@@ -90,7 +90,7 @@ namespace tl
                 auto dialogSystem = _context->getSystem<ftk::DialogSystem>();
                 dialogSystem->message("ERROR", e.what(), _window);
             }
-            _recentFilesModel->addRecent(path);
+            _recentFilesModel->addRecent(path.get());
         }
 
         void App::open()
@@ -100,7 +100,7 @@ namespace tl
                 _window,
                 [this](const ftk::Path& value)
                 {
-                    open(value.get());
+                    open(value);
                 });
         }
 
@@ -200,7 +200,9 @@ namespace tl
 
             for (const auto& input : _cmdLine.inputs->getList())
             {
-                open(std::filesystem::u8path(input));
+                ftk::Path path;
+                ftk::expandSeq(std::filesystem::u8path(input), path);
+                open(path);
             }
 
             ftk::App::run();

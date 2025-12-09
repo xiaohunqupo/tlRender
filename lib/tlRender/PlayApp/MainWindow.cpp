@@ -215,7 +215,7 @@ namespace tl
             {
                 for (const auto& fileName : value)
                 {
-                    app->open(fileName);
+                    app->open(ftk::Path(fileName));
                 }
             }
         }

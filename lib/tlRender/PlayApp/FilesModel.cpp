@@ -45,11 +45,11 @@ namespace tl
             return out;
         }
 
-        void FilesModel::open(const std::filesystem::path& path)
+        void FilesModel::open(const ftk::Path& path)
         {
             if (auto context = _context.lock())
             {
-                auto timeline = timeline::Timeline::create(context, ftk::Path(path.u8string()));
+                auto timeline = timeline::Timeline::create(context, path);
                 auto player = timeline::Player::create(context, timeline);
                 player->setCacheOptions(_cacheOptions);
                 const int index = _players->getSize();
