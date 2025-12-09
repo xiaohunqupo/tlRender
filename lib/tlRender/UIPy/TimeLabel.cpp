@@ -20,16 +20,18 @@ namespace tl
     {
         void timeLabel(py::module_& m)
         {
-            py::class_<timelineui::TimeLabel, ftk::IWidget, std::shared_ptr<timelineui::TimeLabel> >(m, "TimeLabel")
+            using namespace timelineui;
+
+            py::class_<TimeLabel, ftk::IWidget, std::shared_ptr<TimeLabel> >(m, "TimeLabel")
                 .def(
                     py::init(py::overload_cast<
                         const std::shared_ptr<ftk::Context>&,
                         const std::shared_ptr<timeline::TimeUnitsModel>&,
-                        const std::shared_ptr<ftk::IWidget>&>(&timelineui::TimeLabel::create)),
+                        const std::shared_ptr<ftk::IWidget>&>(&TimeLabel::create)),
                     py::arg("context"),
                     py::arg("timeUnitsModel"),
                     py::arg("parent") = nullptr)
-                .def_property("value", &timelineui::TimeLabel::getValue, &timelineui::TimeLabel::setValue);
+                .def_property("value", &TimeLabel::getValue, &TimeLabel::setValue);
         }
     }
 }

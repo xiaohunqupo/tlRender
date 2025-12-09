@@ -18,41 +18,43 @@ namespace tl
     {
         void iItem(py::module_& m)
         {
-            py::enum_<timelineui::InOutDisplay>(m, "InOutDisplay")
-                .value("InsideRange", timelineui::InOutDisplay::InsideRange)
-                .value("OutsideRange", timelineui::InOutDisplay::OutsideRange);
+            using namespace timelineui;
+            
+            py::enum_<InOutDisplay>(m, "InOutDisplay")
+                .value("InsideRange", InOutDisplay::InsideRange)
+                .value("OutsideRange", InOutDisplay::OutsideRange);
 
-            py::enum_<timelineui::CacheDisplay>(m, "CacheDisplay")
-                .value("VideoAndAudio", timelineui::CacheDisplay::VideoAndAudio)
-                .value("VideoOnly", timelineui::CacheDisplay::VideoOnly);
+            py::enum_<CacheDisplay>(m, "CacheDisplay")
+                .value("VideoAndAudio", CacheDisplay::VideoAndAudio)
+                .value("VideoOnly", CacheDisplay::VideoOnly);
 
-            py::enum_<timelineui::WaveformPrim>(m, "WaveformPrim")
-                .value("Mesh", timelineui::WaveformPrim::Mesh)
-                .value("Image", timelineui::WaveformPrim::Image);
+            py::enum_<WaveformPrim>(m, "WaveformPrim")
+                .value("Mesh", WaveformPrim::Mesh)
+                .value("Image", WaveformPrim::Image);
 
-            py::class_<timelineui::ItemOptions>(m, "ItemOptions")
+            py::class_<ItemOptions>(m, "ItemOptions")
                 .def(py::init())
-                .def_readwrite("inputEnabled", &timelineui::ItemOptions::inputEnabled)
-                .def_readwrite("editAssociatedClips", &timelineui::ItemOptions::editAssociatedClips)
+                .def_readwrite("inputEnabled", &ItemOptions::inputEnabled)
+                .def_readwrite("editAssociatedClips", &ItemOptions::editAssociatedClips)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
-            py::class_<timelineui::DisplayOptions>(m, "DisplayOptions")
+            py::class_<DisplayOptions>(m, "DisplayOptions")
                 .def(py::init())
-                .def_readwrite("inOutDisplay", &timelineui::DisplayOptions::inOutDisplay)
-                .def_readwrite("cacheDisplay", &timelineui::DisplayOptions::cacheDisplay)
-                .def_readwrite("minimize", &timelineui::DisplayOptions::minimize)
-                .def_readwrite("thumbnails", &timelineui::DisplayOptions::thumbnails)
-                .def_readwrite("thumbnailHeight", &timelineui::DisplayOptions::thumbnailHeight)
-                .def_readwrite("waveformWidth", &timelineui::DisplayOptions::waveformWidth)
-                .def_readwrite("waveformHeight", &timelineui::DisplayOptions::waveformHeight)
-                .def_readwrite("waveformPrim", &timelineui::DisplayOptions::waveformPrim)
-                .def_readwrite("regularFont", &timelineui::DisplayOptions::regularFont)
-                .def_readwrite("monoFont", &timelineui::DisplayOptions::monoFont)
-                .def_readwrite("fontSize", &timelineui::DisplayOptions::fontSize)
-                .def_readwrite("clipRectScale", &timelineui::DisplayOptions::clipRectScale)
-                .def_readwrite("ocio", &timelineui::DisplayOptions::ocio)
-                .def_readwrite("lut", &timelineui::DisplayOptions::lut)
+                .def_readwrite("inOutDisplay", &DisplayOptions::inOutDisplay)
+                .def_readwrite("cacheDisplay", &DisplayOptions::cacheDisplay)
+                .def_readwrite("minimize", &DisplayOptions::minimize)
+                .def_readwrite("thumbnails", &DisplayOptions::thumbnails)
+                .def_readwrite("thumbnailHeight", &DisplayOptions::thumbnailHeight)
+                .def_readwrite("waveformWidth", &DisplayOptions::waveformWidth)
+                .def_readwrite("waveformHeight", &DisplayOptions::waveformHeight)
+                .def_readwrite("waveformPrim", &DisplayOptions::waveformPrim)
+                .def_readwrite("regularFont", &DisplayOptions::regularFont)
+                .def_readwrite("monoFont", &DisplayOptions::monoFont)
+                .def_readwrite("fontSize", &DisplayOptions::fontSize)
+                .def_readwrite("clipRectScale", &DisplayOptions::clipRectScale)
+                .def_readwrite("ocio", &DisplayOptions::ocio)
+                .def_readwrite("lut", &DisplayOptions::lut)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
             

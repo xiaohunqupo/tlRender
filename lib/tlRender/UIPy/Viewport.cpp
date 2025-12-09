@@ -18,141 +18,143 @@ namespace tl
     {
         void viewport(py::module_& m)
         {
+            using namespace timelineui;
+
             ftk::python::observable<std::pair<ftk::V2I, double> >(m, "ViewPosAndZoom");
             
-            py::class_<timelineui::Viewport, ftk::IWidget, std::shared_ptr<timelineui::Viewport> >(m, "Viewport")
+            py::class_<Viewport, ftk::IWidget, std::shared_ptr<Viewport> >(m, "Viewport")
                 .def(
                     py::init(py::overload_cast<
                         const std::shared_ptr<ftk::Context>&,
-                        const std::shared_ptr<ftk::IWidget>&>(&timelineui::Viewport::create)),
+                        const std::shared_ptr<ftk::IWidget>&>(&Viewport::create)),
                     py::arg("context"),
                     py::arg("parent") = nullptr)
                 .def_property("compareOptions",
-                    &timelineui::Viewport::getCompareOptions,
-                    &timelineui::Viewport::setCompareOptions)
+                    &Viewport::getCompareOptions,
+                    &Viewport::setCompareOptions)
                 .def_property_readonly(
                     "observeCompareOptions",
-                    &timelineui::Viewport::observeCompareOptions)
+                    &Viewport::observeCompareOptions)
                 .def_property(
                     "ocioOptions",
-                    &timelineui::Viewport::getOCIOOptions,
-                    &timelineui::Viewport::setOCIOOptions)
+                    &Viewport::getOCIOOptions,
+                    &Viewport::setOCIOOptions)
                 .def_property_readonly(
                     "observeOCIOOptions",
-                    &timelineui::Viewport::observeOCIOOptions)
+                    &Viewport::observeOCIOOptions)
                 .def_property(
                     "LUTOptions",
-                    &timelineui::Viewport::getLUTOptions,
-                    &timelineui::Viewport::setLUTOptions)
+                    &Viewport::getLUTOptions,
+                    &Viewport::setLUTOptions)
                 .def_property_readonly(
                     "observeLUTOptions",
-                    &timelineui::Viewport::observeLUTOptions)
+                    &Viewport::observeLUTOptions)
                 .def_property(
                     "imageOptions",
-                    &timelineui::Viewport::getImageOptions,
-                    &timelineui::Viewport::setImageOptions)
+                    &Viewport::getImageOptions,
+                    &Viewport::setImageOptions)
                 .def_property_readonly(
                     "observeImageOptions",
-                    &timelineui::Viewport::observeImageOptions)
+                    &Viewport::observeImageOptions)
                 .def_property(
                     "displayOptions",
-                    &timelineui::Viewport::getDisplayOptions,
-                    &timelineui::Viewport::setDisplayOptions)
+                    &Viewport::getDisplayOptions,
+                    &Viewport::setDisplayOptions)
                 .def_property_readonly(
                     "observeDisplayOptions",
-                    &timelineui::Viewport::observeDisplayOptions)
+                    &Viewport::observeDisplayOptions)
                 .def_property(
                     "backgroundOptions",
-                    &timelineui::Viewport::getBackgroundOptions,
-                    &timelineui::Viewport::setBackgroundOptions)
+                    &Viewport::getBackgroundOptions,
+                    &Viewport::setBackgroundOptions)
                 .def_property_readonly(
                     "observeBackgroundOptions",
-                    &timelineui::Viewport::observeBackgroundOptions)
+                    &Viewport::observeBackgroundOptions)
                 .def_property(
                     "foregroundOptions",
-                    &timelineui::Viewport::getForegroundOptions,
-                    &timelineui::Viewport::setForegroundOptions)
+                    &Viewport::getForegroundOptions,
+                    &Viewport::setForegroundOptions)
                 .def_property_readonly(
                     "observeForegroundOptions",
-                    &timelineui::Viewport::observeForegroundOptions)
+                    &Viewport::observeForegroundOptions)
                 .def_property(
                     "colorBuffer",
-                    &timelineui::Viewport::getColorBuffer,
-                    &timelineui::Viewport::setColorBuffer)
+                    &Viewport::getColorBuffer,
+                    &Viewport::setColorBuffer)
                 .def_property_readonly(
                     "observeColorBuffer",
-                    &timelineui::Viewport::observeColorBuffer)
+                    &Viewport::observeColorBuffer)
                 .def_property(
                     "player",
-                    &timelineui::Viewport::getPlayer,
-                    &timelineui::Viewport::setPlayer)
+                    &Viewport::getPlayer,
+                    &Viewport::setPlayer)
                 .def_property_readonly(
                     "viewPos",
-                    &timelineui::Viewport::getViewPos)
+                    &Viewport::getViewPos)
                 .def_property_readonly(
                     "observeViewPos",
-                    &timelineui::Viewport::observeViewPos)
+                    &Viewport::observeViewPos)
                 .def_property_readonly(
                     "viewZoom",
-                    &timelineui::Viewport::getViewZoom)
+                    &Viewport::getViewZoom)
                 .def_property_readonly(
                     "observeViewZoom",
-                    &timelineui::Viewport::observeViewZoom)
+                    &Viewport::observeViewZoom)
                 .def_property_readonly(
                     "viewPosAndZoom",
-                    &timelineui::Viewport::getViewPosAndZoom)
+                    &Viewport::getViewPosAndZoom)
                 .def(
                     "setViewPosAndZoom",
-                    &timelineui::Viewport::setViewPosAndZoom,
+                    &Viewport::setViewPosAndZoom,
                     py::arg("pos"),
                     py::arg("zoom"))
                 .def_property_readonly(
                     "observeViewPosAndZoom",
-                    &timelineui::Viewport::observeViewPosAndZoom)
+                    &Viewport::observeViewPosAndZoom)
                 .def(
                     "setViewZoom",
-                    &timelineui::Viewport::setViewPosAndZoom,
+                    &Viewport::setViewPosAndZoom,
                     py::arg("zoom"),
                     py::arg("focus"))
                 .def_property(
                     "frameView",
-                    &timelineui::Viewport::hasFrameView,
-                    &timelineui::Viewport::setFrameView)
+                    &Viewport::hasFrameView,
+                    &Viewport::setFrameView)
                 .def_property_readonly(
                     "observeFrameView",
-                    &timelineui::Viewport::observeFrameView)
+                    &Viewport::observeFrameView)
                 .def_property_readonly(
                     "observeFramed",
-                    &timelineui::Viewport::observeFramed)
-                .def("viewZoomReset", &timelineui::Viewport::viewZoomReset)
-                .def("viewZoomIn", &timelineui::Viewport::viewZoomIn)
-                .def("viewZoomOut", &timelineui::Viewport::viewZoomOut)
+                    &Viewport::observeFramed)
+                .def("viewZoomReset", &Viewport::viewZoomReset)
+                .def("viewZoomIn", &Viewport::viewZoomIn)
+                .def("viewZoomOut", &Viewport::viewZoomOut)
                 .def_property_readonly(
                     "FPS",
-                    &timelineui::Viewport::getFPS)
+                    &Viewport::getFPS)
                 .def_property_readonly(
                     "observeFPS",
-                    &timelineui::Viewport::observeFPS)
+                    &Viewport::observeFPS)
                 .def_property_readonly(
                     "droppedFrames",
-                    &timelineui::Viewport::getDroppedFrames)
+                    &Viewport::getDroppedFrames)
                 .def_property_readonly(
                     "observeDroppedFrames",
-                    &timelineui::Viewport::observeDroppedFrames)
-                .def("getColorSample", &timelineui::Viewport::getColorSample)
+                    &Viewport::observeDroppedFrames)
+                .def("getColorSample", &Viewport::getColorSample)
                 .def(
                     "setPanBinding",
-                    &timelineui::Viewport::setPanBinding,
+                    &Viewport::setPanBinding,
                     py::arg("button"),
                     py::arg("modifier"))
                 .def(
                     "setWipeBinding",
-                    &timelineui::Viewport::setPanBinding,
+                    &Viewport::setPanBinding,
                     py::arg("button"),
                     py::arg("modifier"))
                 .def(
                     "setMouseWheelScale",
-                    &timelineui::Viewport::setMouseWheelScale);
+                    &Viewport::setMouseWheelScale);
         }
     }
 }

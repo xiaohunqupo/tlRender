@@ -20,17 +20,19 @@ namespace tl
     {
         void timeEdit(py::module_& m)
         {
-            py::class_<timelineui::TimeEdit, ftk::IWidget, std::shared_ptr<timelineui::TimeEdit> >(m, "TimeEdit")
+            using namespace timelineui;
+
+            py::class_<TimeEdit, ftk::IWidget, std::shared_ptr<TimeEdit> >(m, "TimeEdit")
                 .def(
                     py::init(py::overload_cast<
                         const std::shared_ptr<ftk::Context>&,
                         const std::shared_ptr<timeline::TimeUnitsModel>&,
-                        const std::shared_ptr<ftk::IWidget>&>(&timelineui::TimeEdit::create)),
+                        const std::shared_ptr<ftk::IWidget>&>(&TimeEdit::create)),
                     py::arg("context"),
                     py::arg("timeUnitsModel"),
                     py::arg("parent") = nullptr)
-                .def_property("value", &timelineui::TimeEdit::getValue, &timelineui::TimeEdit::setValue)
-                .def("setCallback", &timelineui::TimeEdit::setCallback);
+                .def_property("value", &TimeEdit::getValue, &TimeEdit::setValue)
+                .def("setCallback", &TimeEdit::setCallback);
         }
     }
 }

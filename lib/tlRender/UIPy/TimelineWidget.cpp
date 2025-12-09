@@ -17,35 +17,37 @@ namespace tl
     {
         void timelineWidget(py::module_& m)
         {
-            py::class_<timelineui::TimelineWidget, ftk::IWidget, std::shared_ptr<timelineui::TimelineWidget> >(m, "TimelineWidget")
+            using namespace timelineui;
+
+            py::class_<TimelineWidget, ftk::IWidget, std::shared_ptr<TimelineWidget> >(m, "TimelineWidget")
                 .def(
                     py::init(py::overload_cast<
                         const std::shared_ptr<ftk::Context>&,
-                        const std::shared_ptr<ftk::IWidget>&>(&timelineui::TimelineWidget::create)),
+                        const std::shared_ptr<ftk::IWidget>&>(&TimelineWidget::create)),
                     py::arg("context"),
                     py::arg("parent") = nullptr)
                 .def(
                     py::init(py::overload_cast<
                         const std::shared_ptr<ftk::Context>&,
                         const std::shared_ptr<timeline::ITimeUnitsModel>&,
-                        const std::shared_ptr<ftk::IWidget>&>(&timelineui::TimelineWidget::create)),
+                        const std::shared_ptr<ftk::IWidget>&>(&TimelineWidget::create)),
                     py::arg("context"),
                     py::arg("timeUnitsModel"),
                     py::arg("parent") = nullptr)
                 .def_property_readonly(
                     "timeUnitsModel",
-                    &timelineui::TimelineWidget::getTimeUnitsModel)
+                    &TimelineWidget::getTimeUnitsModel)
                 .def_property(
                     "player",
-                    &timelineui::TimelineWidget::getPlayer,
-                    &timelineui::TimelineWidget::setPlayer)
+                    &TimelineWidget::getPlayer,
+                    &TimelineWidget::setPlayer)
                 .def_property(
                     "displayOptions",
-                    &timelineui::TimelineWidget::getDisplayOptions,
-                    &timelineui::TimelineWidget::setDisplayOptions)
+                    &TimelineWidget::getDisplayOptions,
+                    &TimelineWidget::setDisplayOptions)
                 .def_property_readonly(
                     "observeDisplayOptions",
-                    &timelineui::TimelineWidget::observeDisplayOptions);
+                    &TimelineWidget::observeDisplayOptions);
         }
     }
 }

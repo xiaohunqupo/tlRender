@@ -18,12 +18,14 @@ namespace tl
     {
         void timeUnitsWidget(py::module_& m)
         {
-            py::class_<timelineui::TimeUnitsWidget, ftk::IWidget, std::shared_ptr<timelineui::TimeUnitsWidget> >(m, "TimeUnitsWidget")
+            using namespace timelineui;
+
+            py::class_<TimeUnitsWidget, ftk::IWidget, std::shared_ptr<TimeUnitsWidget> >(m, "TimeUnitsWidget")
                 .def(
                     py::init(py::overload_cast<
                         const std::shared_ptr<ftk::Context>&,
                         const std::shared_ptr<timeline::TimeUnitsModel>&,
-                        const std::shared_ptr<ftk::IWidget>&>(&timelineui::TimeUnitsWidget::create)),
+                        const std::shared_ptr<ftk::IWidget>&>(&TimeUnitsWidget::create)),
                     py::arg("context"),
                     py::arg("timeUnitsModel"),
                     py::arg("parent") = nullptr);

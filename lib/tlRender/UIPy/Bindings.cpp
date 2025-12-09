@@ -19,7 +19,7 @@ namespace py = pybind11;
 namespace tl
 {
     namespace python
-        {
+    {
         void uiBind(py::module_& m)
         {
             auto mUI = m.def_submodule("ui", "User interface");
