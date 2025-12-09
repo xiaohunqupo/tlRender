@@ -316,13 +316,9 @@ namespace tl
                     seqExts.begin(),
                     seqExts.end(),
                     ftk::toLower(path.getExt())) != seqExts.end();
-
-                if (hasSeqExt && (path.hasNum() && !path.isSeq() || path.hasSeqWildcard()))
+                if (hasSeqExt)
                 {
-                    ftk::expandSeq(
-                        std::filesystem::u8path(path.get()),
-                        path,
-                        options.pathOptions);
+                    path = ftk::expandSeq(path, options.pathOptions);
                 }
                 if (hasSeqExt && path.isSeq())
                 {

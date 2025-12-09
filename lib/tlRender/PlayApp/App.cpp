@@ -200,8 +200,11 @@ namespace tl
 
             for (const auto& input : _cmdLine.inputs->getList())
             {
-                ftk::Path path;
-                ftk::expandSeq(std::filesystem::u8path(input), path);
+                ftk::Path path(input);
+                if (path.hasSeqWildcard())
+                {
+                    path = ftk::expandSeq(path);
+                }
                 open(path);
             }
 

@@ -24,18 +24,10 @@ namespace tl
             const Options& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
-            ftk::Path pathTmp = path;
-            if (pathTmp.hasSeqWildcard())
-            {
-                ftk::expandSeq(
-                    std::filesystem::u8path(path.get()),
-                    pathTmp);
-            }
-
-            IRead::_init(pathTmp, mem, options, logSystem);
+            IRead::_init(path, mem, options, logSystem);
             FTK_P();
 
-            const std::string& num = pathTmp.getNum();
+            const std::string& num = path.getNum();
             if (!num.empty())
             {
                 if (!_mem.empty())
@@ -44,9 +36,9 @@ namespace tl
                     ss >> _startFrame;
                     _endFrame = _startFrame + _mem.size() - 1;
                 }
-                else if (pathTmp.getFrames().has_value())
+                else if (path.getFrames().has_value())
                 {
-                    const ftk::RangeI64& frames = pathTmp.getFrames().value();
+                    const ftk::RangeI64& frames = path.getFrames().value();
                     _startFrame = frames.min();
                     _endFrame = frames.max();
                 }
