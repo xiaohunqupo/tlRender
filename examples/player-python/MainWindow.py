@@ -74,7 +74,7 @@ class MainWindow(ftk.MainWindow):
         # Layout widgets.
         self._layout = ftk.VerticalLayout(context)
         self._layout.spacingRole = ftk.SizeRole._None
-        self.setWidget(self._layout)
+        self.widget = self._layout
         hLayout = ftk.HorizontalLayout(context, self._layout)
         hLayout.spacingRole = ftk.SizeRole.SpacingSmall
         self._fileToolBar.parent = hLayout

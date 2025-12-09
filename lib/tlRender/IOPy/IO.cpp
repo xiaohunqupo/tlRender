@@ -17,7 +17,12 @@ namespace tl
         void io(py::module_& m)
         {
             using namespace io;
-
+            
+            py::enum_<FileType>(m, "FileType")
+                .value("Unknown", FileType::Unknown)
+                .value("Media", FileType::Media)
+                .value("Seq", FileType::Seq);
+            
             py::class_<Info>(m, "Info")
                 .def(py::init())
                 .def_readwrite("video", &Info::video)

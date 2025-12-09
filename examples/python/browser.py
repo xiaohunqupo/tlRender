@@ -76,7 +76,7 @@ class MainWindow(ftk.MainWindow):
         # Layout the widgets.
         self._layout = ftk.VerticalLayout(context)
         self._layout.spacingRole = ftk.SizeRole._None
-        self.setWidget(self._layout)
+        self.widget = self._layout
 
         layout = ftk.VerticalLayout(context, self._layout)
         layout.marginRole = ftk.SizeRole.MarginInside
