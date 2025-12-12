@@ -9,19 +9,6 @@ namespace tl
 {
     namespace audio
     {
-        inline bool Info::isValid() const
-        {
-            return
-                channelCount > 0 &&
-                dataType != DataType::None &&
-                sampleRate > 0;
-        }
-
-        inline size_t Info::getByteCount() const
-        {
-            return static_cast<size_t>(channelCount) * audio::getByteCount(dataType);
-        }
-
         inline void S8ToS16(S8_T value, S16_T& out)
         {
             out = value * 256;
@@ -138,6 +125,19 @@ namespace tl
         inline void F64ToF32(F64_T value, F32_T& out)
         {
             out = static_cast<float>(value);
+        }
+
+        inline bool Info::isValid() const
+        {
+            return
+                channelCount > 0 &&
+                dataType != DataType::None &&
+                sampleRate > 0;
+        }
+
+        inline size_t Info::getByteCount() const
+        {
+            return static_cast<size_t>(channelCount) * audio::getByteCount(dataType);
         }
 
         inline bool Info::operator == (const Info& other) const

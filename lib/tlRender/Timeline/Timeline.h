@@ -26,7 +26,7 @@ namespace tl
     {
         //! Create a new timeline from a path. The path can point to an .otio
         //! file, .otioz file, movie file, or image sequence.
-        OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
+        TL_API OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
             const std::shared_ptr<ftk::Context>&,
             const ftk::Path&,
             const Options& = Options());
@@ -34,42 +34,42 @@ namespace tl
         //! Create a new timeline from a path and audio path. The file name
         //! can point to an .otio file, .otioz file, movie file, or image
         //! sequence.
-        OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
+        TL_API OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
             const std::shared_ptr<ftk::Context>&,
             const ftk::Path& path,
             const ftk::Path& audioPath,
             const Options& = Options());
 
         //! Video size request.
-        struct VideoSizeRequest
+        struct TL_API_TYPE VideoSizeRequest
         {
             uint64_t id = 0;
             std::future<size_t> future;
         };
 
         //! Video request.
-        struct VideoRequest
+        struct TL_API_TYPE VideoRequest
         {
             uint64_t id = 0;
             std::future<VideoData> future;
         };
 
         //! Audio size request.
-        struct AudioSizeRequest
+        struct TL_API_TYPE AudioSizeRequest
         {
             uint64_t id = 0;
             std::future<size_t> future;
         };
 
         //! Audio request.
-        struct AudioRequest
+        struct TL_API_TYPE AudioRequest
         {
             uint64_t id = 0;
             std::future<AudioData> future;
         };
 
         //! Timeline.
-        class Timeline : public std::enable_shared_from_this<Timeline>
+        class TL_API_TYPE Timeline : public std::enable_shared_from_this<Timeline>
         {
             FTK_NON_COPYABLE(Timeline);
 
@@ -82,24 +82,24 @@ namespace tl
             Timeline();
 
         public:
-            ~Timeline();
+            TL_API ~Timeline();
 
             //! Create a new timeline.
-            static std::shared_ptr<Timeline> create(
+            TL_API static std::shared_ptr<Timeline> create(
                 const std::shared_ptr<ftk::Context>&,
                 const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline>&,
                 const Options& = Options());
 
             //! Create a new timeline from a path. The path can point to an
             //! .otio file, movie file, or image sequence.
-            static std::shared_ptr<Timeline> create(
+            TL_API static std::shared_ptr<Timeline> create(
                 const std::shared_ptr<ftk::Context>&,
                 const ftk::Path&,
                 const Options& = Options());
 
             //! Create a new timeline from a path and audio path. The path can
             //! point to an .otio file, movie file, or image sequence.
-            static std::shared_ptr<Timeline> create(
+            TL_API static std::shared_ptr<Timeline> create(
                 const std::shared_ptr<ftk::Context>&,
                 const ftk::Path& path,
                 const ftk::Path& audioPath,
@@ -107,7 +107,7 @@ namespace tl
 
             //! Create a new timeline from a file name. The file name can point
             //! to an .otio file, movie file, or image sequence.
-            static std::shared_ptr<Timeline> create(
+            TL_API static std::shared_ptr<Timeline> create(
                 const std::shared_ptr<ftk::Context>&,
                 const std::string&,
                 const Options& = Options());
@@ -115,39 +115,39 @@ namespace tl
             //! Create a new timeline from a file name and audio file name.
             //! The file name can point to an .otio file, movie file, or
             //! image sequence.
-            static std::shared_ptr<Timeline> create(
+            TL_API static std::shared_ptr<Timeline> create(
                 const std::shared_ptr<ftk::Context>&,
                 const std::string& fileName,
                 const std::string& audioFilename,
                 const Options& = Options());
 
             //! Get the context.
-            std::shared_ptr<ftk::Context> getContext() const;
+            TL_API std::shared_ptr<ftk::Context> getContext() const;
 
             //! Get the timeline.
-            const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline>& getTimeline() const;
+            TL_API const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline>& getTimeline() const;
 
             //! Get the file path.
-            const ftk::Path& getPath() const;
+            TL_API const ftk::Path& getPath() const;
 
             //! Get the audio file path.
-            const ftk::Path& getAudioPath() const;
+            TL_API const ftk::Path& getAudioPath() const;
 
             //! Get the timeline options.
-            const Options& getOptions() const;
+            TL_API const Options& getOptions() const;
 
             //! \name Information
             ///@{
 
             //! Get the time range.
-            const OTIO_NS::TimeRange& getTimeRange() const;
+            TL_API const OTIO_NS::TimeRange& getTimeRange() const;
 
             //! Get the duration.
-            OTIO_NS::RationalTime getDuration() const;
+            TL_API OTIO_NS::RationalTime getDuration() const;
 
             //! Get the I/O information. This information is retrieved from
             //! the first clip in the timeline.
-            const io::Info& getIOInfo() const;
+            TL_API const io::Info& getIOInfo() const;
 
             ///@}
 
@@ -155,17 +155,17 @@ namespace tl
             ///@{
 
             //! Get video data.
-            VideoRequest getVideo(
+            TL_API VideoRequest getVideo(
                 const OTIO_NS::RationalTime&,
                 const io::Options& = io::Options());
 
             //! Get audio data.
-            AudioRequest getAudio(
+            TL_API AudioRequest getAudio(
                 double seconds,
                 const io::Options& = io::Options());
 
             //! Cancel requests.
-            void cancelRequests(const std::vector<uint64_t>&);
+            TL_API void cancelRequests(const std::vector<uint64_t>&);
 
             ///@}
 

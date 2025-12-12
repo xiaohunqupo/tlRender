@@ -22,7 +22,7 @@ namespace tl
 {
     namespace exr
     {
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             Compression,
             "None",
             "RLE",

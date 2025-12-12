@@ -16,7 +16,7 @@ namespace tl
 {
     namespace timeline
     {
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             Compare,
             "A",
             "B",
@@ -27,7 +27,7 @@ namespace tl
             "Vertical",
             "Tile");
 
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             CompareTime,
             "Relative",
             "Absolute");

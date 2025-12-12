@@ -29,19 +29,19 @@ namespace tl
             return !(*this == other);
         }
 
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             Playback,
             "Stop",
             "Forward",
             "Reverse");
 
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             Loop,
             "Loop",
             "Once",
             "Ping-Pong");
 
-        FTK_ENUM_IMPL(TimeAction,
+        TL_ENUM_IMPL(TimeAction,
             "Start",
             "End",
             "Frame Previous",

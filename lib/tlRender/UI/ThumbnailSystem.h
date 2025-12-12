@@ -27,14 +27,14 @@ namespace tl
     namespace timelineui
     {
         //! Information request.
-        struct InfoRequest
+        struct TL_API_TYPE InfoRequest
         {
             uint64_t id = 0;
             std::future<io::Info> future;
         };
 
         //! Video thumbnail request.
-        struct ThumbnailRequest
+        struct TL_API_TYPE ThumbnailRequest
         {
             uint64_t id = 0;
             int height = 0;
@@ -43,7 +43,7 @@ namespace tl
         };
 
         //! Audio waveform request.
-        struct WaveformRequest
+        struct TL_API_TYPE WaveformRequest
         {
             uint64_t id = 0;
             ftk::Size2I size;
@@ -52,7 +52,7 @@ namespace tl
         };
 
         //! Thumbnail cache.
-        class ThumbnailCache : public std::enable_shared_from_this<ThumbnailCache>
+        class TL_API_TYPE ThumbnailCache : public std::enable_shared_from_this<ThumbnailCache>
         {
         protected:
             void _init(const std::shared_ptr<ftk::Context>&);
@@ -60,41 +60,41 @@ namespace tl
             ThumbnailCache();
 
         public:
-            ~ThumbnailCache();
+            TL_API ~ThumbnailCache();
 
             //! Create a new thumbnail cache.
-            static std::shared_ptr<ThumbnailCache> create(
+            TL_API static std::shared_ptr<ThumbnailCache> create(
                 const std::shared_ptr<ftk::Context>&);
 
             //! Get the maximum cache size.
-            size_t getMax() const;
+            TL_API size_t getMax() const;
 
             //! Set the maximum cache size.
-            void setMax(size_t);
+            TL_API void setMax(size_t);
 
             //! Get the current cache size.
-            size_t getSize() const;
+            TL_API size_t getSize() const;
 
             //! Get the current cache size as a percentage.
-            float getPercentage() const;
+            TL_API float getPercentage() const;
             
             //! Get an I/O information cache key.
-            static std::string getInfoKey(
+            TL_API static std::string getInfoKey(
                 intptr_t id,
                 const ftk::Path&,
                 const io::Options&);
 
             //! Add I/O information to the cache.
-            void addInfo(const std::string& key, const io::Info&);
+            TL_API void addInfo(const std::string& key, const io::Info&);
 
             //! Get whether the cache contains I/O information.
-            bool containsInfo(const std::string& key);
+            TL_API bool containsInfo(const std::string& key);
 
             //! Get I/O information from the cache.
-            bool getInfo(const std::string& key, io::Info&) const;
+            TL_API bool getInfo(const std::string& key, io::Info&) const;
             
             //! Get a thumbnail cache key.
-            static std::string getThumbnailKey(
+            TL_API static std::string getThumbnailKey(
                 intptr_t id,
                 const ftk::Path&,
                 int height,
@@ -102,20 +102,20 @@ namespace tl
                 const io::Options&);
 
             //! Add a thumbnail to the cache.
-            void addThumbnail(
+            TL_API void addThumbnail(
                 const std::string& key,
                 const std::shared_ptr<ftk::Image>&);
 
             //! Get whether the cache contains a thumbnail.
-            bool containsThumbnail(const std::string& key);
+            TL_API bool containsThumbnail(const std::string& key);
 
             //! Get a thumbnail from the cache.
-            bool getThumbnail(
+            TL_API bool getThumbnail(
                 const std::string& key,
                 std::shared_ptr<ftk::Image>&) const;
 
             //! Get a waveform cache key.
-            static std::string getWaveformKey(
+            TL_API static std::string getWaveformKey(
                 intptr_t id,
                 const ftk::Path&,
                 const ftk::Size2I&,
@@ -123,20 +123,20 @@ namespace tl
                 const io::Options&);
 
             //! Add a waveform to the cache.
-            void addWaveform(
+            TL_API void addWaveform(
                 const std::string& key,
                 const std::shared_ptr<ftk::TriMesh2F>&);
 
             //! Get whether the cache contains a waveform.
-            bool containsWaveform(const std::string& key);
+            TL_API bool containsWaveform(const std::string& key);
 
             //! Get a waveform from the cache.
-            bool getWaveform(
+            TL_API bool getWaveform(
                 const std::string& key,
                 std::shared_ptr<ftk::TriMesh2F>&) const;
 
             //! Clear the cache.
-            void clear();
+            TL_API void clear();
 
         private:
             void _maxUpdate();
@@ -145,7 +145,7 @@ namespace tl
         };
 
         //! Thumbnail generator.
-        class ThumbnailGenerator : public std::enable_shared_from_this<ThumbnailGenerator>
+        class TL_API_TYPE ThumbnailGenerator : public std::enable_shared_from_this<ThumbnailGenerator>
         {
         protected:
             void _init(
@@ -156,29 +156,29 @@ namespace tl
             ThumbnailGenerator();
 
         public:
-            ~ThumbnailGenerator();
+            TL_API ~ThumbnailGenerator();
 
             //! Create a new thumbnail generator.
-            static std::shared_ptr<ThumbnailGenerator> create(
+            TL_API static std::shared_ptr<ThumbnailGenerator> create(
                 const std::shared_ptr<ThumbnailCache>&,
                 const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<ftk::gl::Window>& = nullptr);
 
             //! Get information.
-            InfoRequest getInfo(
+            TL_API InfoRequest getInfo(
                 intptr_t id,
                 const ftk::Path&,
                 const io::Options& = io::Options());
 
             //! Get information.
-            InfoRequest getInfo(
+            TL_API InfoRequest getInfo(
                 intptr_t id,
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
                 const io::Options& = io::Options());
 
             //! Get a video thumbnail.
-            ThumbnailRequest getThumbnail(
+            TL_API ThumbnailRequest getThumbnail(
                 intptr_t id,
                 const ftk::Path&,
                 int height,
@@ -186,7 +186,7 @@ namespace tl
                 const io::Options& = io::Options());
 
             //! Get a video thumbnail.
-            ThumbnailRequest getThumbnail(
+            TL_API ThumbnailRequest getThumbnail(
                 intptr_t id,
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
@@ -195,7 +195,7 @@ namespace tl
                 const io::Options& = io::Options());
 
             //! Get an audio waveform.
-            WaveformRequest getWaveform(
+            TL_API WaveformRequest getWaveform(
                 intptr_t id,
                 const ftk::Path&,
                 const ftk::Size2I&,
@@ -203,7 +203,7 @@ namespace tl
                 const io::Options& = io::Options());
 
             //! Get an audio waveform.
-            WaveformRequest getWaveform(
+            TL_API WaveformRequest getWaveform(
                 intptr_t id,
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
@@ -212,7 +212,7 @@ namespace tl
                 const io::Options& = io::Options());
 
             //! Cancel pending requests.
-            void cancelRequests(const std::vector<uint64_t>&);
+            TL_API void cancelRequests(const std::vector<uint64_t>&);
 
         private:
             void _infoRun();
@@ -226,26 +226,26 @@ namespace tl
         };
 
         //! Thumbnail system.
-        class ThumbnailSystem : public system::ISystem
+        class TL_API_TYPE ThumbnailSystem : public system::ISystem
         {
         protected:
             ThumbnailSystem(const std::shared_ptr<ftk::Context>&);
 
         public:
-            ~ThumbnailSystem();
+            TL_API ~ThumbnailSystem();
 
             //! Create a new system.
-            static std::shared_ptr<ThumbnailSystem> create(
+            TL_API static std::shared_ptr<ThumbnailSystem> create(
                 const std::shared_ptr<ftk::Context>&);
 
             //! Get information.
-            InfoRequest getInfo(
+            TL_API InfoRequest getInfo(
                 intptr_t id,
                 const ftk::Path&,
                 const io::Options& = io::Options());
 
             //! Get a video thumbnail.
-            ThumbnailRequest getThumbnail(
+            TL_API ThumbnailRequest getThumbnail(
                 intptr_t id,
                 const ftk::Path&,
                 int height,
@@ -253,7 +253,7 @@ namespace tl
                 const io::Options& = io::Options());
 
             //! Get an audio waveform.
-            WaveformRequest getWaveform(
+            TL_API WaveformRequest getWaveform(
                 intptr_t id,
                 const ftk::Path&,
                 const ftk::Size2I&,
@@ -261,10 +261,10 @@ namespace tl
                 const io::Options& = io::Options());
 
             //! Cancel pending requests.
-            void cancelRequests(const std::vector<uint64_t>&);
+            TL_API void cancelRequests(const std::vector<uint64_t>&);
 
             //! Get the thumbnail cache.
-            const std::shared_ptr<ThumbnailCache>& getCache() const;
+            TL_API const std::shared_ptr<ThumbnailCache>& getCache() const;
 
         private:
             FTK_PRIVATE();

@@ -15,33 +15,33 @@ namespace tl
     namespace timeline
     {
         //! Video layer.
-        struct VideoLayer
+        struct TL_API_TYPE VideoLayer
         {
             std::shared_ptr<ftk::Image> image;
-            ftk::ImageOptions imageOptions;
+            ftk::ImageOptions           imageOptions;
 
             std::shared_ptr<ftk::Image> imageB;
-            ftk::ImageOptions imageOptionsB;
+            ftk::ImageOptions           imageOptionsB;
 
             Transition transition = Transition::None;
-            float transitionValue = 0.F;
+            float      transitionValue = 0.F;
 
-            bool operator == (const VideoLayer&) const;
-            bool operator != (const VideoLayer&) const;
+            TL_API bool operator == (const VideoLayer&) const;
+            TL_API bool operator != (const VideoLayer&) const;
         };
 
         //! Video data.
-        struct VideoData
+        struct TL_API_TYPE VideoData
         {
-            ftk::Size2I size;
-            OTIO_NS::RationalTime time = time::invalidTime;
+            ftk::Size2I             size;
+            OTIO_NS::RationalTime   time   = time::invalidTime;
             std::vector<VideoLayer> layers;
 
-            bool operator == (const VideoData&) const;
-            bool operator != (const VideoData&) const;
+            TL_API bool operator == (const VideoData&) const;
+            TL_API bool operator != (const VideoData&) const;
         };
 
         //! Compare the time values of video data.
-        bool isTimeEqual(const VideoData&, const VideoData&);
+        TL_API bool isTimeEqual(const VideoData&, const VideoData&);
     }
 }

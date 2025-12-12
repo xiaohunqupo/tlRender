@@ -14,7 +14,7 @@ namespace tl
         class ThumbnailGenerator;
 
         //! Video clip item.
-        class VideoClipItem : public IBasicItem
+        class TL_API_TYPE VideoClipItem : public IBasicItem
         {
         protected:
             void _init(
@@ -30,10 +30,10 @@ namespace tl
             VideoClipItem();
 
         public:
-            virtual ~VideoClipItem();
+            TL_API virtual ~VideoClipItem();
 
             //! Create a new item.
-            static std::shared_ptr<VideoClipItem> create(
+            TL_API static std::shared_ptr<VideoClipItem> create(
                 const std::shared_ptr<ftk::Context>&,
                 const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Clip>&,
                 double scale,
@@ -43,17 +43,17 @@ namespace tl
                 const std::shared_ptr<ThumbnailGenerator>,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
-            void setScale(double) override;
-            void setDisplayOptions(const DisplayOptions&) override;
+            TL_API void setScale(double) override;
+            TL_API void setDisplayOptions(const DisplayOptions&) override;
 
-            void setGeometry(const ftk::Box2I&) override;
-            void tickEvent(
+            TL_API void setGeometry(const ftk::Box2I&) override;
+            TL_API void tickEvent(
                 bool,
                 bool,
                 const ftk::TickEvent&) override;
-            void sizeHintEvent(const ftk::SizeHintEvent&) override;
-            void clipEvent(const ftk::Box2I&, bool) override;
-            void drawEvent(const ftk::Box2I&, const ftk::DrawEvent&) override;
+            TL_API void sizeHintEvent(const ftk::SizeHintEvent&) override;
+            TL_API void clipEvent(const ftk::Box2I&, bool) override;
+            TL_API void drawEvent(const ftk::Box2I&, const ftk::DrawEvent&) override;
 
         private:
             void _drawThumbnails(

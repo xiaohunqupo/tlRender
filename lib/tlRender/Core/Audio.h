@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <tlRender/Core/Util.h>
+
 #include <ftk/Core/Range.h>
 #include <ftk/Core/Util.h>
 
@@ -21,7 +23,7 @@ namespace tl
         ///@{
 
         //! Audio data types.
-        enum class DataType
+        enum class TL_API_TYPE DataType
         {
             None,
             S8,
@@ -33,7 +35,7 @@ namespace tl
             Count,
             First = None
         };
-        FTK_ENUM(DataType);
+        TL_ENUM(DataType);
 
         typedef int8_t   S8_T;
         typedef int16_t S16_T;
@@ -54,13 +56,13 @@ namespace tl
         const ftk::Range<F64_T> F64Range(-1.F, 1.F);
 
         //! Get the byte count for the given data type.
-        size_t getByteCount(DataType);
+        TL_API size_t getByteCount(DataType);
 
         //! Determine the integer data type for a given byte count.
-        DataType getIntType(size_t);
+        TL_API DataType getIntType(size_t);
 
         //! Determine the floating point data type for a given byte count.
-        DataType getFloatType(size_t);
+        TL_API DataType getFloatType(size_t);
 
         ///@}
 
@@ -95,11 +97,11 @@ namespace tl
         ///@}
 
         //! Audio data information.
-        class Info
+        class TL_API_TYPE Info
         {
         public:
-            Info();
-            Info(
+            TL_API Info();
+            TL_API Info(
                 size_t   channelCount,
                 DataType dataType,
                 size_t   sampleRate);
@@ -120,7 +122,7 @@ namespace tl
         };
 
         //! Audio data.
-        class Audio : public std::enable_shared_from_this<Audio>
+        class TL_API_TYPE Audio : public std::enable_shared_from_this<Audio>
         {
             FTK_NON_COPYABLE(Audio);
 
@@ -130,42 +132,42 @@ namespace tl
             Audio();
 
         public:
-            ~Audio();
+            TL_API ~Audio();
 
             //! Create new audio.
-            static std::shared_ptr<Audio> create(
+            TL_API static std::shared_ptr<Audio> create(
                 const Info& info,
                 size_t      sampleCount);
 
             //! Get the audio information.
-            const Info& getInfo() const;
+            TL_API const Info& getInfo() const;
 
             //! Get the audio channel count.
-            size_t getChannelCount() const;
+            TL_API size_t getChannelCount() const;
 
             //! Get the audio data type.
-            DataType getDataType() const;
+            TL_API DataType getDataType() const;
 
             //! Get the audio sample rate.
-            size_t getSampleRate() const;
+            TL_API size_t getSampleRate() const;
 
             //! Get the audio sample count.
-            size_t getSampleCount() const;
+            TL_API size_t getSampleCount() const;
 
             //! Is the audio valid?
-            bool isValid() const;
+            TL_API bool isValid() const;
 
             //! Get the audio data byte count.
-            size_t getByteCount() const;
+            TL_API size_t getByteCount() const;
 
             //! Get the audio data.
-            uint8_t* getData();
+            TL_API uint8_t* getData();
 
             //! Get the audio data.
-            const uint8_t* getData() const;
+            TL_API const uint8_t* getData() const;
 
             //! Zero the audio data.
-            void zero();
+            TL_API void zero();
 
         private:
             Info _info;
@@ -178,29 +180,29 @@ namespace tl
 
         //! Combine chunks of audio. The chunks should all have the same
         //! number of channels and type.
-        std::shared_ptr<audio::Audio> combine(
+        TL_API std::shared_ptr<audio::Audio> combine(
             const std::list<std::shared_ptr<audio::Audio> >&);
 
         //! Mix audio sources.
-        std::shared_ptr<Audio> mix(
+        TL_API std::shared_ptr<Audio> mix(
             const std::vector<std::shared_ptr<Audio> >&,
             float volume,
             const std::vector<bool>& channelMute = {});
 
         //! Reverse audio.
-        std::shared_ptr<Audio> reverse(const std::shared_ptr<Audio>&);
+        TL_API std::shared_ptr<Audio> reverse(const std::shared_ptr<Audio>&);
 
         //! Change audio speed.
-        std::shared_ptr<Audio> changeSpeed(const std::shared_ptr<Audio>&, double);
+        TL_API std::shared_ptr<Audio> changeSpeed(const std::shared_ptr<Audio>&, double);
 
         //! Convert audio data.
-        std::shared_ptr<Audio> convert(const std::shared_ptr<Audio>&, DataType);
+        TL_API std::shared_ptr<Audio> convert(const std::shared_ptr<Audio>&, DataType);
 
         //! Get the total sample count from a list of audio data.
-        size_t getSampleCount(const std::list<std::shared_ptr<audio::Audio> >&);
+        TL_API size_t getSampleCount(const std::list<std::shared_ptr<audio::Audio> >&);
 
         //! Move audio data.
-        void move(
+        TL_API void move(
             std::list<std::shared_ptr<Audio> >& in,
             uint8_t* out,
             size_t sampleCount);

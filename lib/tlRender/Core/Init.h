@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <tlRender/Core/Export.h>
+
 #include <memory>
 
 namespace ftk
@@ -13,5 +15,5 @@ namespace ftk
 namespace tl
 {
     //! Initialize the library.
-    void init(const std::shared_ptr<ftk::Context>&);
+    TL_API void init(const std::shared_ptr<ftk::Context>&);
 }

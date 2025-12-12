@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <tlRender/Core/Export.h>
+
 #include <ftk/Core/Image.h>
 #include <ftk/Core/Matrix.h>
 #include <ftk/Core/RenderOptions.h>
@@ -12,7 +14,7 @@ namespace tl
     namespace timeline
     {
         //! Color values.
-        struct Color
+        struct TL_API_TYPE Color
         {
         public:
             bool     enabled    = false;
@@ -23,27 +25,27 @@ namespace tl
             float    tint       = 0.F;
             bool     invert     = false;
 
-            bool operator == (const Color&) const;
-            bool operator != (const Color&) const;
+            TL_API bool operator == (const Color&) const;
+            TL_API bool operator != (const Color&) const;
         };
 
         //! Get a brightness color matrix.
-        ftk::M44F brightness(const ftk::V3F&);
+        TL_API ftk::M44F brightness(const ftk::V3F&);
 
         //! Get a contrast color matrix.
-        ftk::M44F contrast(const ftk::V3F&);
+        TL_API ftk::M44F contrast(const ftk::V3F&);
 
         //! Get a saturation color matrix.
-        ftk::M44F saturation(const ftk::V3F&);
+        TL_API ftk::M44F saturation(const ftk::V3F&);
 
         //! Get a tint color matrix.
-        ftk::M44F tint(float);
+        TL_API ftk::M44F tint(float);
 
         //! Get a color matrix.
-        ftk::M44F color(const Color&);
+        TL_API ftk::M44F color(const Color&);
 
         //! Levels values.
-        struct Levels
+        struct TL_API_TYPE Levels
         {
             bool  enabled = false;
             float inLow   = 0.F;
@@ -52,13 +54,13 @@ namespace tl
             float outLow  = 0.F;
             float outHigh = 1.F;
 
-            bool operator == (const Levels&) const;
-            bool operator != (const Levels&) const;
+            TL_API bool operator == (const Levels&) const;
+            TL_API bool operator != (const Levels&) const;
         };
 
         //! These values match the ones in exrdisplay for comparison and
         //! testing.
-        struct EXRDisplay
+        struct TL_API_TYPE EXRDisplay
         {
             bool  enabled  = false;
             float exposure = 0.F;
@@ -66,22 +68,22 @@ namespace tl
             float kneeLow  = 0.F;
             float kneeHigh = 5.F;
 
-            bool operator == (const EXRDisplay&) const;
-            bool operator != (const EXRDisplay&) const;
+            TL_API bool operator == (const EXRDisplay&) const;
+            TL_API bool operator != (const EXRDisplay&) const;
         };
 
         //! Soft clip.
-        struct SoftClip
+        struct TL_API_TYPE SoftClip
         {
             bool  enabled = false;
             float value   = 0.F;
 
-            bool operator == (const SoftClip&) const;
-            bool operator != (const SoftClip&) const;
+            TL_API bool operator == (const SoftClip&) const;
+            TL_API bool operator != (const SoftClip&) const;
         };
 
         //! Display options.
-        struct DisplayOptions
+        struct TL_API_TYPE DisplayOptions
         {
             ftk::ChannelDisplay channels     = ftk::ChannelDisplay::Color;
             ftk::ImageMirror    mirror;
@@ -92,24 +94,24 @@ namespace tl
             ftk::ImageFilters   imageFilters;
             ftk::VideoLevels    videoLevels  = ftk::VideoLevels::FullRange;
 
-            bool operator == (const DisplayOptions&) const;
-            bool operator != (const DisplayOptions&) const;
+            TL_API bool operator == (const DisplayOptions&) const;
+            TL_API bool operator != (const DisplayOptions&) const;
         };
 
         //! \name Serialize
         ///@{
 
-        void to_json(nlohmann::json&, const Color&);
-        void to_json(nlohmann::json&, const Levels&);
-        void to_json(nlohmann::json&, const EXRDisplay&);
-        void to_json(nlohmann::json&, const SoftClip&);
-        void to_json(nlohmann::json&, const DisplayOptions&);
+        TL_API void to_json(nlohmann::json&, const Color&);
+        TL_API void to_json(nlohmann::json&, const Levels&);
+        TL_API void to_json(nlohmann::json&, const EXRDisplay&);
+        TL_API void to_json(nlohmann::json&, const SoftClip&);
+        TL_API void to_json(nlohmann::json&, const DisplayOptions&);
 
-        void from_json(const nlohmann::json&, Color&);
-        void from_json(const nlohmann::json&, Levels&);
-        void from_json(const nlohmann::json&, EXRDisplay&);
-        void from_json(const nlohmann::json&, SoftClip&);
-        void from_json(const nlohmann::json&, DisplayOptions&);
+        TL_API void from_json(const nlohmann::json&, Color&);
+        TL_API void from_json(const nlohmann::json&, Levels&);
+        TL_API void from_json(const nlohmann::json&, EXRDisplay&);
+        TL_API void from_json(const nlohmann::json&, SoftClip&);
+        TL_API void from_json(const nlohmann::json&, DisplayOptions&);
 
         ///@}
     }

@@ -15,39 +15,39 @@ namespace tl
     namespace timeline
     {
         //! Get the timeline file extensions.
-        std::vector<std::string> getExts(
+        TL_API std::vector<std::string> getExts(
             const std::shared_ptr<ftk::Context>&,
             int types =
                 static_cast<int>(io::FileType::Media) |
                 static_cast<int>(io::FileType::Seq));
 
         //! Convert frames to ranges.
-        std::vector<OTIO_NS::TimeRange> toRanges(std::vector<OTIO_NS::RationalTime>);
+        TL_API std::vector<OTIO_NS::TimeRange> toRanges(std::vector<OTIO_NS::RationalTime>);
 
         //! Loop a time.
-        OTIO_NS::RationalTime loop(
+        TL_API OTIO_NS::RationalTime loop(
             const OTIO_NS::RationalTime&,
             const OTIO_NS::TimeRange&,
             bool* looped = nullptr);
 
         //! Loop seconds.
-        int64_t loop(
+        TL_API int64_t loop(
             int64_t,
             const OTIO_NS::TimeRange&,
             bool* looped = nullptr);
 
         //! Loop a range.
-        std::vector<OTIO_NS::TimeRange> loop(
+        TL_API std::vector<OTIO_NS::TimeRange> loop(
             const OTIO_NS::TimeRange&,
             const OTIO_NS::TimeRange&);
 
         //! Loop a range in seconds.
-        std::vector<ftk::Range<int64_t> > loop(
+        TL_API std::vector<ftk::Range<int64_t> > loop(
             const ftk::Range<int64_t>&,
             const ftk::Range<int64_t>&);
 
         //! Cache direction.
-        enum class CacheDir
+        enum class TL_API_TYPE CacheDir
         {
             Forward,
             Reverse,
@@ -55,47 +55,47 @@ namespace tl
             Count,
             First = Forward
         };
-        FTK_ENUM(CacheDir);
+        TL_ENUM(CacheDir);
 
         //! Get the root (highest parent).
-        const OTIO_NS::Composable* getRoot(const OTIO_NS::Composable*);
+        TL_API const OTIO_NS::Composable* getRoot(const OTIO_NS::Composable*);
 
         //! Get the parent of the given type.
         template<typename T>
         const T* getParent(const OTIO_NS::Item*);
 
         //! Get the duration of all tracks of the same kind.
-        std::optional<OTIO_NS::RationalTime> getDuration(
+        TL_API std::optional<OTIO_NS::RationalTime> getDuration(
             const OTIO_NS::Timeline*,
             const std::string& kind);
 
         //! Get the time range of a timeline.
-        OTIO_NS::TimeRange getTimeRange(const OTIO_NS::Timeline*);
+        TL_API OTIO_NS::TimeRange getTimeRange(const OTIO_NS::Timeline*);
 
         //! Get a list of paths to open from the given path.
-        std::vector<ftk::Path> getPaths(
+        TL_API std::vector<ftk::Path> getPaths(
             const std::shared_ptr<ftk::Context>&,
             const ftk::Path&,
             const ftk::PathOptions&);
 
         //! Get an absolute path.
-        ftk::Path getPath(
+        TL_API ftk::Path getPath(
             const std::string& url,
             const std::string& directory,
             const ftk::PathOptions&);
 
         //! Get a path for a media reference.
-        ftk::Path getPath(
+        TL_API ftk::Path getPath(
             const OTIO_NS::MediaReference*,
             const std::string& directory,
             ftk::PathOptions);
 
         //! Get a memory read for a media reference.
-        std::vector<ftk::MemFile> getMemRead(
+        TL_API std::vector<ftk::MemFile> getMemRead(
             const OTIO_NS::MediaReference*);
 
         //! Convert to memory references.
-        enum class ToMemRef
+        enum class TL_API_TYPE ToMemRef
         {
             Shared,
             Raw,
@@ -103,31 +103,31 @@ namespace tl
             Count,
             First = Shared
         };
-        FTK_ENUM(ToMemRef);
+        TL_ENUM(ToMemRef);
 
         //! Convert media references to memory references for testing.
-        void toMemRefs(
+        TL_API void toMemRefs(
             OTIO_NS::Timeline*,
             const std::string& directory,
             ToMemRef,
             const ftk::PathOptions& = ftk::PathOptions());
 
         //! Transform track time to video media time.
-        OTIO_NS::RationalTime toVideoMediaTime(
+        TL_API OTIO_NS::RationalTime toVideoMediaTime(
             const OTIO_NS::RationalTime&,
             const OTIO_NS::TimeRange& trimmedRangeInParent,
             const OTIO_NS::TimeRange& trimmedRange,
             double rate);
 
         //! Transform track time to audio media time.
-        OTIO_NS::TimeRange toAudioMediaTime(
+        TL_API OTIO_NS::TimeRange toAudioMediaTime(
             const OTIO_NS::TimeRange&,
             const OTIO_NS::TimeRange& trimmedRangeInParent,
             const OTIO_NS::TimeRange& trimmedRange,
             double sampleRate);
 
         //! Copy audio data.
-        std::vector<std::shared_ptr<audio::Audio> > audioCopy(
+        TL_API std::vector<std::shared_ptr<audio::Audio> > audioCopy(
             const audio::Info&,
             const std::vector<AudioData>&,
             Playback,
@@ -135,7 +135,7 @@ namespace tl
             int64_t size);
 
         //! Write a timeline to an .otioz file.
-        bool writeOTIOZ(
+        TL_API bool writeOTIOZ(
             const std::string& fileName,
             const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline>&,
             const std::string& directory = std::string());

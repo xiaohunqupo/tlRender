@@ -20,49 +20,49 @@ namespace tl
     namespace bmd
     {
         //! Convert to BMD.
-        BMDPixelFormat toBMD(PixelType);
+        TL_API BMDPixelFormat toBMD(PixelType);
 
         //! Convert from BMD.
-        PixelType fromBMD(BMDPixelFormat);
+        TL_API PixelType fromBMD(BMDPixelFormat);
 
         //! Get a label.
-        std::string getVideoConnectionLabel(BMDVideoConnection);
+        TL_API std::string getVideoConnectionLabel(BMDVideoConnection);
 
         //! Get a label.
-        std::string getAudioConnectionLabel(BMDAudioConnection);
+        TL_API std::string getAudioConnectionLabel(BMDAudioConnection);
 
         //! Get a label.
-        std::string getDisplayModeLabel(BMDDisplayMode);
+        TL_API std::string getDisplayModeLabel(BMDDisplayMode);
 
         //! Get a label.
-        std::string getPixelFormatLabel(BMDPixelFormat);
+        TL_API std::string getPixelFormatLabel(BMDPixelFormat);
 
         //! Get a label.
-        std::string getOutputFrameCompletionResultLabel(BMDOutputFrameCompletionResult);
+        TL_API std::string getOutputFrameCompletionResultLabel(BMDOutputFrameCompletionResult);
 
         //! Get the output pixel type.
-        PixelType getOutputType(PixelType);
+        TL_API PixelType getOutputType(PixelType);
 
         //! Get the color buffer type.
-        ftk::ImageType getColorBuffer(PixelType);
+        TL_API ftk::ImageType getColorBuffer(PixelType);
 
         //! Get the pack pixels buffer size.
-        size_t getPackPixelsSize(const ftk::Size2I&, PixelType);
+        TL_API size_t getPackPixelsSize(const ftk::Size2I&, PixelType);
 
         //! Get the pack pixels format.
-        GLenum getPackPixelsFormat(PixelType);
+        TL_API GLenum getPackPixelsFormat(PixelType);
 
         //! Get the pack pixels type.
-        GLenum getPackPixelsType(PixelType);
+        TL_API GLenum getPackPixelsType(PixelType);
 
         //! Get the pack pixels alignment.
-        GLint getPackPixelsAlign(PixelType);
+        TL_API GLint getPackPixelsAlign(PixelType);
 
         //! Get the pack pixels endian byte swap.
-        GLint getPackPixelsSwap(PixelType);
+        TL_API GLint getPackPixelsSwap(PixelType);
 
         //! Copy the pack pixels.
-        void copyPackPixels(
+        TL_API void copyPackPixels(
             const void*,
             void*,
             const ftk::Size2I&,

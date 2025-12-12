@@ -14,7 +14,7 @@ namespace tl
     namespace timeline
     {
         //! Timeline player cache information.
-        struct PlayerCacheInfo
+        struct TL_API_TYPE PlayerCacheInfo
         {
             //! Percentage used of the video cache.
             float videoPercentage = 0.F;
@@ -28,12 +28,12 @@ namespace tl
             //! Cached audio.
             std::vector<OTIO_NS::TimeRange> audio;
 
-            bool operator == (const PlayerCacheInfo&) const;
-            bool operator != (const PlayerCacheInfo&) const;
+            TL_API bool operator == (const PlayerCacheInfo&) const;
+            TL_API bool operator != (const PlayerCacheInfo&) const;
         };
 
         //! Playback modes.
-        enum class Playback
+        enum class TL_API_TYPE Playback
         {
             Stop,
             Forward,
@@ -42,10 +42,10 @@ namespace tl
             Count,
             First = Stop
         };
-        FTK_ENUM(Playback);
+        TL_ENUM(Playback);
 
         //! Playback loop modes.
-        enum class Loop
+        enum class TL_API_TYPE Loop
         {
             Loop,
             Once,
@@ -54,10 +54,10 @@ namespace tl
             Count,
             First = Loop
         };
-        FTK_ENUM(Loop);
+        TL_ENUM(Loop);
 
         //! Time actions.
-        enum class TimeAction
+        enum class TL_API_TYPE TimeAction
         {
             Start,
             End,
@@ -75,10 +75,10 @@ namespace tl
             Count,
             First = Start
         };
-        FTK_ENUM(TimeAction);
+        TL_ENUM(TimeAction);
 
         //! Timeline player.
-        class Player : public std::enable_shared_from_this<Player>
+        class TL_API_TYPE Player : public std::enable_shared_from_this<Player>
         {
             FTK_NON_COPYABLE(Player);
 
@@ -91,44 +91,44 @@ namespace tl
             Player();
 
         public:
-            ~Player();
+            TL_API ~Player();
 
             //! Create a new timeline player.
-            static std::shared_ptr<Player> create(
+            TL_API static std::shared_ptr<Player> create(
                 const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<Timeline>&,
                 const PlayerOptions& = PlayerOptions());
 
             //! Get the context.
-            std::shared_ptr<ftk::Context> getContext() const;
+            TL_API std::shared_ptr<ftk::Context> getContext() const;
 
             //! Get the timeline.
-            const std::shared_ptr<Timeline>& getTimeline() const;
+            TL_API const std::shared_ptr<Timeline>& getTimeline() const;
 
             //! Get the path.
-            const ftk::Path& getPath() const;
+            TL_API const ftk::Path& getPath() const;
 
             //! Get the audio path.
-            const ftk::Path& getAudioPath() const;
+            TL_API const ftk::Path& getAudioPath() const;
 
             //! Get the timeline player options.
-            const PlayerOptions& getPlayerOptions() const;
+            TL_API const PlayerOptions& getPlayerOptions() const;
 
             //! Get the timeline options.
-            const Options& getOptions() const;
+            TL_API const Options& getOptions() const;
 
             //! \name Information
             ///@{
 
             //! Get the time range.
-            const OTIO_NS::TimeRange& getTimeRange() const;
+            TL_API const OTIO_NS::TimeRange& getTimeRange() const;
 
             //! Get the duration.
-            OTIO_NS::RationalTime getDuration() const;
+            TL_API OTIO_NS::RationalTime getDuration() const;
 
             //! Get the I/O information. The information is retrieved from
             //! the first clip in the timeline.
-            const io::Info& getIOInfo() const;
+            TL_API const io::Info& getIOInfo() const;
 
             ///@}
 
@@ -136,46 +136,46 @@ namespace tl
             ///@{
 
             //! Get the default playback speed.
-            double getDefaultSpeed() const;
+            TL_API double getDefaultSpeed() const;
 
             //! Get the playback speed.
-            double getSpeed() const;
+            TL_API double getSpeed() const;
 
             //! Observe the playback speed.
-            std::shared_ptr<ftk::IObservable<double> > observeSpeed() const;
+            TL_API std::shared_ptr<ftk::IObservable<double> > observeSpeed() const;
 
             //! Set the playback speed.
-            void setSpeed(double);
+            TL_API void setSpeed(double);
 
             //! Get the playback mode.
-            Playback getPlayback() const;
+            TL_API Playback getPlayback() const;
 
             //! Observe the playback mode.
-            std::shared_ptr<ftk::IObservable<Playback> > observePlayback() const;
+            TL_API std::shared_ptr<ftk::IObservable<Playback> > observePlayback() const;
 
             //! Set the playback mode.
-            void setPlayback(Playback);
+            TL_API void setPlayback(Playback);
 
             //! Get whether playback is stopped.
-            bool isStopped() const;
+            TL_API bool isStopped() const;
 
             //! Stop playback.
-            void stop();
+            TL_API void stop();
 
             //! Start forward playback.
-            void forward();
+            TL_API void forward();
 
             //! Start reverse playback.
-            void reverse();
+            TL_API void reverse();
 
             //! Get the playback loop.
-            Loop getLoop() const;
+            TL_API Loop getLoop() const;
 
             //! Observe the playback loop mode.
-            std::shared_ptr<ftk::IObservable<Loop> > observeLoop() const;
+            TL_API std::shared_ptr<ftk::IObservable<Loop> > observeLoop() const;
 
             //! Set the playback loop mode.
-            void setLoop(Loop);
+            TL_API void setLoop(Loop);
 
             ///@}
 
@@ -183,31 +183,31 @@ namespace tl
             ///@{
 
             //! Get the current time.
-            const OTIO_NS::RationalTime& getCurrentTime() const;
+            TL_API const OTIO_NS::RationalTime& getCurrentTime() const;
 
             //! Observe the current time.
-            std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > observeCurrentTime() const;
+            TL_API std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > observeCurrentTime() const;
 
             //! Observe seeking.
-            std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > observeSeek() const;
+            TL_API std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > observeSeek() const;
 
             //! Seek to the given time.
-            void seek(const OTIO_NS::RationalTime&);
+            TL_API void seek(const OTIO_NS::RationalTime&);
 
             //! Time action.
-            void timeAction(TimeAction);
+            TL_API void timeAction(TimeAction);
 
             //! Go to the start time.
-            void gotoStart();
+            TL_API void gotoStart();
 
             //! Go to the end time.
-            void gotoEnd();
+            TL_API void gotoEnd();
 
             //! Go to the previous frame.
-            void framePrev();
+            TL_API void framePrev();
 
             //! Go to the next frame.
-            void frameNext();
+            TL_API void frameNext();
 
             ///@}
 
@@ -215,25 +215,25 @@ namespace tl
             ///@{
 
             //! Get the in/out points range.
-            const OTIO_NS::TimeRange& getInOutRange() const;
+            TL_API const OTIO_NS::TimeRange& getInOutRange() const;
 
             //! Observe the in/out points range.
-            std::shared_ptr<ftk::IObservable<OTIO_NS::TimeRange> > observeInOutRange() const;
+            TL_API std::shared_ptr<ftk::IObservable<OTIO_NS::TimeRange> > observeInOutRange() const;
 
             //! Set the in/out points range.
-            void setInOutRange(const OTIO_NS::TimeRange&);
+            TL_API void setInOutRange(const OTIO_NS::TimeRange&);
 
             //! Set the in point to the current time.
-            void setInPoint();
+            TL_API void setInPoint();
 
             //! Reset the in point
-            void resetInPoint();
+            TL_API void resetInPoint();
 
             //! Set the out point to the current time.
-            void setOutPoint();
+            TL_API void setOutPoint();
 
             //! Reset the out point
-            void resetOutPoint();
+            TL_API void resetOutPoint();
 
             ///@}
 
@@ -241,22 +241,22 @@ namespace tl
             ///@{
 
             //! Get the timelines for comparison.
-            const std::vector<std::shared_ptr<Timeline> >& getCompare() const;
+            TL_API const std::vector<std::shared_ptr<Timeline> >& getCompare() const;
 
             //! Observe the timelines for comparison.
-            std::shared_ptr<ftk::IObservableList<std::shared_ptr<Timeline> > > observeCompare() const;
+            TL_API std::shared_ptr<ftk::IObservableList<std::shared_ptr<Timeline> > > observeCompare() const;
 
             //! Set the timelines for comparison.
-            void setCompare(const std::vector<std::shared_ptr<Timeline> >&);
+            TL_API void setCompare(const std::vector<std::shared_ptr<Timeline> >&);
 
             //! Get the comparison time mode.
-            CompareTime getCompareTime() const;
+            TL_API CompareTime getCompareTime() const;
 
             //! Observe the comparison time mode.
-            std::shared_ptr<ftk::IObservable<CompareTime> > observeCompareTime() const;
+            TL_API std::shared_ptr<ftk::IObservable<CompareTime> > observeCompareTime() const;
 
             //! Set the comparison time mode.
-            void setCompareTime(CompareTime);
+            TL_API void setCompareTime(CompareTime);
 
             ///@}
 
@@ -264,13 +264,13 @@ namespace tl
             ///@{
 
             //! Get the I/O options.
-            const io::Options& getIOOptions() const;
+            TL_API const io::Options& getIOOptions() const;
 
             //! Observe the I/O options.
-            std::shared_ptr<ftk::IObservable<io::Options> > observeIOOptions() const;
+            TL_API std::shared_ptr<ftk::IObservable<io::Options> > observeIOOptions() const;
 
             //! Set the I/O options.
-            void setIOOptions(const io::Options&);
+            TL_API void setIOOptions(const io::Options&);
 
             ///@}
 
@@ -278,28 +278,28 @@ namespace tl
             ///@{
 
             //! Get the video layer.
-            int getVideoLayer() const;
+            TL_API int getVideoLayer() const;
 
             //! Observer the video layer.
-            std::shared_ptr<ftk::IObservable<int> > observeVideoLayer() const;
+            TL_API std::shared_ptr<ftk::IObservable<int> > observeVideoLayer() const;
 
             //! Set the video layer.
-            void setVideoLayer(int);
+            TL_API void setVideoLayer(int);
 
             //! Get the comparison video layers.
-            const std::vector<int>& getCompareVideoLayers() const;
+            TL_API const std::vector<int>& getCompareVideoLayers() const;
 
             //! Observe the comparison video layers.
-            std::shared_ptr<ftk::IObservableList<int> > observeCompareVideoLayers() const;
+            TL_API std::shared_ptr<ftk::IObservableList<int> > observeCompareVideoLayers() const;
 
             //! Set the comparison video layers.
-            void setCompareVideoLayers(const std::vector<int>&);
+            TL_API void setCompareVideoLayers(const std::vector<int>&);
 
             //! Get the current video data.
-            const std::vector<VideoData>& getCurrentVideo() const;
+            TL_API const std::vector<VideoData>& getCurrentVideo() const;
 
             //! Observe the current video data.
-            std::shared_ptr<ftk::IObservableList<VideoData> > observeCurrentVideo() const;
+            TL_API std::shared_ptr<ftk::IObservableList<VideoData> > observeCurrentVideo() const;
 
             ///@}
 
@@ -307,55 +307,55 @@ namespace tl
             ///@{
 
             //! Get the audio device.
-            const audio::DeviceID& getAudioDevice() const;
+            TL_API const audio::DeviceID& getAudioDevice() const;
 
             //! Observe the audio devices.
-            std::shared_ptr<ftk::IObservable<audio::DeviceID> > observeAudioDevice() const;
+            TL_API std::shared_ptr<ftk::IObservable<audio::DeviceID> > observeAudioDevice() const;
 
             //! Set the audio device.
-            void setAudioDevice(const audio::DeviceID&);
+            TL_API void setAudioDevice(const audio::DeviceID&);
 
             //! Get the volume.
-            float getVolume() const;
+            TL_API float getVolume() const;
 
             //! Observe the audio volume.
-            std::shared_ptr<ftk::IObservable<float> > observeVolume() const;
+            TL_API std::shared_ptr<ftk::IObservable<float> > observeVolume() const;
 
             //! Set the audio volume.
-            void setVolume(float);
+            TL_API void setVolume(float);
 
             //! Get the audio mute.
-            bool isMuted() const;
+            TL_API bool isMuted() const;
 
             //! Observe the audio mute.
-            std::shared_ptr<ftk::IObservable<bool> > observeMute() const;
+            TL_API std::shared_ptr<ftk::IObservable<bool> > observeMute() const;
 
             //! Set the audio mute.
-            void setMute(bool);
+            TL_API void setMute(bool);
 
             //! Get the audio channels mute.
-            const std::vector<bool>& getChannelMute() const;
+            TL_API const std::vector<bool>& getChannelMute() const;
 
             //! Observe the audio channels mute.
-            std::shared_ptr<ftk::IObservableList<bool> > observeChannelMute() const;
+            TL_API std::shared_ptr<ftk::IObservableList<bool> > observeChannelMute() const;
 
             //! Set the audio channels mute.
-            void setChannelMute(const std::vector<bool>&);
+            TL_API void setChannelMute(const std::vector<bool>&);
 
             //! Get the audio sync offset (in seconds).
-            double getAudioOffset() const;
+            TL_API double getAudioOffset() const;
 
             //! Observe the audio sync offset (in seconds).
-            std::shared_ptr<ftk::IObservable<double> > observeAudioOffset() const;
+            TL_API std::shared_ptr<ftk::IObservable<double> > observeAudioOffset() const;
 
             //! Set the audio sync offset (in seconds).
-            void setAudioOffset(double);
+            TL_API void setAudioOffset(double);
 
             //! Get the current audio data.
-            const std::vector<AudioData>& getCurrentAudio() const;
+            TL_API const std::vector<AudioData>& getCurrentAudio() const;
 
             //! Observe the current audio data.
-            std::shared_ptr<ftk::IObservableList<AudioData> > observeCurrentAudio() const;
+            TL_API std::shared_ptr<ftk::IObservableList<AudioData> > observeCurrentAudio() const;
 
             ///@}
 
@@ -363,24 +363,24 @@ namespace tl
             ///@{
 
             //! Get the cache options.
-            const PlayerCacheOptions& getCacheOptions() const;
+            TL_API const PlayerCacheOptions& getCacheOptions() const;
 
             //! Observe the cache options.
-            std::shared_ptr<ftk::IObservable<PlayerCacheOptions> > observeCacheOptions() const;
+            TL_API std::shared_ptr<ftk::IObservable<PlayerCacheOptions> > observeCacheOptions() const;
 
             //! Set the cache options.
-            void setCacheOptions(const PlayerCacheOptions&);
+            TL_API void setCacheOptions(const PlayerCacheOptions&);
 
             //! Observe the cache information.
-            std::shared_ptr<ftk::IObservable<PlayerCacheInfo> > observeCacheInfo() const;
+            TL_API std::shared_ptr<ftk::IObservable<PlayerCacheInfo> > observeCacheInfo() const;
 
             //! Clear the cache.
-            void clearCache();
+            TL_API void clearCache();
 
             ///@}
 
             //! Tick the timeline player.
-            void tick();
+            TL_API void tick();
 
         private:
             void _thread();

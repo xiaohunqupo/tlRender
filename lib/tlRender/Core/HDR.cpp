@@ -12,13 +12,13 @@ namespace tl
 {
     namespace image
     {
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             HDR_EOTF,
             "SDR",
             "HDR",
             "ST2084");
 
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             HDRPrimaries,
             "Red",
             "Green",

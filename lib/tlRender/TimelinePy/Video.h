@@ -3,12 +3,14 @@
 
 #pragma once
 
+#include <tlRender/Core/Export.h>
+
 #include <pybind11/pybind11.h>
 
 namespace tl
 {
     namespace python
     {
-        void video(pybind11::module_&);
+        TL_API void video(pybind11::module_&);
     }
 }

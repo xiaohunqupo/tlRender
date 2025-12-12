@@ -18,7 +18,7 @@ class Model(ftk.Settings):
             ftk.Path(docPath, "tlRender").get(),
             "player-python.json")
         ftk.Settings.__init__(self, context, settingsPath)
-
+        
         self._contextWeak = weakref.ref(context)
 
         # Restore file browser settings.

@@ -22,7 +22,7 @@ namespace tl
 {
     namespace timeline
     {
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             OCIOConfig,
             "Built In",
             "Environment Variable",

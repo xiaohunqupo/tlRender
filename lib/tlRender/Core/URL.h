@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <tlRender/Core/Export.h>
+
 #include <ftk/Core/Util.h>
 
 #include <string>
@@ -13,12 +15,12 @@ namespace tl
     namespace url
     {
         //! Get the URL scheme.
-        std::string scheme(const std::string&);
+        TL_API std::string scheme(const std::string&);
 
         //! Encode a URL.
-        std::string encode(const std::string&);
+        TL_API std::string encode(const std::string&);
 
         //! Decode a URL.
-        std::string decode(const std::string&);
+        TL_API std::string decode(const std::string&);
     }
 }

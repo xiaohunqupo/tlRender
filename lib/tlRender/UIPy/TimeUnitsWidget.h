@@ -3,13 +3,15 @@
 
 #pragma once
 
+#include <tlRender/Core/Export.h>
+
 #include <pybind11/pybind11.h>
 
 namespace tl
 {
     namespace python
     {
-        void timeUnitsWidget(pybind11::module_&);
+        TL_API void timeUnitsWidget(pybind11::module_&);
     }
 }
 

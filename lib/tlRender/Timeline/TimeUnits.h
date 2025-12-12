@@ -4,6 +4,7 @@
 #pragma once
 
 #include <tlRender/Core/Time.h>
+#include <tlRender/Core/Util.h>
 
 #include <ftk/Core/Observable.h>
 
@@ -17,7 +18,7 @@ namespace tl
     namespace timeline
     {
         //! Time units.
-        enum class TimeUnits
+        enum class TL_API_TYPE TimeUnits
         {
             Frames,
             Seconds,
@@ -26,26 +27,26 @@ namespace tl
             Count,
             First = Frames
         };
-        FTK_ENUM(TimeUnits);
+        TL_ENUM(TimeUnits);
 
         //! Convert a time value to text.
-        std::string timeToText(const OTIO_NS::RationalTime&, timeline::TimeUnits);
+        TL_API std::string timeToText(const OTIO_NS::RationalTime&, timeline::TimeUnits);
 
         //! Convert text to a time value.
-        OTIO_NS::RationalTime textToTime(
+        TL_API OTIO_NS::RationalTime textToTime(
             const std::string&     text,
             double                 rate,
             timeline::TimeUnits    units,
             opentime::ErrorStatus* error = nullptr);
 
         //! Get a time units format string.
-        std::string formatString(timeline::TimeUnits);
+        TL_API TL_API std::string formatString(timeline::TimeUnits);
 
         //! Get a time units validator regular expression.
-        std::string validator(timeline::TimeUnits);
+        TL_API std::string validator(timeline::TimeUnits);
 
         //! Base class for time units models.
-        class ITimeUnitsModel : public std::enable_shared_from_this<ITimeUnitsModel>
+        class TL_API_TYPE ITimeUnitsModel : public std::enable_shared_from_this<ITimeUnitsModel>
         {
             FTK_NON_COPYABLE(ITimeUnitsModel);
 
@@ -55,20 +56,20 @@ namespace tl
             ITimeUnitsModel();
 
         public:
-            virtual ~ITimeUnitsModel() = 0;
+            TL_API virtual ~ITimeUnitsModel() = 0;
 
             //! Observer when the time units are changed.
-            std::shared_ptr<ftk::IObservable<bool> > observeTimeUnitsChanged() const;
+            TL_API std::shared_ptr<ftk::IObservable<bool> > observeTimeUnitsChanged() const;
 
             //! Get a time label in the current time units.
-            virtual std::string getLabel(const OTIO_NS::RationalTime&) const = 0;
+            TL_API virtual std::string getLabel(const OTIO_NS::RationalTime&) const = 0;
 
         protected:
             std::shared_ptr<ftk::Observable<bool> > _timeUnitsChanged;
         };
 
         //! Time units model.
-        class TimeUnitsModel : public ITimeUnitsModel
+        class TL_API_TYPE TimeUnitsModel : public ITimeUnitsModel
         {
             FTK_NON_COPYABLE(TimeUnitsModel);
 
@@ -78,23 +79,24 @@ namespace tl
             TimeUnitsModel();
 
         public:
-            virtual ~TimeUnitsModel();
+            TL_API virtual ~TimeUnitsModel();
 
             //! Create a new model.
-            static std::shared_ptr<TimeUnitsModel> create(
+            TL_API static std::shared_ptr<TimeUnitsModel> create(
                 const std::shared_ptr<ftk::Context>&);
 
             //! Get the time units.
-            TimeUnits getTimeUnits() const;
+            TL_API TimeUnits getTimeUnits() const;
 
             //! Observer the time units.
-            std::shared_ptr<ftk::IObservable<TimeUnits> > observeTimeUnits() const;
+            TL_API std::shared_ptr<ftk::IObservable<TimeUnits> > observeTimeUnits() const;
             
             //! Set the time units.
-            void setTimeUnits(TimeUnits);
+            TL_API void setTimeUnits(TimeUnits);
 
-            std::string getLabel(const OTIO_NS::RationalTime&) const override;
+            TL_API std::string getLabel(const OTIO_NS::RationalTime&) const override;
 
+        private:
             FTK_PRIVATE();
         };
     }

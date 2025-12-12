@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <tlRender/Core/Export.h>
+
 #include <ftk/UI/IWidget.h>
 
 #include <opentimelineio/version.h>
@@ -17,7 +19,7 @@ namespace tl
     namespace timelineui
     {
         //! Time value editor.
-        class TimeEdit : public ftk::IWidget
+        class TL_API_TYPE TimeEdit : public ftk::IWidget
         {
             FTK_NON_COPYABLE(TimeEdit);
 
@@ -30,37 +32,37 @@ namespace tl
             TimeEdit();
 
         public:
-            virtual ~TimeEdit();
+            TL_API virtual ~TimeEdit();
 
             //! Create a new widget.
-            static std::shared_ptr<TimeEdit> create(
+            TL_API static std::shared_ptr<TimeEdit> create(
                 const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<timeline::TimeUnitsModel>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
             //! Get the time units model.
-            const std::shared_ptr<timeline::TimeUnitsModel>& getTimeUnitsModel() const;
+            TL_API const std::shared_ptr<timeline::TimeUnitsModel>& getTimeUnitsModel() const;
 
             //! Get the time value.
-            const OTIO_NS::RationalTime& getValue() const;
+            TL_API const OTIO_NS::RationalTime& getValue() const;
 
             //! Set the time value.
-            void setValue(const OTIO_NS::RationalTime&);
+            TL_API void setValue(const OTIO_NS::RationalTime&);
 
             //! Set the time value callback.
-            void setCallback(const std::function<void(const OTIO_NS::RationalTime&)>&);
+            TL_API void setCallback(const std::function<void(const OTIO_NS::RationalTime&)>&);
 
             //! Select all.
-            void selectAll();
+            TL_API void selectAll();
 
             //! Set the font role.
-            void setFontRole(ftk::FontRole);
+            TL_API void setFontRole(ftk::FontRole);
 
-            void setGeometry(const ftk::Box2I&) override;
-            void takeKeyFocus() override;
-            void sizeHintEvent(const ftk::SizeHintEvent&) override;
-            void keyPressEvent(ftk::KeyEvent&) override;
-            void keyReleaseEvent(ftk::KeyEvent&) override;
+            TL_API void setGeometry(const ftk::Box2I&) override;
+            TL_API void takeKeyFocus() override;
+            TL_API void sizeHintEvent(const ftk::SizeHintEvent&) override;
+            TL_API void keyPressEvent(ftk::KeyEvent&) override;
+            TL_API void keyReleaseEvent(ftk::KeyEvent&) override;
 
         private:
             void _commitValue(const std::string&);

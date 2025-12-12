@@ -11,7 +11,7 @@ namespace tl
     namespace exr
     {
         //! Compression types.
-        enum class Compression
+        enum class TL_API_TYPE Compression
         {
             None,
             RLE,
@@ -27,16 +27,16 @@ namespace tl
             Count,
             First = None
         };
-        FTK_ENUM(Compression);
+        TL_ENUM(Compression);
 
         //! Get default channels.
-        std::set<std::string> getDefaultChannels(const std::set<std::string>&);
+        std::set<std::string> TL_API getDefaultChannels(const std::set<std::string>&);
 
         //! Reorder channels.
-        void reorderChannels(std::vector<std::string>&);
+        void TL_API reorderChannels(std::vector<std::string>&);
 
         //! OpenEXR reader.
-        class Read : public io::ISeqRead
+        class TL_API_TYPE Read : public io::ISeqRead
         {
         protected:
             void _init(
@@ -48,16 +48,16 @@ namespace tl
             Read();
 
         public:
-            virtual ~Read();
+            TL_API virtual ~Read();
 
             //! Create a new reader.
-            static std::shared_ptr<Read> create(
+            TL_API static std::shared_ptr<Read> create(
                 const ftk::Path&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
             //! Create a new reader.
-            static std::shared_ptr<Read> create(
+            TL_API static std::shared_ptr<Read> create(
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
                 const io::Options&,
@@ -75,7 +75,7 @@ namespace tl
         };
 
         //! OpenEXR writer.
-        class Write : public io::ISeqWrite
+        class TL_API_TYPE Write : public io::ISeqWrite
         {
         protected:
             void _init(
@@ -87,10 +87,10 @@ namespace tl
             Write();
 
         public:
-            virtual ~Write();
+            TL_API virtual ~Write();
 
             //! Create a new writer.
-            static std::shared_ptr<Write> create(
+            TL_API static std::shared_ptr<Write> create(
                 const ftk::Path&,
                 const io::Info&,
                 const io::Options&,
@@ -109,7 +109,7 @@ namespace tl
         };
 
         //! OpenEXR read plugin.
-        class ReadPlugin : public io::IReadPlugin
+        class TL_API_TYPE ReadPlugin : public io::IReadPlugin
         {
         protected:
             void _init(const std::shared_ptr<ftk::LogSystem>&);
@@ -118,20 +118,20 @@ namespace tl
 
         public:
             //! Create a new plugin.
-            static std::shared_ptr<ReadPlugin> create(
+            TL_API static std::shared_ptr<ReadPlugin> create(
                 const std::shared_ptr<ftk::LogSystem>&);
 
-            std::shared_ptr<io::IRead> read(
+            TL_API std::shared_ptr<io::IRead> read(
                 const ftk::Path&,
                 const io::Options& = io::Options()) override;
-            std::shared_ptr<io::IRead> read(
+            TL_API std::shared_ptr<io::IRead> read(
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
                 const io::Options& = io::Options()) override;
         };
 
         //! OpenEXR write plugin.
-        class WritePlugin : public io::IWritePlugin
+        class TL_API_TYPE WritePlugin : public io::IWritePlugin
         {
         protected:
             void _init(const std::shared_ptr<ftk::LogSystem>&);
@@ -140,13 +140,13 @@ namespace tl
 
         public:
             //! Create a new write plugin.
-            static std::shared_ptr<WritePlugin> create(
+            TL_API static std::shared_ptr<WritePlugin> create(
                 const std::shared_ptr<ftk::LogSystem>&);
 
-            ftk::ImageInfo getInfo(
+            TL_API ftk::ImageInfo getInfo(
                 const ftk::ImageInfo&,
                 const io::Options & = io::Options()) const override;
-            std::shared_ptr<io::IWrite> write(
+            TL_API std::shared_ptr<io::IWrite> write(
                 const ftk::Path&,
                 const io::Info&,
                 const io::Options & = io::Options()) override;

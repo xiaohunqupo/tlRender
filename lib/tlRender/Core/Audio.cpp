@@ -13,7 +13,7 @@ namespace tl
 {
     namespace audio
     {
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             DataType,
             "None",
             "S8",

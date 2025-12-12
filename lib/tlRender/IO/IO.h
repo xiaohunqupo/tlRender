@@ -14,7 +14,7 @@ namespace tl
     namespace io
     {
         //! File types.
-        enum class FileType
+        enum class TL_API_TYPE FileType
         {
             Unknown = 0,
             Media   = 1,
@@ -25,7 +25,7 @@ namespace tl
         };
 
         //! I/O information.
-        struct Info
+        struct TL_API_TYPE Info
         {
             //! Video layer information.
             std::vector<ftk::ImageInfo> video;
@@ -47,7 +47,7 @@ namespace tl
         };
 
         //! Video I/O data.
-        struct VideoData
+        struct TL_API_TYPE VideoData
         {
             VideoData();
             VideoData(
@@ -81,17 +81,17 @@ namespace tl
         };
 
         //! Get an integer image type for the given channel count and bit depth.
-        ftk::ImageType getIntType(size_t channelCount, size_t bitDepth);
+        TL_API ftk::ImageType getIntType(size_t channelCount, size_t bitDepth);
 
         //! Get a floating point image type for the given channel count and bit
         //! depth.
-        ftk::ImageType getFloatType(size_t channelCount, size_t bitDepth);
+        TL_API ftk::ImageType getFloatType(size_t channelCount, size_t bitDepth);
 
         //! Options.
         typedef std::map<std::string, std::string> Options;
 
         //! Merge options.
-        Options merge(const Options&, const Options&);
+        TL_API Options merge(const Options&, const Options&);
     }
 }
 

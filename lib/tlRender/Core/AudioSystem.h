@@ -14,27 +14,27 @@ namespace tl
     namespace audio
     {
         //! Audio device ID.
-        struct DeviceID
+        struct TL_API_TYPE DeviceID
         {
             int         number = -1;
             std::string name;
 
-            bool operator == (const DeviceID&) const;
-            bool operator != (const DeviceID&) const;
+            TL_API bool operator == (const DeviceID&) const;
+            TL_API bool operator != (const DeviceID&) const;
         };
 
         //! Audio device information.
-        struct DeviceInfo
+        struct TL_API_TYPE  DeviceInfo
         {
             DeviceID    id;
             audio::Info info;
 
-            bool operator == (const DeviceInfo&) const;
-            bool operator != (const DeviceInfo&) const;
+            TL_API bool operator == (const DeviceInfo&) const;
+            TL_API bool operator != (const DeviceInfo&) const;
         };
 
         //! Audio system.
-        class System : public system::ISystem
+        class TL_API_TYPE System : public system::ISystem
         {
             FTK_NON_COPYABLE(System);
 
@@ -42,28 +42,28 @@ namespace tl
             System(const std::shared_ptr<ftk::Context>&);
 
         public:
-            virtual ~System();
+            TL_API virtual ~System();
 
             //! Create a new system.
-            static std::shared_ptr<System> create(const std::shared_ptr<ftk::Context>&);
+            TL_API static std::shared_ptr<System> create(const std::shared_ptr<ftk::Context>&);
 
             //! Get the list of audio drivers.
-            const std::vector<std::string>& getDrivers() const;
+            TL_API const std::vector<std::string>& getDrivers() const;
 
             //! Get the list of audio devices.
-            const std::vector<DeviceInfo>& getDevices() const;
+            TL_API const std::vector<DeviceInfo>& getDevices() const;
 
             //! Observe the list of audio devices.
-            std::shared_ptr<ftk::IObservableList<DeviceInfo> > observeDevices() const;
+            TL_API std::shared_ptr<ftk::IObservableList<DeviceInfo> > observeDevices() const;
 
             //! Get the default audio device.
-            DeviceInfo getDefaultDevice() const;
+            TL_API DeviceInfo getDefaultDevice() const;
 
             //! Observe the default audio device.
-            std::shared_ptr<ftk::IObservable<DeviceInfo> > observeDefaultDevice() const;
+            TL_API std::shared_ptr<ftk::IObservable<DeviceInfo> > observeDefaultDevice() const;
 
-            void tick() override;
-            std::chrono::milliseconds getTickTime() const override;
+            TL_API void tick() override;
+            TL_API std::chrono::milliseconds getTickTime() const override;
 
         private:
             std::vector<DeviceInfo> _getDevices();

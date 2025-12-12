@@ -14,7 +14,7 @@ namespace tl
     namespace timeline_gl
     {
         //! Timeline OpenGL renderer.
-        class Render : public timeline::IRender
+        class TL_API_TYPE Render : public timeline::IRender
         {
             FTK_NON_COPYABLE(Render);
 
@@ -26,90 +26,90 @@ namespace tl
             Render();
 
         public:
-            virtual ~Render();
+            TL_API virtual ~Render();
 
             //! Create a new renderer.
-            static std::shared_ptr<Render> create(
+            TL_API static std::shared_ptr<Render> create(
                 const std::shared_ptr<ftk::LogSystem>& = nullptr,
                 const std::shared_ptr<ftk::gl::TextureCache>& = nullptr);
 
-            const std::shared_ptr<ftk::gl::TextureCache>& getTextureCache() const;
+            TL_API const std::shared_ptr<ftk::gl::TextureCache>& getTextureCache() const;
 
-            void setOCIOOptions(const timeline::OCIOOptions&) override;
-            void setLUTOptions(const timeline::LUTOptions&) override;
+            TL_API void setOCIOOptions(const timeline::OCIOOptions&) override;
+            TL_API void setLUTOptions(const timeline::LUTOptions&) override;
 
-            void drawTexture(
+            TL_API void drawTexture(
                 unsigned int,
                 const ftk::Box2I&,
                 bool flipV = false,
                 const ftk::Color4F& = ftk::Color4F(1.F, 1.F, 1.F),
                 ftk::AlphaBlend = ftk::AlphaBlend::Straight) override;
-            void drawBackground(
+            TL_API void drawBackground(
                 const std::vector<ftk::Box2I>&,
                 const ftk::M44F&,
                 const timeline::BackgroundOptions&) override;
-            void drawVideo(
+            TL_API void drawVideo(
                 const std::vector<timeline::VideoData>&,
                 const std::vector<ftk::Box2I>&,
                 const std::vector<ftk::ImageOptions>& = {},
                 const std::vector<timeline::DisplayOptions>& = {},
                 const timeline::CompareOptions& = timeline::CompareOptions(),
                 ftk::ImageType colorBuffer = ftk::ImageType::RGBA_U8) override;
-            void drawForeground(
+            TL_API void drawForeground(
                 const std::vector<ftk::Box2I>&,
                 const ftk::M44F&,
                 const timeline::ForegroundOptions&) override;
 
-            void begin(
+            TL_API void begin(
                 const ftk::Size2I&,
                 const ftk::RenderOptions& = ftk::RenderOptions()) override;
-            void end() override;
-            ftk::Size2I getRenderSize() const override;
-            void setRenderSize(const ftk::Size2I&) override;
-            ftk::RenderOptions getRenderOptions() const override;
-            ftk::Box2I getViewport() const override;
-            void setViewport(const ftk::Box2I&) override;
-            void clearViewport(const ftk::Color4F&) override;
-            bool getClipRectEnabled() const override;
-            void setClipRectEnabled(bool) override;
-            ftk::Box2I getClipRect() const override;
-            void setClipRect(const ftk::Box2I&) override;
-            ftk::M44F getTransform() const override;
-            void setTransform(const ftk::M44F&) override;
-            void drawRect(
+            TL_API void end() override;
+            TL_API ftk::Size2I getRenderSize() const override;
+            TL_API void setRenderSize(const ftk::Size2I&) override;
+            TL_API ftk::RenderOptions getRenderOptions() const override;
+            TL_API ftk::Box2I getViewport() const override;
+            TL_API void setViewport(const ftk::Box2I&) override;
+            TL_API void clearViewport(const ftk::Color4F&) override;
+            TL_API bool getClipRectEnabled() const override;
+            TL_API void setClipRectEnabled(bool) override;
+            TL_API ftk::Box2I getClipRect() const override;
+            TL_API void setClipRect(const ftk::Box2I&) override;
+            TL_API ftk::M44F getTransform() const override;
+            TL_API void setTransform(const ftk::M44F&) override;
+            TL_API void drawRect(
                 const ftk::Box2F&,
                 const ftk::Color4F&) override;
-            void drawRects(
+            TL_API void drawRects(
                 const std::vector<ftk::Box2F>&,
                 const ftk::Color4F&) override;
-            void drawLine(
+            TL_API void drawLine(
                 const ftk::V2F&,
                 const ftk::V2F&,
                 const ftk::Color4F&,
                 const ftk::LineOptions& = ftk::LineOptions()) override;
-            void drawLines(
+            TL_API void drawLines(
                 const std::vector<std::pair<ftk::V2F, ftk::V2F> >&,
                 const ftk::Color4F&,
                 const ftk::LineOptions& = ftk::LineOptions()) override;
-            void drawMesh(
+            TL_API void drawMesh(
                 const ftk::TriMesh2F&,
                 const ftk::Color4F& = ftk::Color4F(1.F, 1.F, 1.F, 1.F),
                 const ftk::V2F& pos = ftk::V2F()) override;
-            void drawColorMesh(
+            TL_API void drawColorMesh(
                 const ftk::TriMesh2F&,
                 const ftk::Color4F& = ftk::Color4F(1.F, 1.F, 1.F, 1.F),
                 const ftk::V2F& pos = ftk::V2F()) override;
-            void drawText(
+            TL_API void drawText(
                 const std::vector<std::shared_ptr<ftk::Glyph> >&,
                 const ftk::FontMetrics&,
                 const ftk::V2F& position,
                 const ftk::Color4F& = ftk::Color4F(1.F, 1.F, 1.F, 1.F)) override;
-            void drawImage(
+            TL_API void drawImage(
                 const std::shared_ptr<ftk::Image>&,
                 const ftk::TriMesh2F&,
                 const ftk::Color4F& = ftk::Color4F(1.F, 1.F, 1.F, 1.F),
                 const ftk::ImageOptions& = ftk::ImageOptions()) override;
-            void drawImage(
+            TL_API void drawImage(
                 const std::shared_ptr<ftk::Image>&,
                 const ftk::Box2F&,
                 const ftk::Color4F& = ftk::Color4F(1.F, 1.F, 1.F, 1.F),
@@ -171,10 +171,10 @@ namespace tl
         };
 
         //! Timeline OpenGL render factory.
-        class RenderFactory : public ftk::IRenderFactory
+        class TL_API_TYPE RenderFactory : public ftk::IRenderFactory
         {
         public:
-            std::shared_ptr<ftk::IRender> createRender(const std::shared_ptr<ftk::LogSystem>& logSystem) override;
+            TL_API std::shared_ptr<ftk::IRender> createRender(const std::shared_ptr<ftk::LogSystem>& logSystem) override;
         };
     }
 }

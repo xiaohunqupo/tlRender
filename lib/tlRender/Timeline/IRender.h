@@ -17,25 +17,25 @@ namespace tl
     namespace timeline
     {
         //! Base class for renderers.
-        class IRender : public ftk::IRender
+        class TL_API_TYPE IRender : public ftk::IRender
         {
         public:
-            virtual ~IRender() = 0;
+            TL_API virtual ~IRender() = 0;
 
             //! Set the OpenColorIO options.
-            virtual void setOCIOOptions(const OCIOOptions&) = 0;
+            TL_API virtual void setOCIOOptions(const OCIOOptions&) = 0;
 
             //! Set the LUT options.
-            virtual void setLUTOptions(const LUTOptions&) = 0;
+            TL_API virtual void setLUTOptions(const LUTOptions&) = 0;
 
             //! Draw the background.
-            virtual void drawBackground(
+            TL_API virtual void drawBackground(
                 const std::vector<ftk::Box2I>&,
                 const ftk::M44F&,
                 const BackgroundOptions&) = 0;
 
             //! Draw timeline video data.
-            virtual void drawVideo(
+            TL_API virtual void drawVideo(
                 const std::vector<timeline::VideoData>&,
                 const std::vector<ftk::Box2I>&,
                 const std::vector<ftk::ImageOptions>& = {},
@@ -44,7 +44,7 @@ namespace tl
                 ftk::ImageType colorBuffer = ftk::ImageType::RGBA_U8) = 0;
 
             //! Draw the foreground.
-            virtual void drawForeground(
+            TL_API virtual void drawForeground(
                 const std::vector<ftk::Box2I>&,
                 const ftk::M44F&,
                 const ForegroundOptions&) = 0;

@@ -21,7 +21,7 @@ namespace tl
     namespace bmd
     {
         //! BMD devices model data.
-        struct DevicesModelData
+        struct TL_API_TYPE DevicesModelData
         {
             std::vector<std::string> devices;
             int                      deviceIndex = 0;
@@ -35,11 +35,11 @@ namespace tl
             HDRMode                  hdrMode = HDRMode::FromFile;
             image::HDRData           hdrData;
 
-            bool operator == (const DevicesModelData&) const;
+            TL_API bool operator == (const DevicesModelData&) const;
         };
 
         //! BMD devices model.
-        class DevicesModel : public std::enable_shared_from_this<DevicesModel>
+        class TL_API_TYPE DevicesModel : public std::enable_shared_from_this<DevicesModel>
         {
             FTK_NON_COPYABLE(DevicesModel);
 
@@ -49,38 +49,38 @@ namespace tl
             DevicesModel();
 
         public:
-            ~DevicesModel();
+            TL_API ~DevicesModel();
 
             //! Create a new device model.
-            static std::shared_ptr<DevicesModel> create(
+            TL_API static std::shared_ptr<DevicesModel> create(
                 const std::shared_ptr<ftk::Context>&);
 
             //! Observe the model data.
-            std::shared_ptr<ftk::IObservable<DevicesModelData> > observeData() const;
+            TL_API std::shared_ptr<ftk::IObservable<DevicesModelData> > observeData() const;
 
             //! Set the device index.
-            void setDeviceIndex(int);
+            TL_API void setDeviceIndex(int);
 
             //! Set the display mode index.
-            void setDisplayModeIndex(int);
+            TL_API void setDisplayModeIndex(int);
 
             //! Set the pixel type index.
-            void setPixelTypeIndex(int);
+            TL_API void setPixelTypeIndex(int);
 
             //! Set whether the device is enabled.
-            void setDeviceEnabled(bool);
+            TL_API void setDeviceEnabled(bool);
 
             //! Set the boolean options.
-            void setBoolOptions(const BoolOptions&);
+            TL_API void setBoolOptions(const BoolOptions&);
 
             //! Set the video levels.
-            void setVideoLevels(ftk::VideoLevels);
+            TL_API void setVideoLevels(ftk::VideoLevels);
 
             //! Set the HDR mode.
-            void setHDRMode(HDRMode);
+            TL_API void setHDRMode(HDRMode);
 
             //! Set the HDR data.
-            void setHDRData(const image::HDRData&);
+            TL_API void setHDRData(const image::HDRData&);
 
         private:
             void _update();
@@ -88,8 +88,8 @@ namespace tl
             FTK_PRIVATE();
         };
 
-        void to_json(nlohmann::json&, const DevicesModelData&);
+        TL_API void to_json(nlohmann::json&, const DevicesModelData&);
 
-        void from_json(const nlohmann::json&, DevicesModelData&);
+        TL_API void from_json(const nlohmann::json&, DevicesModelData&);
     }
 }

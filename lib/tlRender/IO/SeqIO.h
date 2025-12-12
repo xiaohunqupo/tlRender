@@ -11,20 +11,20 @@ namespace tl
     namespace io
     {
         //! Sequence I/O options.
-        struct SeqOptions
+        struct TL_API_TYPE SeqOptions
         {
             double defaultSpeed = 24.0;
             size_t threadCount = 16;
 
-            bool operator == (const SeqOptions&) const;
-            bool operator != (const SeqOptions&) const;
+            TL_API bool operator == (const SeqOptions&) const;
+            TL_API bool operator != (const SeqOptions&) const;
         };
 
         //! Get sequence I/O options.
-        Options getOptions(const SeqOptions&);
+        TL_API Options getOptions(const SeqOptions&);
 
         //! Base class for image sequence readers.
-        class ISeqRead : public IRead
+        class TL_API_TYPE ISeqRead : public IRead
         {
         protected:
             void _init(
@@ -36,13 +36,13 @@ namespace tl
             ISeqRead();
 
         public:
-            virtual ~ISeqRead();
+            TL_API virtual ~ISeqRead();
 
-            std::future<Info> getInfo() override;
-            std::future<VideoData> readVideo(
+            TL_API std::future<Info> getInfo() override;
+            TL_API std::future<VideoData> readVideo(
                 const OTIO_NS::RationalTime&,
                 const Options& = Options()) override;
-            void cancelRequests() override;
+            TL_API void cancelRequests() override;
 
         protected:
             virtual Info _getInfo(
@@ -70,7 +70,7 @@ namespace tl
         };
 
         //! Base class for image sequence writers.
-        class ISeqWrite : public IWrite
+        class TL_API_TYPE ISeqWrite : public IWrite
         {
         protected:
             void _init(
@@ -82,9 +82,9 @@ namespace tl
             ISeqWrite();
 
         public:
-            virtual ~ISeqWrite();
+            TL_API virtual ~ISeqWrite();
 
-            void writeVideo(
+            TL_API void writeVideo(
                 const OTIO_NS::RationalTime&,
                 const std::shared_ptr<ftk::Image>&,
                 const Options& = Options()) override;
@@ -103,9 +103,9 @@ namespace tl
         //! \name Serialize
         ///@{
 
-        void to_json(nlohmann::json&, const SeqOptions&);
+        TL_API void to_json(nlohmann::json&, const SeqOptions&);
 
-        void from_json(const nlohmann::json&, SeqOptions&);
+        TL_API void from_json(const nlohmann::json&, SeqOptions&);
 
         ///@}
     }

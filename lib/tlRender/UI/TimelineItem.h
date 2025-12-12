@@ -20,7 +20,7 @@ namespace tl
     namespace timelineui
     {
         //! Track types.
-        enum class TrackType
+        enum class TL_API_TYPE TrackType
         {
             None,
             Video,
@@ -34,7 +34,7 @@ namespace tl
         //! \todo Add support for adjusting clip handles.
         //! \todo Add support for undo/redo.
         //! \todo Add an option for viewing/playing individual clips ("solo" mode).
-        class TimelineItem : public IItem
+        class TL_API_TYPE TimelineItem : public IItem
         {
         protected:
             void _init(
@@ -51,10 +51,10 @@ namespace tl
             TimelineItem();
 
         public:
-            virtual ~TimelineItem();
+            TL_API virtual ~TimelineItem();
 
             //! Create a new item.
-            static std::shared_ptr<TimelineItem> create(
+            TL_API static std::shared_ptr<TimelineItem> create(
                 const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<timeline::Player>&,
                 const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Stack>&,
@@ -66,30 +66,30 @@ namespace tl
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
             //! Set whether playback stops when scrubbing.
-            void setStopOnScrub(bool);
+            TL_API void setStopOnScrub(bool);
 
             //! Observe whether scrubbing is in progress.
-            std::shared_ptr<ftk::IObservable<bool> > observeScrub() const;
+            TL_API std::shared_ptr<ftk::IObservable<bool> > observeScrub() const;
 
             //! Observe time scrubbing.
-            std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > observeTimeScrub() const;
+            TL_API std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > observeTimeScrub() const;
 
             //! Set the frame markers.
-            void setFrameMarkers(const std::vector<int>&);
+            TL_API void setFrameMarkers(const std::vector<int>&);
 
             //! Get the track geometry.
-            std::vector<ftk::Box2I> getTrackGeom() const;
+            TL_API std::vector<ftk::Box2I> getTrackGeom() const;
 
-            void setDisplayOptions(const DisplayOptions&) override;
+            TL_API void setDisplayOptions(const DisplayOptions&) override;
 
-            void setGeometry(const ftk::Box2I&) override;
-            void sizeHintEvent(const ftk::SizeHintEvent&) override;
-            void drawOverlayEvent(const ftk::Box2I&, const ftk::DrawEvent&) override;
-            void mouseMoveEvent(ftk::MouseMoveEvent&) override;
-            void mousePressEvent(ftk::MouseClickEvent&) override;
-            void mouseReleaseEvent(ftk::MouseClickEvent&) override;
-            //void keyPressEvent(ftk::KeyEvent&) override;
-            //void keyReleaseEvent(ftk::KeyEvent&) override;
+            TL_API void setGeometry(const ftk::Box2I&) override;
+            TL_API void sizeHintEvent(const ftk::SizeHintEvent&) override;
+            TL_API void drawOverlayEvent(const ftk::Box2I&, const ftk::DrawEvent&) override;
+            TL_API void mouseMoveEvent(ftk::MouseMoveEvent&) override;
+            TL_API void mousePressEvent(ftk::MouseClickEvent&) override;
+            TL_API void mouseReleaseEvent(ftk::MouseClickEvent&) override;
+            //TL_API void keyPressEvent(ftk::KeyEvent&) override;
+            //TL_API void keyReleaseEvent(ftk::KeyEvent&) override;
 
         protected:
             void _timeUnitsUpdate() override;

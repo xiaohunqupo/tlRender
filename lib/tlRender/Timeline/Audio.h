@@ -10,25 +10,25 @@ namespace tl
     namespace timeline
     {
         //! Audio layer.
-        struct AudioLayer
+        struct TL_API_TYPE AudioLayer
         {
             std::shared_ptr<audio::Audio> audio;
 
-            bool operator == (const AudioLayer&) const;
-            bool operator != (const AudioLayer&) const;
+            TL_API bool operator == (const AudioLayer&) const;
+            TL_API bool operator != (const AudioLayer&) const;
         };
 
         //! Audio data.
-        struct AudioData
+        struct TL_API_TYPE AudioData
         {
-            double seconds = -1.0;
+            double                  seconds = -1.0;
             std::vector<AudioLayer> layers;
 
-            bool operator == (const AudioData&) const;
-            bool operator != (const AudioData&) const;
+            TL_API bool operator == (const AudioData&) const;
+            TL_API bool operator != (const AudioData&) const;
         };
 
         //! Compare the time values of audio data.
-        bool isTimeEqual(const AudioData&, const AudioData&);
+        TL_API bool isTimeEqual(const AudioData&, const AudioData&);
     }
 }

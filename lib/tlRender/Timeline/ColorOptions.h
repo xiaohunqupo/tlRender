@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <tlRender/Core/Util.h>
+
 #include <ftk/Core/Util.h>
 
 #include <nlohmann/json.hpp>
@@ -16,7 +18,7 @@ namespace tl
     namespace timeline
     {
         //! OpenColorIO configuration options.
-        enum class OCIOConfig
+        enum class TL_API_TYPE OCIOConfig
         {
             BuiltIn,
             EnvVar,
@@ -25,10 +27,10 @@ namespace tl
             Count,
             First = BuiltIn
         };
-        FTK_ENUM(OCIOConfig);
+        TL_ENUM(OCIOConfig);
 
         //! OpenColorIO options.
-        struct OCIOOptions
+        struct TL_API_TYPE OCIOOptions
         {
             bool        enabled  = false;
             OCIOConfig  config   = OCIOConfig::BuiltIn;
@@ -38,12 +40,12 @@ namespace tl
             std::string view;
             std::string look;
 
-            bool operator == (const OCIOOptions&) const;
-            bool operator != (const OCIOOptions&) const;
+            TL_API bool operator == (const OCIOOptions&) const;
+            TL_API bool operator != (const OCIOOptions&) const;
         };
 
         //! LUT operation order.
-        enum class LUTOrder
+        enum class TL_API_TYPE LUTOrder
         {
             PostConfig,
             PreConfig,
@@ -54,30 +56,30 @@ namespace tl
         FTK_ENUM(LUTOrder);
 
         //! LUT options.
-        struct LUTOptions
+        struct TL_API_TYPE LUTOptions
         {
             bool        enabled  = false;
             std::string fileName;
             LUTOrder    order    = LUTOrder::First;
 
-            bool operator == (const LUTOptions&) const;
-            bool operator != (const LUTOptions&) const;
+            TL_API bool operator == (const LUTOptions&) const;
+            TL_API bool operator != (const LUTOptions&) const;
         };
 
         //! Get the list of LUT format names.
-        std::vector<std::string> getLUTFormatNames();
+        TL_API std::vector<std::string> getLUTFormatNames();
 
         //! Get the list of LUT format file extensions.
-        std::vector<std::string> getLUTFormatExtensions();
+        TL_API std::vector<std::string> getLUTFormatExtensions();
 
         //! \name Serialize
         ///@{
 
-        void to_json(nlohmann::json&, const OCIOOptions&);
-        void to_json(nlohmann::json&, const LUTOptions&);
+        TL_API void to_json(nlohmann::json&, const OCIOOptions&);
+        TL_API void to_json(nlohmann::json&, const LUTOptions&);
 
-        void from_json(const nlohmann::json&, OCIOOptions&);
-        void from_json(const nlohmann::json&, LUTOptions&);
+        TL_API void from_json(const nlohmann::json&, OCIOOptions&);
+        TL_API void from_json(const nlohmann::json&, LUTOptions&);
 
         ///@}
     }

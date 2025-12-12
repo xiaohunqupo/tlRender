@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <tlRender/Core/Util.h>
+
 #include <ftk/Core/Util.h>
 
 #include <nlohmann/json.hpp>
@@ -15,7 +17,7 @@ namespace tl
     namespace timeline
     {
         //! Transitions.
-        enum class Transition
+        enum class TL_API_TYPE Transition
         {
             None,
             Dissolve,
@@ -23,9 +25,9 @@ namespace tl
             Count,
             First = None
         };
-        FTK_ENUM(Transition);
+        TL_ENUM(Transition);
 
         //! Convert to a transition.
-        Transition toTransition(const std::string&);
+        TL_API Transition toTransition(const std::string&);
     }
 }

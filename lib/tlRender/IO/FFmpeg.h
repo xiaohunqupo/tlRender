@@ -14,20 +14,20 @@ namespace tl
     namespace ffmpeg
     {
         //! FFmpeg options.
-        struct Options
+        struct TL_API_TYPE Options
         {
-            bool yuvToRgb = false;
+            bool   yuvToRgb    = false;
             size_t threadCount = 0;
 
-            bool operator == (const Options&) const;
-            bool operator != (const Options&) const;
+            TL_API bool operator == (const Options&) const;
+            TL_API bool operator != (const Options&) const;
         };
 
         //! Get FFmpeg options.
-        io::Options getOptions(const Options&);
+        TL_API io::Options getOptions(const Options&);
 
         //! FFmpeg reader
-        class Read : public io::IRead
+        class TL_API_TYPE Read : public io::IRead
         {
         protected:
             void _init(
@@ -39,29 +39,29 @@ namespace tl
             Read();
 
         public:
-            virtual ~Read();
+            TL_API virtual ~Read();
 
             //! Create a new reader.
-            static std::shared_ptr<Read> create(
+            TL_API static std::shared_ptr<Read> create(
                 const ftk::Path&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
             //! Create a new reader.
-            static std::shared_ptr<Read> create(
+            TL_API static std::shared_ptr<Read> create(
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
-            std::future<io::Info> getInfo() override;
-            std::future<io::VideoData> readVideo(
+            TL_API std::future<io::Info> getInfo() override;
+            TL_API std::future<io::VideoData> readVideo(
                 const OTIO_NS::RationalTime&,
                 const io::Options& = io::Options()) override;
-            std::future<io::AudioData> readAudio(
+            TL_API std::future<io::AudioData> readAudio(
                 const OTIO_NS::TimeRange&,
                 const io::Options& = io::Options()) override;
-            void cancelRequests() override;
+            TL_API void cancelRequests() override;
 
         private:
             void _videoThread();
@@ -73,7 +73,7 @@ namespace tl
         };
 
         //! FFmpeg writer.
-        class Write : public io::IWrite
+        class TL_API_TYPE Write : public io::IWrite
         {
         protected:
             void _init(
@@ -85,16 +85,16 @@ namespace tl
             Write();
 
         public:
-            virtual ~Write();
+            TL_API virtual ~Write();
 
             //! Create a new writer.
-            static std::shared_ptr<Write> create(
+            TL_API static std::shared_ptr<Write> create(
                 const ftk::Path&,
                 const io::Info&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
-            void writeVideo(
+            TL_API void writeVideo(
                 const OTIO_NS::RationalTime&,
                 const std::shared_ptr<ftk::Image>&,
                 const io::Options& = io::Options()) override;
@@ -106,7 +106,7 @@ namespace tl
         };
 
         //! FFmpeg read plugin.
-        class ReadPlugin : public io::IReadPlugin
+        class TL_API_TYPE ReadPlugin : public io::IReadPlugin
         {
         protected:
             void _init(const std::shared_ptr<ftk::LogSystem>&);
@@ -115,13 +115,13 @@ namespace tl
 
         public:
             //! Create a new plugin.
-            static std::shared_ptr<ReadPlugin> create(
+            TL_API static std::shared_ptr<ReadPlugin> create(
                 const std::shared_ptr<ftk::LogSystem>&);
 
-            std::shared_ptr<io::IRead> read(
+            TL_API std::shared_ptr<io::IRead> read(
                 const ftk::Path&,
                 const io::Options& = io::Options()) override;
-            std::shared_ptr<io::IRead> read(
+            TL_API std::shared_ptr<io::IRead> read(
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
                 const io::Options & = io::Options()) override;
@@ -137,7 +137,7 @@ namespace tl
         };
 
         //! FFmpeg write plugin.
-        class WritePlugin : public io::IWritePlugin
+        class TL_API_TYPE WritePlugin : public io::IWritePlugin
         {
         protected:
             void _init(const std::shared_ptr<ftk::LogSystem>&);
@@ -146,16 +146,16 @@ namespace tl
 
         public:
             //! Create a new plugin.
-            static std::shared_ptr<WritePlugin> create(
+            TL_API static std::shared_ptr<WritePlugin> create(
                 const std::shared_ptr<ftk::LogSystem>&);
 
             //! Get the list of codecs.
-            const std::vector<std::string>& getCodecs() const;
+            TL_API const std::vector<std::string>& getCodecs() const;
 
-            ftk::ImageInfo getInfo(
+            TL_API ftk::ImageInfo getInfo(
                 const ftk::ImageInfo&,
                 const io::Options & = io::Options()) const override;
-            std::shared_ptr<io::IWrite> write(
+            TL_API std::shared_ptr<io::IWrite> write(
                 const ftk::Path&,
                 const io::Info&,
                 const io::Options & = io::Options()) override;
@@ -173,9 +173,9 @@ namespace tl
         //! \name Serialize
         ///@{
 
-        void to_json(nlohmann::json&, const Options&);
+        TL_API void to_json(nlohmann::json&, const Options&);
 
-        void from_json(const nlohmann::json&, Options&);
+        TL_API void from_json(const nlohmann::json&, Options&);
 
         ///@}
     }

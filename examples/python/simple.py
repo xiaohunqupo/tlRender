@@ -65,9 +65,6 @@ if app.exitValue != 0:
 # Create the main window.
 window = MainWindow(context, ftk.Path(cmdLineInput.value))
 
-# \bug Set the display scale manually.
-app.displayScale = 2
-
 # Run the application.
 app.run()
 

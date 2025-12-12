@@ -13,17 +13,17 @@ namespace tl
     namespace bmd
     {
         //! Frame rate.
-        struct FrameRate
+        struct TL_API_TYPE FrameRate
         {
             int num = 0;
             int den = 0;
 
-            bool operator == (const FrameRate&) const;
-            bool operator != (const FrameRate&) const;
+            TL_API bool operator == (const FrameRate&) const;
+            TL_API bool operator != (const FrameRate&) const;
         };
 
         //! BMD output device.
-        class OutputDevice : public std::enable_shared_from_this<OutputDevice>
+        class TL_API_TYPE OutputDevice : public std::enable_shared_from_this<OutputDevice>
         {
             FTK_NON_COPYABLE(OutputDevice);
 
@@ -33,103 +33,103 @@ namespace tl
             OutputDevice();
 
         public:
-            ~OutputDevice();
+            TL_API ~OutputDevice();
 
             //! Create a new output device.
-            static std::shared_ptr<OutputDevice> create(const std::shared_ptr<ftk::Context>&);
+            TL_API static std::shared_ptr<OutputDevice> create(const std::shared_ptr<ftk::Context>&);
 
             //! Get the device configuration.
-            DeviceConfig getConfig() const;
+            TL_API DeviceConfig getConfig() const;
 
             //! Observe the device configuration.
-            std::shared_ptr<ftk::IObservable<DeviceConfig> > observeConfig() const;
+            TL_API std::shared_ptr<ftk::IObservable<DeviceConfig> > observeConfig() const;
 
             //! Set the device configuration.
-            void setConfig(const DeviceConfig&);
+            TL_API void setConfig(const DeviceConfig&);
 
             //! Get whether the device is enabled.
-            bool isEnabled() const;
+            TL_API bool isEnabled() const;
 
             //! Observe whether the device is enabled.
-            std::shared_ptr<ftk::IObservable<bool> > observeEnabled() const;
+            TL_API std::shared_ptr<ftk::IObservable<bool> > observeEnabled() const;
 
             //! Set whether the device is enabled.
-            void setEnabled(bool);
+            TL_API void setEnabled(bool);
 
             //! Get whether the device is active.
-            bool isActive() const;
+            TL_API bool isActive() const;
 
             //! Observe whether the device is active.
-            std::shared_ptr<ftk::IObservable<bool> > observeActive() const;
+            TL_API std::shared_ptr<ftk::IObservable<bool> > observeActive() const;
 
             //! Get the video size.
-            const ftk::Size2I& getSize() const;
+            TL_API const ftk::Size2I& getSize() const;
 
             //! Observe the video size.
-            std::shared_ptr<ftk::IObservable<ftk::Size2I> > observeSize() const;
+            TL_API std::shared_ptr<ftk::IObservable<ftk::Size2I> > observeSize() const;
 
             //! Get the frame rate.
-            const FrameRate& getFrameRate() const;
+            TL_API const FrameRate& getFrameRate() const;
 
             //! Observe the frame rate.
-            std::shared_ptr<ftk::IObservable<FrameRate> > observeFrameRate() const;
+            TL_API std::shared_ptr<ftk::IObservable<FrameRate> > observeFrameRate() const;
 
             //! Get the video frame delay.
-            int getVideoFrameDelay() const;
+            TL_API int getVideoFrameDelay() const;
 
             //! Observe the video frame delay.
-            std::shared_ptr<ftk::IObservable<int> > observeVideoFrameDelay() const;
+            TL_API std::shared_ptr<ftk::IObservable<int> > observeVideoFrameDelay() const;
 
             //! Set the view.
-            void setView(
+            TL_API void setView(
                 const ftk::V2I& position,
                 double          zoom,
                 bool            frame);
 
             //! Set the OpenColorIO options.
-            void setOCIOOptions(const timeline::OCIOOptions&);
+            TL_API void setOCIOOptions(const timeline::OCIOOptions&);
 
             //! Set the LUT options.
-            void setLUTOptions(const timeline::LUTOptions&);
+            TL_API void setLUTOptions(const timeline::LUTOptions&);
 
             //! Set the image options.
-            void setImageOptions(const std::vector<ftk::ImageOptions>&);
+            TL_API void setImageOptions(const std::vector<ftk::ImageOptions>&);
 
             //! Set the display options.
-            void setDisplayOptions(const std::vector<timeline::DisplayOptions>&);
+            TL_API void setDisplayOptions(const std::vector<timeline::DisplayOptions>&);
 
             //! Set the HDR mode and metadata.
-            void setHDR(HDRMode, const image::HDRData&);
+            TL_API void setHDR(HDRMode, const image::HDRData&);
 
             //! Set the comparison options.
-            void setCompareOptions(const timeline::CompareOptions&);
+            TL_API void setCompareOptions(const timeline::CompareOptions&);
 
             //! Set the background options.
-            void setBackgroundOptions(const timeline::BackgroundOptions&);
+            TL_API void setBackgroundOptions(const timeline::BackgroundOptions&);
 
             //! Set the foreground options.
-            void setForegroundOptions(const timeline::ForegroundOptions&);
+            TL_API void setForegroundOptions(const timeline::ForegroundOptions&);
 
             //! Set the overlay.
-            void setOverlay(const std::shared_ptr<ftk::Image>&);
+            TL_API void setOverlay(const std::shared_ptr<ftk::Image>&);
 
             //! Set the audio volume.
-            void setVolume(float);
+            TL_API void setVolume(float);
 
             //! Set the audio mute.
-            void setMute(bool);
+            TL_API void setMute(bool);
 
             //! Set the audio channels mute.
-            void setChannelMute(const std::vector<bool>&);
+            TL_API void setChannelMute(const std::vector<bool>&);
 
             //! Set the audio sync offset.
-            void setAudioOffset(double);
+            TL_API void setAudioOffset(double);
 
             //! Set the timeline player.
-            void setPlayer(const std::shared_ptr<timeline::Player>&);
+            TL_API void setPlayer(const std::shared_ptr<timeline::Player>&);
 
             //! Tick the output device.
-            void tick();
+            TL_API void tick();
 
         private:
             void _run();

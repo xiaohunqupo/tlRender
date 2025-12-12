@@ -13,7 +13,7 @@ namespace tl
 {
     namespace timeline
     {
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             TimeUnits,
             "Frames",
             "Seconds",

@@ -18,7 +18,7 @@ namespace tl
         class IItem;
 
         //! Item data.
-        struct ItemData
+        struct TL_API_TYPE ItemData
         {
             double speed = 0.0;
             std::string dir;
@@ -30,7 +30,7 @@ namespace tl
         };
 
         //! In/out points display options.
-        enum class InOutDisplay
+        enum class TL_API_TYPE InOutDisplay
         {
             InsideRange,
             OutsideRange,
@@ -38,10 +38,10 @@ namespace tl
             Count,
             First = InsideRange
         };
-        FTK_ENUM(InOutDisplay);
+        TL_ENUM(InOutDisplay);
         
         //! Cache display options.
-        enum class CacheDisplay
+        enum class TL_API_TYPE CacheDisplay
         {
             VideoAndAudio,
             VideoOnly,
@@ -49,10 +49,10 @@ namespace tl
             Count,
             First = VideoAndAudio
         };
-        FTK_ENUM(CacheDisplay);
+        TL_ENUM(CacheDisplay);
 
         //! Waveform primitive type.
-        enum class WaveformPrim
+        enum class TL_API_TYPE WaveformPrim
         {
             Mesh,
             Image,
@@ -60,20 +60,20 @@ namespace tl
             Count,
             First = Mesh
         };
-        FTK_ENUM(WaveformPrim);
+        TL_ENUM(WaveformPrim);
 
         //! Item options.
-        struct ItemOptions
+        struct TL_API_TYPE ItemOptions
         {
             bool inputEnabled = true;
             bool editAssociatedClips = true;
 
-            bool operator == (const ItemOptions&) const;
-            bool operator != (const ItemOptions&) const;
+            TL_API bool operator == (const ItemOptions&) const;
+            TL_API bool operator != (const ItemOptions&) const;
         };
 
         //! Display options.
-        struct DisplayOptions
+        struct TL_API_TYPE DisplayOptions
         {
             InOutDisplay inOutDisplay = InOutDisplay::InsideRange;
             CacheDisplay cacheDisplay = CacheDisplay::VideoAndAudio;
@@ -94,12 +94,12 @@ namespace tl
             timeline::OCIOOptions ocio;
             timeline::LUTOptions lut;
 
-            bool operator == (const DisplayOptions&) const;
-            bool operator != (const DisplayOptions&) const;
+            TL_API bool operator == (const DisplayOptions&) const;
+            TL_API bool operator != (const DisplayOptions&) const;
         };
 
         //! Marker.
-        struct Marker
+        struct TL_API_TYPE Marker
         {
             std::string name;
             ftk::Color4F color;
@@ -107,27 +107,27 @@ namespace tl
         };
 
         //! Get the markers from an item.
-        std::vector<Marker> getMarkers(const OTIO_NS::Item*);
+        TL_API std::vector<Marker> getMarkers(const OTIO_NS::Item*);
 
         //! Convert a named marker color.
-        ftk::Color4F getMarkerColor(const std::string&);
+        TL_API ftk::Color4F getMarkerColor(const std::string&);
 
         //! Drag and drop data.
-        class DragAndDropData : public ftk::DragAndDropData
+        class TL_API_TYPE DragAndDropData : public ftk::DragAndDropData
         {
         public:
-            DragAndDropData(const std::shared_ptr<IItem>&);
+            TL_API DragAndDropData(const std::shared_ptr<IItem>&);
 
-            virtual ~DragAndDropData();
+            TL_API virtual ~DragAndDropData();
 
-            const std::shared_ptr<IItem>& getItem() const;
+            TL_API const std::shared_ptr<IItem>& getItem() const;
 
         private:
             std::shared_ptr<IItem> _item;
         };
 
         //! Base class for items.
-        class IItem : public ftk::IMouseWidget
+        class TL_API_TYPE IItem : public ftk::IMouseWidget
         {
         protected:
             void _init(
@@ -145,31 +145,31 @@ namespace tl
             IItem();
 
         public:
-            virtual ~IItem() = 0;
+            TL_API virtual ~IItem() = 0;
             
             //! Get the item time range.
-            const OTIO_NS::TimeRange& getTimeRange() const;
+            TL_API const OTIO_NS::TimeRange& getTimeRange() const;
 
             //! Set the item scale.
-            virtual void setScale(double);
+            TL_API virtual void setScale(double);
 
             //! Set the item options.
-            virtual void setOptions(const ItemOptions&);
+            TL_API virtual void setOptions(const ItemOptions&);
 
             //! Set the display options.
-            virtual void setDisplayOptions(const DisplayOptions&);
+            TL_API virtual void setDisplayOptions(const DisplayOptions&);
 
             //! Get the selection color role.
-            ftk::ColorRole getSelectRole() const;
+            TL_API ftk::ColorRole getSelectRole() const;
 
             //! Set the selection color role.
-            void setSelectRole(ftk::ColorRole);
+            TL_API void setSelectRole(ftk::ColorRole);
 
             //! Convert a position to a time.
-            OTIO_NS::RationalTime posToTime(float) const;
+            TL_API OTIO_NS::RationalTime posToTime(float) const;
 
             //! Convert a time to a position.
-            int timeToPos(const OTIO_NS::RationalTime&) const;
+            TL_API int timeToPos(const OTIO_NS::RationalTime&) const;
 
         protected:
             static ftk::Box2I _getClipRect(
@@ -195,11 +195,11 @@ namespace tl
         //! \name Serialize
         ///@{
 
-        void to_json(nlohmann::json&, const ItemOptions&);
-        void to_json(nlohmann::json&, const DisplayOptions&);
+        TL_API void to_json(nlohmann::json&, const ItemOptions&);
+        TL_API void to_json(nlohmann::json&, const DisplayOptions&);
 
-        void from_json(const nlohmann::json&, ItemOptions&);
-        void from_json(const nlohmann::json&, DisplayOptions&);
+        TL_API void from_json(const nlohmann::json&, ItemOptions&);
+        TL_API void from_json(const nlohmann::json&, DisplayOptions&);
 
         ///@}
     }

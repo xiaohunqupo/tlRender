@@ -10,7 +10,7 @@ namespace tl
     namespace io
     {
         //! Base class for writers.
-        class IWrite : public IIO
+        class TL_API_TYPE IWrite : public IIO
         {
         protected:
             void _init(
@@ -22,10 +22,10 @@ namespace tl
             IWrite();
 
         public:
-            virtual ~IWrite();
+            TL_API virtual ~IWrite();
 
             //! Write video data.
-            virtual void writeVideo(
+            TL_API virtual void writeVideo(
                 const OTIO_NS::RationalTime&,
                 const std::shared_ptr<ftk::Image>&,
                 const Options& = Options()) = 0;
@@ -35,7 +35,7 @@ namespace tl
         };
 
         //! Base class for write plugins.
-        class IWritePlugin : public IPlugin
+        class TL_API_TYPE IWritePlugin : public IPlugin
         {
             FTK_NON_COPYABLE(IWritePlugin);
 
@@ -48,15 +48,15 @@ namespace tl
             IWritePlugin();
 
         public:
-            virtual ~IWritePlugin() = 0;
+            TL_API virtual ~IWritePlugin() = 0;
 
             //! Get information for writing.
-            virtual ftk::ImageInfo getInfo(
+            TL_API virtual ftk::ImageInfo getInfo(
                 const ftk::ImageInfo&,
                 const Options& = Options()) const = 0;
 
             //! Create a writer for the given path.
-            virtual std::shared_ptr<IWrite> write(
+            TL_API virtual std::shared_ptr<IWrite> write(
                 const ftk::Path&,
                 const Info&,
                 const Options& = Options()) = 0;

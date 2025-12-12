@@ -13,7 +13,7 @@ namespace tl
     namespace timeline
     {
         //! Image sequence audio options.
-        enum class ImageSeqAudio
+        enum class TL_API_TYPE ImageSeqAudio
         {
             None,     //!< No audio
             Ext,      //!< Search for an audio file by extension
@@ -22,10 +22,10 @@ namespace tl
             Count,
             First = None
         };
-        FTK_ENUM(ImageSeqAudio);
+        TL_ENUM(ImageSeqAudio);
 
         //! Timeline options.
-        struct Options
+        struct TL_API_TYPE Options
         {
             //! Image sequence audio.
             ImageSeqAudio imageSeqAudio = ImageSeqAudio::Ext;
@@ -55,8 +55,8 @@ namespace tl
             //! Path options.
             ftk::PathOptions pathOptions;
 
-            bool operator == (const Options&) const;
-            bool operator != (const Options&) const;
+            TL_API bool operator == (const Options&) const;
+            TL_API bool operator != (const Options&) const;
         };
     }
 }

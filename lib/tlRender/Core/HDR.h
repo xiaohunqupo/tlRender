@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <tlRender/Core/Util.h>
+
 #include <ftk/Core/Range.h>
 #include <ftk/Core/Vector.h>
 #include <ftk/Core/Util.h>
@@ -16,7 +18,7 @@ namespace tl
     namespace image
     {
         //! HDR EOTF.
-        enum class HDR_EOTF
+        enum class TL_API_TYPE HDR_EOTF
         {
             SDR,
             HDR,
@@ -25,10 +27,10 @@ namespace tl
             Count,
             First = SDR
         };
-        FTK_ENUM(HDR_EOTF);
+        TL_ENUM(HDR_EOTF);
 
         //! HDR color primaries.
-        enum class HDRPrimaries
+        enum class TL_API_TYPE HDRPrimaries
         {
             Red,
             Green,
@@ -38,10 +40,10 @@ namespace tl
             Count,
             First = Red
         };
-        FTK_ENUM(HDRPrimaries);
+        TL_ENUM(HDRPrimaries);
 
         //! HDR data.
-        struct HDRData
+        struct TL_API_TYPE HDRData
         {
             HDR_EOTF eotf = HDR_EOTF::SDR;
 
@@ -57,16 +59,16 @@ namespace tl
             float maxCLL  = 1000.F;
             float maxFALL = 400.F;
 
-            bool operator == (const HDRData&) const;
-            bool operator != (const HDRData&) const;
+            TL_API bool operator == (const HDRData&) const;
+            TL_API bool operator != (const HDRData&) const;
         };
 
         //! \name Serialize
         ///@{
 
-        void to_json(nlohmann::json&, const HDRData&);
+        TL_API void to_json(nlohmann::json&, const HDRData&);
 
-        void from_json(const nlohmann::json&, HDRData&);
+        TL_API void from_json(const nlohmann::json&, HDRData&);
 
         ///@}
     }

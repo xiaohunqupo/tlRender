@@ -68,9 +68,6 @@ class App(ftk.App):
 
     def run(self):
 
-        # \bug Set the display scale manually.
-        self.displayScale = 2
-
         # Create the settings model.
         self._settingsModel = SettingsModel.Model(self.context)
 

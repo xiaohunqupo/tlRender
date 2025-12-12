@@ -15,17 +15,17 @@ namespace tl
 {
     namespace timelineui
     {
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             InOutDisplay,
             "Inside Range",
             "Outside Range");
 
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             CacheDisplay,
             "Video And Audio",
             "Video Only");
 
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             WaveformPrim,
             "Mesh",
             "Image");

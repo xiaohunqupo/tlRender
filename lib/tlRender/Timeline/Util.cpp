@@ -206,7 +206,7 @@ namespace tl
             return out;
         }
 
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             CacheDir,
             "Forward",
             "Reverse");
@@ -402,7 +402,7 @@ namespace tl
             return out;
         }
 
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             ToMemRef,
             "Shared",
             "Raw");

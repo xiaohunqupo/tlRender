@@ -10,7 +10,7 @@ namespace tl
     namespace timelineui
     {
         //! Timeline widget.
-        class TimelineWidget : public ftk::IWidget
+        class TL_API_TYPE TimelineWidget : public ftk::IWidget
         {
             FTK_NON_COPYABLE(TimelineWidget);
 
@@ -23,74 +23,74 @@ namespace tl
             TimelineWidget();
 
         public:
-            virtual ~TimelineWidget();
+            TL_API virtual ~TimelineWidget();
 
             //! Create a new widget.
-            static std::shared_ptr<TimelineWidget> create(
+            TL_API static std::shared_ptr<TimelineWidget> create(
                 const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
             //! Create a new widget.
-            static std::shared_ptr<TimelineWidget> create(
+            TL_API static std::shared_ptr<TimelineWidget> create(
                 const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<timeline::ITimeUnitsModel>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
             //! Get the time units model.
-            const std::shared_ptr<timeline::ITimeUnitsModel>& getTimeUnitsModel() const;
+            TL_API const std::shared_ptr<timeline::ITimeUnitsModel>& getTimeUnitsModel() const;
 
             //! Get the timeline player.
-            std::shared_ptr<timeline::Player>& getPlayer() const;
+            TL_API std::shared_ptr<timeline::Player>& getPlayer() const;
 
             //! Set the timeline player.
-            void setPlayer(const std::shared_ptr<timeline::Player>&);
+            TL_API void setPlayer(const std::shared_ptr<timeline::Player>&);
 
             //! \name View
             ///@{
 
             //! Set the view zoom.
-            void setViewZoom(double);
+            TL_API void setViewZoom(double);
 
             //! Set the view zoom.
-            void setViewZoom(
+            TL_API void setViewZoom(
                 double,
                 const ftk::V2I& focus);
 
             //! Frame the view.
-            void frameView();
+            TL_API void frameView();
 
             //! Get whether the view is framed automatically.
-            bool hasFrameView() const;
+            TL_API bool hasFrameView() const;
             
             //! Observe whether the view is framed automatically.
-            std::shared_ptr<ftk::IObservable<bool> > observeFrameView() const;
+            TL_API std::shared_ptr<ftk::IObservable<bool> > observeFrameView() const;
 
             //! Set whether the view is framed automatically.
-            void setFrameView(bool);
+            TL_API void setFrameView(bool);
 
             //! Get whether the scroll bars are visible.
-            bool areScrollBarsVisible() const;
+            TL_API bool areScrollBarsVisible() const;
 
             //! Observe whether the scroll bars are visible.
-            std::shared_ptr<ftk::IObservable<bool> > observeScrollBarsVisible() const;
+            TL_API std::shared_ptr<ftk::IObservable<bool> > observeScrollBarsVisible() const;
 
             //! Set whether the scroll bars are visible.
-            void setScrollBarsVisible(bool);
+            TL_API void setScrollBarsVisible(bool);
 
             //! Get whether auto-scroll is enabled.
-            bool hasAutoScroll() const;
+            TL_API bool hasAutoScroll() const;
 
             //! Observe whether auto-scroll is enabled.
-            std::shared_ptr<ftk::IObservable<bool> > observeAutoScroll() const;
+            TL_API std::shared_ptr<ftk::IObservable<bool> > observeAutoScroll() const;
 
             //! Set whether auto-scroll is enabled.
-            void setAutoScroll(bool);
+            TL_API void setAutoScroll(bool);
 
             //! Set the scroll binding.
-            void setScrollBinding(int button, ftk::KeyModifier);
+            TL_API void setScrollBinding(int button, ftk::KeyModifier);
 
             //! Set the mouse wheel scale.
-            void setMouseWheelScale(float);
+            TL_API void setMouseWheelScale(float);
 
             ///@}
 
@@ -98,19 +98,19 @@ namespace tl
             ///@{
 
             //! Get whether to stop playback when scrubbing.
-            bool hasStopOnScrub() const;
+            TL_API bool hasStopOnScrub() const;
 
             //! Observe whether to stop playback when scrubbing.
-            std::shared_ptr<ftk::IObservable<bool> > observeStopOnScrub() const;
+            TL_API std::shared_ptr<ftk::IObservable<bool> > observeStopOnScrub() const;
 
             //! Set whether to stop playback when scrubbing.
-            void setStopOnScrub(bool);
+            TL_API void setStopOnScrub(bool);
 
             //! Observe whether scrubbing is in progress.
-            std::shared_ptr<ftk::IObservable<bool> > observeScrub() const;
+            TL_API std::shared_ptr<ftk::IObservable<bool> > observeScrub() const;
 
             //! Observe time scrubbing.
-            std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > observeTimeScrub() const;
+            TL_API std::shared_ptr<ftk::IObservable<OTIO_NS::RationalTime> > observeTimeScrub() const;
 
             ///@}
 
@@ -118,10 +118,10 @@ namespace tl
             ///@{
 
             //! Get the frame markers.
-            const std::vector<int>& getFrameMarkers() const;
+            TL_API const std::vector<int>& getFrameMarkers() const;
 
             //! Set the frame markers.
-            void setFrameMarkers(const std::vector<int>&);
+            TL_API void setFrameMarkers(const std::vector<int>&);
 
             ///@}
 
@@ -129,42 +129,42 @@ namespace tl
             ///@{
 
             //! Get the item options.
-            const ItemOptions& getItemOptions() const;
+            TL_API const ItemOptions& getItemOptions() const;
 
             //! Observe the item options.
-            std::shared_ptr<ftk::IObservable<ItemOptions> > observeItemOptions() const;
+            TL_API std::shared_ptr<ftk::IObservable<ItemOptions> > observeItemOptions() const;
 
             //! Set the item options.
-            void setItemOptions(const ItemOptions&);
+            TL_API void setItemOptions(const ItemOptions&);
 
             //! Get the display options.
-            const DisplayOptions& getDisplayOptions() const;
+            TL_API const DisplayOptions& getDisplayOptions() const;
 
             //! Observe the display options.
-            std::shared_ptr<ftk::IObservable<DisplayOptions> > observeDisplayOptions() const;
+            TL_API std::shared_ptr<ftk::IObservable<DisplayOptions> > observeDisplayOptions() const;
 
             //! Set the display options.
-            void setDisplayOptions(const DisplayOptions&);
+            TL_API void setDisplayOptions(const DisplayOptions&);
 
             ///@}
 
             //! Get the track geometry.
-            std::vector<ftk::Box2I> getTrackGeom() const;
+            TL_API std::vector<ftk::Box2I> getTrackGeom() const;
 
-            void setGeometry(const ftk::Box2I&) override;
-            void tickEvent(
+            TL_API void setGeometry(const ftk::Box2I&) override;
+            TL_API void tickEvent(
                 bool,
                 bool,
                 const ftk::TickEvent&) override;
-            void sizeHintEvent(const ftk::SizeHintEvent&) override;
-            void mouseEnterEvent(ftk::MouseEnterEvent&) override;
-            void mouseLeaveEvent() override;
-            void mouseMoveEvent(ftk::MouseMoveEvent&) override;
-            void mousePressEvent(ftk::MouseClickEvent&) override;
-            void mouseReleaseEvent(ftk::MouseClickEvent&) override;
-            void scrollEvent(ftk::ScrollEvent&) override;
-            void keyPressEvent(ftk::KeyEvent&) override;
-            void keyReleaseEvent(ftk::KeyEvent&) override;
+            TL_API void sizeHintEvent(const ftk::SizeHintEvent&) override;
+            TL_API void mouseEnterEvent(ftk::MouseEnterEvent&) override;
+            TL_API void mouseLeaveEvent() override;
+            TL_API void mouseMoveEvent(ftk::MouseMoveEvent&) override;
+            TL_API void mousePressEvent(ftk::MouseClickEvent&) override;
+            TL_API void mouseReleaseEvent(ftk::MouseClickEvent&) override;
+            TL_API void scrollEvent(ftk::ScrollEvent&) override;
+            TL_API void keyPressEvent(ftk::KeyEvent&) override;
+            TL_API void keyReleaseEvent(ftk::KeyEvent&) override;
 
         private:
             void _setViewZoom(

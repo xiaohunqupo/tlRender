@@ -200,9 +200,6 @@ if app.exitValue != 0:
 # Create the main window.
 window = MainWindow(context, app)
 
-# \bug Set the display scale manually.
-app.displayScale = 2
-
 app.run()
 
 # Clean up.

@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <tlRender/Core/Util.h>
+
 #include <ftk/Core/Color.h>
 #include <ftk/Core/Size.h>
 #include <ftk/Core/Util.h>
@@ -12,7 +14,7 @@ namespace tl
     namespace timeline
     {
         //! Background type.
-        enum class Background
+        enum class TL_API_TYPE Background
         {
             Solid,
             Checkers,
@@ -21,10 +23,10 @@ namespace tl
             Count,
             First = Solid
         };
-        FTK_ENUM(Background);
+        TL_ENUM(Background);
 
         //! Background options.
-        struct BackgroundOptions
+        struct TL_API_TYPE BackgroundOptions
         {
             Background type = Background::Solid;
 
@@ -43,16 +45,16 @@ namespace tl
                 ftk::Color4F(1.F, 1.F, 1.F)
             };
 
-            bool operator == (const BackgroundOptions&) const;
-            bool operator != (const BackgroundOptions&) const;
+            TL_API bool operator == (const BackgroundOptions&) const;
+            TL_API bool operator != (const BackgroundOptions&) const;
         };
 
         //! \name Serialize
         ///@{
 
-        void to_json(nlohmann::json&, const BackgroundOptions&);
+        TL_API void to_json(nlohmann::json&, const BackgroundOptions&);
 
-        void from_json(const nlohmann::json&, BackgroundOptions&);
+        TL_API void from_json(const nlohmann::json&, BackgroundOptions&);
 
         ///@}
     }

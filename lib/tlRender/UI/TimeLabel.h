@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <tlRender/Core/Export.h>
+
 #include <ftk/UI/IWidget.h>
 
 #include <opentimelineio/version.h>
@@ -17,7 +19,7 @@ namespace tl
     namespace timelineui
     {
         //! Time label.
-        class TimeLabel : public ftk::IWidget
+        class TL_API_TYPE TimeLabel : public ftk::IWidget
         {
             FTK_NON_COPYABLE(TimeLabel);
 
@@ -30,32 +32,32 @@ namespace tl
             TimeLabel();
 
         public:
-            virtual ~TimeLabel();
+            TL_API virtual ~TimeLabel();
 
             //! Create a new widget.
-            static std::shared_ptr<TimeLabel> create(
+            TL_API static std::shared_ptr<TimeLabel> create(
                 const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<timeline::TimeUnitsModel>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
             //! Get the time units model.
-            const std::shared_ptr<timeline::TimeUnitsModel>& getTimeUnitsModel() const;
+            TL_API const std::shared_ptr<timeline::TimeUnitsModel>& getTimeUnitsModel() const;
 
             //! Get the time value.
-            const OTIO_NS::RationalTime& getValue() const;
+            TL_API const OTIO_NS::RationalTime& getValue() const;
 
             //! Set the time value.
-            void setValue(const OTIO_NS::RationalTime&);
+            TL_API void setValue(const OTIO_NS::RationalTime&);
 
             //! Set the margin role.
-            void setMarginRole(ftk::SizeRole);
+            TL_API void setMarginRole(ftk::SizeRole);
 
             //! Set the font role.
-            void setFontRole(ftk::FontRole);
+            TL_API void setFontRole(ftk::FontRole);
 
-            void sizeHintEvent(const ftk::SizeHintEvent&) override;
-            void clipEvent(const ftk::Box2I&, bool) override;
-            void drawEvent(const ftk::Box2I&, const ftk::DrawEvent&) override;
+            TL_API void sizeHintEvent(const ftk::SizeHintEvent&) override;
+            TL_API void clipEvent(const ftk::Box2I&, bool) override;
+            TL_API void drawEvent(const ftk::Box2I&, const ftk::DrawEvent&) override;
 
         private:
             void _textUpdate();

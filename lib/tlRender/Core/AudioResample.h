@@ -10,7 +10,7 @@ namespace tl
     namespace audio
     {
         //! Resample audio data.
-        class AudioResample
+        class TL_API_TYPE AudioResample
         {
             FTK_NON_COPYABLE(AudioResample);
 
@@ -22,24 +22,24 @@ namespace tl
             AudioResample();
 
         public:
-            ~AudioResample();
+            TL_API ~AudioResample();
 
             //! Create a new resampler.
-            static std::shared_ptr<AudioResample> create(
+            TL_API static std::shared_ptr<AudioResample> create(
                 const audio::Info& input,
                 const audio::Info& ouput);
 
             //! Get the input audio information.
-            const audio::Info& getInputInfo() const;
+            TL_API const audio::Info& getInputInfo() const;
 
             //! Get the output audio information.
-            const audio::Info& getOutputInfo() const;
+            TL_API const audio::Info& getOutputInfo() const;
 
             //! Resample audio data.
-            std::shared_ptr<Audio> process(const std::shared_ptr<Audio>&);
+            TL_API std::shared_ptr<Audio> process(const std::shared_ptr<Audio>&);
 
             //! Flush any remaining data.
-            void flush();
+            TL_API void flush();
 
         private:
             FTK_PRIVATE();

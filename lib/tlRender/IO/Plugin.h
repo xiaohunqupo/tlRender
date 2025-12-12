@@ -24,10 +24,10 @@ namespace tl
         typedef std::map<std::string, std::string> Options;
 
         //! Merge options.
-        Options merge(const Options&, const Options&);
+        TL_API Options merge(const Options&, const Options&);
 
         //! Base class for readers and writers.
-        class IIO : public std::enable_shared_from_this<IIO>
+        class TL_API_TYPE IIO : public std::enable_shared_from_this<IIO>
         {
             FTK_NON_COPYABLE(IIO);
 
@@ -40,10 +40,10 @@ namespace tl
             IIO();
 
         public:
-            virtual ~IIO() = 0;
+            TL_API virtual ~IIO() = 0;
 
             //! Get the path.
-            const ftk::Path& getPath() const;
+            TL_API const ftk::Path& getPath() const;
 
         protected:
             ftk::Path _path;
@@ -52,7 +52,7 @@ namespace tl
         };
 
         //! Base class for I/O plugins.
-        class IPlugin : public std::enable_shared_from_this<IPlugin>
+        class TL_API_TYPE IPlugin : public std::enable_shared_from_this<IPlugin>
         {
             FTK_NON_COPYABLE(IPlugin);
 
@@ -65,13 +65,13 @@ namespace tl
             IPlugin();
 
         public:
-            virtual ~IPlugin() = 0;
+            TL_API virtual ~IPlugin() = 0;
 
             //! Get the plugin name.
-            const std::string& getName() const;
+            TL_API const std::string& getName() const;
 
             //! Get the supported file extensions.
-            std::set<std::string> getExts(int types =
+            TL_API std::set<std::string> getExts(int types =
                 static_cast<int>(FileType::Media) |
                 static_cast<int>(FileType::Seq)) const;
 

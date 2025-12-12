@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <tlRender/Core/Export.h>
+
 #include <memory>
 #include <string>
 
@@ -17,6 +19,6 @@ namespace tl
     namespace timelineui
     {
         //! Initialize the library.
-        void init(const std::shared_ptr<ftk::Context>&);
+        TL_API void init(const std::shared_ptr<ftk::Context>&);
     }
 }

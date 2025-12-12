@@ -11,10 +11,10 @@ namespace tl
     namespace timeline
     {
         //! Initialize the library.
-        void init(const std::shared_ptr<ftk::Context>&);
+        TL_API void init(const std::shared_ptr<ftk::Context>&);
 
         //! Timeline system.
-        class System : public system::ISystem
+        class TL_API_TYPE System : public system::ISystem
         {
             FTK_NON_COPYABLE(System);
 
@@ -22,10 +22,10 @@ namespace tl
             System(const std::shared_ptr<ftk::Context>&);
 
         public:
-            virtual ~System();
+            TL_API virtual ~System();
 
             //! Create a new system.
-            static std::shared_ptr<System> create(const std::shared_ptr<ftk::Context>&);
+            TL_API static std::shared_ptr<System> create(const std::shared_ptr<ftk::Context>&);
         };
     }
 }

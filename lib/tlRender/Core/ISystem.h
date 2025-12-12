@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <tlRender/Core/Export.h>
+
 #include <ftk/Core/ISystem.h>
 #include <ftk/Core/LogSystem.h>
 
@@ -11,7 +13,7 @@ namespace tl
     namespace system
     {
         //! Base class for systems.
-        class ISystem : public ftk::ISystem
+        class TL_API_TYPE ISystem : public ftk::ISystem
         {
         protected:
             ISystem(
@@ -19,7 +21,7 @@ namespace tl
                 const std::string& name);
 
         public:
-            virtual ~ISystem();
+            TL_API virtual ~ISystem();
 
         protected:
             void _log(const std::string&, ftk::LogType = ftk::LogType::Message);

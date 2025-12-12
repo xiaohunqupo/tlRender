@@ -12,7 +12,7 @@ namespace tl
     namespace timelineui
     {
         //! Gap item.
-        class GapItem : public IBasicItem
+        class TL_API_TYPE GapItem : public IBasicItem
         {
         protected:
             void _init(
@@ -28,10 +28,10 @@ namespace tl
             GapItem();
 
         public:
-            virtual ~GapItem();
+            TL_API virtual ~GapItem();
 
             //! Create a new item.
-            static std::shared_ptr<GapItem> create(
+            TL_API static std::shared_ptr<GapItem> create(
                 const std::shared_ptr<ftk::Context>&,
                 ftk::ColorRole,
                 const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Gap>&,

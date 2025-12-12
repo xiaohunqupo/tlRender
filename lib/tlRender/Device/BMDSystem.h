@@ -22,16 +22,16 @@ namespace tl
             System(const std::shared_ptr<ftk::Context>&);
 
         public:
-            ~System() override;
+            TL_API ~System() override;
 
             //! Create a new system.
-            static std::shared_ptr<System> create(const std::shared_ptr<ftk::Context>&);
+            TL_API static std::shared_ptr<System> create(const std::shared_ptr<ftk::Context>&);
 
             //! Observe the device information.
-            std::shared_ptr<ftk::IObservableList<DeviceInfo> > observeDeviceInfo() const;
+            TL_API std::shared_ptr<ftk::IObservableList<DeviceInfo> > observeDeviceInfo() const;
 
-            void tick() override;
-            std::chrono::milliseconds getTickTime() const override;
+            TL_API void tick() override;
+            TL_API std::chrono::milliseconds getTickTime() const override;
 
         private:
             FTK_PRIVATE();

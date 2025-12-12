@@ -12,7 +12,7 @@ namespace tl
     namespace timeline
     {
         //! Comparison modes.
-        enum class Compare
+        enum class TL_API_TYPE Compare
         {
             A,
             B,
@@ -26,10 +26,10 @@ namespace tl
             Count,
             First = A
         };
-        FTK_ENUM(Compare);
+        TL_ENUM(Compare);
 
         //! Comparison time modes.
-        enum class CompareTime
+        enum class TL_API_TYPE CompareTime
         {
             Relative,
             Absolute,
@@ -37,34 +37,34 @@ namespace tl
             Count,
             First = Relative
         };
-        FTK_ENUM(CompareTime);
+        TL_ENUM(CompareTime);
 
         //! Comparison options.
-        struct CompareOptions
+        struct TL_API_TYPE CompareOptions
         {
             Compare  compare      = Compare::A;
             ftk::V2F wipeCenter   = ftk::V2F(.5F, .5F);
             float    wipeRotation = 0.F;
             float    overlay      = .5F;
 
-            bool operator == (const CompareOptions&) const;
-            bool operator != (const CompareOptions&) const;
+            TL_API bool operator == (const CompareOptions&) const;
+            TL_API bool operator != (const CompareOptions&) const;
         };
 
         //! Get the boxes for the given compare mode.
-        std::vector<ftk::Box2I> getBoxes(Compare, const std::vector<ftk::ImageInfo>&);
+        TL_API std::vector<ftk::Box2I> getBoxes(Compare, const std::vector<ftk::ImageInfo>&);
 
         //! Get the boxes for the given compare mode.
-        std::vector<ftk::Box2I> getBoxes(Compare, const std::vector<VideoData>&);
+        TL_API std::vector<ftk::Box2I> getBoxes(Compare, const std::vector<VideoData>&);
 
         //! Get the render size for the given compare mode.
-        ftk::Size2I getRenderSize(Compare, const std::vector<ftk::ImageInfo>&);
+        TL_API ftk::Size2I getRenderSize(Compare, const std::vector<ftk::ImageInfo>&);
 
         //! Get the render size for the given compare mode.
-        ftk::Size2I getRenderSize(Compare, const std::vector<VideoData>&);
+        TL_API ftk::Size2I getRenderSize(Compare, const std::vector<VideoData>&);
 
         //! Get a compare time.
-        OTIO_NS::RationalTime getCompareTime(
+        TL_API OTIO_NS::RationalTime getCompareTime(
             const OTIO_NS::RationalTime& sourceTime,
             const OTIO_NS::TimeRange& sourceTimeRange,
             const OTIO_NS::TimeRange& compareTimeRange,
@@ -73,9 +73,9 @@ namespace tl
         //! \name Serialize
         ///@{
 
-        void to_json(nlohmann::json&, const CompareOptions&);
+        TL_API void to_json(nlohmann::json&, const CompareOptions&);
 
-        void from_json(const nlohmann::json&, CompareOptions&);
+        TL_API void from_json(const nlohmann::json&, CompareOptions&);
 
         ///@}
     }

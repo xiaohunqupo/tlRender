@@ -10,17 +10,17 @@ namespace tl
     namespace wmf
     {
         //! WMF options.
-        struct Options
+        struct TL_API_TYPE Options
         {
-            bool operator == (const Options&) const;
-            bool operator != (const Options&) const;
+            TL_API bool operator == (const Options&) const;
+            TL_API bool operator != (const Options&) const;
         };
 
         //! Get WMF options.
-        io::Options getOptions(const Options&);
+        TL_API io::Options getOptions(const Options&);
 
         //! WMF reader
-        class Read : public io::IRead
+        class TL_API_TYPE Read : public io::IRead
         {
         protected:
             void _init(
@@ -32,29 +32,29 @@ namespace tl
             Read();
 
         public:
-            virtual ~Read();
+            TL_API virtual ~Read();
 
             //! Create a new reader.
-            static std::shared_ptr<Read> create(
+            TL_API static std::shared_ptr<Read> create(
                 const ftk::Path&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
             //! Create a new reader.
-            static std::shared_ptr<Read> create(
+            TL_API static std::shared_ptr<Read> create(
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
                 const io::Options&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
-            std::future<io::Info> getInfo() override;
-            std::future<io::VideoData> readVideo(
+            TL_API std::future<io::Info> getInfo() override;
+            TL_API std::future<io::VideoData> readVideo(
                 const OTIO_NS::RationalTime&,
                 const io::Options& = io::Options()) override;
-            std::future<io::AudioData> readAudio(
+            TL_API std::future<io::AudioData> readAudio(
                 const OTIO_NS::TimeRange&,
                 const io::Options& = io::Options()) override;
-            void cancelRequests() override;
+            TL_API void cancelRequests() override;
 
         private:
             void _thread(const ftk::Path&);
@@ -63,7 +63,7 @@ namespace tl
         };
 
         //! WMF read plugin.
-        class ReadPlugin : public io::IReadPlugin
+        class TL_API_TYPE ReadPlugin : public io::IReadPlugin
         {
         protected:
             void _init(const std::shared_ptr<ftk::LogSystem>&);
@@ -72,13 +72,13 @@ namespace tl
 
         public:
             //! Create a new plugin.
-            static std::shared_ptr<ReadPlugin> create(
+            TL_API static std::shared_ptr<ReadPlugin> create(
                 const std::shared_ptr<ftk::LogSystem>&);
 
-            std::shared_ptr<io::IRead> read(
+            TL_API std::shared_ptr<io::IRead> read(
                 const ftk::Path&,
                 const io::Options& = io::Options()) override;
-            std::shared_ptr<io::IRead> read(
+            TL_API std::shared_ptr<io::IRead> read(
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
                 const io::Options& = io::Options()) override;
@@ -90,9 +90,9 @@ namespace tl
         //! \name Serialize
         ///@{
 
-        void to_json(nlohmann::json&, const Options&);
+        TL_API void to_json(nlohmann::json&, const Options&);
 
-        void from_json(const nlohmann::json&, Options&);
+        TL_API void from_json(const nlohmann::json&, Options&);
 
         ///@}
     }

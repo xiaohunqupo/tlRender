@@ -12,7 +12,7 @@ namespace tl
     namespace timelineui
     {
         //! Transition item.
-        class TransitionItem : public IItem
+        class TL_API_TYPE TransitionItem : public IItem
         {
         protected:
             void _init(
@@ -27,10 +27,10 @@ namespace tl
             TransitionItem();
 
         public:
-            virtual ~TransitionItem();
+            TL_API virtual ~TransitionItem();
 
             //! Create a new item.
-            static std::shared_ptr<TransitionItem> create(
+            TL_API static std::shared_ptr<TransitionItem> create(
                 const std::shared_ptr<ftk::Context>&,
                 const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Transition>&,
                 double scale,

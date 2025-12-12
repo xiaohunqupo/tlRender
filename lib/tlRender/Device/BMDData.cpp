@@ -22,7 +22,7 @@ namespace tl
                 frameRate == other.frameRate;
         }
 
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             PixelType,
             "None",
             "8BitBGRA",
@@ -81,7 +81,7 @@ namespace tl
             return !(*this == other);
         }
         
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             Option,
             "None",
             "444SDIVideoOutput");
@@ -100,7 +100,7 @@ namespace tl
             return !(*this == other);
         }
 
-        FTK_ENUM_IMPL(
+        TL_ENUM_IMPL(
             HDRMode,
             "None",
             "FromFile",

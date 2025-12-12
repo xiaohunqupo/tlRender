@@ -3,6 +3,7 @@ set(HEADERS
     AudioInline.h
     AudioResample.h
     AudioSystem.h
+    Export.h
     FileLogSystem.h
     HDR.h
     HDRInline.h
@@ -43,6 +44,11 @@ add_library(tlCore ${HEADERS} ${SOURCE})
 target_link_libraries(tlCore PUBLIC ${LIBRARIES} PRIVATE ${LIBRARIES_PRIVATE})
 set_target_properties(tlCore PROPERTIES FOLDER lib)
 set_target_properties(tlCore PROPERTIES PUBLIC_HEADER "${HEADERS}")
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(tlCore PUBLIC TL_EXPORTS)
+else()
+    target_compile_definitions(tlCore PUBLIC TL_STATIC)
+endif()
 
 install(
     TARGETS tlCore
