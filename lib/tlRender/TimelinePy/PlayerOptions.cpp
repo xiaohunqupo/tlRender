@@ -22,18 +22,6 @@ namespace tl
                 .def_readwrite("videoGB", &timeline::PlayerCacheOptions::videoGB)
                 .def_readwrite("audioGB", &timeline::PlayerCacheOptions::audioGB)
                 .def_readwrite("readBehind", &timeline::PlayerCacheOptions::readBehind)
-                .def("to_json",
-                    [](timeline::PlayerCacheOptions& self)
-                    {
-                        nlohmann::json json;
-                        to_json(json, self);
-                        return json.dump();
-                    })
-                .def("from_json",
-                    [](timeline::PlayerCacheOptions& self, const std::string& value)
-                    {
-                        from_json(nlohmann::json().parse(value), self);
-                    })
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
@@ -49,6 +37,19 @@ namespace tl
                 .def_readwrite("currentTime", &timeline::PlayerOptions::currentTime)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
+
+            m.def("to_json",
+                [](const timeline::PlayerCacheOptions& value)
+                {
+                    nlohmann::json json;
+                    to_json(json, value);
+                    return json.dump();
+                });
+            m.def("from_json",
+                [](const std::string& value, timeline::PlayerCacheOptions& out)
+                {
+                    from_json(nlohmann::json().parse(value), out);
+                });
         }
     }
 }

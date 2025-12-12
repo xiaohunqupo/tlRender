@@ -25,7 +25,7 @@ class Model(ftk.Settings):
         fileBrowserSystem = context.getSystemByName("ftk::FileBrowserSystem")
         settings = self.getJSON("/FileBrowser")
         if settings[0]:
-            fileBrowserSystem.model.options.from_json(settings[1])
+            ftk.from_json(settings[1], fileBrowserSystem.model.options)
         settings = self.getBool("/NativeFileDialog")
         if settings[0]:
             fileBrowserSystem.nativeFileDialog = settings[1]
@@ -34,18 +34,18 @@ class Model(ftk.Settings):
         cacheOptions = tl.timeline.PlayerCacheOptions()
         settings = self.getJSON("/Cache")
         if settings[0]:
-            cacheOptions.from_json(settings[1])
+            tl.timeline.from_json(settings[1], cacheOptions)
         self._cache = tl.timeline.ObservablePlayerCacheOptions(cacheOptions)
 
     def __del__(self):
     
         # Save file browse settings.
         fileBrowserSystem = self._contextWeak().getSystemByName("ftk::FileBrowserSystem")
-        self.setJSON("/FileBrowser", fileBrowserSystem.model.options.to_json())
+        self.setJSON("/FileBrowser", ftk.to_json(fileBrowserSystem.model.options))
         self.setBool("/NativeFileDialog", fileBrowserSystem.nativeFileDialog)
         
         # Save timeline player cache settings.
-        self.setJSON("/Cache", self._cache.get().to_json())
+        self.setJSON("/Cache", tl.timeline.to_json(self._cache.get()))
 
     def observeCache(self):
         """
