@@ -11,7 +11,8 @@ set(HEADERS
     Init.h
     Time.h
     TimeInline.h
-    URL.h)
+    URL.h
+    Util.h)
 
 set(SOURCE
     Audio.cpp
