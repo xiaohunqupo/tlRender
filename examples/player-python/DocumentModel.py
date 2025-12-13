@@ -58,13 +58,6 @@ class Model:
         Observe the current timeline player.
         """
         return self._player
-
-    def tick(self):
-        """
-        Tick the model.
-        """
-        if self._player.get():
-            self._player.get().tick()
     
     def _cacheUpdate(self, value):
         if self._player.get():

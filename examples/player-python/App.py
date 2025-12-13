@@ -62,10 +62,6 @@ class App(ftk.App):
         """
         return self._documentModel
 
-    def tick(self):
-        super().tick()
-        self._documentModel.tick()
-
     def run(self):
 
         # Create the settings model.

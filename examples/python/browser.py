@@ -134,11 +134,6 @@ class MainWindow(ftk.MainWindow):
             self._fileBrowserModel.observePath,
             lambda path: selfWeak()._pathUpdate(path))
 
-    def tickEvent(self, parentsVisible, parentsEnabled, event):
-        super().tickEvent(parentsVisible, parentsEnabled, event)
-        if self._player:
-            self._player.tick()
-
     def _selectCallback(self, path):
         
         self._player = None

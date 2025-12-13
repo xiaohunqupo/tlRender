@@ -13,19 +13,10 @@ import os
 class MainWindow(ftk.MainWindow):
     def __init__(self, context):
         ftk.MainWindow.__init__(self, context, app, ftk.Size2I(1280, 960))
-        
-        self._players = []
 
         # Create the MDI canvas.
         self._mdiCanvas = ftk.MDICanvas(context)
         self.widget = self._mdiCanvas
-
-    def tickEvent(self, parentsVisible, parentsEnabled, event):
-        super().tickEvent(parentsVisible, parentsEnabled, event)
-        
-        # Tick the timeline players.
-        for player in self._players:
-            player.tick()
 
     def dropEvent(self, event):
         event.accept = True
@@ -35,11 +26,22 @@ class MainWindow(ftk.MainWindow):
                 # \todo Add exception handling.
                 timeline = tl.timeline.Timeline(self.context, text)
                 player = tl.timeline.Player(self.context, timeline)
-                self._players.append(player)
 
-                timelineWidget = tl.ui.TimelineWidget(self.context)
+                splitter = ftk.Splitter(context, ftk.Orientation.Vertical)
+
+                viewport = tl.ui.Viewport(self.context, splitter)
+                viewport.player = player
+
+                timelineWidget = tl.ui.TimelineWidget(self.context, splitter)
+                timelineDisplayOptions = tl.ui.DisplayOptions()
+                timelineDisplayOptions.minimize = False
+                timelineDisplayOptions.thumbnailHeight = 300
+                timelineDisplayOptions.waveformHeight = 150
+                timelineWidget.displayOptions = timelineDisplayOptions
+                timelineWidget.vStretch = ftk.Stretch.Expanding
                 timelineWidget.player = player
-                self._mdiCanvas.addWidget(text, event.pos, timelineWidget)
+                
+                self._mdiCanvas.addWidget(text, event.pos, splitter)
 
 # Create the application.
 context = ftk.Context()

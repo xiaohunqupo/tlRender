@@ -20,41 +20,6 @@ import tlRenderPy as tl
 
 import os
 
-class MainWindow(ftk.MainWindow):
-    def __init__(self, context, path):
-        ftk.MainWindow.__init__(self, context, app, ftk.Size2I(1280, 960))
-
-        # Create the timeline and timeline player.
-        #
-        # \todo Add exception handling.
-        timeline = tl.timeline.Timeline(context, path)
-        self._player = tl.timeline.Player(context, timeline)
-
-        # Create the timeline widget.
-        self._timelineWidget = tl.ui.TimelineWidget(context)
-        self._timelineWidget.backgroundColor = ftk.ColorRole.Red
-        self._timelineWidget.vStretch = ftk.Stretch.Expanding
-        
-        # Set timeline widget options.
-        timelineDisplayOptions = tl.ui.DisplayOptions()
-        timelineDisplayOptions.minimize = False
-        timelineDisplayOptions.thumbnailHeight = 600
-        timelineDisplayOptions.waveformHeight = 300
-        self._timelineWidget.displayOptions = timelineDisplayOptions
-        
-        # Set the timeline player.
-        self._timelineWidget.player = self._player
-        
-        # Set the timeline widget as the central widget in the window.
-        self.widget = self._timelineWidget
-
-    def tickEvent(self, parentsVisible, parentsEnabled, event):
-        super().tickEvent(parentsVisible, parentsEnabled, event)
-        
-        # Tick the timeline player.
-        if self._player:
-            self._player.tick()
-
 # Create the application.
 context = ftk.Context()
 tl.ui.init(context)
@@ -63,8 +28,28 @@ app = ftk.App(context, sys.argv, "timeline", "Python timeline example.", [ cmdLi
 if app.exitValue != 0:
     sys.exit(app.exitValue)
 
+# Create the timeline and timeline player.
+#
+# \todo Add exception handling.
+timeline = tl.timeline.Timeline(context, ftk.Path(cmdLineInput.value))
+player = tl.timeline.Player(context, timeline)
+
+# Create the timeline widget.
+timelineWidget = tl.ui.TimelineWidget(context)
+timelineWidget.backgroundColor = ftk.ColorRole.Red
+timelineWidget.vStretch = ftk.Stretch.Expanding
+timelineWidget.player = player
+
+# Set timeline widget options.
+timelineDisplayOptions = tl.ui.DisplayOptions()
+timelineDisplayOptions.minimize = False
+timelineDisplayOptions.thumbnailHeight = 600
+timelineDisplayOptions.waveformHeight = 300
+timelineWidget.displayOptions = timelineDisplayOptions
+
 # Create the main window.
-window = MainWindow(context, ftk.Path(cmdLineInput.value))
+window = ftk.MainWindow(context, app)
+window.widget = timelineWidget
 
 # Run the application.
 app.run()
