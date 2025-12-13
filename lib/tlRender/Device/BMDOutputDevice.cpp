@@ -3,6 +3,7 @@
 
 #include <tlRender/Device/BMDOutputPrivate.h>
 
+#include <tlRender/Device/BMDSystem.h>
 #include <tlRender/Device/BMDUtil.h>
 
 #include <tlRender/GL/Render.h>
@@ -133,6 +134,11 @@ namespace tl
         void OutputDevice::_init(const std::shared_ptr<ftk::Context>& context)
         {
             FTK_P();
+
+            if (auto system = context->getSystem<System>())
+            {
+                system->_addDevice(shared_from_this());
+            }
 
             p.logSystem = context->getLogSystem();
             p.config = ftk::Observable<DeviceConfig>::create();
@@ -548,7 +554,7 @@ namespace tl
             }
         }
 
-        void OutputDevice::tick()
+        void OutputDevice::_tick()
         {
             FTK_P();
             bool active = false;

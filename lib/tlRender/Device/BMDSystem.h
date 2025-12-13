@@ -13,6 +13,8 @@ namespace tl
 {
     namespace bmd
     {
+        class OutputDevice;
+
         //! BMD system.
         class System : public system::ISystem
         {
@@ -34,6 +36,10 @@ namespace tl
             TL_API std::chrono::milliseconds getTickTime() const override;
 
         private:
+            void _addDevice(const std::shared_ptr<OutputDevice>&);
+
+            friend class OutputDevice;
+
             FTK_PRIVATE();
         };
     }

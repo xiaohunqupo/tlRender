@@ -737,7 +737,7 @@ namespace tl
             p.mutex.clearCache = true;
         }
 
-        void Player::tick()
+        void Player::_tick()
         {
             FTK_P();
 

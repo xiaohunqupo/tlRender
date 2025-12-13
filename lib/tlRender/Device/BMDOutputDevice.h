@@ -12,6 +12,8 @@ namespace tl
 {
     namespace bmd
     {
+        class System;
+
         //! Frame rate.
         struct TL_API_TYPE FrameRate
         {
@@ -128,10 +130,8 @@ namespace tl
             //! Set the timeline player.
             TL_API void setPlayer(const std::shared_ptr<timeline::Player>&);
 
-            //! Tick the output device.
-            TL_API void tick();
-
         private:
+            void _tick();
             void _run();
             void _createDevice(
                 const DeviceConfig&,
@@ -149,6 +149,8 @@ namespace tl
                 const timeline::BackgroundOptions&,
                 const timeline::ForegroundOptions&);
             void _read();
+
+            friend class System;
 
             FTK_PRIVATE();
         };

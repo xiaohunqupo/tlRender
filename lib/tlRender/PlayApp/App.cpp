@@ -117,17 +117,6 @@ namespace tl
             }
         }
 
-        void App::tick()
-        {
-            ftk::App::tick();
-#if defined(TLRENDER_BMD)
-            if (_bmdOutputDevice)
-            {
-                _bmdOutputDevice->tick();
-            }
-#endif // TLRENDER_BMD
-        }
-
         void App::run()
         {
             // Create the settings model.

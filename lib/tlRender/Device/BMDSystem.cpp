@@ -29,7 +29,6 @@ namespace tl
     {
         struct System::Private
         {
-            std::weak_ptr<ftk::Context> context;
             std::shared_ptr<ftk::ObservableList<DeviceInfo> > deviceInfo;
             struct Mutex
             {
@@ -39,6 +38,8 @@ namespace tl
             Mutex mutex;
             std::thread thread;
             std::atomic<bool> running;
+
+            std::vector<std::weak_ptr<OutputDevice> > devices;
         };
 
         System::System(const std::shared_ptr<ftk::Context>& context) :
@@ -46,8 +47,6 @@ namespace tl
             _p(new Private)
         {
             FTK_P();
-
-            p.context = context;
 
             p.deviceInfo = ftk::ObservableList<DeviceInfo>::create();
 
@@ -75,7 +74,6 @@ namespace tl
                             while (dlIterator->Next(&dl) == S_OK)
                             {
                                 DeviceInfo deviceInfo;
-
 #if defined(__APPLE__)
                                 CFStringRef dlstring;
                                 dl->GetModelName(&dlstring);
@@ -205,7 +203,7 @@ namespace tl
                         }
 
                         const auto t1 = std::chrono::steady_clock::now();
-                        ftk::sleep(getTickTime(), t0, t1);
+                        ftk::sleep(std::chrono::milliseconds(1000), t0, t1);
                     }
 
 #if defined(_WINDOWS)
@@ -243,17 +241,48 @@ namespace tl
         void System::tick()
         {
             FTK_P();
+
+            // Update the device information.
             std::vector<DeviceInfo> deviceInfo;
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 deviceInfo = p.mutex.deviceInfo;
             }
             p.deviceInfo->setIfChanged(deviceInfo);
+
+            // Delete the expired devices.
+            auto devices = p.devices;
+            auto i = devices.begin();
+            while (i != devices.end())
+            {
+                if (i->expired())
+                {
+                    i = devices.erase(i);
+                }
+                else
+                {
+                    ++i;
+                }
+            }
+
+            // Tick the active devices.
+            for (i = devices.begin(); i != devices.end(); ++i)
+            {
+                if (auto device = i->lock())
+                {
+                    device->_tick();
+                }
+            }
         }
 
         std::chrono::milliseconds System::getTickTime() const
         {
-            return std::chrono::milliseconds(1000);
+            return std::chrono::milliseconds(1);
+        }
+
+        void System::_addDevice(const std::shared_ptr<OutputDevice>& device)
+        {
+            _p->devices.push_back(device);
         }
     }
 }

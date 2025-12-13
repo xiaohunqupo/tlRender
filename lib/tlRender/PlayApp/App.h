@@ -50,8 +50,6 @@ namespace tl
             void open();
             void reload();
 
-            void tick() override;
-
             void run() override;
 
         private:

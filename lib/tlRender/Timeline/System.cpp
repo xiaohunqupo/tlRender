@@ -61,7 +61,7 @@ namespace tl
             {
                 if (auto player = i->lock())
                 {
-                    player->tick();
+                    player->_tick();
                 }
             }
         }

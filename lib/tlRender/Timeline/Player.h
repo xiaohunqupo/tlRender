@@ -13,6 +13,8 @@ namespace tl
 {
     namespace timeline
     {
+        class System;
+
         //! Timeline player cache information.
         struct TL_API_TYPE PlayerCacheInfo
         {
@@ -379,11 +381,11 @@ namespace tl
 
             ///@}
 
-            //! Tick the timeline player.
-            TL_API void tick();
-
         private:
+            void _tick();
             void _thread();
+
+            friend class System;
 
             FTK_PRIVATE();
         };
