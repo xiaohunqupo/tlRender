@@ -7,8 +7,6 @@
 
 #include <ftk/Core/Math.h>
 
-#include <QTimer>
-
 #include <atomic>
 #include <thread>
 
@@ -24,7 +22,6 @@ namespace tl
         struct PlayerObject::Private
         {
             std::shared_ptr<timeline::Player> player;
-            std::unique_ptr<QTimer> timer;
 
             std::shared_ptr<ftk::Observer<double> > speedObserver;
             std::shared_ptr<ftk::Observer<timeline::Playback> > playbackObserver;
@@ -188,11 +185,6 @@ namespace tl
                 {
                     Q_EMIT cacheInfoChanged(value);
                 });
-
-            p.timer.reset(new QTimer);
-            p.timer->setTimerType(Qt::PreciseTimer);
-            connect(p.timer.get(), &QTimer::timeout, this, &PlayerObject::_timerCallback);
-            p.timer->start(timeout);
         }
 
         PlayerObject::PlayerObject(
@@ -504,14 +496,6 @@ namespace tl
         void PlayerObject::setCacheOptions(const timeline::PlayerCacheOptions& value)
         {
             _p->player->setCacheOptions(value);
-        }
-
-        void PlayerObject::_timerCallback()
-        {
-            if (_p && _p->player)
-            {
-                _p->player->tick();
-            }
         }
     }
 }

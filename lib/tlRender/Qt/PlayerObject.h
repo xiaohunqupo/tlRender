@@ -481,8 +481,6 @@ namespace tl
             ///@}
 
         private:
-            void _timerCallback();
-
             FTK_PRIVATE();
         };
     }

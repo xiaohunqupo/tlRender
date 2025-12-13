@@ -52,8 +52,6 @@ namespace tl
             std::shared_ptr<ftk::IObservable<int> > observeBPlayerIndex() const;
             std::shared_ptr<ftk::IObservable<timeline::Compare> > observeCompare() const;
 
-            void tick();
-
         private:
             std::weak_ptr<ftk::Context> _context;
             std::shared_ptr<ftk::ObservableList<std::shared_ptr<timeline::Player> > > _players;

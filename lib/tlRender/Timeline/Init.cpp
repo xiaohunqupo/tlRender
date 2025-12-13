@@ -4,6 +4,7 @@
 #include <tlRender/Timeline/Init.h>
 
 #include <tlRender/Timeline/MemRef.h>
+#include <tlRender/Timeline/System.h>
 
 #include <tlRender/IO/Init.h>
 
@@ -19,12 +20,7 @@ namespace tl
         void init(const std::shared_ptr<ftk::Context>& context)
         {
             io::init(context);
-            System::create(context);
-        }
 
-        System::System(const std::shared_ptr<ftk::Context>& context) :
-            ISystem(context, "tl::timeline::System")
-        {
             const std::vector<std::pair<std::string, bool> > registerTypes
             {
                 {
@@ -52,26 +48,17 @@ namespace tl
                     OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::SeqZipMemRef>()
                 }
             };
+            auto logSystem = context->getLogSystem();
             for (const auto& t : registerTypes)
             {
-                _log(ftk::Format("Register type {0}: {1}").
+                logSystem->print(
+                    "tl::timeline::init",
+                    ftk::Format("Register type {0}: {1}").
                     arg(t.first).
                     arg(t.second));
             }
-        }
 
-        System::~System()
-        {}
-
-        std::shared_ptr<System> System::create(const std::shared_ptr<ftk::Context>& context)
-        {
-            auto out = context->getSystem<System>();
-            if (!out)
-            {
-                out = std::shared_ptr<System>(new System(context));
-                context->addSystem(out);
-            }
-            return out;
+            System::create(context);
         }
     }
 }

@@ -365,7 +365,6 @@ namespace tl
                     std::chrono::duration<float> diff;
                     do
                     {
-                        player->tick();
                         ftk::sleep(std::chrono::milliseconds(10));
                         const auto t2 = std::chrono::steady_clock::now();
                         diff = t2 - t;
@@ -375,7 +374,6 @@ namespace tl
                     t = std::chrono::steady_clock::now();
                     do
                     {
-                        player->tick();
                         ftk::sleep(std::chrono::milliseconds(10));
                         const auto t2 = std::chrono::steady_clock::now();
                         diff = t2 - t;
@@ -386,7 +384,6 @@ namespace tl
                     t = std::chrono::steady_clock::now();
                     do
                     {
-                        player->tick();
                         ftk::sleep(std::chrono::milliseconds(10));
                         const auto t2 = std::chrono::steady_clock::now();
                         diff = t2 - t;
@@ -397,7 +394,6 @@ namespace tl
                     t = std::chrono::steady_clock::now();
                     do
                     {
-                        player->tick();
                         ftk::sleep(std::chrono::milliseconds(10));
                         const auto t2 = std::chrono::steady_clock::now();
                         diff = t2 - t;

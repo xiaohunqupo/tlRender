@@ -3,6 +3,7 @@
 
 #include <tlRender/Timeline/PlayerPrivate.h>
 
+#include <tlRender/Timeline/System.h>
 #include <tlRender/Timeline/Util.h>
 
 #include <ftk/Core/Context.h>
@@ -61,6 +62,11 @@ namespace tl
             const PlayerOptions& playerOptions)
         {
             FTK_P();
+
+            if (auto system = context->getSystem<System>())
+            {
+                system->_addPlayer(shared_from_this());
+            }
 
             auto logSystem = context->getLogSystem();
             {

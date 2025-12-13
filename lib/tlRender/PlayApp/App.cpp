@@ -120,7 +120,6 @@ namespace tl
         void App::tick()
         {
             ftk::App::tick();
-            _filesModel->tick();
 #if defined(TLRENDER_BMD)
             if (_bmdOutputDevice)
             {

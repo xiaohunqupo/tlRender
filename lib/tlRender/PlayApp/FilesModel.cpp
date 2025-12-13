@@ -238,14 +238,6 @@ namespace tl
         {
             return _compare;
         }
-
-        void FilesModel::tick()
-        {
-            for (const auto& player : _players->get())
-            {
-                player->tick();
-            }
-        }
     }
 }
 

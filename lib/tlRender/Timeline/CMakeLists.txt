@@ -11,6 +11,7 @@ set(HEADERS
     Player.h
     PlayerOptions.h
     RenderUtil.h
+    System.h
     TimeUnits.h
     Timeline.h
     TimelineOptions.h
@@ -37,6 +38,7 @@ set(SOURCE
     PlayerOptions.cpp
     PlayerPrivate.cpp
     RenderUtil.cpp
+    System.cpp
     TimeUnits.cpp
     Timeline.cpp
     TimelineCreate.cpp
