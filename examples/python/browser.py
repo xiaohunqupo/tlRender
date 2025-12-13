@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright Contributors to the feather-tk project.
 
+# This example combines a file browser with a timeline viewport and widget.
+
 import sys
 import opentimelineio as otio
 import ftkPy as ftk
@@ -152,10 +154,8 @@ class MainWindow(ftk.MainWindow):
             # Create the timeline and player.
             #
             # \todo Add exception handling.
-            timelineOptions = tl.timeline.Options()
-            timeline = tl.timeline.Timeline(self.context, path, timelineOptions)
-            playerOptions = tl.timeline.PlayerOptions()
-            self._player = tl.timeline.Player(self.context, timeline, playerOptions)
+            timeline = tl.timeline.Timeline(self.context, path)
+            self._player = tl.timeline.Player(self.context, timeline)
             self._viewport.player = self._player
             self._timelineWidget.player = self._player
 

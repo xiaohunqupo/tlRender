@@ -113,12 +113,12 @@ namespace tl
         TL_API ftk::Color4F getMarkerColor(const std::string&);
 
         //! Drag and drop data.
-        class TL_API_TYPE DragAndDropData : public ftk::DragAndDropData
+        class TL_API_TYPE DragDropData : public ftk::IDragDropData
         {
         public:
-            TL_API DragAndDropData(const std::shared_ptr<IItem>&);
+            TL_API DragDropData(const std::shared_ptr<IItem>&);
 
-            TL_API virtual ~DragAndDropData();
+            TL_API virtual ~DragDropData();
 
             TL_API const std::shared_ptr<IItem>& getItem() const;
 

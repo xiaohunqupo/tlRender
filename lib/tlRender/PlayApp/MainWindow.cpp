@@ -209,13 +209,17 @@ namespace tl
             event.accept = true;
         }
 
-        void MainWindow::_drop(const std::vector<std::string>& value)
+        void MainWindow::dropEvent(ftk::DragDropEvent& event)
         {
-            if (auto app = _app.lock())
+            event.accept = true;
+            if (auto textData = std::dynamic_pointer_cast<ftk::DragDropTextData>(event.data))
             {
-                for (const auto& fileName : value)
+                if (auto app = _app.lock())
                 {
-                    app->open(ftk::Path(fileName));
+                    for (const auto& fileName : textData->getText())
+                    {
+                        app->open(ftk::Path(fileName));
+                    }
                 }
             }
         }

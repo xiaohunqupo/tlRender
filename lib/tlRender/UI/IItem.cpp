@@ -112,15 +112,15 @@ namespace tl
             return i != colors.end() ? i->second : ftk::Color4F();
         }
 
-        DragAndDropData::DragAndDropData(
+        DragDropData::DragDropData(
             const std::shared_ptr<IItem>& item) :
             _item(item)
         {}
 
-        DragAndDropData::~DragAndDropData()
+        DragDropData::~DragDropData()
         {}
 
-        const std::shared_ptr<IItem>& DragAndDropData::getItem() const
+        const std::shared_ptr<IItem>& DragDropData::getItem() const
         {
             return _item;
         }

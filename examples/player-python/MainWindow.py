@@ -128,6 +128,12 @@ class MainWindow(ftk.MainWindow):
         if self._settingsVisible.setIfChanged(value):
             self._settingsWidget.setVisible(value)
 
+    def dropEvent(self, event):
+        event.accept = True
+        if isinstance(event.data, ftk.DragDropTextData):
+            if event.data.text:
+                self.app.getDocumentModel().open(event.data.text[0])
+
     def _widgetUpdate(self, player):
         self._viewport.player = player
         self._timelineWidget.player = player

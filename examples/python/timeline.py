@@ -1,16 +1,17 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright Contributors to the feather-tk project.
 
-# This example creates a simple application that displays a timeline.
+# This example displays a timeline.
 #
 # The timeline can be specified on the command line like:
-# * python simple.py timeline.otio
-# * python simple.py timeline.otioz
-# * python simple.py render.mov
-# * python simple.py render.#.exr
+# * simple.py timeline.otio
+# * simple.py timeline.otioz
+# * simple.py render.mov
+# * simple.py render.#.exr
 #
-# The timeline can be zoomed with the mouse wheel or "-" and "=" keys. The
-# timeline can be panned with control + mouse or the scroll bars.
+# The timeline can be zoomed with the mouse wheel, or "-" and "=" keys.
+#
+# The timeline can be panned with control + mouse, or the scroll bars.
 
 import sys
 import opentimelineio as otio
