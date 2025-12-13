@@ -34,6 +34,20 @@ namespace tl
                 .def_readwrite("gradientColor", &BackgroundOptions::gradientColor)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
+
+            m.def("to_json",
+                [](const timeline::BackgroundOptions& value)
+                {
+                    nlohmann::json json;
+                    to_json(json, value);
+                    return json.dump();
+                });
+
+            m.def("from_json",
+                [](const std::string& value, timeline::BackgroundOptions& out)
+                {
+                    from_json(nlohmann::json().parse(value), out);
+                });
         }
     }
 }

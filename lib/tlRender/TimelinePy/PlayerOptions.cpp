@@ -45,6 +45,7 @@ namespace tl
                     to_json(json, value);
                     return json.dump();
                 });
+
             m.def("from_json",
                 [](const std::string& value, timeline::PlayerCacheOptions& out)
                 {

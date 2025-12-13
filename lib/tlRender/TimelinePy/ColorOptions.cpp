@@ -37,6 +37,32 @@ namespace tl
                 .def_readwrite("look", &OCIOOptions::look)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
+
+            m.def("to_json",
+                [](const timeline::OCIOOptions& value)
+                {
+                    nlohmann::json json;
+                    to_json(json, value);
+                    return json.dump();
+                });
+            m.def("to_json",
+                [](const timeline::LUTOptions& value)
+                {
+                    nlohmann::json json;
+                    to_json(json, value);
+                    return json.dump();
+                });
+
+            m.def("from_json",
+                [](const std::string& value, timeline::OCIOOptions& out)
+                {
+                    from_json(nlohmann::json().parse(value), out);
+                });
+            m.def("from_json",
+                [](const std::string& value, timeline::LUTOptions& out)
+                {
+                    from_json(nlohmann::json().parse(value), out);
+                });
         }
     }
 }

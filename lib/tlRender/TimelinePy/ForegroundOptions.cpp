@@ -39,6 +39,44 @@ namespace tl
                 .def_readwrite("outline", &timeline::ForegroundOptions::outline)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
+
+            m.def("to_json",
+                [](const timeline::Grid& value)
+                {
+                    nlohmann::json json;
+                    to_json(json, value);
+                    return json.dump();
+                });
+            m.def("to_json",
+                [](const timeline::Outline& value)
+                {
+                    nlohmann::json json;
+                    to_json(json, value);
+                    return json.dump();
+                });
+            m.def("to_json",
+                [](const timeline::ForegroundOptions& value)
+                {
+                    nlohmann::json json;
+                    to_json(json, value);
+                    return json.dump();
+                });
+
+            m.def("from_json",
+                [](const std::string& value, timeline::Grid& out)
+                {
+                    from_json(nlohmann::json().parse(value), out);
+                });
+            m.def("from_json",
+                [](const std::string& value, timeline::Outline& out)
+                {
+                    from_json(nlohmann::json().parse(value), out);
+                });
+            m.def("from_json",
+                [](const std::string& value, timeline::ForegroundOptions& out)
+                {
+                    from_json(nlohmann::json().parse(value), out);
+                });
         }
     }
 }

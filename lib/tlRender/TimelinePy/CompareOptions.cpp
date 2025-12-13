@@ -44,6 +44,20 @@ namespace tl
                 .def_readwrite("overlay", &CompareOptions::overlay)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
+
+            m.def("to_json",
+                [](const timeline::CompareOptions& value)
+                {
+                    nlohmann::json json;
+                    to_json(json, value);
+                    return json.dump();
+                });
+
+            m.def("from_json",
+                [](const std::string& value, timeline::CompareOptions& out)
+                {
+                    from_json(nlohmann::json().parse(value), out);
+                });
         }
     }
 }

@@ -74,6 +74,68 @@ namespace tl
                 .def_readwrite("videoLevels", &timeline::DisplayOptions::videoLevels)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
+
+            m.def("to_json",
+                [](const timeline::Color& value)
+                {
+                    nlohmann::json json;
+                    to_json(json, value);
+                    return json.dump();
+                });
+            m.def("to_json",
+                [](const timeline::Levels& value)
+                {
+                    nlohmann::json json;
+                    to_json(json, value);
+                    return json.dump();
+                });
+            m.def("to_json",
+                [](const timeline::EXRDisplay& value)
+                {
+                    nlohmann::json json;
+                    to_json(json, value);
+                    return json.dump();
+                });
+            m.def("to_json",
+                [](const timeline::SoftClip& value)
+                {
+                    nlohmann::json json;
+                    to_json(json, value);
+                    return json.dump();
+                });
+            m.def("to_json",
+                [](const timeline::DisplayOptions& value)
+                {
+                    nlohmann::json json;
+                    to_json(json, value);
+                    return json.dump();
+                });
+
+            m.def("from_json",
+                [](const std::string& value, timeline::Color& out)
+                {
+                    from_json(nlohmann::json().parse(value), out);
+                });
+            m.def("from_json",
+                [](const std::string& value, timeline::Levels& out)
+                {
+                    from_json(nlohmann::json().parse(value), out);
+                });
+            m.def("from_json",
+                [](const std::string& value, timeline::EXRDisplay& out)
+                {
+                    from_json(nlohmann::json().parse(value), out);
+                });
+            m.def("from_json",
+                [](const std::string& value, timeline::SoftClip& out)
+                {
+                    from_json(nlohmann::json().parse(value), out);
+                });
+            m.def("from_json",
+                [](const std::string& value, timeline::DisplayOptions& out)
+                {
+                    from_json(nlohmann::json().parse(value), out);
+                });
         }
     }
 }
