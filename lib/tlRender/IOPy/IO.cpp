@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <tlRender/IOPy/IO.h>
+#include <tlRender/IOPy/Bindings.h>
 
 #include <tlRender/IO/IO.h>
 

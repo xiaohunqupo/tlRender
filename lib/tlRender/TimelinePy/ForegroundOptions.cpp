@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <tlRender/TimelinePy/ForegroundOptions.h>
+#include <tlRender/TimelinePy/Bindings.h>
 
 #include <tlRender/Timeline/ForegroundOptions.h>
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <tlRender/CorePy/Time.h>
+#include <tlRender/CorePy/Bindings.h>
 
 #include <tlRender/Core/Time.h>
 

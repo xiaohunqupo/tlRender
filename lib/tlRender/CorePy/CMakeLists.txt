@@ -1,7 +1,5 @@
 set(HEADERS
-    Audio.h
-    Bindings.h
-    Time.h)
+    Bindings.h)
 set(HEADERS_PRIVATE)
 set(SOURCE
     Audio.cpp

@@ -5,7 +5,7 @@
 
 #include <tlRender/UI/Viewport.h>
 
-#include <ftk/CorePy/Observable.h>
+#include <ftk/CorePy/Bindings.h>
 #include <ftk/Core/Context.h>
 
 #include <pybind11/stl.h>

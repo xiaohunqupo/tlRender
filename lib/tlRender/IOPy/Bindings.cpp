@@ -3,8 +3,6 @@
 
 #include <tlRender/IOPy/Bindings.h>
 
-#include <tlRender/IOPy/IO.h>
-
 #include <tlRender/IO/Init.h>
 
 #include <ftk/Core/Context.h>

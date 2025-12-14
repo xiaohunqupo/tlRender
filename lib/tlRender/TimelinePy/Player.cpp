@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <tlRender/TimelinePy/Player.h>
+#include <tlRender/TimelinePy/Bindings.h>
 
 #include <tlRender/Timeline/Player.h>
 
-#include <ftk/CorePy/Observable.h>
-#include <ftk/CorePy/Util.h>
+#include <ftk/CorePy/Bindings.h>
 #include <ftk/Core/Context.h>
 
 #include <pybind11/stl.h>
@@ -142,9 +141,7 @@ namespace tl
 
                 .def_property("cacheOptions", &Player::getCacheOptions, &Player::setCacheOptions)
                 .def_property_readonly("observeCacheOptions", &Player::observeCacheOptions)
-                .def("clearCache", &Player::clearCache)
-
-                .def("tick", &Player::tick);
+                .def("clearCache", &Player::clearCache);
         }
     }
 }

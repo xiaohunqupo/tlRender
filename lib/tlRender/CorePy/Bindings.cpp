@@ -3,9 +3,6 @@
 
 #include <tlRender/CorePy/Bindings.h>
 
-#include <tlRender/CorePy/Audio.h>
-#include <tlRender/CorePy/Time.h>
-
 #include <tlRender/Core/Init.h>
 
 #include <ftk/Core/Context.h>

@@ -3,17 +3,6 @@
 
 #include <tlRender/TimelinePy/Bindings.h>
 
-#include <tlRender/TimelinePy/Audio.h>
-#include <tlRender/TimelinePy/CompareOptions.h>
-#include <tlRender/TimelinePy/Player.h>
-#include <tlRender/TimelinePy/PlayerOptions.h>
-#include <tlRender/TimelinePy/TimeUnits.h>
-#include <tlRender/TimelinePy/Timeline.h>
-#include <tlRender/TimelinePy/TimelineOptions.h>
-#include <tlRender/TimelinePy/Transition.h>
-#include <tlRender/TimelinePy/Util.h>
-#include <tlRender/TimelinePy/Video.h>
-
 #include <tlRender/Timeline/Init.h>
 
 #include <ftk/Core/Context.h>

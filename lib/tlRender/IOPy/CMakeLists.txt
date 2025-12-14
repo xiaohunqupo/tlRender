@@ -1,6 +1,5 @@
 set(HEADERS
-    Bindings.h
-    IO.h)
+    Bindings.h)
 set(HEADERS_PRIVATE)
 set(SOURCE
     Bindings.cpp

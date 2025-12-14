@@ -11,6 +11,9 @@ namespace tl
 {
     namespace python
     {
+        TL_API void audio(pybind11::module_&);
+        TL_API void time(pybind11::module_&);
+
         TL_API void coreBind(pybind11::module_&);
     }
 }

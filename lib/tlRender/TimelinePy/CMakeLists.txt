@@ -1,19 +1,5 @@
 set(HEADERS
-    Audio.h
-    BackgroundOptions.h
-    Bindings.h
-    ColorOptions.h
-    CompareOptions.h
-    DisplayOptions.h
-    ForegroundOptions.h
-    Player.h
-    PlayerOptions.h
-    TimeUnits.h
-    Timeline.h
-    TimelineOptions.h
-    Transition.h
-    Util.h
-    Video.h)
+    Bindings.h)
 set(HEADERS_PRIVATE)
 set(SOURCE
     Audio.cpp
