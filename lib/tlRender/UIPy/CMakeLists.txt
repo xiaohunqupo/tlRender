@@ -9,7 +9,9 @@ set(HEADERS
 set(HEADERS_PRIVATE)
 set(SOURCE
     Bindings.cpp
+    FrameToolBar.cpp
     IItem.cpp
+    PlaybackToolBar.cpp
     TimeEdit.cpp
     TimeLabel.cpp
     TimeUnitsWidget.cpp

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright Contributors to the feather-tk project.
 
-# This example displays a timeline.
+# This example demonstrates a simple player application.
 #
 # The timeline can be specified on the command line like:
 # * simple.py timeline.otio
@@ -9,9 +9,9 @@
 # * simple.py render.mov
 # * simple.py render.#.exr
 #
-# The timeline can be zoomed with the mouse wheel, or "-" and "=" keys.
+# The timeline can be zoomed with the mouse wheel or "-" and "=" keys.
 #
-# The timeline can be panned with control + mouse, or the scroll bars.
+# The timeline can be panned with control + mouse or the scroll bars.
 
 import sys
 import opentimelineio as otio
@@ -34,22 +34,43 @@ if app.exitValue != 0:
 timeline = tl.timeline.Timeline(context, ftk.Path(cmdLineInput.value))
 player = tl.timeline.Player(context, timeline)
 
+# Create the viewport.
+viewport = tl.ui.Viewport(context)
+viewport.vStretch = ftk.Stretch.Expanding
+viewport.player = player
+
+# Create tool bars.
+playbackToolBar = tl.ui.PlaybackToolBar(context)
+playbackToolBar.player = player
+frameToolBar = tl.ui.FrameToolBar(context)
+frameToolBar.player = player
+
 # Create the timeline widget.
 timelineWidget = tl.ui.TimelineWidget(context)
-timelineWidget.backgroundColor = ftk.ColorRole.Red
 timelineWidget.vStretch = ftk.Stretch.Expanding
-timelineWidget.player = player
-
-# Set timeline widget options.
 timelineDisplayOptions = tl.ui.DisplayOptions()
 timelineDisplayOptions.minimize = False
-timelineDisplayOptions.thumbnailHeight = 600
-timelineDisplayOptions.waveformHeight = 300
 timelineWidget.displayOptions = timelineDisplayOptions
+timelineWidget.player = player
 
-# Create the main window.
+# Create the layout and main window.
 window = ftk.MainWindow(context, app)
-window.widget = timelineWidget
+splitter = ftk.Splitter(context, ftk.Orientation.Vertical)
+splitter.split = 0.7
+viewport.parent = splitter
+
+vLayout = ftk.VerticalLayout(context, splitter)
+vLayout.spacingRole = ftk.SizeRole._None
+
+hLayout = ftk.HorizontalLayout(context, vLayout)
+hLayout.spacingRole = ftk.SizeRole._None
+playbackToolBar.parent = hLayout
+ftk.Divider(context, ftk.Orientation.Horizontal, hLayout)
+frameToolBar.parent = hLayout
+ftk.Divider(context, ftk.Orientation.Vertical, vLayout)
+
+timelineWidget.parent = vLayout
+window.widget = splitter
 
 # Run the application.
 app.run()

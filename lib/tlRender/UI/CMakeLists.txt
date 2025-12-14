@@ -1,9 +1,11 @@
 set(HEADERS
     AudioClipItem.h
+    FrameToolBar.h
     GapItem.h
     IBasicItem.h
     IItem.h
     Init.h
+    PlaybackToolBar.h
     ThumbnailSystem.h
     TimeEdit.h
     TimeLabel.h
@@ -18,10 +20,12 @@ set(HEADERS_PRIVATE
 
 set(SOURCE
     AudioClipItem.cpp
+    FrameToolBar.cpp
     GapItem.cpp
     IBasicItem.cpp
     IItem.cpp
     Init.cpp
+    PlaybackToolBar.cpp
     ThumbnailSystem.cpp
     TimeEdit.cpp
     TimeLabel.cpp

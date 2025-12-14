@@ -1,0 +1,139 @@
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright Contributors to the tlRender project.
+
+#include <tlRender/UI/PlaybackToolBar.h>
+
+#include <tlRender/Timeline/Player.h>
+
+#include <ftk/UI/Action.h>
+
+namespace tl
+{
+    namespace timelineui
+    {
+        struct PlaybackToolBar::Private
+        {
+            std::map<std::string, std::shared_ptr<ftk::Action> > actions;
+            std::shared_ptr<timeline::Player> player;
+            std::shared_ptr<ftk::Observer<timeline::Playback> > playbackObserver;
+        };
+
+        void PlaybackToolBar::_init(
+            const std::shared_ptr<ftk::Context>& context,
+            const std::shared_ptr<IWidget>& parent)
+        {
+            ToolBar::_init(context, ftk::Orientation::Horizontal, parent);
+            FTK_P();
+
+            p.actions["Stop"] = ftk::Action::create(
+                "Stop",
+                "PlaybackStop",
+                ftk::Key::K,
+                0,
+                [this]
+                {
+                    if (_p->player)
+                    {
+                        _p->player->stop();
+                    }
+                });
+            p.actions["Stop"]->setTooltip("Stop playback.");
+
+            p.actions["Forward"] = ftk::Action::create(
+                "Forward",
+                "PlaybackForward",
+                ftk::Key::L,
+                0,
+                [this]
+                {
+                    if (_p->player)
+                    {
+                        _p->player->forward();
+                    }
+                });
+            p.actions["Forward"]->setTooltip("Start forward playback.");
+
+            p.actions["Reverse"] = ftk::Action::create(
+                "Reverse",
+                "PlaybackReverse",
+                ftk::Key::J,
+                0,
+                [this]
+                {
+                    if (_p->player)
+                    {
+                        _p->player->reverse();
+                    }
+                });
+            p.actions["Reverse"]->setTooltip("Start reverse playback.");
+
+            addAction(p.actions["Reverse"]);
+            addAction(p.actions["Stop"]);
+            addAction(p.actions["Forward"]);
+
+            _widgetUpdate();
+        }
+
+        PlaybackToolBar::PlaybackToolBar() :
+            _p(new Private)
+        {}
+
+        PlaybackToolBar::~PlaybackToolBar()
+        {}
+
+        std::shared_ptr<PlaybackToolBar> PlaybackToolBar::create(
+            const std::shared_ptr<ftk::Context>& context,
+            const std::shared_ptr<IWidget>& parent)
+        {
+            auto out = std::shared_ptr<PlaybackToolBar>(new PlaybackToolBar);
+            out->_init(context, parent);
+            return out;
+        }
+            
+        const std::map<std::string, std::shared_ptr<ftk::Action> >& PlaybackToolBar::getActions() const
+        {
+            return _p->actions;
+        }
+
+        const std::shared_ptr<timeline::Player>& PlaybackToolBar::getPlayer() const
+        {
+            return _p->player;
+        }
+
+        void PlaybackToolBar::setPlayer(const std::shared_ptr<timeline::Player>& player)
+        {
+            FTK_P();
+            p.player = player;
+            if (player)
+            {
+                p.playbackObserver = ftk::Observer<timeline::Playback>::create(
+                    player->observePlayback(),
+                    [this](timeline::Playback value)
+                    {
+                        _p->actions["Stop"]->setChecked(timeline::Playback::Stop == value);
+                        _p->actions["Forward"]->setChecked(timeline::Playback::Forward == value);
+                        _p->actions["Reverse"]->setChecked(timeline::Playback::Reverse == value);
+                    });
+            }
+            else
+            {
+                p.playbackObserver.reset();
+            }
+            _widgetUpdate();
+        }
+
+        void PlaybackToolBar::_widgetUpdate()
+        {
+            FTK_P();
+            if (!p.player)
+            {
+                p.actions["Stop"]->setChecked(true);
+                p.actions["Forward"]->setChecked(false);
+                p.actions["Reverse"]->setChecked(false);            
+            }
+            p.actions["Stop"]->setEnabled(p.player.get());
+            p.actions["Forward"]->setEnabled(p.player.get());
+            p.actions["Reverse"]->setEnabled(p.player.get());
+        }
+    }
+}

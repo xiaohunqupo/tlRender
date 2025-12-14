@@ -11,6 +11,9 @@ namespace tl
 {
     namespace python
     {
+        TL_API void frameToolBar(pybind11::module_&);
+        TL_API void playbackToolBar(pybind11::module_&);
+
         TL_API void uiBind(pybind11::module_&);
     }
 }

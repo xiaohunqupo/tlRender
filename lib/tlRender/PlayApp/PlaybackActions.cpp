@@ -206,11 +206,11 @@ namespace tl
                     }
                     else
                     {
+                        _playbackObserver.reset();
+
                         _actions["Stop"]->setChecked(true);
                         _actions["Forward"]->setChecked(false);
                         _actions["Reverse"]->setChecked(false);
-
-                        _playbackObserver.reset();
                     }
 
                     _actions["Stop"]->setEnabled(value.get());

@@ -16,7 +16,13 @@ class MainWindow(ftk.MainWindow):
 
         # Create the MDI canvas.
         self._mdiCanvas = ftk.MDICanvas(context)
-        self.widget = self._mdiCanvas
+        self._mdiCanvas.setSize(ftk.Size2I(8192, 8192))
+        
+        scrollWidget = ftk.ScrollWidget(context)
+        scrollWidget.border = False
+        scrollWidget.areaResizable = False
+        scrollWidget.widget = self._mdiCanvas
+        self.widget = scrollWidget
 
     def dropEvent(self, event):
         event.accept = True
@@ -27,20 +33,30 @@ class MainWindow(ftk.MainWindow):
                 timeline = tl.timeline.Timeline(self.context, text)
                 player = tl.timeline.Player(self.context, timeline)
 
-                splitter = ftk.Splitter(context, ftk.Orientation.Vertical)
-
-                viewport = tl.ui.Viewport(self.context, splitter)
+                viewport = tl.ui.Viewport(self.context)
                 viewport.player = player
 
-                timelineWidget = tl.ui.TimelineWidget(self.context, splitter)
+                playbackToolBar = tl.ui.PlaybackToolBar(self.context)
+                playbackToolBar.player = player
+                frameToolBar = tl.ui.FrameToolBar(self.context)
+                frameToolBar.player = player
+
+                timelineWidget = tl.ui.TimelineWidget(self.context)
                 timelineDisplayOptions = tl.ui.DisplayOptions()
                 timelineDisplayOptions.minimize = False
-                timelineDisplayOptions.thumbnailHeight = 300
-                timelineDisplayOptions.waveformHeight = 150
                 timelineWidget.displayOptions = timelineDisplayOptions
                 timelineWidget.vStretch = ftk.Stretch.Expanding
                 timelineWidget.player = player
                 
+                splitter = ftk.Splitter(context, ftk.Orientation.Vertical)
+                viewport.parent = splitter
+                vLayout = ftk.VerticalLayout(context, splitter)
+                vLayout.spacingRole = ftk.SizeRole._None
+                hLayout = ftk.HorizontalLayout(context, vLayout)
+                hLayout.spacingRole = ftk.SizeRole._None
+                playbackToolBar.parent = hLayout
+                frameToolBar.parent = hLayout
+                timelineWidget.parent = vLayout
                 self._mdiCanvas.addWidget(text, event.pos, splitter)
 
 # Create the application.

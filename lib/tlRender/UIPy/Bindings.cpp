@@ -31,6 +31,9 @@ namespace tl
                 "Initialize the library.");
 
             iItem(mUI);
+
+            frameToolBar(mUI);
+            playbackToolBar(mUI);
             timeEdit(mUI);
             timeLabel(mUI);
             timeUnitsWidget(mUI);
