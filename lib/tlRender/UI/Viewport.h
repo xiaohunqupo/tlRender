@@ -174,10 +174,10 @@ namespace tl
             TL_API ftk::Color4F getColorSample(const ftk::V2I&);
 
             //! Set the pan binding.
-            TL_API void setPanBinding(int button, ftk::KeyModifier);
+            TL_API void setPanBinding(ftk::MouseButton, ftk::KeyModifier);
 
             //! Set the wipe binding.
-            TL_API void setWipeBinding(int button, ftk::KeyModifier);
+            TL_API void setWipeBinding(ftk::MouseButton, ftk::KeyModifier);
 
             //! Set the mouse wheel scale.
             TL_API void setMouseWheelScale(float);

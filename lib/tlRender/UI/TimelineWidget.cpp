@@ -27,7 +27,8 @@ namespace tl
             std::function<void(bool)> frameViewCallback;
             std::shared_ptr<ftk::Observable<bool> > scrollBarsVisible;
             std::shared_ptr<ftk::Observable<bool> > autoScroll;
-            std::pair<int, ftk::KeyModifier> scrollBinding = std::make_pair(1, ftk::KeyModifier::Control);
+            std::pair<ftk::MouseButton, ftk::KeyModifier> scrollBinding =
+                std::make_pair(ftk::MouseButton::Left, ftk::KeyModifier::Control);
             float mouseWheelScale = 1.1F;
             std::shared_ptr<ftk::Observable<bool> > stopOnScrub;
             std::shared_ptr<ftk::Observable<bool> > scrub;
@@ -275,7 +276,7 @@ namespace tl
             }
         }
 
-        void TimelineWidget::setScrollBinding(int button, ftk::KeyModifier modifier)
+        void TimelineWidget::setScrollBinding(ftk::MouseButton button, ftk::KeyModifier modifier)
         {
             _p->scrollBinding = std::make_pair(button, modifier);
         }
@@ -408,7 +409,7 @@ namespace tl
             }
             else if (p.timelineItem &&
                 p.timelineItem->getSizeHint().w <
-                p.scrollWidget->getViewport().w())
+                p.scrollWidget->getScrollInfo().viewport.w())
             {
                 setFrameView(true);
                 frameView();
@@ -493,6 +494,7 @@ namespace tl
             if (p.itemOptions->get().inputEnabled)
             {
                 event.accept = true;
+                takeKeyFocus();
                 const double newZoom =
                     event.value.y > 0 ?
                     p.scale * p.mouseWheelScale :
@@ -566,7 +568,7 @@ namespace tl
                 const double duration = timeRange.duration().rescaled_to(1.0).value();
                 if (duration > 0.0)
                 {
-                    const ftk::Box2I scrollViewport = p.scrollWidget->getViewport();
+                    const ftk::Box2I scrollViewport = p.scrollWidget->getScrollInfo().viewport;
                     out = scrollViewport.w() / duration;
                 }
             }
@@ -579,7 +581,7 @@ namespace tl
             double out = 1.0;
             if (p.player)
             {
-                const ftk::Box2I scrollViewport = p.scrollWidget->getViewport();
+                const ftk::Box2I scrollViewport = p.scrollWidget->getScrollInfo().viewport;
                 const OTIO_NS::TimeRange& timeRange = p.player->getTimeRange();
                 const double duration = timeRange.duration().rescaled_to(1.0).value();
                 if (duration < 1.0)
@@ -658,7 +660,7 @@ namespace tl
                 Private::MouseMode::None == p.mouse.mode)
             {
                 const int pos = p.timelineItem->timeToPos(p.currentTime);
-                const ftk::Box2I vp = p.scrollWidget->getViewport();
+                const ftk::Box2I vp = p.scrollWidget->getScrollInfo().viewport;
                 const int margin = vp.w() * marginPercentage;
                 if (pos < (vp.min.x + margin) || pos >(vp.max.x - margin))
                 {

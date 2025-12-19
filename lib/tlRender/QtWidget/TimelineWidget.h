@@ -70,7 +70,7 @@ namespace tl
             void setAutoScroll(bool);
 
             //! Set the scroll binding.
-            void setScrollBinding(int button, ftk::KeyModifier);
+            void setScrollBinding(ftk::MouseButton, ftk::KeyModifier);
 
             //! Set the mouse wheel scale.
             void setMouseWheelScale(float);

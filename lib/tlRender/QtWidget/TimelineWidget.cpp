@@ -123,7 +123,7 @@ namespace tl
             _p->timelineWidget->setAutoScroll(value);
         }
 
-        void TimelineWidget::setScrollBinding(int button, ftk::KeyModifier modifier)
+        void TimelineWidget::setScrollBinding(ftk::MouseButton button, ftk::KeyModifier modifier)
         {
             _p->timelineWidget->setScrollBinding(button, modifier);
         }

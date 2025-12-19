@@ -87,7 +87,7 @@ namespace tl
             TL_API void setAutoScroll(bool);
 
             //! Set the scroll binding.
-            TL_API void setScrollBinding(int button, ftk::KeyModifier);
+            TL_API void setScrollBinding(ftk::MouseButton, ftk::KeyModifier);
 
             //! Set the mouse wheel scale.
             TL_API void setMouseWheelScale(float);

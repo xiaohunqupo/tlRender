@@ -50,8 +50,10 @@ namespace tl
                 double frame = 0.0;
             };
             std::optional<DroppedFramesData> droppedFramesData;
-            std::pair<int, ftk::KeyModifier> panBinding = std::make_pair(1, ftk::KeyModifier::Control);
-            std::pair<int, ftk::KeyModifier> wipeBinding = std::make_pair(1, ftk::KeyModifier::Alt);
+            std::pair<ftk::MouseButton, ftk::KeyModifier> panBinding =
+                std::make_pair(ftk::MouseButton::Left, ftk::KeyModifier::Control);
+            std::pair<ftk::MouseButton, ftk::KeyModifier> wipeBinding =
+                std::make_pair(ftk::MouseButton::Left, ftk::KeyModifier::Alt);
             float mouseWheelScale = 1.1F;
 
             bool doRender = false;
@@ -515,16 +517,14 @@ namespace tl
             return out;
         }
 
-        void Viewport::setPanBinding(int button, ftk::KeyModifier modifier)
+        void Viewport::setPanBinding(ftk::MouseButton button, ftk::KeyModifier modifier)
         {
-            FTK_P();
-            p.panBinding = std::make_pair(button, modifier);
+            _p->panBinding = std::make_pair(button, modifier);
         }
 
-        void Viewport::setWipeBinding(int button, ftk::KeyModifier modifier)
+        void Viewport::setWipeBinding(ftk::MouseButton button, ftk::KeyModifier modifier)
         {
-            FTK_P();
-            p.wipeBinding = std::make_pair(button, modifier);
+            _p->wipeBinding = std::make_pair(button, modifier);
         }
 
         void Viewport::setMouseWheelScale(float value)

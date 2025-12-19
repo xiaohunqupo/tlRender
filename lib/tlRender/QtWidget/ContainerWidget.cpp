@@ -77,7 +77,7 @@ namespace tl
                     _cursorPos(value);
                 }
 
-                void mouseButton(int button, bool press, int modifiers)
+                void mouseButton(ftk::MouseButton button, bool press, int modifiers)
                 {
                     _mouseButton(button, press, modifiers);
                 }
@@ -437,12 +437,12 @@ namespace tl
                 event->accept();
                 p.window->cursorPos(
                     ftk::V2I(_toUI(event->x()), _toUI(event->y())));
-                int button = 0;
+                ftk::MouseButton button = ftk::MouseButton::None;
                 if (event->button() == Qt::LeftButton)
                 {
-                    button = 1;
+                    button = ftk::MouseButton::Left;
                 }
-                if (button != 0)
+                if (button != ftk::MouseButton::None)
                 {
                     p.window->mouseButton(
                         button,
@@ -458,12 +458,12 @@ namespace tl
             if (p.inputEnabled)
             {
                 event->accept();
-                int button = -1;
+                ftk::MouseButton button = ftk::MouseButton::None;
                 if (event->button() == Qt::LeftButton)
                 {
-                    button = 0;
+                    button = ftk::MouseButton::Left;
                 }
-                if (button != -1)
+                if (button != ftk::MouseButton::None)
                 {
                     p.window->mouseButton(
                         button,

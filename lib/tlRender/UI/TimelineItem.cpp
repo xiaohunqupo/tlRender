@@ -47,7 +47,7 @@ namespace tl
             FTK_P();
 
             _setMouseHoverEnabled(true);
-            _setMousePressEnabled(true, 1, 0);
+            _setMousePressEnabled(true, ftk::MouseButton::Left, 0);
 
             p.player = player;
 
@@ -457,7 +457,7 @@ namespace tl
             IItem::mousePressEvent(event);
             FTK_P();
             if (_options.inputEnabled &&
-                1 == event.button &&
+                ftk::MouseButton::Left == event.button &&
                 0 == event.modifiers)
             {
                 takeKeyFocus();
