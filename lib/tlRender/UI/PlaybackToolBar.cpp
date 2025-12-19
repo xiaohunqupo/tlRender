@@ -29,7 +29,6 @@ namespace tl
                 "Stop",
                 "PlaybackStop",
                 ftk::Key::K,
-                0,
                 [this]
                 {
                     if (_p->player)
@@ -43,7 +42,6 @@ namespace tl
                 "Forward",
                 "PlaybackForward",
                 ftk::Key::L,
-                0,
                 [this]
                 {
                     if (_p->player)
@@ -57,7 +55,6 @@ namespace tl
                 "Reverse",
                 "PlaybackReverse",
                 ftk::Key::J,
-                0,
                 [this]
                 {
                     if (_p->player)

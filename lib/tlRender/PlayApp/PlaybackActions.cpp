@@ -18,7 +18,6 @@ namespace tl
                 "Stop",
                 "PlaybackStop",
                 ftk::Key::K,
-                0,
                 [this]
                 {
                     if (_player)
@@ -32,7 +31,6 @@ namespace tl
                 "Forward",
                 "PlaybackForward",
                 ftk::Key::L,
-                0,
                 [this]
                 {
                     if (_player)
@@ -46,7 +44,6 @@ namespace tl
                 "Reverse",
                 "PlaybackReverse",
                 ftk::Key::J,
-                0,
                 [this]
                 {
                     if (_player)
@@ -59,7 +56,6 @@ namespace tl
             _actions["TogglePlayback"] = ftk::Action::create(
                 "Toggle Playback",
                 ftk::Key::Space,
-                0,
                 [this]
                 {
                     if (_player)
@@ -79,7 +75,6 @@ namespace tl
                 "Start Frame",
                 "FrameStart",
                 ftk::Key::Home,
-                0,
                 [this]
                 {
                     if (_player)
@@ -93,7 +88,6 @@ namespace tl
                 "Previous Frame",
                 "FramePrev",
                 ftk::Key::Left,
-                0,
                 [this]
                 {
                     if (_player)
@@ -107,7 +101,6 @@ namespace tl
                 "Next Frame",
                 "FrameNext",
                 ftk::Key::Right,
-                0,
                 [this]
                 {
                     if (_player)
@@ -121,7 +114,6 @@ namespace tl
                 "End Frame",
                 "FrameEnd",
                 ftk::Key::End,
-                0,
                 [this]
                 {
                     if (_player)
@@ -134,7 +126,6 @@ namespace tl
             _actions["SetInPoint"] = ftk::Action::create(
                 "Set In Point",
                 ftk::Key::I,
-                0,
                 [this]
                 {
                     if (_player)
@@ -146,8 +137,7 @@ namespace tl
 
             _actions["ResetInPoint"] = ftk::Action::create(
                 "Reset In Point",
-                ftk::Key::I,
-                static_cast<int>(ftk::KeyModifier::Shift),
+                ftk::KeyShortcut(ftk::Key::I, static_cast<int>(ftk::KeyModifier::Shift)),
                 [this]
                 {
                     if (_player)
@@ -160,7 +150,6 @@ namespace tl
             _actions["SetOutPoint"] = ftk::Action::create(
                 "Set Out Point",
                 ftk::Key::O,
-                0,
                 [this]
                 {
                     if (_player)
@@ -172,8 +161,7 @@ namespace tl
 
             _actions["ResetOutPoint"] = ftk::Action::create(
                 "Reset Out Point",
-                ftk::Key::O,
-                static_cast<int>(ftk::KeyModifier::Shift),
+                ftk::KeyShortcut(ftk::Key::O, static_cast<int>(ftk::KeyModifier::Shift)),
                 [this]
                 {
                     if (_player)

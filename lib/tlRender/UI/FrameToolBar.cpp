@@ -29,7 +29,6 @@ namespace tl
                 "Start Frame",
                 "FrameStart",
                 ftk::Key::Home,
-                0,
                 [this]
                 {
                     if (_p->player)
@@ -43,7 +42,6 @@ namespace tl
                 "Previous Frame",
                 "FramePrev",
                 ftk::Key::Left,
-                0,
                 [this]
                 {
                     if (_p->player)
@@ -57,7 +55,6 @@ namespace tl
                 "Next Frame",
                 "FrameNext",
                 ftk::Key::Right,
-                0,
                 [this]
                 {
                     if (_p->player)
@@ -71,7 +68,6 @@ namespace tl
                 "End Frame",
                 "FrameEnd",
                 ftk::Key::End,
-                0,
                 [this]
                 {
                     if (_p->player)

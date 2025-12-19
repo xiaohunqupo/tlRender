@@ -52,8 +52,7 @@ namespace tl
                 _actions[labels[i]] = ftk::Action::create(
                     labels[i],
                     icons[i],
-                    shortcuts[i],
-                    static_cast<int>(ftk::commandKeyModifier),
+                    ftk::KeyShortcut(shortcuts[i], static_cast<int>(ftk::commandKeyModifier)),
                     [appWeak, i]
                     {
                         if (auto app = appWeak.lock())

@@ -22,7 +22,6 @@ namespace tl
                 "Frame",
                 "ViewFrame",
                 ftk::Key::Backspace,
-                0,
                 [viewportWeak](bool value)
                 {
                     if (auto viewport = viewportWeak.lock())
@@ -36,7 +35,6 @@ namespace tl
                 "Zoom Reset",
                 "ViewZoomReset",
                 ftk::Key::_0,
-                0,
                 [viewportWeak]
                 {
                     if (auto viewport = viewportWeak.lock())
@@ -50,7 +48,6 @@ namespace tl
                 "Zoom In",
                 "ViewZoomIn",
                 ftk::Key::Equals,
-                0,
                 [viewportWeak]
                 {
                     if (auto viewport = viewportWeak.lock())
@@ -64,7 +61,6 @@ namespace tl
                 "Zoom Out",
                 "ViewZoomOut",
                 ftk::Key::Minus,
-                0,
                 [viewportWeak]
                 {
                     if (auto viewport = viewportWeak.lock())

@@ -19,8 +19,7 @@ namespace tl
             _actions["FullScreen"] = ftk::Action::create(
                 "Full Screen",
                 "WindowFullScreen",
-                ftk::Key::U,
-                static_cast<int>(ftk::commandKeyModifier),
+                ftk::KeyShortcut(ftk::Key::U, static_cast<int>(ftk::commandKeyModifier)),
                 [mainWindowWeak](bool value)
                 {
                     if (auto mainWindow = mainWindowWeak.lock())

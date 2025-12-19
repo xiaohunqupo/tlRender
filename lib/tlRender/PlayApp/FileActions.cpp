@@ -18,8 +18,7 @@ namespace tl
             _actions["Open"] = ftk::Action::create(
                 "Open",
                 "FileOpen",
-                ftk::Key::O,
-                static_cast<int>(ftk::commandKeyModifier),
+                ftk::KeyShortcut(ftk::Key::O, static_cast<int>(ftk::commandKeyModifier)),
                 [appWeak]
                 {
                     if (auto app = appWeak.lock())
@@ -32,8 +31,7 @@ namespace tl
             _actions["Close"] = ftk::Action::create(
                 "Close",
                 "FileClose",
-                ftk::Key::E,
-                static_cast<int>(ftk::commandKeyModifier),
+                ftk::KeyShortcut(ftk::Key::E, static_cast<int>(ftk::commandKeyModifier)),
                 [appWeak]
                 {
                     if (auto app = appWeak.lock())
@@ -46,8 +44,10 @@ namespace tl
             _actions["CloseAll"] = ftk::Action::create(
                 "Close All",
                 "FileCloseAll",
-                ftk::Key::E,
-                static_cast<int>(ftk::commandKeyModifier) | static_cast<int>(ftk::KeyModifier::Shift),
+                ftk::KeyShortcut(
+                    ftk::Key::E,
+                    static_cast<int>(ftk::commandKeyModifier) |
+                    static_cast<int>(ftk::KeyModifier::Shift)),
                 [appWeak]
                 {
                     if (auto app = appWeak.lock())
@@ -60,8 +60,7 @@ namespace tl
             _actions["Reload"] = ftk::Action::create(
                 "Reload",
                 "FileReload",
-                ftk::Key::R,
-                static_cast<int>(ftk::commandKeyModifier),
+                ftk::KeyShortcut(ftk::Key::R, static_cast<int>(ftk::commandKeyModifier)),
                 [appWeak]
                 {
                     if (auto app = appWeak.lock())
@@ -74,8 +73,7 @@ namespace tl
             _actions["Next"] = ftk::Action::create(
                 "Next",
                 "Next",
-                ftk::Key::PageDown,
-                static_cast<int>(ftk::commandKeyModifier),
+                ftk::KeyShortcut(ftk::Key::PageDown, static_cast<int>(ftk::commandKeyModifier)),
                 [appWeak]
                 {
                     if (auto app = appWeak.lock())
@@ -87,8 +85,7 @@ namespace tl
             _actions["Prev"] = ftk::Action::create(
                 "Previous",
                 "Prev",
-                ftk::Key::PageUp,
-                static_cast<int>(ftk::commandKeyModifier),
+                ftk::KeyShortcut(ftk::Key::PageUp, static_cast<int>(ftk::commandKeyModifier)),
                 [appWeak]
                 {
                     if (auto app = appWeak.lock())
@@ -99,8 +96,7 @@ namespace tl
 
             _actions["Exit"] = ftk::Action::create(
                 "Exit",
-                ftk::Key::Q,
-                static_cast<int>(ftk::commandKeyModifier),
+                ftk::KeyShortcut(ftk::Key::Q, static_cast<int>(ftk::commandKeyModifier)),
                 [appWeak]
                 {
                     if (auto app = appWeak.lock())
