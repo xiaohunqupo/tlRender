@@ -6,7 +6,7 @@
 #include <tlRender/IO/Read.h>
 #include <tlRender/IO/Write.h>
 
-#include <tlRender/Core/ISystem.h>
+#include <ftk/Core/ISystem.h>
 
 namespace tl
 {
@@ -15,7 +15,7 @@ namespace tl
         class Player;
 
         //! Timeline system.
-        class TL_API_TYPE System : public system::ISystem
+        class TL_API_TYPE System : public ftk::ISystem
         {
             FTK_NON_COPYABLE(System);
 

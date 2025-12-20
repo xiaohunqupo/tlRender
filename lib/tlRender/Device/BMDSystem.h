@@ -5,8 +5,7 @@
 
 #include <tlRender/Device/BMDData.h>
 
-#include <tlRender/Core/ISystem.h>
-
+#include <ftk/Core/ISystem.h>
 #include <ftk/Core/ObservableList.h>
 
 namespace tl
@@ -16,7 +15,7 @@ namespace tl
         class OutputDevice;
 
         //! BMD system.
-        class System : public system::ISystem
+        class System : public ftk::ISystem
         {
             FTK_NON_COPYABLE(System);
 

@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
         {
             for (const auto& i : value)
             {
-                std::cout << "[LOG] " << toString(i) << std::endl;
+                std::cout << "[LOG] " << ftk::getLabel(i) << std::endl;
             }
         },
         ftk::ObserverAction::Suppress);

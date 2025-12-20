@@ -6,14 +6,14 @@
 #include <tlRender/IO/Read.h>
 #include <tlRender/IO/Write.h>
 
-#include <tlRender/Core/ISystem.h>
+#include <ftk/Core/ISystem.h>
 
 namespace tl
 {
     namespace io
     {
         //! Read system.
-        class TL_API_TYPE ReadSystem : public system::ISystem
+        class TL_API_TYPE ReadSystem : public ftk::ISystem
         {
             FTK_NON_COPYABLE(ReadSystem);
 
@@ -71,7 +71,7 @@ namespace tl
         };
 
         //! Write system.
-        class TL_API_TYPE WriteSystem : public system::ISystem
+        class TL_API_TYPE WriteSystem : public ftk::ISystem
         {
             FTK_NON_COPYABLE(WriteSystem);
 

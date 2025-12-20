@@ -4,10 +4,8 @@ set(HEADERS
     AudioResample.h
     AudioSystem.h
     Export.h
-    FileLogSystem.h
     HDR.h
     HDRInline.h
-    ISystem.h
     Init.h
     Time.h
     TimeInline.h
@@ -18,9 +16,7 @@ set(SOURCE
     Audio.cpp
     AudioResample.cpp
     AudioSystem.cpp
-    FileLogSystem.cpp
     HDR.cpp
-    ISystem.cpp
     Init.cpp
     Time.cpp
     URL.cpp)

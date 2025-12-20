@@ -5,9 +5,8 @@
 
 #include <tlRender/IO/IO.h>
 
-#include <tlRender/Core/ISystem.h>
-
 #include <ftk/Core/FileIO.h>
+#include <ftk/Core/ISystem.h>
 #include <ftk/Core/Image.h>
 #include <ftk/Core/Mesh.h>
 #include <ftk/Core/Path.h>
@@ -226,7 +225,7 @@ namespace tl
         };
 
         //! Thumbnail system.
-        class TL_API_TYPE ThumbnailSystem : public system::ISystem
+        class TL_API_TYPE ThumbnailSystem : public ftk::ISystem
         {
         protected:
             ThumbnailSystem(const std::shared_ptr<ftk::Context>&);

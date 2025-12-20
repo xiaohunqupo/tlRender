@@ -17,7 +17,7 @@ namespace tl
             qt::DefaultSurfaceFormat);
 
         //! Qt Quick system.
-        class System : public system::ISystem
+        class System : public ftk::ISystem
         {
             FTK_NON_COPYABLE(System);
 

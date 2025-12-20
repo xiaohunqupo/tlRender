@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <tlRender/Core/ISystem.h>
+#include <ftk/Core/ISystem.h>
 
 namespace tl
 {
@@ -24,7 +24,7 @@ namespace tl
             DefaultSurfaceFormat);
 
         //! Qt support system.
-        class System : public system::ISystem
+        class System : public ftk::ISystem
         {
             FTK_NON_COPYABLE(System);
 

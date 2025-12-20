@@ -81,7 +81,7 @@ namespace tl
                 {
                 case ftk::LogType::Error:
                 {
-                    const std::string text = ftk::toString(i);
+                    const std::string text = ftk::getLabel(i, true);
                     _labels["Log"]->setText(text);
                     _labels["Log"]->setTooltip(text);
                     _logTimer->start(

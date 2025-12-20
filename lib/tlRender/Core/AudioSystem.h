@@ -4,8 +4,8 @@
 #pragma once
 
 #include <tlRender/Core/Audio.h>
-#include <tlRender/Core/ISystem.h>
 
+#include <ftk/Core/ISystem.h>
 #include <ftk/Core/ObservableList.h>
 #include <ftk/Core/Observable.h>
 
@@ -34,7 +34,7 @@ namespace tl
         };
 
         //! Audio system.
-        class TL_API_TYPE System : public system::ISystem
+        class TL_API_TYPE System : public ftk::ISystem
         {
             FTK_NON_COPYABLE(System);
 
