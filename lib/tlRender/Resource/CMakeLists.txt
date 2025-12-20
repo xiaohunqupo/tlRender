@@ -14,7 +14,7 @@ set(RESOURCES
     etc/Icons/CompareWipe.svg
     etc/Icons/Devices.svg
     etc/Icons/Export.svg
-    etc/Icons/FileOpenSeparateAudio.svg
+    etc/Icons/FileOpenAudio.svg
     etc/Icons/Files.svg
     etc/Icons/FrameShuttle0.svg
     etc/Icons/FrameShuttle1.svg

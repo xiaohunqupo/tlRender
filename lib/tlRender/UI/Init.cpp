@@ -28,7 +28,7 @@ namespace tl_resource
     extern std::vector<uint8_t> CompareWipe;
     extern std::vector<uint8_t> Devices;
     extern std::vector<uint8_t> Export;
-    extern std::vector<uint8_t> FileOpenSeparateAudio;
+    extern std::vector<uint8_t> FileOpenAudio;
     extern std::vector<uint8_t> Files;
     extern std::vector<uint8_t> FrameShuttle0;
     extern std::vector<uint8_t> FrameShuttle1;
@@ -80,7 +80,7 @@ namespace tl
             iconSystem->add("CompareWipe", tl_resource::CompareWipe);
             iconSystem->add("Devices", tl_resource::Devices);
             iconSystem->add("Export", tl_resource::Export);
-            iconSystem->add("FileOpenSeparateAudio", tl_resource::FileOpenSeparateAudio);
+            iconSystem->add("FileOpenAudio", tl_resource::FileOpenAudio);
             iconSystem->add("Files", tl_resource::Files);
             iconSystem->add("FrameShuttle0", tl_resource::FrameShuttle0);
             iconSystem->add("FrameShuttle1", tl_resource::FrameShuttle1);
