@@ -3,7 +3,14 @@
 
 #pragma once
 
-#include <tlRender/Core/ISystem.h>
+#include <tlRender/Core/Export.h>
+
+#include <memory>
+
+namespace ftk
+{
+    class Context;
+}
 
 namespace tl
 {
