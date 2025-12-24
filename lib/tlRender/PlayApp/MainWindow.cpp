@@ -50,7 +50,7 @@ namespace tl
             _settingsModel = settingsModel;
 
             // Create the viewport.
-            _viewport = timelineui::Viewport::create(context);
+            _viewport = ui::Viewport::create(context);
             timeline::BackgroundOptions bgOptions;
             bgOptions.type = timeline::Background::Gradient;
             //_viewport->setBackgroundOptions(bgOptions);
@@ -67,10 +67,10 @@ namespace tl
             _viewport->setDisplayOptions({ displayOptions });
 
             // Create the timeline.
-            _timelineWidget = timelineui::TimelineWidget::create(
+            _timelineWidget = ui::TimelineWidget::create(
                 context,
                 app->getTimeUnitsModel());
-            timelineui::DisplayOptions timelineDisplayOptions;
+            ui::DisplayOptions timelineDisplayOptions;
             timelineDisplayOptions.minimize = false;
             //timelineDisplayOptions.thumbnails = false;
             _timelineWidget->setDisplayOptions(timelineDisplayOptions);
@@ -181,7 +181,7 @@ namespace tl
             return out;
         }
 
-        const std::shared_ptr<timelineui::Viewport>& MainWindow::getViewport() const
+        const std::shared_ptr<ui::Viewport>& MainWindow::getViewport() const
         {
             return _viewport;
         }

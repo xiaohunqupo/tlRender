@@ -11,7 +11,7 @@ namespace tl
     {
         struct Viewport::Private
         {
-            std::shared_ptr<timelineui::Viewport> viewport;
+            std::shared_ptr<ui::Viewport> viewport;
         };
 
         Viewport::Viewport(
@@ -22,7 +22,7 @@ namespace tl
             _p(new Private)
         {
             FTK_P();
-            p.viewport = timelineui::Viewport::create(context);
+            p.viewport = ui::Viewport::create(context);
             setWidget(p.viewport);
         }
 

@@ -18,7 +18,7 @@ namespace tl
     {
         struct TimelineWidget::Private
         {
-            std::shared_ptr<timelineui::TimelineWidget> timelineWidget;
+            std::shared_ptr<ui::TimelineWidget> timelineWidget;
 
             std::shared_ptr<ftk::Observer<bool> > frameViewObserver;
             std::shared_ptr<ftk::Observer<bool> > scrubObserver;
@@ -35,7 +35,7 @@ namespace tl
         {
             FTK_P();
 
-            p.timelineWidget = timelineui::TimelineWidget::create(context, timeUnitsModel);
+            p.timelineWidget = ui::TimelineWidget::create(context, timeUnitsModel);
             setWidget(p.timelineWidget);
 
             p.frameViewObserver = ftk::Observer<bool>::create(
@@ -98,12 +98,12 @@ namespace tl
             return _p->timelineWidget->getFrameMarkers();
         }
 
-        const timelineui::ItemOptions& TimelineWidget::itemOptions() const
+        const ui::ItemOptions& TimelineWidget::itemOptions() const
         {
             return _p->timelineWidget->getItemOptions();
         }
 
-        const timelineui::DisplayOptions& TimelineWidget::displayOptions() const
+        const ui::DisplayOptions& TimelineWidget::displayOptions() const
         {
             return _p->timelineWidget->getDisplayOptions();
         }
@@ -143,14 +143,14 @@ namespace tl
             _p->timelineWidget->setFrameMarkers(value);
         }
 
-        void TimelineWidget::setItemOptions(const timelineui::ItemOptions& value)
+        void TimelineWidget::setItemOptions(const ui::ItemOptions& value)
         {
             FTK_P();
             p.timelineWidget->setItemOptions(value);
             setInputEnabled(value.inputEnabled);
         }
 
-        void TimelineWidget::setDisplayOptions(const timelineui::DisplayOptions& value)
+        void TimelineWidget::setDisplayOptions(const ui::DisplayOptions& value)
         {
             _p->timelineWidget->setDisplayOptions(value);
         }

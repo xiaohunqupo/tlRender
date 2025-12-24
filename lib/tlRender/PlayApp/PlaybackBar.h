@@ -49,8 +49,8 @@ namespace tl
         private:
             std::shared_ptr<timeline::Player> _player;
             std::shared_ptr<ftk::HorizontalLayout> _layout;
-            std::shared_ptr<timelineui::TimeEdit> _currentTimeEdit;
-            std::shared_ptr<timelineui::TimeLabel> _durationLabel;
+            std::shared_ptr<ui::TimeEdit> _currentTimeEdit;
+            std::shared_ptr<ui::TimeLabel> _durationLabel;
             std::shared_ptr<ftk::DoubleEdit> _speedEdit;
             std::shared_ptr<ftk::ComboBox> _timeUnitsComboBox;
             std::shared_ptr<ftk::Observer<std::shared_ptr<timeline::Player> > > _playerObserver;

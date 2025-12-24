@@ -9,7 +9,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         //! Time units widget.
         class TL_API_TYPE TimeUnitsWidget : public ftk::IWidget

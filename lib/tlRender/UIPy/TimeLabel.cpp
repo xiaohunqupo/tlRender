@@ -20,7 +20,7 @@ namespace tl
     {
         void timeLabel(py::module_& m)
         {
-            using namespace timelineui;
+            using namespace ui;
 
             py::class_<TimeLabel, ftk::IWidget, std::shared_ptr<TimeLabel> >(m, "TimeLabel")
                 .def(

@@ -23,7 +23,7 @@ namespace ftk
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         //! Information request.
         struct TL_API_TYPE InfoRequest

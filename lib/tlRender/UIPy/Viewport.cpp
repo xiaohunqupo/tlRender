@@ -18,7 +18,7 @@ namespace tl
     {
         void viewport(py::module_& m)
         {
-            using namespace timelineui;
+            using namespace ui;
 
             ftk::python::observable<std::pair<ftk::V2I, double> >(m, "ViewPosAndZoom");
             

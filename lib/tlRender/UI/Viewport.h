@@ -13,7 +13,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         //! Timeline viewport.
         class TL_API_TYPE Viewport : public ftk::IWidget

@@ -8,7 +8,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         struct IBasicItem::Private
         {

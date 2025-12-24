@@ -11,7 +11,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         struct TimeLabel::Private
         {
@@ -47,7 +47,7 @@ namespace tl
             const std::shared_ptr<timeline::TimeUnitsModel>& timeUnitsModel,
             const std::shared_ptr<IWidget>& parent)
         {
-            IWidget::_init(context, "tl::timelineui::TimeLabel", parent);
+            IWidget::_init(context, "tl::ui::TimeLabel", parent);
             FTK_P();
 
             setVAlign(ftk::VAlign::Center);

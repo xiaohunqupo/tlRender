@@ -19,7 +19,7 @@ namespace tl
     {
         void playbackToolBar(py::module_& m)
         {
-            using namespace timelineui;
+            using namespace ui;
 
             py::class_<PlaybackToolBar, ftk::ToolBar, std::shared_ptr<PlaybackToolBar> >(m, "PlaybackToolBar")
                 .def(

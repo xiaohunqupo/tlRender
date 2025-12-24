@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
     try
     {
         auto context = ftk::Context::create();
-        tl::timelineui::init(context);
+        tl::ui::init(context);
         tl::device::init(context);
         auto args = ftk::convert(argc, argv);
         auto app = tl::play::App::create(context, args);

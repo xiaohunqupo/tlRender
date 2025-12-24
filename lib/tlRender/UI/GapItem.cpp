@@ -5,7 +5,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         void GapItem::_init(
             const std::shared_ptr<ftk::Context>& context,
@@ -21,7 +21,7 @@ namespace tl
                 context,
                 !gap->name().empty() ? gap->name() : "Gap",
                 colorRole,
-                "tl::timelineui::GapItem",
+                "tl::ui::GapItem",
                 gap.value,
                 scale,
                 options,

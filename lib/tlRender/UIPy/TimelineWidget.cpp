@@ -17,7 +17,7 @@ namespace tl
     {
         void timelineWidget(py::module_& m)
         {
-            using namespace timelineui;
+            using namespace ui;
 
             py::class_<TimelineWidget, ftk::IWidget, std::shared_ptr<TimelineWidget> >(m, "TimelineWidget")
                 .def(

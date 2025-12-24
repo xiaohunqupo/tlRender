@@ -7,7 +7,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         //! Timeline widget.
         class TL_API_TYPE TimelineWidget : public ftk::IWidget

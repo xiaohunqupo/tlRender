@@ -23,7 +23,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         namespace
         {
@@ -334,7 +334,7 @@ namespace tl
             {
                 p.window = ftk::gl::Window::create(
                     context,
-                    "tl::timelineui::ThumbnailGenerator",
+                    "tl::ui::ThumbnailGenerator",
                     ftk::Size2I(1, 1),
                     static_cast<int>(ftk::gl::WindowOptions::None));
             }
@@ -1089,7 +1089,7 @@ namespace tl
         };
 
         ThumbnailSystem::ThumbnailSystem(const std::shared_ptr<ftk::Context>& context) :
-            ISystem(context, "tl::timelineui::ThumbnailSystem"),
+            ISystem(context, "tl::ui::ThumbnailSystem"),
             _p(new Private)
         {
             FTK_P();

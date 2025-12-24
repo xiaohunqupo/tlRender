@@ -18,7 +18,7 @@ namespace tl
     {
         void iItem(py::module_& m)
         {
-            using namespace timelineui;
+            using namespace ui;
             
             py::enum_<InOutDisplay>(m, "InOutDisplay")
                 .value("InsideRange", InOutDisplay::InsideRange)

@@ -22,7 +22,7 @@ namespace tl
             void _init(
                 const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<App>&,
-                const std::shared_ptr<timelineui::Viewport>&);
+                const std::shared_ptr<ui::Viewport>&);
 
             ViewActions() = default;
 
@@ -32,7 +32,7 @@ namespace tl
             static std::shared_ptr<ViewActions> create(
                 const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<App>&,
-                const std::shared_ptr<timelineui::Viewport>&);
+                const std::shared_ptr<ui::Viewport>&);
 
             const std::map<std::string, std::shared_ptr<ftk::Action> >& getActions() const;
 

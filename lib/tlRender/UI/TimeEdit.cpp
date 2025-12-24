@@ -11,7 +11,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         struct TimeEdit::Private
         {
@@ -30,7 +30,7 @@ namespace tl
             const std::shared_ptr<timeline::TimeUnitsModel>& timeUnitsModel,
             const std::shared_ptr<IWidget>& parent)
         {
-            IWidget::_init(context, "tl::timelineui::TimeEdit", parent);
+            IWidget::_init(context, "tl::ui::TimeEdit", parent);
             FTK_P();
 
             p.timeUnitsModel = timeUnitsModel;

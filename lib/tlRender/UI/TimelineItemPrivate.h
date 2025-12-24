@@ -10,7 +10,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         struct TimelineItem::Private
         {

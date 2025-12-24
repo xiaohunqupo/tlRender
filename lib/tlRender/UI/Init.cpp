@@ -57,7 +57,7 @@ namespace tl_resource
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         void init(const std::shared_ptr<ftk::Context>& context)
         {

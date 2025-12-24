@@ -49,7 +49,7 @@ namespace tl
                 const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<App>&);
 
-            const std::shared_ptr<timelineui::Viewport>& getViewport() const;
+            const std::shared_ptr<ui::Viewport>& getViewport() const;
 
             std::shared_ptr<ftk::IObservable<bool> > observeSettingsVisible() const;
             void setSettingsVisible(bool);
@@ -62,7 +62,7 @@ namespace tl
             std::weak_ptr<App> _app;
             std::weak_ptr<SettingsModel> _settingsModel;
 
-            std::shared_ptr<timelineui::Viewport> _viewport;
+            std::shared_ptr<ui::Viewport> _viewport;
             std::shared_ptr<FileActions> _fileActions;
             std::shared_ptr<CompareActions> _compareActions;
             std::shared_ptr<PlaybackActions> _playbackActions;
@@ -71,7 +71,7 @@ namespace tl
             std::shared_ptr<MenuBar> _menuBar;
             std::shared_ptr<TabBar> _tabBar;
             std::shared_ptr<PlaybackBar> _playbackBar;
-            std::shared_ptr<timelineui::TimelineWidget> _timelineWidget;
+            std::shared_ptr<ui::TimelineWidget> _timelineWidget;
             std::shared_ptr<StatusBar> _statusBar;
             std::shared_ptr<SettingsWidget> _settingsWidget;
             std::shared_ptr<ftk::Observable<bool> > _settingsVisible;

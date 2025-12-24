@@ -9,7 +9,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         //! Base class for clips, gaps, and other items.
         class TL_API_TYPE IBasicItem : public IItem

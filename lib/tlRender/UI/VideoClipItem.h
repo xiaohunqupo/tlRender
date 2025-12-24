@@ -9,7 +9,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         class ThumbnailGenerator;
 

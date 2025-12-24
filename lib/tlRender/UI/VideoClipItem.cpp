@@ -13,7 +13,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         struct VideoClipItem::Private
         {
@@ -53,7 +53,7 @@ namespace tl
                 context,
                 !clip->name().empty() ? clip->name() : path.getFileName(),
                 ftk::ColorRole::VideoClip,
-                "tl::timelineui::VideoClipItem",
+                "tl::ui::VideoClipItem",
                 clip.value,
                 scale,
                 options,

@@ -9,7 +9,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         //! Transition item.
         class TL_API_TYPE TransitionItem : public IItem

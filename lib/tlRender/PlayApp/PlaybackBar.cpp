@@ -39,10 +39,10 @@ namespace tl
             nextButton->setRepeatClick(true);
             auto endButton = ftk::ToolButton::create(context, tmp["End"], hLayout);
 
-            _currentTimeEdit = timelineui::TimeEdit::create(context, app->getTimeUnitsModel(), _layout);
+            _currentTimeEdit = ui::TimeEdit::create(context, app->getTimeUnitsModel(), _layout);
             _currentTimeEdit->setTooltip("The current time.");
 
-            _durationLabel = timelineui::TimeLabel::create(context, app->getTimeUnitsModel(), _layout);
+            _durationLabel = ui::TimeLabel::create(context, app->getTimeUnitsModel(), _layout);
             _durationLabel->setTooltip("The timeline duration.");
 
             _speedEdit = ftk::DoubleEdit::create(context, _layout);

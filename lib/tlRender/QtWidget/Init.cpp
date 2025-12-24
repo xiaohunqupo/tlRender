@@ -32,7 +32,7 @@ namespace tl
             const std::shared_ptr<ftk::Context>& context,
             qt::DefaultSurfaceFormat defaultSurfaceFormat)
         {
-            timelineui::init(context);
+            ui::init(context);
             qt::init(context, defaultSurfaceFormat);
         }
 

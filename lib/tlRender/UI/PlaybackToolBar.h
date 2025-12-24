@@ -9,7 +9,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         //! Playback tool bar.
         class TL_API_TYPE PlaybackToolBar : public ftk::ToolBar

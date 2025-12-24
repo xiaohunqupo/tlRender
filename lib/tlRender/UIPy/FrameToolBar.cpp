@@ -19,7 +19,7 @@ namespace tl
     {
         void frameToolBar(py::module_& m)
         {
-            using namespace timelineui;
+            using namespace ui;
 
             py::class_<FrameToolBar, ftk::ToolBar, std::shared_ptr<FrameToolBar> >(m, "FrameToolBar")
                 .def(

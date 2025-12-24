@@ -5,7 +5,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         void TransitionItem::_init(
             const std::shared_ptr<ftk::Context>& context,
@@ -28,7 +28,7 @@ namespace tl
             }
             IItem::_init(
                 context,
-                "tl::timelineui::TransitionItem",
+                "tl::ui::TransitionItem",
                 timeRange,
                 availableRange,
                 availableRange,

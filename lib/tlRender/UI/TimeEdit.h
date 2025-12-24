@@ -16,7 +16,7 @@ namespace tl
         class TimeUnitsModel;
     }
 
-    namespace timelineui
+    namespace ui
     {
         //! Time value editor.
         class TL_API_TYPE TimeEdit : public ftk::IWidget

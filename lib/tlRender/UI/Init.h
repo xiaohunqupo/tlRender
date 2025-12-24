@@ -16,7 +16,7 @@ namespace ftk
 namespace tl
 {
     //! Timeline user interface
-    namespace timelineui
+    namespace ui
     {
         //! Initialize the library.
         TL_API void init(const std::shared_ptr<ftk::Context>&);

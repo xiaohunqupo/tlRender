@@ -20,7 +20,7 @@ namespace tl
     {
         void timeEdit(py::module_& m)
         {
-            using namespace timelineui;
+            using namespace ui;
 
             py::class_<TimeEdit, ftk::IWidget, std::shared_ptr<TimeEdit> >(m, "TimeEdit")
                 .def(

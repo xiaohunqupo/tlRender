@@ -54,10 +54,10 @@ namespace tl
             const std::vector<int>& frameMarkers() const;
 
             //! Get the item options.
-            const timelineui::ItemOptions& itemOptions() const;
+            const ui::ItemOptions& itemOptions() const;
 
             //! Get the display options.
-            const timelineui::DisplayOptions& displayOptions() const;
+            const ui::DisplayOptions& displayOptions() const;
 
         public Q_SLOTS:
             //! Set whether the view is framed automatically.
@@ -82,10 +82,10 @@ namespace tl
             void setFrameMarkers(const std::vector<int>&);
 
             //! Set the item options.
-            void setItemOptions(const timelineui::ItemOptions&);
+            void setItemOptions(const ui::ItemOptions&);
 
             //! Set the display options.
-            void setDisplayOptions(const timelineui::DisplayOptions&);
+            void setDisplayOptions(const ui::DisplayOptions&);
 
         Q_SIGNALS:
             //! This signal is emitted when the frame view is changed.

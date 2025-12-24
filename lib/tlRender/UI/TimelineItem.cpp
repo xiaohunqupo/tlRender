@@ -16,7 +16,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         void TimelineItem::_init(
             const std::shared_ptr<ftk::Context>& context,
@@ -35,7 +35,7 @@ namespace tl
                 timeRange.duration());
             IItem::_init(
                 context,
-                "tl::timelineui::TimelineItem",
+                "tl::ui::TimelineItem",
                 timeRange,
                 availableRange,
                 availableRange,

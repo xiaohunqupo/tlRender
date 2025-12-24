@@ -17,7 +17,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         struct Viewport::Private
         {
@@ -84,7 +84,7 @@ namespace tl
             const std::shared_ptr<ftk::Context>& context,
             const std::shared_ptr<IWidget>& parent)
         {
-            IWidget::_init(context, "tl::timelineui::Viewport", parent);
+            IWidget::_init(context, "tl::ui::Viewport", parent);
             FTK_P();
 
             setHStretch(ftk::Stretch::Expanding);
@@ -672,7 +672,7 @@ namespace tl
                 {
                     if (auto context = getContext())
                     {
-                        context->log("tl::timelineui::Viewport", e.what(), ftk::LogType::Error);
+                        context->log("tl::ui::Viewport", e.what(), ftk::LogType::Error);
                     }
                 }
             }

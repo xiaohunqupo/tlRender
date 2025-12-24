@@ -26,7 +26,7 @@ namespace tl
             
             mUI.def(
                 "init",
-                &timelineui::init,
+                &ui::init,
                 py::arg("context"),
                 "Initialize the library.");
 

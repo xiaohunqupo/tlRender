@@ -17,7 +17,7 @@ namespace ftk
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         //! Track types.
         enum class TL_API_TYPE TrackType

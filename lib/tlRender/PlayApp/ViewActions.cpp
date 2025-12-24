@@ -15,9 +15,9 @@ namespace tl
         void ViewActions::_init(
             const std::shared_ptr<ftk::Context>& context,
             const std::shared_ptr<App>& app,
-            const std::shared_ptr<timelineui::Viewport>& viewport)
+            const std::shared_ptr<ui::Viewport>& viewport)
         {
-            auto viewportWeak = std::weak_ptr<timelineui::Viewport>(viewport);
+            auto viewportWeak = std::weak_ptr<ui::Viewport>(viewport);
             _actions["Frame"] = ftk::Action::create(
                 "Frame",
                 "ViewFrame",
@@ -94,7 +94,7 @@ namespace tl
         std::shared_ptr<ViewActions> ViewActions::create(
             const std::shared_ptr<ftk::Context>& context,
             const std::shared_ptr<App>& app,
-            const std::shared_ptr<timelineui::Viewport>& viewport)
+            const std::shared_ptr<ui::Viewport>& viewport)
         {
             auto out = std::shared_ptr<ViewActions>(new ViewActions);
             out->_init(context, app, viewport);

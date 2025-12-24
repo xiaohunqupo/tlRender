@@ -18,7 +18,7 @@ namespace tl
     {
         void timeUnitsWidget(py::module_& m)
         {
-            using namespace timelineui;
+            using namespace ui;
 
             py::class_<TimeUnitsWidget, ftk::IWidget, std::shared_ptr<TimeUnitsWidget> >(m, "TimeUnitsWidget")
                 .def(

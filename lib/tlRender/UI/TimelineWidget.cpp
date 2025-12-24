@@ -11,7 +11,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         namespace
         {
@@ -73,7 +73,7 @@ namespace tl
             const std::shared_ptr<timeline::ITimeUnitsModel>& timeUnitsModel,
             const std::shared_ptr<IWidget>& parent)
         {
-            IWidget::_init(context, "tl::timelineui::TimelineWidget", parent);
+            IWidget::_init(context, "tl::ui::TimelineWidget", parent);
             FTK_P();
 
             p.itemData = std::make_shared<ItemData>();
@@ -93,7 +93,7 @@ namespace tl
 
             p.window = ftk::gl::Window::create(
                 context,
-                "tl::timelineui::TimelineWidget",
+                "tl::ui::TimelineWidget",
                 ftk::Size2I(1, 1),
                 static_cast<int>(ftk::gl::WindowOptions::None));
 

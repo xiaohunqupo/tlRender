@@ -9,7 +9,7 @@
 
 namespace tl
 {
-    namespace timelineui
+    namespace ui
     {
         //! Gap item.
         class TL_API_TYPE GapItem : public IBasicItem
