@@ -142,6 +142,10 @@ namespace tl
                     "observeDroppedFrames",
                     &Viewport::observeDroppedFrames)
                 .def("getColorSample", &Viewport::getColorSample)
+                .def_property(
+                    "inputEnabled",
+                    &Viewport::isInputEnabled,
+                    &Viewport::setInputEnabled)
                 .def(
                     "setPanBinding",
                     &Viewport::setPanBinding,

@@ -35,83 +35,86 @@ namespace tl
                 const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
-            //! Get the comparison options.
+            //! \name Comparison Options
+            ///@{
+
             TL_API const timeline::CompareOptions& getCompareOptions() const;
-
-            //! Observe the comparison options.
             TL_API std::shared_ptr<ftk::IObservable<timeline::CompareOptions> > observeCompareOptions() const;
-
-            //! Set the comparison options.
             TL_API void setCompareOptions(const timeline::CompareOptions&);
 
-            //! Get the OpenColorIO options.
+            ///@}
+
+            //! \name OpenColorIO Options
+            ///@{
+
             TL_API const timeline::OCIOOptions& getOCIOOptions() const;
-
-            //! Observe the OpenColorIO options.
             TL_API std::shared_ptr<ftk::IObservable<timeline::OCIOOptions> > observeOCIOOptions() const;
-
-            //! Set the OpenColorIO options.
             TL_API void setOCIOOptions(const timeline::OCIOOptions&);
 
-            //! Get the LUT options.
+            ///@}
+
+            //! \name LUT Options
+            ///@{
+
             TL_API const timeline::LUTOptions& getLUTOptions() const;
-
-            //! Observe the LUT options.
             TL_API std::shared_ptr<ftk::IObservable<timeline::LUTOptions> > observeLUTOptions() const;
-
-            //! Set the LUT options.
             TL_API void setLUTOptions(const timeline::LUTOptions&);
 
-            //! Get the image options.
+            ///@}
+
+            //! \name Image Options
+            ///@{
+
             TL_API const std::vector<ftk::ImageOptions>& getImageOptions() const;
-
-            //! Observe the image options.
             TL_API std::shared_ptr<ftk::IObservableList<ftk::ImageOptions> > observeImageOptions() const;
-
-            //! Set the image options.
             TL_API void setImageOptions(const std::vector<ftk::ImageOptions>&);
 
-            //! Get the display options.
+            ///@}
+
+            //! \name Display Options
+            ///@{
+
             TL_API const std::vector<timeline::DisplayOptions>& getDisplayOptions() const;
-
-            //! Observe the display options.
             TL_API std::shared_ptr<ftk::IObservableList<timeline::DisplayOptions> > observeDisplayOptions() const;
-
-            //! Set the display options.
             TL_API void setDisplayOptions(const std::vector<timeline::DisplayOptions>&);
 
-            //! Get the background options.
+            ///@}
+
+            //! \name Background Options
+            ///@{
+
             TL_API const timeline::BackgroundOptions& getBackgroundOptions() const;
-
-            //! Observe the background options.
             TL_API std::shared_ptr<ftk::IObservable<timeline::BackgroundOptions> > observeBackgroundOptions() const;
-
-            //! Set the background options.
             TL_API void setBackgroundOptions(const timeline::BackgroundOptions&);
 
-            //! Get the foreground options.
+            //! \name Foreground Options
+            ///@{
+
             TL_API const timeline::ForegroundOptions& getForegroundOptions() const;
-
-            //! Observe the foreground options.
             TL_API std::shared_ptr<ftk::IObservable<timeline::ForegroundOptions> > observeForegroundOptions() const;
-
-            //! Set the foreground options.
             TL_API void setForegroundOptions(const timeline::ForegroundOptions&);
 
-            //! Get the color buffer type.
+            ///@}
+
+            //! \name Color Buffer Type
+            ///@{
+
             TL_API ftk::ImageType getColorBuffer() const;
-
-            //! Observe the color buffer type.
             TL_API std::shared_ptr<ftk::IObservable<ftk::ImageType> > observeColorBuffer() const;
-
-            //! Set the color buffer type.
             TL_API void setColorBuffer(ftk::ImageType);
 
-            //! Get the timeline player.
-            TL_API const std::shared_ptr<timeline::Player>& getPlayer() const;
+            ///@}
 
-            //! Set the timeline player.
+            //! \name Timeline Player
+            ///@{
+
+            TL_API const std::shared_ptr<timeline::Player>& getPlayer() const;
             TL_API virtual void setPlayer(const std::shared_ptr<timeline::Player>&);
+
+            ///@}
+
+            //! \name View
+            ///@{
 
             //! Get the view position.
             TL_API const ftk::V2I& getViewPos() const;
@@ -158,6 +161,11 @@ namespace tl
             //! Zoom the view out.
             TL_API void viewZoomOut();
 
+            ///@}
+
+            //! \name Frames
+            ///@{
+
             //! Get the frames per second.
             TL_API double getFPS() const;
 
@@ -170,8 +178,24 @@ namespace tl
             //! Observe the number of dropped frames during playback.
             TL_API std::shared_ptr<ftk::IObservable<size_t> > observeDroppedFrames() const;
             
+            ///@}
+
+            //! \name Color Sample
+            ///@{
+
             //! Sample a color from the viewport.
             TL_API ftk::Color4F getColorSample(const ftk::V2I&);
+
+            ///@}
+
+            //! \name Input
+            ///@{
+
+            //! Get whether input is enabled.
+            bool isInputEnabled() const;
+
+            //! Set whether input is enabled.
+            void setInputEnabled(bool);
 
             //! Set the pan binding.
             TL_API void setPanBinding(ftk::MouseButton, ftk::KeyModifier);
@@ -181,6 +205,8 @@ namespace tl
 
             //! Set the mouse wheel scale.
             TL_API void setMouseWheelScale(float);
+
+            ///@}
 
             TL_API void setGeometry(const ftk::Box2I&) override;
             TL_API void sizeHintEvent(const ftk::SizeHintEvent&) override;
