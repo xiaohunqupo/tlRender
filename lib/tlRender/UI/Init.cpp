@@ -40,6 +40,7 @@ namespace tl_resource
     extern std::vector<uint8_t> FrameShuttle7;
     extern std::vector<uint8_t> Hidden;
     extern std::vector<uint8_t> Info;
+    extern std::vector<uint8_t> Magnify;
     extern std::vector<uint8_t> Messages;
     extern std::vector<uint8_t> PlaybackShuttle0;
     extern std::vector<uint8_t> PlaybackShuttle1;
@@ -92,6 +93,7 @@ namespace tl
             iconSystem->add("FrameShuttle7", tl_resource::FrameShuttle7);
             iconSystem->add("Hidden", tl_resource::Hidden);
             iconSystem->add("Info", tl_resource::Info);
+            iconSystem->add("Magnify", tl_resource::Magnify);
             iconSystem->add("Messages", tl_resource::Messages);
             iconSystem->add("PlaybackShuttle0", tl_resource::PlaybackShuttle0);
             iconSystem->add("PlaybackShuttle1", tl_resource::PlaybackShuttle1);

@@ -26,6 +26,7 @@ set(RESOURCES
     etc/Icons/FrameShuttle7.svg
     etc/Icons/Hidden.svg
     etc/Icons/Info.svg
+    etc/Icons/Magnify.svg
     etc/Icons/Messages.svg
     etc/Icons/PlaybackShuttle0.svg
     etc/Icons/PlaybackShuttle1.svg
