@@ -54,11 +54,12 @@ namespace tl
 
         void Render::_init(
             const std::shared_ptr<ftk::LogSystem>& logSystem,
+            const std::shared_ptr<ftk::FontSystem>& fontSystem,
             const std::shared_ptr<ftk::gl::TextureCache>& textureCache)
         {
-            IRender::_init(logSystem);
+            IRender::_init(logSystem, fontSystem);
             FTK_P();
-            p.baseRender = ftk::gl::Render::create(logSystem, textureCache);
+            p.baseRender = ftk::gl::Render::create(logSystem, fontSystem, textureCache);
         }
 
         Render::Render() :
@@ -70,10 +71,11 @@ namespace tl
 
         std::shared_ptr<Render> Render::create(
             const std::shared_ptr<ftk::LogSystem>& logSystem,
+            const std::shared_ptr<ftk::FontSystem>& fontSystem,
             const std::shared_ptr<ftk::gl::TextureCache>& textureCache)
         {
             auto out = std::shared_ptr<Render>(new Render);
-            out->_init(logSystem, textureCache);
+            out->_init(logSystem, fontSystem, textureCache);
             return out;
         }
 
@@ -636,9 +638,11 @@ namespace tl
 #endif // TLRENDER_OCIO
         }
 
-        std::shared_ptr<ftk::IRender> RenderFactory::createRender(const std::shared_ptr<ftk::LogSystem>& logSystem)
+        std::shared_ptr<ftk::IRender> RenderFactory::createRender(
+            const std::shared_ptr<ftk::LogSystem>& logSystem,
+            const std::shared_ptr<ftk::FontSystem>& fontSystem)
         {
-            return Render::create(logSystem);
+            return Render::create(logSystem, fontSystem);
         }
     }
 }

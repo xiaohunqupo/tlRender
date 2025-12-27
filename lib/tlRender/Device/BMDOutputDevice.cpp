@@ -51,7 +51,8 @@ namespace tl
 
         struct OutputDevice::Private
         {
-            std::weak_ptr<ftk::LogSystem> logSystem;
+            std::weak_ptr<ftk::Context> context;
+
             std::shared_ptr<ftk::Observable<DeviceConfig> > config;
             std::shared_ptr<ftk::Observable<bool> > enabled;
             std::shared_ptr<ftk::Observable<bool> > active;
@@ -140,7 +141,8 @@ namespace tl
                 system->_addDevice(shared_from_this());
             }
 
-            p.logSystem = context->getLogSystem();
+            p.context = context;
+
             p.config = ftk::Observable<DeviceConfig>::create();
             p.enabled = ftk::Observable<bool>::create(false);
             p.active = ftk::Observable<bool>::create(false);
@@ -596,10 +598,9 @@ namespace tl
             std::vector<timeline::AudioData> audioData;
             std::shared_ptr<ftk::Image> overlay;
 
-            if (auto logSystem = p.logSystem.lock())
-            {
-                p.thread.render = timeline_gl::Render::create(logSystem);
-            }
+            p.thread.render = timeline_gl::Render::create(
+                p.context.lock()->getLogSystem(),
+                p.context.lock()->getSystem<ftk::FontSystem>());
 
             auto t = std::chrono::steady_clock::now();
             while (p.thread.running)
@@ -732,13 +733,10 @@ namespace tl
                         }
                         catch (const std::exception& e)
                         {
-                            if (auto logSystem = p.logSystem.lock())
-                            {
-                                logSystem->print(
-                                    "tl::bmd::OutputDevice",
-                                    e.what(),
-                                    ftk::LogType::Error);
-                            }
+                            p.context.lock()->log(
+                                "tl::bmd::OutputDevice",
+                                e.what(),
+                                ftk::LogType::Error);
                         }
                     }
                     {
@@ -773,13 +771,10 @@ namespace tl
                     }
                     catch (const std::exception& e)
                     {
-                        if (auto logSystem = p.logSystem.lock())
-                        {
-                            logSystem->print(
-                                "tl::bmd::OutputDevice",
-                                e.what(),
-                                ftk::LogType::Error);
-                        }
+                        p.context.lock()->log(
+                            "tl::bmd::OutputDevice",
+                            e.what(),
+                            ftk::LogType::Error);
                     }
                 }
 
@@ -887,14 +882,11 @@ namespace tl
                     default: break;
                     }
                 }
-                if (auto logSystem = p.logSystem.lock())
-                {
-                    BOOL value = 0;
-                    p.thread.dl->config->GetFlag(bmdDeckLinkConfig444SDIVideoOutput, &value);
-                    logSystem->print(
-                        "tl::bmd::OutputDevice",
-                        ftk::Format("444 SDI output: {0}").arg(value));
-                }
+                BOOL value = 0;
+                p.thread.dl->config->GetFlag(bmdDeckLinkConfig444SDIVideoOutput, &value);
+                p.context.lock()->log(
+                    "tl::bmd::OutputDevice",
+                    ftk::Format("444 SDI output: {0}").arg(value));
 
                 if (p.thread.dl->p->QueryInterface(IID_IDeckLinkStatus, (void**)&p.thread.dl->status) != S_OK)
                 {
@@ -941,24 +933,21 @@ namespace tl
                     frameRate.num = static_cast<int>(frameDuration);
                     frameRate.den = static_cast<int>(frameTimescale);
 
-                    if (auto logSystem = p.logSystem.lock())
-                    {
-                        logSystem->print(
-                            "tl::bmd::OutputDevice",
-                            ftk::Format(
-                                "\n"
-                                "    #{0} {1}/{2}\n"
-                                "    video: {3} {4}\n"
-                                "    audio: {5} {6} {7}").
-                            arg(config.deviceIndex).
-                            arg(modelName).
-                            arg(p.thread.size).
-                            arg(frameRate.num).
-                            arg(frameRate.den).
-                            arg(audioInfo.channelCount).
-                            arg(audioInfo.dataType).
-                            arg(audioInfo.sampleRate));
-                    }
+                    p.context.lock()->log(
+                        "tl::bmd::OutputDevice",
+                        ftk::Format(
+                            "\n"
+                            "    #{0} {1}/{2}\n"
+                            "    video: {3} {4}\n"
+                            "    audio: {5} {6} {7}").
+                        arg(config.deviceIndex).
+                        arg(modelName).
+                        arg(p.thread.size).
+                        arg(frameRate.num).
+                        arg(frameRate.den).
+                        arg(audioInfo.channelCount).
+                        arg(audioInfo.dataType).
+                        arg(audioInfo.sampleRate));
 
                     HRESULT r = p.thread.dl->output->EnableVideoOutput(
                         dlDisplayMode->GetDisplayMode(),

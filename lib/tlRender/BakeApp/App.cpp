@@ -263,7 +263,9 @@ namespace tl
             _print(ftk::Format("Render size: {0}").arg(_renderSize));
 
             // Create the renderer.
-            _render = timeline_gl::Render::create(_context->getLogSystem());
+            _render = timeline_gl::Render::create(
+                _context->getLogSystem(),
+                _context->getSystem<ftk::FontSystem>());
             ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
             offscreenBufferOptions.color = ftk::gl::offscreenColorDefault;
             _buffer = ftk::gl::OffscreenBuffer::create(_renderSize, offscreenBufferOptions);

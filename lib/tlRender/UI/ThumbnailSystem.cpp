@@ -362,7 +362,9 @@ namespace tl
                 {
                     FTK_P();
                     p.window->makeCurrent();
-                    p.thumbnailThread.render = timeline_gl::Render::create();
+                    p.thumbnailThread.render = timeline_gl::Render::create(
+                        p.context.lock()->getLogSystem(),
+                        p.context.lock()->getSystem<ftk::FontSystem>());
                     while (p.thumbnailThread.running)
                     {
                         _thumbnailRun();

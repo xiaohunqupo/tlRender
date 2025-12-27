@@ -21,6 +21,7 @@ namespace tl
         protected:
             void _init(
                 const std::shared_ptr<ftk::LogSystem>&,
+                const std::shared_ptr<ftk::FontSystem>&,
                 const std::shared_ptr<ftk::gl::TextureCache>&);
 
             Render();
@@ -30,7 +31,8 @@ namespace tl
 
             //! Create a new renderer.
             TL_API static std::shared_ptr<Render> create(
-                const std::shared_ptr<ftk::LogSystem>& = nullptr,
+                const std::shared_ptr<ftk::LogSystem>&,
+                const std::shared_ptr<ftk::FontSystem>&,
                 const std::shared_ptr<ftk::gl::TextureCache>& = nullptr);
 
             TL_API const std::shared_ptr<ftk::gl::TextureCache>& getTextureCache() const;
@@ -174,7 +176,9 @@ namespace tl
         class TL_API_TYPE RenderFactory : public ftk::IRenderFactory
         {
         public:
-            TL_API std::shared_ptr<ftk::IRender> createRender(const std::shared_ptr<ftk::LogSystem>& logSystem) override;
+            TL_API std::shared_ptr<ftk::IRender> createRender(
+                const std::shared_ptr<ftk::LogSystem>&,
+                const std::shared_ptr<ftk::FontSystem>&) override;
         };
     }
 }

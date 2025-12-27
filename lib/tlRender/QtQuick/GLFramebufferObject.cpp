@@ -42,7 +42,9 @@ namespace tl
                     {
                         _init = true;
                         ftk::gl::initGLAD();
-                        _render = timeline_gl::Render::create(qtquick::getContext()->getLogSystem());
+                        _render = timeline_gl::Render::create(
+                            qtquick::getContext()->getLogSystem(),
+                            qtquick::getContext()->getSystem<ftk::FontSystem>());
                     }
 
                     QOpenGLFramebufferObject* fbo = framebufferObject();

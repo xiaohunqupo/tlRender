@@ -222,53 +222,49 @@ namespace tl
             FTK_P();
             initializeOpenGLFunctions();
             ftk::gl::initGLAD();
-            if (auto context = p.context.lock())
+            try
             {
-                try
-                {
-                    p.render = timeline_gl::Render::create(context->getLogSystem());
+                p.render = timeline_gl::Render::create(
+                    p.context.lock()->getLogSystem(),
+                    p.context.lock()->getSystem<ftk::FontSystem>());
 
-                    const std::string vertexSource =
-                        "#version 410\n"
-                        "\n"
-                        "in vec3 vPos;\n"
-                        "in vec2 vTexture;\n"
-                        "out vec2 fTexture;\n"
-                        "\n"
-                        "uniform struct Transform\n"
-                        "{\n"
-                        "    mat4 mvp;\n"
-                        "} transform;\n"
-                        "\n"
-                        "void main()\n"
-                        "{\n"
-                        "    gl_Position = transform.mvp * vec4(vPos, 1.0);\n"
-                        "    fTexture = vTexture;\n"
-                        "}\n";
-                    const std::string fragmentSource =
-                        "#version 410\n"
-                        "\n"
-                        "in vec2 fTexture;\n"
-                        "out vec4 fColor;\n"
-                        "\n"
-                        "uniform sampler2D textureSampler;\n"
-                        "\n"
-                        "void main()\n"
-                        "{\n"
-                        "    fColor = texture(textureSampler, fTexture);\n"
-                        "}\n";
-                    p.shader = ftk::gl::Shader::create(vertexSource, fragmentSource);
-                }
-                catch (const std::exception& e)
-                {
-                    if (auto context = p.context.lock())
-                    {
-                        context->log(
-                            "tl::qtwidget::TimelineWidget",
-                            e.what(),
-                            ftk::LogType::Error);
-                    }
-                }
+                const std::string vertexSource =
+                    "#version 410\n"
+                    "\n"
+                    "in vec3 vPos;\n"
+                    "in vec2 vTexture;\n"
+                    "out vec2 fTexture;\n"
+                    "\n"
+                    "uniform struct Transform\n"
+                    "{\n"
+                    "    mat4 mvp;\n"
+                    "} transform;\n"
+                    "\n"
+                    "void main()\n"
+                    "{\n"
+                    "    gl_Position = transform.mvp * vec4(vPos, 1.0);\n"
+                    "    fTexture = vTexture;\n"
+                    "}\n";
+                const std::string fragmentSource =
+                    "#version 410\n"
+                    "\n"
+                    "in vec2 fTexture;\n"
+                    "out vec4 fColor;\n"
+                    "\n"
+                    "uniform sampler2D textureSampler;\n"
+                    "\n"
+                    "void main()\n"
+                    "{\n"
+                    "    fColor = texture(textureSampler, fTexture);\n"
+                    "}\n";
+                p.shader = ftk::gl::Shader::create(vertexSource, fragmentSource);
+            }
+            catch (const std::exception& e)
+            {
+                p.context.lock()->log(
+                    "tl::qtwidget::TimelineWidget",
+                    e.what(),
+                    ftk::LogType::Error);
             }
             _sizeHintEvent();
         }
