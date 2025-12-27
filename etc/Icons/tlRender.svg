@@ -7,7 +7,7 @@
    viewBox="0 0 270.93334 270.93334"
    version="1.1"
    id="svg1"
-   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   inkscape:version="1.4.2 (ebf0e94, 2025-05-08)"
    sodipodi:docname="tlRender.svg"
    inkscape:export-filename="tlRender_32.png"
    inkscape:export-xdpi="3"
@@ -34,7 +34,8 @@
      inkscape:window-x="322"
      inkscape:window-y="25"
      inkscape:window-maximized="0"
-     inkscape:current-layer="layer4" />
+     inkscape:current-layer="layer4"
+     showgrid="false" />
   <defs
      id="defs1" />
   <g
@@ -307,7 +308,7 @@
      inkscape:label="icon_256x256"
      style="display:inline">
     <rect
-       style="fill:#5aff5a;fill-opacity:1;stroke-width:1.32292"
+       style="fill:#7fff7f;fill-opacity:1;stroke-width:1.32292"
        id="rect5"
        width="218.01668"
        height="50.799999"
@@ -321,7 +322,7 @@
        x="26.458334"
        y="154.25208" />
     <rect
-       style="fill:#fc5a5a;fill-opacity:1;stroke-width:1.32292"
+       style="fill:#fc7f7f;fill-opacity:1;stroke-width:1.32292"
        id="rect2"
        width="218.01668"
        height="50.799999"
@@ -342,7 +343,7 @@
        x="26.458334"
        y="90.222923" />
     <rect
-       style="fill:#5a5afe;fill-opacity:1;stroke-width:1.32292"
+       style="fill:#7f7ffe;fill-opacity:1;stroke-width:1.32292"
        id="rect6"
        width="218.01668"
        height="50.799999"
@@ -356,28 +357,28 @@
        x="26.458334"
        y="218.28125" />
     <rect
-       style="fill:#3c3c3c;fill-opacity:1;stroke:none;stroke-width:6.61459;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#3c3c3c;fill-opacity:1;stroke:none;stroke-width:11.4569;stroke-dasharray:none;stroke-opacity:1"
        id="rect21"
        width="50.799999"
-       height="6.6145835"
+       height="19.84375"
        x="39.422935"
-       y="-74.347916"
+       y="-85.989586"
        transform="rotate(90)" />
     <rect
-       style="fill:#3c3c3c;fill-opacity:1;stroke:none;stroke-width:6.61459;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#3c3c3c;fill-opacity:1;stroke:none;stroke-width:11.4568;stroke-dasharray:none;stroke-opacity:1"
        id="rect22"
        width="50.799999"
-       height="6.6145835"
-       x="103.4521"
-       y="-209.81459"
+       height="19.84375"
+       x="103.45209"
+       y="-205.05209"
        transform="rotate(90)" />
     <rect
-       style="fill:#3c3c3c;fill-opacity:1;stroke:none;stroke-width:6.61459;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#3c3c3c;fill-opacity:1;stroke:none;stroke-width:11.4568;stroke-dasharray:none;stroke-opacity:1"
        id="rect23"
        width="50.799999"
-       height="6.6145835"
+       height="19.84375"
        x="167.48125"
-       y="-142.08125"
+       y="-152.13542"
        transform="rotate(90)" />
   </g>
   <g
