@@ -149,6 +149,15 @@ namespace tl
             //! Set the playback speed.
             TL_API void setSpeed(double);
 
+            //! Get the playback speed multiplier.
+            TL_API double getSpeedMult() const;
+
+            //! Observe the playback speed multiplier.
+            TL_API std::shared_ptr<ftk::IObservable<double> > observeSpeedMult() const;
+
+            //! Set the playback speed multiplier.
+            TL_API void setSpeedMult(double);
+
             //! Get the playback mode.
             TL_API Playback getPlayback() const;
 

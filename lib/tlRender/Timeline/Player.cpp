@@ -96,6 +96,7 @@ namespace tl
 
             // Create observers.
             p.speed = ftk::Observable<double>::create(p.timeRange.duration().rate());
+            p.speedMult = ftk::Observable<double>::create(1.0);
             p.playback = ftk::Observable<Playback>::create(Playback::Stop);
             p.loop = ftk::Observable<Loop>::create(Loop::Loop);
             p.currentTime = ftk::Observable<OTIO_NS::RationalTime>::create(
@@ -156,7 +157,7 @@ namespace tl
             p.mutex.state.inOutRange = p.inOutRange->get();
             p.mutex.state.audioOffset = p.audioOffset->get();
             p.mutex.state.cacheOptions = p.cacheOptions->get();
-            p.audioMutex.state.speed = p.speed->get();
+            p.audioMutex.state.speed = p.speed->get() * p.speedMult->get();
             p.log(context);
             p.running = true;
             p.thread.thread = std::thread(
@@ -271,6 +272,33 @@ namespace tl
                 {
                     std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
                     p.audioMutex.state.speed = value;
+                    p.audioReset(p.currentTime->get());
+                }
+                if (!p.hasAudio())
+                {
+                    p.playbackReset(p.currentTime->get());
+                }
+            }
+        }
+
+        double Player::getSpeedMult() const
+        {
+            return _p->speedMult->get();
+        }
+
+        std::shared_ptr<ftk::IObservable<double> > Player::observeSpeedMult() const
+        {
+            return _p->speedMult;
+        }
+
+        void Player::setSpeedMult(double value)
+        {
+            FTK_P();
+            if (p.speedMult->setIfChanged(value))
+            {
+                {
+                    std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
+                    p.audioMutex.state.speed = p.speed->get() * value;
                     p.audioReset(p.currentTime->get());
                 }
                 if (!p.hasAudio())
@@ -759,7 +787,7 @@ namespace tl
                     start = p.noAudio.start;
                     const auto now = std::chrono::steady_clock::now();
                     const std::chrono::duration<double> diff = now - p.noAudio.playbackTimer;
-                    t = diff.count() * p.speed->get() / timelineSpeed;
+                    t = diff.count() * (p.speed->get() * p.speedMult->get()) / timelineSpeed;
                 }
                 if (Playback::Reverse == playback)
                 {
