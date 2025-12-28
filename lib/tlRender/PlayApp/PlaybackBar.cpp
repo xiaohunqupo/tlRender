@@ -7,6 +7,7 @@
 #include "FilesModel.h"
 
 #include <ftk/UI/ToolButton.h>
+#include <ftk/Core/Format.h>
 
 namespace tl
 {
@@ -50,6 +51,10 @@ namespace tl
             _speedEdit->setStep(1.0);
             _speedEdit->setLargeStep(10.0);
             _speedEdit->setTooltip("The timeline speed.");
+
+            _speedMultLabel = ftk::Label::create(context, _layout);
+            _speedMultLabel->setHMarginRole(ftk::SizeRole::MarginInside);
+            _speedMultLabel->setTooltip("Playback speed multiplier.");
 
             _timeUnitsComboBox = ftk::ComboBox::create(
                 context,
@@ -109,19 +114,33 @@ namespace tl
                             {
                                 _speedEdit->setValue(value);
                             });
+
+                        _speedMultObserver = ftk::Observer<double>::create(
+                            value->observeSpeedMult(),
+                            [this](double value)
+                            {
+                                _speedMultLabel->setText(ftk::Format("{0}X").arg(value, 1));
+                                _speedMultLabel->setBackgroundRole(value > 1.0 ?
+                                    ftk::ColorRole::Checked :
+                                    ftk::ColorRole::None);
+                            });
                     }
                     else
                     {
                         _currentTimeEdit->setValue(time::invalidTime);
                         _durationLabel->setValue(time::invalidTime);
+                        _speedMultLabel->setText("1X");
+                        _speedMultLabel->setBackgroundRole(ftk::ColorRole::None);
 
                         _currentTimeObserver.reset();
                         _speedObserver.reset();
+                        _speedMultObserver.reset();
                     }
 
                     _currentTimeEdit->setEnabled(value.get());
                     _durationLabel->setEnabled(value.get());
                     _speedEdit->setEnabled(value.get());
+                    _speedMultLabel->setEnabled(value.get());
                 });
 
             _timeUnitsObserver = ftk::Observer<timeline::TimeUnits>::create(

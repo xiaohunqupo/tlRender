@@ -60,14 +60,7 @@ namespace tl
                 {
                     if (_player)
                     {
-                        if (_player->isStopped())
-                        {
-                            _player->setPlayback(_playback);
-                        }
-                        else
-                        {
-                            _player->stop();
-                        }
+                        _player->togglePlayback();
                     }
                 });
 
@@ -183,10 +176,6 @@ namespace tl
                             value->observePlayback(),
                             [this](timeline::Playback value)
                             {
-                                if (value != timeline::Playback::Stop)
-                                {
-                                    _playback = value;
-                                }
                                 _actions["Stop"]->setChecked(timeline::Playback::Stop == value);
                                 _actions["Forward"]->setChecked(timeline::Playback::Forward == value);
                                 _actions["Reverse"]->setChecked(timeline::Playback::Reverse == value);

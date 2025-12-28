@@ -12,6 +12,7 @@
 #include <ftk/UI/Action.h>
 #include <ftk/UI/ComboBox.h>
 #include <ftk/UI/DoubleEdit.h>
+#include <ftk/UI/Label.h>
 #include <ftk/UI/RowLayout.h>
 
 namespace tl
@@ -52,10 +53,13 @@ namespace tl
             std::shared_ptr<ui::TimeEdit> _currentTimeEdit;
             std::shared_ptr<ui::TimeLabel> _durationLabel;
             std::shared_ptr<ftk::DoubleEdit> _speedEdit;
+            std::shared_ptr<ftk::Label> _speedMultLabel;
             std::shared_ptr<ftk::ComboBox> _timeUnitsComboBox;
+
             std::shared_ptr<ftk::Observer<std::shared_ptr<timeline::Player> > > _playerObserver;
             std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > _currentTimeObserver;
             std::shared_ptr<ftk::Observer<double> > _speedObserver;
+            std::shared_ptr<ftk::Observer<double> > _speedMultObserver;
             std::shared_ptr<ftk::Observer<timeline::TimeUnits> > _timeUnitsObserver;
         };
     }

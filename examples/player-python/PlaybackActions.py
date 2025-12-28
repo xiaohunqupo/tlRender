@@ -12,8 +12,6 @@ class Actions:
     This class provides playback actions.
     """
     def __init__(self, context, app):
-        
-        self._playback = tl.timeline.Playback.Forward
 
         self.actions = {}
         self.actions["Stop"] = ftk.Action(
@@ -126,10 +124,7 @@ class Actions:
 
     def _togglePlaybackCallback(self):
         if self._player:
-            if self._player.isStopped:
-                self._player.playback = self._playback
-            else:
-                self._player.stop()
+            self._player.togglePlayback()
 
     def _startCallback(self):
         if self._player:
@@ -189,9 +184,6 @@ class Actions:
         self.actions["ResetOutPoint"].enabled = player != None
 
     def _playbackUpdate(self, playback):
-
-        if playback != tl.timeline.Playback.Stop:
-            self._playback = playback
 
         self.actions["Stop"].checked = tl.timeline.Playback.Stop == playback
         self.actions["Forward"].checked = tl.timeline.Playback.Forward == playback

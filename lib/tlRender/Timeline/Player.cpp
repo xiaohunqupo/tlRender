@@ -294,18 +294,8 @@ namespace tl
         void Player::setSpeedMult(double value)
         {
             FTK_P();
-            if (p.speedMult->setIfChanged(value))
-            {
-                {
-                    std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
-                    p.audioMutex.state.speed = p.speed->get() * value;
-                    p.audioReset(p.currentTime->get());
-                }
-                if (!p.hasAudio())
-                {
-                    p.playbackReset(p.currentTime->get());
-                }
-            }
+            p.accelerate = 0;
+            _setSpeedMult(value);
         }
 
         Playback Player::getPlayback() const
@@ -368,6 +358,7 @@ namespace tl
             {
                 if (value != Playback::Stop)
                 {
+                    p.toggle = value;
                     {
                         std::unique_lock<std::mutex> lock(p.mutex.mutex);
                         p.mutex.state.playback = value;
@@ -389,6 +380,11 @@ namespace tl
                 }
                 else
                 {
+                    if (p.accelerate > 0)
+                    {
+                        p.accelerate = 0;
+                        _setSpeedMult(1.0);
+                    }
                     {
                         std::unique_lock<std::mutex> lock(p.mutex.mutex);
                         p.mutex.state.playback = value;
@@ -399,6 +395,28 @@ namespace tl
                         p.audioMutex.state.playback = value;
                     }
                 }
+            }
+            else if (value != Playback::Stop)
+            {
+                ++p.accelerate;
+                if (p.accelerate >= p.accelerateMult.size())
+                {
+                    p.accelerate = 0;
+                }
+                _setSpeedMult(p.accelerateMult[p.accelerate]);
+            }
+        }
+
+        void Player::togglePlayback()
+        {
+            FTK_P();
+            if (Playback::Stop == p.playback->get())
+            {
+                setPlayback(p.toggle);
+            }
+            else
+            {
+                stop();
             }
         }
 
@@ -763,6 +781,23 @@ namespace tl
             std::unique_lock<std::mutex> lock(p.mutex.mutex);
             p.mutex.clearRequests = true;
             p.mutex.clearCache = true;
+        }
+
+        void Player::_setSpeedMult(double value)
+        {
+            FTK_P();
+            if (p.speedMult->setIfChanged(value))
+            {
+                {
+                    std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
+                    p.audioMutex.state.speed = p.speed->get() * value;
+                    p.audioReset(p.currentTime->get());
+                }
+                if (!p.hasAudio())
+                {
+                    p.playbackReset(p.currentTime->get());
+                }
+            }
         }
 
         void Player::_tick()

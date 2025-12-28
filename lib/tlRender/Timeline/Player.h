@@ -167,6 +167,9 @@ namespace tl
             //! Set the playback mode.
             TL_API void setPlayback(Playback);
 
+            //! Toggle the playback mode.
+            TL_API void togglePlayback();
+
             //! Get whether playback is stopped.
             TL_API bool isStopped() const;
 
@@ -391,6 +394,8 @@ namespace tl
             ///@}
 
         private:
+            void _setSpeedMult(double);
+
             void _tick();
             void _thread();
 
