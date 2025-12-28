@@ -510,7 +510,7 @@ namespace tl
 #endif // FTK_API_GL_4_1
                 glReadPixels(
                     pos.x,
-                    pos.y,
+                    g.h() - 1 - pos.y,
                     1,
                     1,
                     GL_RGBA,
