@@ -271,7 +271,7 @@ namespace tl
             {
                 {
                     std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
-                    p.audioMutex.state.speed = value;
+                    p.audioMutex.state.speed = value * p.speedMult->get();
                     p.audioReset(p.currentTime->get());
                 }
                 if (!p.hasAudio())
