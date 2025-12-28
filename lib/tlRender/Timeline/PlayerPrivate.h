@@ -80,7 +80,6 @@ namespace tl
             std::shared_ptr<ftk::ListObserver<audio::DeviceInfo> > audioDevicesObserver;
             std::shared_ptr<ftk::Observer<audio::DeviceInfo> > defaultAudioDeviceObserver;
 
-            const std::array<double, 4> accelerateMult = { 1.0, 2.0, 4.0, 2.0 };
             int accelerate = 0;
             tl::timeline::Playback toggle = tl::timeline::Playback::Forward;
 

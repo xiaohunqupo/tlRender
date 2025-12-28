@@ -354,7 +354,17 @@ namespace tl
             default: break;
             }
 
-            if (p.playback->setIfChanged(value))
+            if (value != Playback::Stop && value == p.playback->get())
+            {
+                p.accelerate = std::min(p.accelerate + 1, 6);
+                _setSpeedMult(pow(2, p.accelerate));
+            }
+            else if (value != Playback::Stop && p.accelerate > 0)
+            {
+                --p.accelerate;
+                _setSpeedMult(pow(2, p.accelerate));
+            }
+            else if (p.playback->setIfChanged(value))
             {
                 if (value != Playback::Stop)
                 {
@@ -395,15 +405,6 @@ namespace tl
                         p.audioMutex.state.playback = value;
                     }
                 }
-            }
-            else if (value != Playback::Stop)
-            {
-                ++p.accelerate;
-                if (p.accelerate >= p.accelerateMult.size())
-                {
-                    p.accelerate = 0;
-                }
-                _setSpeedMult(p.accelerateMult[p.accelerate]);
             }
         }
 
