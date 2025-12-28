@@ -1121,7 +1121,7 @@ namespace tl
                 p.thread.size.h,
                 getRowByteCount(p.thread.size.w, p.thread.outputPixelType),
                 toBMD(p.thread.outputPixelType),
-                bmdFrameFlagDefault,
+                bmdFrameFlagFlipVertical,
                 &dlVideoFrame->p) != S_OK)
             {
                 throw std::runtime_error("Cannot create video frame");

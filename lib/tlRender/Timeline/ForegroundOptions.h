@@ -3,23 +3,40 @@
 
 #pragma once
 
-#include <tlRender/Core/Export.h>
+#include <tlRender/Core/Util.h>
 
 #include <ftk/Core/Color.h>
-#include <ftk/Core/Size.h>
-#include <ftk/Core/Util.h>
+#include <ftk/Core/FontSystem.h>
 
 namespace tl
 {
     namespace timeline
     {
+        //! Grid labels.
+        enum class TL_API_TYPE GridLabels
+        {
+            None,
+            Pixels,
+            Letters,
+
+            Count,
+            First = None
+        };
+        TL_ENUM(GridLabels);
+
         //! Grid.
         struct TL_API_TYPE Grid
         {
-            bool         enabled   = false;
-            int          size      = 100;
-            int          lineWidth = 2;
-            ftk::Color4F color     = ftk::Color4F(0.F, 0.F, 0.F);
+            bool          enabled      = false;
+            int           size         = 100;
+            int           lineWidth    = 2;
+            ftk::Color4F  color        = ftk::Color4F(0.F, 0.F, 0.F);
+            GridLabels    xLabels      = GridLabels::None;
+            GridLabels    yLabels      = GridLabels::None;
+            ftk::Color4F  textColor    = ftk::Color4F(1.F, 1.F, 1.F);
+            ftk::Color4F  overlayColor = ftk::Color4F(0.F, 0.F, 0.F, .5F);
+            ftk::FontInfo fontInfo;
+            int           textMargin   = 2;
 
             TL_API bool operator == (const Grid&) const;
             TL_API bool operator != (const Grid&) const;

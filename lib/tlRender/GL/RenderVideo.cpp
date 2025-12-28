@@ -8,6 +8,7 @@
 #include <ftk/GL/GL.h>
 #include <ftk/GL/Mesh.h>
 #include <ftk/GL/Util.h>
+#include <ftk/Core/Format.h>
 #include <ftk/Core/Math.h>
 
 namespace tl
@@ -887,7 +888,7 @@ namespace tl
                 if (p.vbos["video"])
                 {
                     p.vbos["video"]->copy(convert(
-                        ftk::mesh(box),
+                        ftk::mesh(box, true),
                         p.vbos["video"]->getType()));
                 }
                 if (p.vaos["video"])
@@ -912,45 +913,77 @@ namespace tl
 
                 const ftk::V3F v0 = m * ftk::V3F(0.F, 0.F, 0.F);
                 const ftk::V3F v1 = m * ftk::V3F(options.grid.size, 0.F, 0.F);
-                if (ftk::length(v1 - v0) > options.grid.lineWidth + 10.F)
+                const float l = ftk::length(v1 - v0);
+                if (l > options.grid.lineWidth + 10.F)
                 {
-                    ftk::Box2I bounds = boxes.front();
-                    for (size_t i = 1; i < boxes.size(); ++i)
-                    {
-                        bounds.min.x = std::min(bounds.min.x, boxes[i].min.x);
-                        bounds.min.y = std::min(bounds.min.y, boxes[i].min.y);
-                        bounds.max.x = std::max(bounds.max.x, boxes[i].max.x);
-                        bounds.max.y = std::max(bounds.max.y, boxes[i].max.y);
-                    }
-
+                    const ftk::Box2I bounds = ftk::bbox(boxes);
                     const ftk::Size2I& renderSize = getRenderSize();
-                    const ftk::Box2F vp(0, 0, renderSize.w, renderSize.h);
+
+                    ftk::M44F mi;
+                    ftk::invert(m, mi);
+                    const ftk::V3F v0 = mi * ftk::V3F(0.F, 0.F, 0.F);
+                    const ftk::V3F v1 = mi * ftk::V3F(renderSize.w, renderSize.h, 0.F);
+                    const ftk::V2F v2(
+                        std::max(static_cast<int>(v0.x) / options.grid.size * options.grid.size, bounds.min.x),
+                        std::max(static_cast<int>(v0.y) / options.grid.size * options.grid.size, bounds.min.y));
+                    const ftk::V2F v3(
+                        std::min(static_cast<int>(v1.x) / options.grid.size * options.grid.size, bounds.max.x),
+                        std::min(static_cast<int>(v1.y) / options.grid.size * options.grid.size, bounds.max.y));
+
                     std::vector<std::pair<ftk::V2F, ftk::V2F> > lines;
                     ftk::LineOptions lineOptions;
                     lineOptions.width = options.grid.lineWidth;
-                    for (int y = bounds.min.y; y <= bounds.max.y + 1; y += options.grid.size)
+                    for (int y = v2.y; y <= v3.y + 1; y += options.grid.size)
                     {
                         const ftk::V3F v0 = m * ftk::V3F(bounds.min.x, y, 0.F);
                         const ftk::V3F v1 = m * ftk::V3F(bounds.max.x + 1, y, 0.F);
                         const ftk::V2F v2(std::round(v0.x), std::round(v0.y));
                         const ftk::V2F v3(std::round(v1.x), std::round(v1.y));
-                        if (ftk::intersects(ftk::Box2F(v2, v3), vp))
-                        {
-                            lines.push_back(std::make_pair(v2, v3));
-                        }
+                        lines.push_back(std::make_pair(v2, v3));
                     }
-                    for (int x = bounds.min.x; x <= bounds.max.x + 1; x += options.grid.size)
+                    for (int x = v2.x; x <= v3.x + 1; x += options.grid.size)
                     {
                         const ftk::V3F v0 = m * ftk::V3F(x, bounds.min.y, 0.F);
                         const ftk::V3F v1 = m * ftk::V3F(x, bounds.max.y + 1, 0.F);
                         const ftk::V2F v2(std::round(v0.x), std::round(v0.y));
                         const ftk::V2F v3(std::round(v1.x), std::round(v1.y));
-                        if (ftk::intersects(ftk::Box2F(v2, v3), vp))
-                        {
-                            lines.push_back(std::make_pair(v2, v3));
-                        }
+                        lines.push_back(std::make_pair(v2, v3));
                     }
                     drawLines(lines, options.grid.color, lineOptions);
+
+                    auto fontSystem = _fontSystem.lock();
+                    const ftk::FontMetrics fontMetrics = fontSystem->getMetrics(options.grid.fontInfo);
+                    for (int y = v2.y; y <= v3.y; y += options.grid.size)
+                    {
+                        for (int x = v2.x; x <= v3.x; x += options.grid.size)
+                        {
+                            std::stringstream ss;
+                            ss << x << ", " << y;
+                            const std::string text = ss.str();
+                            const ftk::Size2I size =
+                                fontSystem->getSize(text, options.grid.fontInfo) +
+                                options.grid.textMargin * 2;
+                            if (size.w <= l - options.grid.lineWidth)
+                            {
+                                const ftk::V3F v4 = m * ftk::V3F(x, y, 0.F);
+                                const ftk::V2F v5(std::round(v4.x), std::round(v4.y));
+                                drawRect(
+                                    ftk::Box2F(
+                                        v5.x + options.grid.lineWidth / 2,
+                                        v5.y + options.grid.lineWidth / 2,
+                                        size.w,
+                                        size.h),
+                                    options.grid.overlayColor);
+                                drawText(
+                                    fontSystem->getGlyphs(text, options.grid.fontInfo),
+                                    fontMetrics,
+                                    ftk::V2F(
+                                        v5.x + options.grid.lineWidth / 2 + options.grid.textMargin,
+                                        v5.y + options.grid.lineWidth / 2 + options.grid.textMargin),
+                                    options.grid.textColor);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -958,14 +991,7 @@ namespace tl
             {
                 glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
-                ftk::Box2I bounds = boxes.front();
-                for (size_t i = 1; i < boxes.size(); ++i)
-                {
-                    bounds.min.x = std::min(bounds.min.x, boxes[i].min.x);
-                    bounds.min.y = std::min(bounds.min.y, boxes[i].min.y);
-                    bounds.max.x = std::max(bounds.max.x, boxes[i].max.x);
-                    bounds.max.y = std::max(bounds.max.y, boxes[i].max.y);
-                }
+                const ftk::Box2I bounds = ftk::bbox(boxes);
 
                 ftk::TriMesh2F mesh;
                 mesh.v.push_back(ftk::V2F(bounds.min.x, bounds.min.y));
@@ -978,6 +1004,7 @@ namespace tl
                     v.x = v3.x;
                     v.y = v3.y;
                 }
+
                 mesh.v.push_back(ftk::round(
                     ftk::normalize(mesh.v[0] - mesh.v[1]) * options.outline.width +
                     ftk::normalize(mesh.v[0] - mesh.v[3]) * options.outline.width +
@@ -994,6 +1021,7 @@ namespace tl
                     ftk::normalize(mesh.v[3] - mesh.v[0]) * options.outline.width +
                     ftk::normalize(mesh.v[3] - mesh.v[2]) * options.outline.width +
                     mesh.v[3]));
+
                 mesh.triangles.push_back({ ftk::Vertex2(1), ftk::Vertex2(2), ftk::Vertex2(5) });
                 mesh.triangles.push_back({ ftk::Vertex2(2), ftk::Vertex2(6), ftk::Vertex2(5) });
                 mesh.triangles.push_back({ ftk::Vertex2(2), ftk::Vertex2(3), ftk::Vertex2(6) });
@@ -1002,6 +1030,7 @@ namespace tl
                 mesh.triangles.push_back({ ftk::Vertex2(4), ftk::Vertex2(8), ftk::Vertex2(7) });
                 mesh.triangles.push_back({ ftk::Vertex2(4), ftk::Vertex2(1), ftk::Vertex2(8) });
                 mesh.triangles.push_back({ ftk::Vertex2(1), ftk::Vertex2(5), ftk::Vertex2(8) });
+
                 drawMesh(mesh, options.outline.color);
             }
         }

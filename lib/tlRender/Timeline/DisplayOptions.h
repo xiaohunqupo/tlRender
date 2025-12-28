@@ -16,7 +16,6 @@ namespace tl
         //! Color values.
         struct TL_API_TYPE Color
         {
-        public:
             bool     enabled    = false;
             ftk::V3F add        = ftk::V3F(0.F, 0.F, 0.F);
             ftk::V3F brightness = ftk::V3F(1.F, 1.F, 1.F);

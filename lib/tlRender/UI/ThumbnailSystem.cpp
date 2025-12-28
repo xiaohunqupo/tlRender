@@ -768,7 +768,6 @@ namespace tl
                                     ftk::ImageInfo info(size.w,
                                         size.h,
                                         ftk::ImageType::RGBA_U8);
-                                    info.layout.mirror.y = true;
                                     image = ftk::Image::create(info);
                                     glPixelStorei(GL_PACK_ALIGNMENT, 1);
                                     glReadPixels(

@@ -52,7 +52,7 @@ namespace tl
             std::optional<DroppedFramesData> droppedFramesData;
             bool inputEnabled = true;
             std::pair<ftk::MouseButton, ftk::KeyModifier> panBinding =
-                std::make_pair(ftk::MouseButton::Left, ftk::KeyModifier::Control);
+                std::make_pair(ftk::MouseButton::Middle, ftk::KeyModifier::None);
             std::pair<ftk::MouseButton, ftk::KeyModifier> wipeBinding =
                 std::make_pair(ftk::MouseButton::Left, ftk::KeyModifier::Alt);
             float mouseWheelScale = 1.1F;
@@ -61,6 +61,12 @@ namespace tl
             std::shared_ptr<ftk::gl::OffscreenBuffer> buffer;
             std::shared_ptr<ftk::gl::OffscreenBuffer> bgBuffer;
             std::shared_ptr<ftk::gl::OffscreenBuffer> fgBuffer;
+
+            struct SizeData
+            {
+                float displayScale = 1.F;
+            };
+            SizeData size;
 
             enum class MouseMode
             {
@@ -556,6 +562,8 @@ namespace tl
 
         void Viewport::sizeHintEvent(const ftk::SizeHintEvent& event)
         {
+            FTK_P();
+            p.size.displayScale = event.displayScale;
             const int sa = event.style->getSizeRole(ftk::SizeRole::ScrollArea, event.displayScale);
             setSizeHint(ftk::Size2I(sa, sa));
         }
@@ -676,7 +684,10 @@ namespace tl
                         ftk::gl::OffscreenBufferBinding binding(p.fgBuffer);
                         render->clearViewport(ftk::Color4F(0.F, 0.F, 0.F, 0.F));
                         render->setTransform(pm);
-                        render->drawForeground(boxes, vm, p.fgOptions->get());
+                        timeline::ForegroundOptions options = p.fgOptions->get();
+                        options.grid.fontInfo.size *= p.size.displayScale;
+                        options.grid.textMargin *= p.size.displayScale;
+                        render->drawForeground(boxes, vm, options);
                     }
                 }
                 catch (const std::exception& e)
@@ -690,7 +701,7 @@ namespace tl
 
             if (p.bgBuffer)
             {
-                render->drawTexture(p.bgBuffer->getColorID(), g);
+                render->drawTexture(p.bgBuffer->getColorID(), g, true);
             }
             if (p.buffer)
             {
@@ -702,13 +713,13 @@ namespace tl
                 render->drawTexture(
                     p.buffer->getColorID(),
                     g,
-                    false,
+                    true,
                     ftk::Color4F(1.F, 1.F, 1.F),
                     alphaBlend);
             }
             if (p.fgBuffer)
             {
-                render->drawTexture(p.fgBuffer->getColorID(), g);
+                render->drawTexture(p.fgBuffer->getColorID(), g, true);
             }
         }
         void Viewport::mouseEnterEvent(ftk::MouseEnterEvent& event)
@@ -737,7 +748,7 @@ namespace tl
                 const ftk::Box2I& g = getGeometry();
                 const ftk::V2I pos(
                     event.pos.x - g.min.x,
-                    (g.h() - 1) - (event.pos.y - g.min.y));
+                    event.pos.y - g.min.y);
 
                 switch (p.mouse.mode)
                 {
@@ -801,7 +812,7 @@ namespace tl
                 const ftk::Box2I& g = getGeometry();
                 const ftk::V2I pos(
                     event.pos.x - g.min.x,
-                    (g.h() - 1) - (event.pos.y - g.min.y));
+                    event.pos.y - g.min.y);
                 p.mouse.press = pos;
 
                 if (p.panBinding.first == event.button &&
@@ -841,7 +852,7 @@ namespace tl
                     const ftk::Box2I& g = getGeometry();
                     const ftk::V2I pos(
                         event.pos.x - g.min.x,
-                        (g.h() - 1) - (event.pos.y - g.min.y));
+                        event.pos.y - g.min.y);
 
                     const double viewZoom = p.viewZoom->get();
                     const double newZoom =
@@ -871,7 +882,7 @@ namespace tl
                 const ftk::Box2I& g = getGeometry();
                 const ftk::V2I pos(
                     event.pos.x - g.min.x,
-                    (g.h() - 1) - (event.pos.y - g.min.y));
+                    event.pos.y - g.min.y);
 
                 if (0 == event.modifiers)
                 {
