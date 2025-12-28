@@ -168,6 +168,13 @@ namespace tl
             bmdConfig.displayModeIndex = 3;
             bmdConfig.pixelType = bmd::PixelType::_8BitBGRA;
             _bmdOutputDevice->setConfig(bmdConfig);
+            /*timeline::ForegroundOptions fgOptions;
+            fgOptions.grid.enabled = true;
+            //fgOptions.grid.size = 1;
+            fgOptions.grid.labels = timeline::GridLabels::Alphanumeric;
+            //fgOptions.grid.lineWidth = 10;
+            fgOptions.outline.enabled = true;
+            _bmdOutputDevice->setForegroundOptions(fgOptions);*/
             _bmdOutputDevice->setEnabled(true);
 #endif // TLRENDER_BMD
 

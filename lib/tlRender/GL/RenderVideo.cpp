@@ -902,6 +902,29 @@ namespace tl
             imageShader->setUniform("transform.mvp", getTransform());
         }
 
+        namespace
+        {
+            std::string alpha(int value)
+            {
+                std::string out;
+                if (0 == value)
+                {
+                    out = "A";
+                }
+                else
+                {
+                    while (value > 0)
+                    {
+                        const int remainder = value % 26;
+                        out += 'A' + remainder;
+                        value /= 26;
+                    }
+                    std::reverse(out.begin(), out.end());
+                }
+                return out;
+            }
+        }
+
         void Render::drawForeground(
             const std::vector<ftk::Box2I>& boxes,
             const ftk::M44F& m,
@@ -951,36 +974,48 @@ namespace tl
                     }
                     drawLines(lines, options.grid.color, lineOptions);
 
-                    auto fontSystem = _fontSystem.lock();
-                    const ftk::FontMetrics fontMetrics = fontSystem->getMetrics(options.grid.fontInfo);
-                    for (int y = v2.y; y <= v3.y; y += options.grid.size)
+                    if (options.grid.labels != timeline::GridLabels::None)
                     {
-                        for (int x = v2.x; x <= v3.x; x += options.grid.size)
+                        auto fontSystem = _fontSystem.lock();
+                        const ftk::FontMetrics fontMetrics = fontSystem->getMetrics(options.grid.fontInfo);
+                        for (int y = v2.y, i = v2.y / options.grid.size; y <= v3.y; y += options.grid.size, ++i)
                         {
-                            std::stringstream ss;
-                            ss << x << ", " << y;
-                            const std::string text = ss.str();
-                            const ftk::Size2I size =
-                                fontSystem->getSize(text, options.grid.fontInfo) +
-                                options.grid.textMargin * 2;
-                            if (size.w <= l - options.grid.lineWidth)
+                            for (int x = v2.x, j = v2.x / options.grid.size; x <= v3.x; x += options.grid.size, ++j)
                             {
-                                const ftk::V3F v4 = m * ftk::V3F(x, y, 0.F);
-                                const ftk::V2F v5(std::round(v4.x), std::round(v4.y));
-                                drawRect(
-                                    ftk::Box2F(
-                                        v5.x + options.grid.lineWidth / 2,
-                                        v5.y + options.grid.lineWidth / 2,
-                                        size.w,
-                                        size.h),
-                                    options.grid.overlayColor);
-                                drawText(
-                                    fontSystem->getGlyphs(text, options.grid.fontInfo),
-                                    fontMetrics,
-                                    ftk::V2F(
-                                        v5.x + options.grid.lineWidth / 2 + options.grid.textMargin,
-                                        v5.y + options.grid.lineWidth / 2 + options.grid.textMargin),
-                                    options.grid.textColor);
+                                std::stringstream ss;
+                                switch (options.grid.labels)
+                                {
+                                case timeline::GridLabels::Pixels:
+                                    ss << x << ", " << y;
+                                    break;
+                                case timeline::GridLabels::Alphanumeric:
+                                    ss << alpha(j) << ", " << i;
+                                    break;
+                                default: break;
+                                }
+                                const std::string text = ss.str();
+                                const ftk::Size2I size =
+                                    fontSystem->getSize(text, options.grid.fontInfo) +
+                                    options.grid.textMargin * 2;
+                                if (size.w <= l - options.grid.lineWidth)
+                                {
+                                    const ftk::V3F v4 = m * ftk::V3F(x, y, 0.F);
+                                    const ftk::V2F v5(std::round(v4.x), std::round(v4.y));
+                                    drawRect(
+                                        ftk::Box2F(
+                                            v5.x + options.grid.lineWidth / 2,
+                                            v5.y + options.grid.lineWidth / 2,
+                                            size.w,
+                                            size.h),
+                                        options.grid.overlayColor);
+                                    drawText(
+                                        fontSystem->getGlyphs(text, options.grid.fontInfo),
+                                        fontMetrics,
+                                        ftk::V2F(
+                                            v5.x + options.grid.lineWidth / 2 + options.grid.textMargin,
+                                            v5.y + options.grid.lineWidth / 2 + options.grid.textMargin),
+                                        options.grid.textColor);
+                                }
                             }
                         }
                     }

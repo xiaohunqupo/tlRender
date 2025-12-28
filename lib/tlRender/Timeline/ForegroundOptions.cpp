@@ -16,7 +16,7 @@ namespace tl
             GridLabels,
             "None",
             "Pixels",
-            "Letters");
+            "Alphanumeric");
 
         bool Grid::operator == (const Grid& other) const
         {
@@ -25,8 +25,7 @@ namespace tl
                 size == other.size &&
                 lineWidth == other.lineWidth &&
                 color == other.color &&
-                xLabels == other.xLabels &&
-                yLabels == other.yLabels &&
+                labels == other.labels &&
                 textColor == other.textColor &&
                 overlayColor == other.overlayColor &&
                 fontInfo == other.fontInfo &&
@@ -69,8 +68,7 @@ namespace tl
             json["Size"] = in.size;
             json["LineWidth"] = in.lineWidth;
             json["Color"] = in.color;
-            json["XLabels"] = to_string(in.xLabels);
-            json["YLabels"] = to_string(in.yLabels);
+            json["Labels"] = to_string(in.labels);
             json["TextColor"] = in.textColor;
             json["OverlayColor"] = in.overlayColor;
             json["FontInfo"] = in.fontInfo;
@@ -96,8 +94,7 @@ namespace tl
             json.at("Size").get_to(out.size);
             json.at("LineWidth").get_to(out.lineWidth);
             json.at("Color").get_to(out.color);
-            from_string(json.at("XLabels").get<std::string>(), out.xLabels);
-            from_string(json.at("YLabels").get<std::string>(), out.yLabels);
+            from_string(json.at("Labels").get<std::string>(), out.labels);
             json.at("TextColor").get_to(out.textColor);
             json.at("OverlayColor").get_to(out.overlayColor);
             json.at("FontInfo").get_to(out.fontInfo);

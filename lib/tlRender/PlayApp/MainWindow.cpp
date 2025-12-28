@@ -56,7 +56,8 @@ namespace tl
             //_viewport->setBackgroundOptions(bgOptions);
             timeline::ForegroundOptions fgOptions;
             fgOptions.grid.enabled = true;
-            fgOptions.grid.size = 1;
+            //fgOptions.grid.size = 1;
+            fgOptions.grid.labels = timeline::GridLabels::Alphanumeric;
             //fgOptions.grid.lineWidth = 10;
             fgOptions.outline.enabled = true;
             _viewport->setForegroundOptions(fgOptions);

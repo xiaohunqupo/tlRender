@@ -17,7 +17,7 @@ namespace tl
         {
             None,
             Pixels,
-            Letters,
+            Alphanumeric,
 
             Count,
             First = None
@@ -31,11 +31,10 @@ namespace tl
             int           size         = 100;
             int           lineWidth    = 2;
             ftk::Color4F  color        = ftk::Color4F(0.F, 0.F, 0.F);
-            GridLabels    xLabels      = GridLabels::None;
-            GridLabels    yLabels      = GridLabels::None;
+            GridLabels    labels       = GridLabels::None;
             ftk::Color4F  textColor    = ftk::Color4F(1.F, 1.F, 1.F);
             ftk::Color4F  overlayColor = ftk::Color4F(0.F, 0.F, 0.F, .5F);
-            ftk::FontInfo fontInfo;
+            ftk::FontInfo fontInfo     = ftk::FontInfo(ftk::getFont(ftk::Font::Mono), 12);
             int           textMargin   = 2;
 
             TL_API bool operator == (const Grid&) const;
