@@ -24,14 +24,14 @@ namespace tl
     //! Timelines.
     namespace timeline
     {
-        //! Create a new timeline from a path. The path can point to an .otio
+        //! Create an OTIO timeline from a path. The path can point to an .otio
         //! file, .otioz file, movie file, or image sequence.
         TL_API OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
             const std::shared_ptr<ftk::Context>&,
             const ftk::Path&,
             const Options& = Options());
 
-        //! Create a new timeline from a path and audio path. The file name
+        //! Create an OTIO timeline from a path and audio path. The file name
         //! can point to an .otio file, .otioz file, movie file, or image
         //! sequence.
         TL_API OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
