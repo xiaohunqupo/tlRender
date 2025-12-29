@@ -28,7 +28,7 @@ namespace tl
             std::shared_ptr<ftk::Observable<bool> > scrollBarsVisible;
             std::shared_ptr<ftk::Observable<bool> > autoScroll;
             std::pair<ftk::MouseButton, ftk::KeyModifier> scrollBinding =
-                std::make_pair(ftk::MouseButton::Left, ftk::KeyModifier::Control);
+                std::make_pair(ftk::MouseButton::Middle, ftk::KeyModifier::None);
             float mouseWheelScale = 1.1F;
             std::shared_ptr<ftk::Observable<bool> > stopOnScrub;
             std::shared_ptr<ftk::Observable<bool> > scrub;
@@ -469,7 +469,7 @@ namespace tl
             p.mouse.press = event.pos;
             if (p.itemOptions->get().inputEnabled &&
                 p.scrollBinding.first == event.button &&
-                event.modifiers & static_cast<int>(p.scrollBinding.second))
+                checkKeyModifier(p.scrollBinding.second, event.modifiers))
             {
                 takeKeyFocus();
                 p.mouse.mode = Private::MouseMode::Scroll;
