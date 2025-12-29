@@ -51,16 +51,16 @@ namespace tl
 
             // Create the viewport.
             _viewport = ui::Viewport::create(context);
-            timeline::BackgroundOptions bgOptions;
-            bgOptions.type = timeline::Background::Gradient;
+            //timeline::BackgroundOptions bgOptions;
+            //bgOptions.type = timeline::Background::Gradient;
             //_viewport->setBackgroundOptions(bgOptions);
-            timeline::ForegroundOptions fgOptions;
-            fgOptions.grid.enabled = true;
+            //timeline::ForegroundOptions fgOptions;
+            //fgOptions.grid.enabled = true;
             //fgOptions.grid.size = 1;
-            fgOptions.grid.labels = timeline::GridLabels::Alphanumeric;
+            //fgOptions.grid.labels = timeline::GridLabels::Alphanumeric;
             //fgOptions.grid.lineWidth = 10;
-            fgOptions.outline.enabled = true;
-            _viewport->setForegroundOptions(fgOptions);
+            //fgOptions.outline.enabled = true;
+            //_viewport->setForegroundOptions(fgOptions);
             ftk::ImageOptions imageOptions;
             imageOptions.imageFilters.minify = ftk::ImageFilter::Nearest;
             imageOptions.imageFilters.magnify = ftk::ImageFilter::Nearest;
