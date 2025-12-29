@@ -127,9 +127,7 @@ namespace tl
             FTK_NON_COPYABLE(Audio);
 
         protected:
-            void _init(const Info&, size_t sampleCount);
-
-            Audio();
+            Audio(const Info&, size_t sampleCount);
 
         public:
             TL_API ~Audio();
@@ -170,9 +168,10 @@ namespace tl
             TL_API void zero();
 
         private:
-            Info _info;
-            size_t _sampleCount = 0;
-            std::vector<uint8_t> _data;
+            Info     _info;
+            size_t   _sampleCount = 0;
+            size_t   _byteCount   = 0;
+            uint8_t* _data        = nullptr;
         };
 
         //! \name Utility

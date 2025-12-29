@@ -79,32 +79,28 @@ namespace tl
             sampleRate(sampleRate)
         {}
 
-        void Audio::_init(const Info& info, size_t sampleCount)
-        {
-            _info = info;
-            _sampleCount = sampleCount;
-            const size_t byteCount = getByteCount();
-            _data.resize(byteCount);
-        }
-
-        Audio::Audio()
+        Audio::Audio(const Info& info, size_t sampleCount) :
+            _info(info),
+            _sampleCount(sampleCount),
+            _byteCount(info.getByteCount()* _sampleCount),
+            _data(new uint8_t[_byteCount])
         {}
 
         Audio::~Audio()
-        {}
+        {
+            delete[] _data;
+        }
 
         std::shared_ptr<Audio> Audio::create(
             const Info& info,
             size_t sampleCount)
         {
-            auto out = std::shared_ptr<Audio>(new Audio);
-            out->_init(info, sampleCount);
-            return out;
+            return std::shared_ptr<Audio>(new Audio(info, sampleCount));
         }
 
         void Audio::zero()
         {
-            std::memset(_data.data(), 0, getByteCount());
+            std::memset(_data, 0, _byteCount);
         }
 
         std::shared_ptr<audio::Audio> combine(const std::list<std::shared_ptr<audio::Audio> >& chunks)

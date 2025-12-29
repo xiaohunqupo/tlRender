@@ -186,17 +186,17 @@ namespace tl
 
         inline size_t Audio::getByteCount() const
         {
-            return _info.getByteCount() * _sampleCount;
+            return _byteCount;
         }
 
         inline uint8_t* Audio::getData()
         {
-            return _data.data();
+            return _data;
         }
 
         inline const uint8_t* Audio::getData() const
         {
-            return _data.data();
+            return _data;
         }
     }
 }
