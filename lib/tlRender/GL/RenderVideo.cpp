@@ -986,10 +986,10 @@ namespace tl
                                 switch (options.grid.labels)
                                 {
                                 case timeline::GridLabels::Pixels:
-                                    ss << x << ", " << y;
+                                    ss << x << " " << y;
                                     break;
                                 case timeline::GridLabels::Alphanumeric:
-                                    ss << alpha(j) << ", " << i;
+                                    ss << alpha(j) << " " << i;
                                     break;
                                 default: break;
                                 }
