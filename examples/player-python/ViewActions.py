@@ -18,33 +18,29 @@ class Actions:
         self.actions["Frame"] = ftk.Action(
             "Frame",
             "ViewFrame",
-            ftk.Key.Backspace,
-            0,
-            checkedCallback=self._frameCallback)
+            ftk.KeyShortcut(ftk.Key.Backspace),
+            checkedCallback = self._frameCallback)
         self.actions["Frame"].tooltip = "Toggle whether to automatically frame the view."
 
         self.actions["ZoomReset"] = ftk.Action(
             "Zoom Reset",
             "ViewZoomReset",
-            ftk.Key._0,
-            0,
-            callback=lambda: self._mainWindowWeak().getViewport().viewZoomReset())
+            ftk.KeyShortcut(ftk.Key._0),
+            callback = lambda: self._mainWindowWeak().getViewport().viewZoomReset())
         self.actions["ZoomReset"].tooltip = "Reset the view zoom."
 
         self.actions["ZoomIn"] = ftk.Action(
             "Zoom In",
             "ViewZoomIn",
-            ftk.Key.Equals,
-            0,
-            callback=lambda: self._mainWindowWeak().getViewport().viewZoomIn())
+            ftk.KeyShortcut(ftk.Key.Equals),
+            callback=  lambda: self._mainWindowWeak().getViewport().viewZoomIn())
         self.actions["ZoomIn"].tooltip = "Zoom the view in."
 
         self.actions["ZoomOut"] = ftk.Action(
             "Zoom Out",
             "ViewZoomOut",
-            ftk.Key.Minus,
-            0,
-            callback=lambda: self._mainWindowWeak().getViewport().viewZoomOut())
+            ftk.KeyShortcut(ftk.Key.Minus),
+            callback = lambda: self._mainWindowWeak().getViewport().viewZoomOut())
         self.actions["ZoomOut"].tooltip = "Zoom the view out."
 
         selfWeak = weakref.ref(self)

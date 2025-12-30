@@ -17,91 +17,79 @@ class Actions:
         self.actions["Stop"] = ftk.Action(
             "Stop",
             "PlaybackStop",
-            ftk.Key.K,
-            0,
+            ftk.KeyShortcut(ftk.Key.K),
             self._stopCallback)
         self.actions["Stop"].tooltip = "Stop playback."
 
         self.actions["Forward"] = ftk.Action(
             "Forward",
             "PlaybackForward",
-            ftk.Key.L,
-            0,
+            ftk.KeyShortcut(ftk.Key.L),
             self._forwardCallback)
         self.actions["Forward"].tooltip = "Start forward playback."
 
         self.actions["Reverse"] = ftk.Action(
             "Reverse",
             "PlaybackReverse",
-            ftk.Key.J,
-            0,
+            ftk.KeyShortcut(ftk.Key.J),
             self._reverseCallback)
         self.actions["Reverse"].tooltip = "Start reverse playback."
 
         self.actions["TogglePlayback"] = ftk.Action(
             "Toggle Playback",
-            ftk.Key.Space,
-            0,
+            ftk.KeyShortcut(ftk.Key.Space),
             self._togglePlaybackCallback)
         self.actions["TogglePlayback"].tooltip = "Toggle playback direction."
 
         self.actions["Start"] = ftk.Action(
             "Start Frame",
             "FrameStart",
-            ftk.Key.Up,
-            0,
+            ftk.KeyShortcut(ftk.Key.Up),
             self._startCallback)
         self.actions["Start"].tooltip = "Go to the start frame."
 
         self.actions["Prev"] = ftk.Action(
             "Previous Frame",
             "FramePrev",
-            ftk.Key.Left,
-            0,
+            ftk.KeyShortcut(ftk.Key.Left),
             self._prevCallback)
         self.actions["Prev"].tooltip = "Go to the previous frame."
 
         self.actions["Next"] = ftk.Action(
             "Next Frame",
             "FrameNext",
-            ftk.Key.Right,
-            0,
+            ftk.KeyShortcut(ftk.Key.Right),
             self._nextCallback)
         self.actions["Next"].tooltip = "Go to the next frame."
 
         self.actions["End"] = ftk.Action(
             "End Frame",
             "FrameEnd",
-            ftk.Key.Down,
-            0,
+            ftk.KeyShortcut(ftk.Key.Down),
             self._endCallback)
         self.actions["End"].tooltip = "Go to the end frame."
 
         self.actions["SetInPoint"] = ftk.Action(
             "Set In Point",
-            ftk.Key.I,
-            0,
+            ftk.KeyShortcut(ftk.Key.I),
             self._setInPointCallback)
         self.actions["SetInPoint"].tooltip = "Set the in point to the current frame."
 
         self.actions["ResetInPoint"] = ftk.Action(
             "Reset In Point",
-            ftk.Key.I,
-            ftk.KeyModifier.Shift,
+            ftk.KeyShortcut(ftk.Key.I, ftk.KeyModifier.Shift),
             self._resetInPointCallback)
         self.actions["ResetInPoint"].tooltip = "Reset the in point to the start frame."
 
         self.actions["SetOutPoint"] = ftk.Action(
             "Set Out Point",
-            ftk.Key.O,
-            0,
+            ftk.KeyShortcut(ftk.Key.O),
             self._setOutPointCallback)
         self.actions["SetOutPoint"].tooltip = "Set the out point to the current frame."
 
         self.actions["ResetOutPoint"] = ftk.Action(
             "Reset Out Point",
-            ftk.Key.O,
-            ftk.KeyModifier.Shift,
+            ftk.KeyShortcut(ftk.Key.O, ftk.KeyModifier.Shift),
             self._resetOutPointCallback)
         self.actions["ResetOutPoint"].tooltip = "Reset the out point to the end frame."
 

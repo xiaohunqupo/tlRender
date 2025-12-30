@@ -19,8 +19,7 @@ class Actions:
         self.actions["Open"] = ftk.Action(
             "Open",
             "FileOpen",
-            ftk.Key.O,
-            ftk.commandKeyModifier,
+            ftk.KeyShortcut(ftk.Key.O, ftk.commandKeyModifier),
             lambda: context.getSystemByName("ftk::FileBrowserSystem").open(
                 mainWindowWeak(),
                 appWeak().getDocumentModel().open))
@@ -29,23 +28,20 @@ class Actions:
         self.actions["Close"] = ftk.Action(
             "Close",
             "FileClose",
-            ftk.Key.E,
-            ftk.commandKeyModifier,
+            ftk.KeyShortcut(ftk.Key.E, ftk.commandKeyModifier),
             lambda: appWeak().getDocumentModel().close())
         self.actions["Close"].tooltip = "Close the current file."
 
         self.actions["Reload"] = ftk.Action(
             "Reload",
             "FileReload",
-            ftk.Key.R,
-            ftk.commandKeyModifier,
+            ftk.KeyShortcut(ftk.Key.R, ftk.commandKeyModifier),
             lambda: appWeak().getDocumentModel().reload())
         self.actions["Reload"].tooltip = "Reload the current file."
 
         self.actions["Exit"] = ftk.Action(
             "Exit",
-            ftk.Key.Q,
-            ftk.commandKeyModifier,
+            ftk.KeyShortcut(ftk.Key.Q, ftk.commandKeyModifier),
             lambda: appWeak().exit())
 
         selfWeak = weakref.ref(self)

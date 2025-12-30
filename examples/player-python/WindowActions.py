@@ -18,9 +18,8 @@ class Actions:
         self.actions["FullScreen"] = ftk.Action(
             "Full Screen",
             "WindowFullScreen",
-            ftk.Key.U,
-            ftk.commandKeyModifier,
-            checkedCallback=self._fullScreenCallback)
+            ftk.KeyShortcut(ftk.Key.U, ftk.commandKeyModifier),
+            checkedCallback = self._fullScreenCallback)
         self.actions["FullScreen"].tooltip = "Toggle the window full screen."
 
         self.actions["Settings"] = ftk.Action(

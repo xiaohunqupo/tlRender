@@ -13,16 +13,26 @@ import os
 class MainWindow(ftk.MainWindow):
     def __init__(self, context):
         ftk.MainWindow.__init__(self, context, app, ftk.Size2I(1280, 960))
+        
+        # Create a scroll widget.
+        self._scrollWidget = ftk.ScrollWidget(context)
+        self._scrollWidget.border = False
+        self._scrollWidget.areaResizable = False
+        self.widget = self._scrollWidget
 
-        # Create the MDI canvas.
+        # Create a MDI canvas.
         self._mdiCanvas = ftk.MDICanvas(context)
         self._mdiCanvas.setSize(ftk.Size2I(8192, 8192))
-        
-        scrollWidget = ftk.ScrollWidget(context)
-        scrollWidget.border = False
-        scrollWidget.areaResizable = False
-        scrollWidget.widget = self._mdiCanvas
-        self.widget = scrollWidget
+        self._scrollWidget.widget = self._mdiCanvas
+
+        # Create a MDI mini-map.
+        self._miniMap = ftk.MDIMiniMap(context)
+        self._scrollWidget.viewportWidget = self._miniMap
+
+        # Setup callbacks.
+        self._scrollWidget.setScrollInfoCallback(self._scrollInfoCallback)
+        self._mdiCanvas.setChildGeometryCallback(self._childGeometryCallback)
+        self._miniMap.setCallback(self._miniMapCallback)
 
     def dropEvent(self, event):
         event.accept = True
@@ -58,6 +68,15 @@ class MainWindow(ftk.MainWindow):
                 frameToolBar.parent = hLayout
                 timelineWidget.parent = vLayout
                 self._mdiCanvas.addWidget(text, event.pos, splitter)
+
+    def _scrollInfoCallback(self, info):
+        self._miniMap.setScrollInfo(info)
+
+    def _childGeometryCallback(self, geom):
+        self._miniMap.setChildGeometry(geom)
+
+    def _miniMapCallback(self, pos):
+        self._scrollWidget.setScrollPos(pos)
 
 # Create the application.
 context = ftk.Context()
