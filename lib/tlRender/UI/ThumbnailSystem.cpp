@@ -362,12 +362,18 @@ namespace tl
                 {
                     FTK_P();
                     p.window->makeCurrent();
-                    p.thumbnailThread.render = timeline_gl::Render::create(
-                        p.context.lock()->getLogSystem(),
-                        p.context.lock()->getSystem<ftk::FontSystem>());
-                    while (p.thumbnailThread.running)
+                    if (auto context = p.context.lock())
                     {
-                        _thumbnailRun();
+                        p.thumbnailThread.render = timeline_gl::Render::create(
+                            context->getLogSystem(),
+                            context->getSystem<ftk::FontSystem>());
+                    }
+                    if (p.thumbnailThread.render)
+                    {
+                        while (p.thumbnailThread.running)
+                        {
+                            _thumbnailRun();
+                        }
                     }
                     {
                         std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
