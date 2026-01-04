@@ -73,17 +73,16 @@ namespace tl
             out->_init(context, app, parent);
             return out;
         }
+        
+        ftk::Size2I TabBar::getSizeHint() const
+        {
+            return _tabBar->getSizeHint();
+        }
 
         void TabBar::setGeometry(const ftk::Box2I& value)
         {
             IWidget::setGeometry(value);
             _tabBar->setGeometry(value);
-        }
-
-        void TabBar::sizeHintEvent(const ftk::SizeHintEvent& event)
-        {
-            IWidget::sizeHintEvent(event);
-            setSizeHint(_tabBar->getSizeHint());
         }
     }
 }

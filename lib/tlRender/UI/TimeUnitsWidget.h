@@ -33,8 +33,8 @@ namespace tl
                 const std::shared_ptr<timeline::TimeUnitsModel>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
+            TL_API ftk::Size2I getSizeHint() const override;
             TL_API void setGeometry(const ftk::Box2I&) override;
-            TL_API void sizeHintEvent(const ftk::SizeHintEvent&) override;
 
         private:
             void _widgetUpdate();

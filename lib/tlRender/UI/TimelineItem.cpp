@@ -269,6 +269,45 @@ namespace tl
                 _tracksUpdate();
             }
         }
+        
+        ftk::Size2I TimelineItem::getSizeHint() const
+        {
+            FTK_P();
+            int tracksHeight = 0;
+            for (int i = 0; i < p.tracks.size(); ++i)
+            {
+                auto& track = p.tracks[i];
+                const bool visible = _isTrackVisible(track.index);
+
+                track.size.w = track.timeRange.duration().rescaled_to(1.0).value() * _scale;
+                track.size.h = 0;
+                track.clipHeight = 0;
+                if (visible)
+                {
+                    for (const auto& item : track.items)
+                    {
+                        const ftk::Size2I& sizeHint = item->getSizeHint();
+                        track.size.h = std::max(track.size.h, sizeHint.h);
+                    }
+                    track.clipHeight = track.size.h;
+                    if (!_displayOptions.minimize)
+                    {
+                        track.size.h += std::max(
+                            track.label->getSizeHint().h,
+                            track.durationLabel->getSizeHint().h);
+                    }
+                    tracksHeight += track.size.h;
+                }
+            }
+            return ftk::Size2I(
+                _timeRange.duration().rescaled_to(1.0).value() * _scale,
+                p.size.margin +
+                p.size.fontMetrics.lineHeight +
+                p.size.margin +
+                p.size.border * 4 +
+                p.size.border +
+                tracksHeight);
+        }
 
         void TimelineItem::setGeometry(const ftk::Box2I& value)
         {
@@ -348,7 +387,6 @@ namespace tl
         {
             IItem::sizeHintEvent(event);
             FTK_P();
-
             if (!p.size.displayScale.has_value() ||
                 (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
             {
@@ -362,42 +400,6 @@ namespace tl
                     _displayOptions.fontSize * event.displayScale);
                 p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             }
-
-            int tracksHeight = 0;
-            for (int i = 0; i < p.tracks.size(); ++i)
-            {
-                auto& track = p.tracks[i];
-                const bool visible = _isTrackVisible(track.index);
-
-                track.size.w = track.timeRange.duration().rescaled_to(1.0).value() * _scale;
-                track.size.h = 0;
-                track.clipHeight = 0;
-                if (visible)
-                {
-                    for (const auto& item : track.items)
-                    {
-                        const ftk::Size2I& sizeHint = item->getSizeHint();
-                        track.size.h = std::max(track.size.h, sizeHint.h);
-                    }
-                    track.clipHeight = track.size.h;
-                    if (!_displayOptions.minimize)
-                    {
-                        track.size.h += std::max(
-                            track.label->getSizeHint().h,
-                            track.durationLabel->getSizeHint().h);
-                    }
-                    tracksHeight += track.size.h;
-                }
-            }
-
-            setSizeHint(ftk::Size2I(
-                _timeRange.duration().rescaled_to(1.0).value() * _scale,
-                p.size.margin +
-                p.size.fontMetrics.lineHeight +
-                p.size.margin +
-                p.size.border * 4 +
-                p.size.border +
-                tracksHeight));
         }
 
         void TimelineItem::drawOverlayEvent(

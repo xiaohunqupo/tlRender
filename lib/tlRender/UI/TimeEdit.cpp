@@ -135,6 +135,11 @@ namespace tl
         {
             _p->lineEdit->setFontRole(value);
         }
+        
+        ftk::Size2I TimeEdit::getSizeHint() const
+        {
+            return _p->layout->getSizeHint();
+        }
 
         void TimeEdit::setGeometry(const ftk::Box2I& value)
         {
@@ -145,12 +150,6 @@ namespace tl
         void TimeEdit::takeKeyFocus()
         {
             _p->lineEdit->takeKeyFocus();
-        }
-
-        void TimeEdit::sizeHintEvent(const ftk::SizeHintEvent& event)
-        {
-            IWidget::sizeHintEvent(event);
-            setSizeHint(_p->layout->getSizeHint());
         }
 
         void TimeEdit::keyPressEvent(ftk::KeyEvent& event)

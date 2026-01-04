@@ -131,8 +131,8 @@ namespace tl
                 const std::shared_ptr<WindowActions>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
+            ftk::Size2I getSizeHint() const override;
             void setGeometry(const ftk::Box2I&) override;
-            void sizeHintEvent(const ftk::SizeHintEvent&) override;
 
         private:
             std::shared_ptr<ftk::HorizontalLayout> _layout;

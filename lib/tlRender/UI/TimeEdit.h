@@ -58,9 +58,9 @@ namespace tl
             //! Set the font role.
             TL_API void setFontRole(ftk::FontRole);
 
+            TL_API ftk::Size2I getSizeHint() const override;
             TL_API void setGeometry(const ftk::Box2I&) override;
             TL_API void takeKeyFocus() override;
-            TL_API void sizeHintEvent(const ftk::SizeHintEvent&) override;
             TL_API void keyPressEvent(ftk::KeyEvent&) override;
             TL_API void keyReleaseEvent(ftk::KeyEvent&) override;
 

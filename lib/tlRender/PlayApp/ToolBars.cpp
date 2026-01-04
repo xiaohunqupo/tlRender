@@ -157,17 +157,16 @@ namespace tl
                 parent);
             return out;
         }
+        
+        ftk::Size2I ToolBars::getSizeHint() const
+        {
+            return _layout->getSizeHint();
+        }
 
         void ToolBars::setGeometry(const ftk::Box2I& value)
         {
             IWidget::setGeometry(value);
             _layout->setGeometry(value);
-        }
-
-        void ToolBars::sizeHintEvent(const ftk::SizeHintEvent& event)
-        {
-            IWidget::sizeHintEvent(event);
-            setSizeHint(_layout->getSizeHint());
         }
     }
 }

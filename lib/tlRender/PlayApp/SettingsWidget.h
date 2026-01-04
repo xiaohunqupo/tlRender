@@ -37,8 +37,8 @@ namespace tl
                 const std::shared_ptr<App>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
+            ftk::Size2I getSizeHint() const override;
             void setGeometry(const ftk::Box2I&) override;
-            void sizeHintEvent(const ftk::SizeHintEvent&) override;
 
         private:
             std::shared_ptr<ftk::DoubleEdit> _videoEdit;
@@ -69,8 +69,8 @@ namespace tl
                 const std::shared_ptr<App>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
+            ftk::Size2I getSizeHint() const override;
             void setGeometry(const ftk::Box2I&) override;
-            void sizeHintEvent(const ftk::SizeHintEvent&) override;
 
         private:
             std::shared_ptr<ftk::CheckBox> _nativeCheckBox;
@@ -99,8 +99,8 @@ namespace tl
                 const std::shared_ptr<App>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
+            ftk::Size2I getSizeHint() const override;
             void setGeometry(const ftk::Box2I&) override;
-            void sizeHintEvent(const ftk::SizeHintEvent&) override;
 
         private:
             std::shared_ptr<ftk::VerticalLayout> _layout;

@@ -110,6 +110,21 @@ namespace tl
                 _textUpdate();
             }
         }
+        
+        ftk::Size2I IBasicItem::getSizeHint() const
+        {
+            FTK_P();
+            ftk::Size2I out;
+            out.w = _timeRange.duration().rescaled_to(1.0).value() * _scale;
+            if (!_displayOptions.minimize)
+            {
+                out.h +=
+                    p.size.fontMetrics.lineHeight +
+                    p.size.margin * 2;
+            }
+            out.h += p.size.border * 4;
+            return out;
+        }
 
         void IBasicItem::setGeometry(const ftk::Box2I& value)
         {
@@ -126,7 +141,6 @@ namespace tl
         {
             IItem::sizeHintEvent(event);
             FTK_P();
-
             if (!p.size.displayScale.has_value() ||
                 (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
             {
@@ -145,17 +159,6 @@ namespace tl
                     ftk::Size2I();
                 p.draw.reset();
             }
-
-            ftk::Size2I sizeHint;
-            sizeHint.w = _timeRange.duration().rescaled_to(1.0).value() * _scale;
-            if (!_displayOptions.minimize)
-            {
-                sizeHint.h +=
-                    p.size.fontMetrics.lineHeight +
-                    p.size.margin * 2;
-            }
-            sizeHint.h += p.size.border * 4;
-            setSizeHint(sizeHint);
         }
 
         void IBasicItem::clipEvent(const ftk::Box2I& clipRect, bool clipped)

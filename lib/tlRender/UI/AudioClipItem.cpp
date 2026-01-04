@@ -134,6 +134,16 @@ namespace tl
                 setDrawUpdate();
             }
         }
+        
+        ftk::Size2I AudioClipItem::getSizeHint() const
+        {
+            ftk::Size2I out = IBasicItem::getSizeHint();
+            if (_displayOptions.thumbnails)
+            {
+                out.h += _displayOptions.waveformHeight;
+            }
+            return out;
+        }
 
         void AudioClipItem::setGeometry(const ftk::Box2I& value)
         {
@@ -199,12 +209,6 @@ namespace tl
             IBasicItem::sizeHintEvent(event);
             FTK_P();
             p.size.dragLength = event.style->getSizeRole(ftk::SizeRole::DragLength, event.displayScale);
-            ftk::Size2I sizeHint = getSizeHint();
-            if (_displayOptions.thumbnails)
-            {
-                sizeHint.h += _displayOptions.waveformHeight;
-            }
-            setSizeHint(sizeHint);
         }
 
         void AudioClipItem::clipEvent(const ftk::Box2I& clipRect, bool clipped)

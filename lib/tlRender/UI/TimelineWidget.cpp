@@ -395,6 +395,11 @@ namespace tl
         {
             return _p->timelineItem->getTrackGeom();
         }
+        
+        ftk::Size2I TimelineWidget::getSizeHint() const
+        {
+            return _p->scrollWidget->getSizeHint();
+        }
 
         void TimelineWidget::setGeometry(const ftk::Box2I& value)
         {
@@ -427,7 +432,6 @@ namespace tl
         void TimelineWidget::sizeHintEvent(const ftk::SizeHintEvent& event)
         {
             FTK_P();
-            setSizeHint(p.scrollWidget->getSizeHint());
             p.sizeInit |= event.displayScale != p.displayScale;
             p.displayScale = event.displayScale;
         }

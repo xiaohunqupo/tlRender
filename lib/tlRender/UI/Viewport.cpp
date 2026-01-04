@@ -65,6 +65,7 @@ namespace tl
             struct SizeData
             {
                 float displayScale = 1.F;
+                int sizeHint = 0;
             };
             SizeData size;
 
@@ -548,6 +549,12 @@ namespace tl
         {
             _p->mouseWheelScale = value;
         }
+        
+        ftk::Size2I Viewport::getSizeHint() const
+        {
+            FTK_P();
+            return ftk::Size2I(p.size.sizeHint, p.size.sizeHint);
+        }
 
         void Viewport::setGeometry(const ftk::Box2I& value)
         {
@@ -564,8 +571,7 @@ namespace tl
         {
             FTK_P();
             p.size.displayScale = event.displayScale;
-            const int sa = event.style->getSizeRole(ftk::SizeRole::ScrollArea, event.displayScale);
-            setSizeHint(ftk::Size2I(sa, sa));
+            p.size.sizeHint = event.style->getSizeRole(ftk::SizeRole::ScrollArea, event.displayScale);
         }
 
         void Viewport::drawEvent(const ftk::Box2I& drawRect, const ftk::DrawEvent& event)

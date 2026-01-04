@@ -125,12 +125,24 @@ namespace tl
             setSizeUpdate();
             setDrawUpdate();
         }
+        
+        ftk::Size2I TimeLabel::getSizeHint() const
+        {
+            FTK_P();
+            ftk::Size2I out;
+            out.w =
+                std::max(p.size.textSize.w, p.size.formatSize.w) +
+                p.size.margin * 2;
+            out.h =
+                p.size.fontMetrics.lineHeight +
+                p.size.margin * 2;
+            return out;
+        }
 
         void TimeLabel::sizeHintEvent(const ftk::SizeHintEvent& event)
         {
             IWidget::sizeHintEvent(event);
             FTK_P();
-
             if (!p.size.displayScale.has_value() ||
                 (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
             {
@@ -142,15 +154,6 @@ namespace tl
                 p.size.formatSize = event.fontSystem->getSize(p.format, p.size.fontInfo);
                 p.draw.reset();
             }
-
-            ftk::Size2I sizeHint;
-            sizeHint.w =
-                std::max(p.size.textSize.w, p.size.formatSize.w) +
-                p.size.margin * 2;
-            sizeHint.h =
-                p.size.fontMetrics.lineHeight +
-                p.size.margin * 2;
-            setSizeHint(sizeHint);
         }
 
         void TimeLabel::clipEvent(const ftk::Box2I& clipRect, bool clipped)

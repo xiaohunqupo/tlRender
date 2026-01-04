@@ -61,16 +61,15 @@ namespace tl
             return out;
         }
 
+        ftk::Size2I StatusBar::getSizeHint() const
+        {
+            return _layout->getSizeHint();
+        }
+
         void StatusBar::setGeometry(const ftk::Box2I& value)
         {
             IWidget::setGeometry(value);
             _layout->setGeometry(value);
-        }
-
-        void StatusBar::sizeHintEvent(const ftk::SizeHintEvent& event)
-        {
-            IWidget::sizeHintEvent(event);
-            setSizeHint(_layout->getSizeHint());
         }
 
         void StatusBar::_logUpdate(const std::vector<ftk::LogItem>& value)

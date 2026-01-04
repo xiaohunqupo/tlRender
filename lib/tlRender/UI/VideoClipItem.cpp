@@ -138,6 +138,17 @@ namespace tl
                 setDrawUpdate();
             }
         }
+        
+        ftk::Size2I VideoClipItem::getSizeHint() const
+        {
+            FTK_P();
+            ftk::Size2I out = IBasicItem::getSizeHint();
+            if (_displayOptions.thumbnails)
+            {
+                out.h += _displayOptions.thumbnailHeight;
+            }
+            return out;
+        }
 
         void VideoClipItem::setGeometry(const ftk::Box2I& value)
         {
@@ -201,12 +212,6 @@ namespace tl
             IBasicItem::sizeHintEvent(event);
             FTK_P();
             p.size.dragLength = event.style->getSizeRole(ftk::SizeRole::DragLength, event.displayScale);
-            ftk::Size2I sizeHint = getSizeHint();
-            if (_displayOptions.thumbnails)
-            {
-                sizeHint.h += _displayOptions.thumbnailHeight;
-            }
-            setSizeHint(sizeHint);
         }
 
         void VideoClipItem::clipEvent(const ftk::Box2I& clipRect, bool clipped)

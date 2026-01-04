@@ -61,16 +61,15 @@ namespace tl
             return out;
         }
 
+        ftk::Size2I TimeUnitsWidget::getSizeHint() const
+        {
+            return _p->comboBox->getSizeHint();
+        }
+
         void TimeUnitsWidget::setGeometry(const ftk::Box2I& value)
         {
             IWidget::setGeometry(value);
             _p->comboBox->setGeometry(value);
-        }
-
-        void TimeUnitsWidget::sizeHintEvent(const ftk::SizeHintEvent& event)
-        {
-            IWidget::sizeHintEvent(event);
-            setSizeHint(_p->comboBox->getSizeHint());
         }
     }
 }

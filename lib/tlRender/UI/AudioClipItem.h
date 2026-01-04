@@ -46,6 +46,7 @@ namespace tl
             TL_API void setScale(double) override;
             TL_API void setDisplayOptions(const DisplayOptions&) override;
 
+            TL_API ftk::Size2I getSizeHint() const override;
             TL_API void setGeometry(const ftk::Box2I&) override;
             TL_API void tickEvent(
                 bool,

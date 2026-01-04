@@ -95,16 +95,15 @@ namespace tl
             return out;
         }
 
+        ftk::Size2I CacheSettingsWidget::getSizeHint() const
+        {
+            return _layout->getSizeHint();
+        }
+
         void CacheSettingsWidget::setGeometry(const ftk::Box2I& value)
         {
             IWidget::setGeometry(value);
             _layout->setGeometry(value);
-        }
-
-        void CacheSettingsWidget::sizeHintEvent(const ftk::SizeHintEvent& event)
-        {
-            IWidget::sizeHintEvent(event);
-            setSizeHint(_layout->getSizeHint());
         }
 
         void FileBrowserSettingsWidget::_init(
@@ -143,16 +142,15 @@ namespace tl
             return out;
         }
 
+        ftk::Size2I FileBrowserSettingsWidget::getSizeHint() const
+        {
+            return _layout->getSizeHint();
+        }
+
         void FileBrowserSettingsWidget::setGeometry(const ftk::Box2I& value)
         {
             IWidget::setGeometry(value);
             _layout->setGeometry(value);
-        }
-
-        void FileBrowserSettingsWidget::sizeHintEvent(const ftk::SizeHintEvent& event)
-        {
-            IWidget::sizeHintEvent(event);
-            setSizeHint(_layout->getSizeHint());
         }
 
         void SettingsWidget::_init(
@@ -183,16 +181,15 @@ namespace tl
             return out;
         }
 
+        ftk::Size2I SettingsWidget::getSizeHint() const
+        {
+            return _layout->getSizeHint();
+        }
+
         void SettingsWidget::setGeometry(const ftk::Box2I& value)
         {
             IWidget::setGeometry(value);
             _layout->setGeometry(value);
-        }
-
-        void SettingsWidget::sizeHintEvent(const ftk::SizeHintEvent& event)
-        {
-            IWidget::sizeHintEvent(event);
-            setSizeHint(_layout->getSizeHint());
         }
     }
 }

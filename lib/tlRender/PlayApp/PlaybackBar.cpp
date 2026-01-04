@@ -165,16 +165,15 @@ namespace tl
             return out;
         }
 
+        ftk::Size2I PlaybackBar::getSizeHint() const
+        {
+            return _layout->getSizeHint();
+        }
+
         void PlaybackBar::setGeometry(const ftk::Box2I& value)
         {
             IWidget::setGeometry(value);
             _layout->setGeometry(value);
-        }
-
-        void PlaybackBar::sizeHintEvent(const ftk::SizeHintEvent& event)
-        {
-            IWidget::sizeHintEvent(event);
-            setSizeHint(_layout->getSizeHint());
         }
     }
 }
