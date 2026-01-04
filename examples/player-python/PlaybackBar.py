@@ -64,13 +64,13 @@ class Widget(ftk.IWidget):
             app.getDocumentModel().observePlayer(),
             lambda player: selfWeak()._playerUpdate(player))
 
+    def getSizeHint(self):
+        return self._layout.getSizeHint()
+
     def setGeometry(self, value):
         ftk.IWidget.setGeometry(self, value)
         self._layout.setGeometry(value)
     
-    def sizeHintEvent(self, event):
-        self.setSizeHint(self._layout.sizeHint)
-
     def _currentTimeCallback(self, value):
         if self._player:
             self._player.currentTime = value

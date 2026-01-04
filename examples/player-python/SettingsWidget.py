@@ -44,12 +44,12 @@ class CacheWidget(ftk.IWidget):
             app.getSettingsModel().observeCache(),
             lambda value: selfWeak()._cacheUpdate(value))
 
+    def getSizeHint(self):
+        return self._layout.getSizeHint()
+
     def setGeometry(self, value):
         ftk.IWidget.setGeometry(self, value)
         self._layout.setGeometry(value)
-    
-    def sizeHintEvent(self, event):
-        self.setSizeHint(self._layout.sizeHint)
 
     def _videoCallback(self, value):
         if self._app:
@@ -93,12 +93,12 @@ class FileBrowserWidget(ftk.IWidget):
 
         self._nativeCheckBox.setCheckedCallback(self._nativeCallback)
 
+    def getSizeHint(self):
+        return self._layout.getSizeHint()
+
     def setGeometry(self, value):
         ftk.IWidget.setGeometry(self, value)
         self._layout.setGeometry(value)
-    
-    def sizeHintEvent(self, event):
-        self.setSizeHint(self._layout.sizeHint)
 
     def _nativeCallback(self, value):
         if self._app:
@@ -126,9 +126,9 @@ class Widget(ftk.IWidget):
         self._scrollWidget.border = False
         self._scrollWidget.widget = layout
 
+    def getSizeHint(self):
+        return self._scrollWidget.getSizeHint()
+
     def setGeometry(self, value):
         ftk.IWidget.setGeometry(self, value)
         self._scrollWidget.setGeometry(value)
-    
-    def sizeHintEvent(self, event):
-        self.setSizeHint(self._scrollWidget.sizeHint)
