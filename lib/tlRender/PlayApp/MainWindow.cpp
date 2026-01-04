@@ -31,7 +31,7 @@ namespace tl
             const std::shared_ptr<ftk::Context>& context,
             const std::shared_ptr<App>& app)
         {
-            ftk::Window::_init(context, app, "tlplay", ftk::Size2I(1920, 1080));
+            ftk::Window::_init(context, app, "tlplay", ftk::Size2I(1280, 960));
 
             auto iconSystem = context->getSystem<ftk::IconSystem>();
             setIcon(iconSystem->get("tlRender", 1.0));
