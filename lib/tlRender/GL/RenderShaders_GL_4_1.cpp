@@ -118,8 +118,6 @@ namespace tl
                 "    float g;\n"
                 "};\n"
                 "\n"
-                "{0}\n"
-                "\n"
                 "uniform sampler2D textureSampler;\n"
                 "\n"
                 "uniform int        channels;\n"
@@ -203,9 +201,9 @@ namespace tl
                 "    return value;\n"
                 "}\n"
                 "\n"
-                "{1}\n"
+                "{0}\n"
                 "\n"
-                "{2}\n"
+                "{1}\n"
                 "\n"
                 "void main()\n"
                 "{\n"
@@ -246,8 +244,8 @@ namespace tl
                 "    }\n"
                 "\n"
                 "    // Apply color management.\n"
+                "    {2}\n"
                 "    {3}\n"
-                "    {4}\n"
                 "\n"
                 "    // Swizzle for the channels display.\n"
                 "    if (Channels_Red == channels)\n"
@@ -275,8 +273,7 @@ namespace tl
                 arg(args[0]).
                 arg(args[1]).
                 arg(args[2]).
-                arg(args[3]).
-                arg(args[4]);
+                arg(args[3]);
         }
 
         std::string dissolveFragmentSource()
