@@ -24,7 +24,7 @@ namespace tl
 
         size_t getByteCount(DataType value)
         {
-            static const std::array<uint8_t, static_cast<size_t>(DataType::Count)> data =
+            const std::array<uint8_t, static_cast<size_t>(DataType::Count)> data =
             {
                 0,
                 1,
@@ -38,7 +38,7 @@ namespace tl
 
         DataType getIntType(size_t value)
         {
-            static const std::array<DataType, 9> data =
+            const std::array<DataType, 9> data =
             {
                 DataType::None,
                 DataType::S8,
@@ -55,7 +55,7 @@ namespace tl
 
         DataType getFloatType(size_t value)
         {
-            static const std::array<DataType, 9> data =
+            const std::array<DataType, 9> data =
             {
                 DataType::None,
                 DataType::None,

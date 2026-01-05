@@ -105,9 +105,9 @@ namespace tl
 
         namespace
         {
-            const std::string& getLabel(Imf::PixelType value)
+            std::string getLabel(Imf::PixelType value)
             {
-                static const std::array<std::string, 3> data =
+                const std::array<std::string, 3> data =
                 {
                     "UInt",
                     "Half",
@@ -116,7 +116,7 @@ namespace tl
                 return data[value];
             }
 
-            const std::string& getLabel(Imf::Compression value)
+            std::string getLabel(Imf::Compression value)
             {
                 static const std::array<std::string, static_cast<size_t>(Imf::Compression::NUM_COMPRESSION_METHODS) > data =
                 {

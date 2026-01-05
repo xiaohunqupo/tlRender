@@ -210,7 +210,7 @@ namespace tl
                 const std::shared_ptr<timeline::IRender>& render,
                 const OTIO_NS::RationalTime& time)
             {
-                static const std::array<ftk::Color4F, 8> colors =
+                const std::array<ftk::Color4F, 8> colors =
                 {
                     ftk::Color4F(0.F, 0.F, 0.F),
                     ftk::Color4F(1.F, 0.F, 0.F),
