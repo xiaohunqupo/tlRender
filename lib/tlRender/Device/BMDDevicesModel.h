@@ -31,7 +31,6 @@ namespace tl
             int                      pixelTypeIndex = 0;
             bool                     deviceEnabled = true;
             BoolOptions              boolOptions;
-            ftk::VideoLevels         videoLevels = ftk::VideoLevels::LegalRange;
             HDRMode                  hdrMode = HDRMode::FromFile;
             image::HDRData           hdrData;
 
@@ -72,9 +71,6 @@ namespace tl
 
             //! Set the boolean options.
             TL_API void setBoolOptions(const BoolOptions&);
-
-            //! Set the video levels.
-            TL_API void setVideoLevels(ftk::VideoLevels);
 
             //! Set the HDR mode.
             TL_API void setHDRMode(HDRMode);

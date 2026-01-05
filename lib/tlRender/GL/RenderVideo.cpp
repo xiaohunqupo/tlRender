@@ -853,9 +853,6 @@ namespace tl
                 p.shaders["display"]->setUniform(
                     "softClip",
                     displayOptions.softClip.enabled ? displayOptions.softClip.value : 0.F);
-                p.shaders["display"]->setUniform(
-                    "videoLevels",
-                    static_cast<int>(displayOptions.videoLevels));
 
                 glActiveTexture(static_cast<GLenum>(GL_TEXTURE0));
                 glBindTexture(GL_TEXTURE_2D, p.buffers["video"]->getColorID());

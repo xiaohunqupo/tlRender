@@ -147,8 +147,7 @@ namespace tl
                 levels == other.levels &&
                 exrDisplay == other.exrDisplay &&
                 softClip == other.softClip &&
-                imageFilters == other.imageFilters &&
-                videoLevels == other.videoLevels;
+                imageFilters == other.imageFilters;
         }
 
         bool DisplayOptions::operator != (const DisplayOptions& other) const
@@ -201,7 +200,6 @@ namespace tl
             json["EXRDisplay"] = in.exrDisplay;
             json["SoftClip"] = in.softClip;
             json["ImageFilters"] = in.imageFilters;
-            json["VideoLevels"] = to_string(in.videoLevels);
         }
 
         void from_json(const nlohmann::json& json, Color& out)
@@ -249,7 +247,6 @@ namespace tl
             json.at("EXRDisplay").get_to(out.exrDisplay);
             json.at("SoftClip").get_to(out.softClip);
             json.at("ImageFilters").get_to(out.imageFilters);
-            from_string(json.at("VideoLevels").get<std::string>(), out.videoLevels);
         }
     }
 }

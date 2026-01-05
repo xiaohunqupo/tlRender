@@ -24,7 +24,6 @@ namespace tl
                 pixelTypeIndex == other.pixelTypeIndex &&
                 deviceEnabled == other.deviceEnabled &&
                 boolOptions == other.boolOptions &&
-                videoLevels == other.videoLevels &&
                 hdrMode == other.hdrMode &&
                 hdrData == other.hdrData;
         }
@@ -37,7 +36,6 @@ namespace tl
             int pixelTypeIndex = 0;
             bool deviceEnabled = true;
             BoolOptions boolOptions;
-            ftk::VideoLevels videoLevels = ftk::VideoLevels::LegalRange;
             HDRMode hdrMode = HDRMode::FromFile;
             image::HDRData hdrData;
             std::shared_ptr<ftk::Observable<DevicesModelData> > data;
@@ -130,15 +128,6 @@ namespace tl
             _update();
         }
 
-        void DevicesModel::setVideoLevels(ftk::VideoLevels value)
-        {
-            FTK_P();
-            if (value == p.videoLevels)
-                return;
-            p.videoLevels = value;
-            _update();
-        }
-
         void DevicesModel::setHDRMode(HDRMode value)
         {
             FTK_P();
@@ -193,8 +182,6 @@ namespace tl
             data.deviceEnabled = p.deviceEnabled;
 
             data.boolOptions = p.boolOptions;
-
-            data.videoLevels = p.videoLevels;
 
             data.hdrMode = p.hdrMode;
             data.hdrData = p.hdrData;

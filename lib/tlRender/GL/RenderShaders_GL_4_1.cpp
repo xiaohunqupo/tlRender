@@ -65,14 +65,6 @@ namespace tl
                 "}\n";
         }
 
-        namespace
-        {
-            const std::string videoLevels =
-                "// enum ftk::VideoLevels\n"
-                "const uint VideoLevels_FullRange  = 0;\n"
-                "const uint VideoLevels_LegalRange = 1;\n";
-        }
-
         std::string displayFragmentSource(
             const std::string& ocioDef,
             const std::string& ocio,
@@ -81,7 +73,6 @@ namespace tl
             timeline::LUTOrder lutOrder)
         {
             std::vector<std::string> args;
-            args.push_back(videoLevels);
             args.push_back(ocioDef);
             args.push_back(lutDef);
             switch (lutOrder)
@@ -143,7 +134,6 @@ namespace tl
                 "uniform bool       exrDisplayEnabled;\n"
                 "uniform EXRDisplay exrDisplay;\n"
                 "uniform float      softClip;\n"
-                "uniform int        videoLevels;\n"
                 "\n"
                 "vec4 colorFunc(vec4 value, vec3 add, mat4 m)\n"
                 "{\n"
@@ -230,16 +220,6 @@ namespace tl
                 "    }\n"
                 "\n"
                 "    outColor = texture(textureSampler, t);\n"
-                "\n"
-                "    // Video levels.\n"
-                "    if (VideoLevels_LegalRange == videoLevels)\n"
-                "    {\n"
-                "        const float scale = (940.0 - 64.0) / 1023.0;\n"
-                "        const float offset = 64.0 / 1023.0;\n"
-                "        outColor.r = outColor.r * scale + offset;\n"
-                "        outColor.g = outColor.g * scale + offset;\n"
-                "        outColor.b = outColor.b * scale + offset;\n"
-                "    }\n"
                 "\n"
                 "    // Apply color transformations.\n"
                 "    if (colorEnabled)\n"

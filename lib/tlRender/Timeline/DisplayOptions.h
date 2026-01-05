@@ -91,7 +91,6 @@ namespace tl
             EXRDisplay          exrDisplay;
             SoftClip            softClip;
             ftk::ImageFilters   imageFilters;
-            ftk::VideoLevels    videoLevels  = ftk::VideoLevels::FullRange;
 
             TL_API bool operator == (const DisplayOptions&) const;
             TL_API bool operator != (const DisplayOptions&) const;
