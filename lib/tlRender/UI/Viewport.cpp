@@ -502,7 +502,6 @@ namespace tl
             if (p.buffer)
             {
                 const ftk::Box2I& g = getGeometry();
-                const ftk::V2I pos = value - g.min;
                 std::vector<float> sample(4);
                 ftk::gl::OffscreenBufferBinding binding(p.buffer);
                 glPixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -510,8 +509,8 @@ namespace tl
                 glClampColor(GL_CLAMP_READ_COLOR, GL_FALSE);
 #endif // FTK_API_GL_4_1
                 glReadPixels(
-                    pos.x,
-                    g.h() - 1 - pos.y,
+                    value.x,
+                    g.h() - 1 - value.y,
                     1,
                     1,
                     GL_RGBA,
