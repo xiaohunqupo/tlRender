@@ -71,7 +71,6 @@ namespace tl
                 .def_readwrite("exrDisplay", &timeline::DisplayOptions::exrDisplay)
                 .def_readwrite("softClip", &timeline::DisplayOptions::softClip)
                 .def_readwrite("imageFilters", &timeline::DisplayOptions::imageFilters)
-                .def_readwrite("videoLevels", &timeline::DisplayOptions::videoLevels)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
