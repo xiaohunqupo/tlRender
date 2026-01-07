@@ -319,18 +319,18 @@ namespace tl
                         //std::cout << "t: " << t << std::endl;
 
                         // Mix the audio layers.
-                        auto audio = mix(audioLayers, mute ? 0.F : volume, channelMute);
+                        auto audio = mixAudio(audioLayers, mute ? 0.F : volume, channelMute);
 
                         // Reverse the audio.
                         if (timeline::Playback::Reverse == playback)
                         {
-                            audio = reverse(audio);
+                            audio = reverseAudio(audio);
                         }
 
                         // Change the audio speed.
                         if (speed != currentTime.rate() && speed > 0.0)
                         {
-                            audio = changeSpeed(audio, currentTime.rate() / speed);
+                            audio = changeAudioSpeed(audio, currentTime.rate() / speed);
                         }
 
                         // Resample the audio.

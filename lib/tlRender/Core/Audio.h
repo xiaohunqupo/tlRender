@@ -128,29 +128,29 @@ namespace tl
 
     //! Combine chunks of audio. The chunks should all have the same
     //! number of channels and type.
-    TL_API std::shared_ptr<Audio> combine(
+    TL_API std::shared_ptr<Audio> combineAudio(
         const std::list<std::shared_ptr<Audio> >&);
 
     //! Mix audio sources.
-    TL_API std::shared_ptr<Audio> mix(
+    TL_API std::shared_ptr<Audio> mixAudio(
         const std::vector<std::shared_ptr<Audio> >&,
         float volume,
         const std::vector<bool>& channelMute = {});
 
     //! Reverse audio.
-    TL_API std::shared_ptr<Audio> reverse(const std::shared_ptr<Audio>&);
+    TL_API std::shared_ptr<Audio> reverseAudio(const std::shared_ptr<Audio>&);
 
     //! Change audio speed.
-    TL_API std::shared_ptr<Audio> changeSpeed(const std::shared_ptr<Audio>&, double);
+    TL_API std::shared_ptr<Audio> changeAudioSpeed(const std::shared_ptr<Audio>&, double);
 
     //! Convert audio data.
-    TL_API std::shared_ptr<Audio> convert(const std::shared_ptr<Audio>&, AudioType);
+    TL_API std::shared_ptr<Audio> convertAudio(const std::shared_ptr<Audio>&, AudioType);
 
     //! Get the total sample count from a list of audio data.
     TL_API size_t getSampleCount(const std::list<std::shared_ptr<Audio> >&);
 
     //! Move audio data.
-    TL_API void move(
+    TL_API void moveAudio(
         std::list<std::shared_ptr<Audio> >& in,
         uint8_t* out,
         size_t sampleCount);

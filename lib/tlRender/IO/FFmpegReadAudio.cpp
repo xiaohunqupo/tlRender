@@ -465,7 +465,7 @@ namespace tl
 
         void ReadAudio::bufferCopy(uint8_t* out, size_t sampleCount)
         {
-            move(_buffer, out, sampleCount);
+            moveAudio(_buffer, out, sampleCount);
         }
 
         namespace

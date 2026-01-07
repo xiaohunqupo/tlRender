@@ -419,18 +419,18 @@ namespace tl
                         {
                             state.volume = 0.F;
                         }
-                        auto audio = mix(audioLayers, state.volume, state.channelMute);
+                        auto audio = mixAudio(audioLayers, state.volume, state.channelMute);
 
                         // Reverse the audio.
                         if (Playback::Reverse == state.playback)
                         {
-                            audio = tl::reverse(audio);
+                            audio = reverseAudio(audio);
                         }
 
                         // Change the audio speed.
                         if (state.speed != timeRange.duration().rate() && state.speed > 0.0)
                         {
-                            audio = changeSpeed(audio, timeRange.duration().rate() / state.speed);
+                            audio = changeAudioSpeed(audio, timeRange.duration().rate() / state.speed);
                         }
 
                         // Resample the audio and add it to the buffer.
@@ -453,7 +453,7 @@ namespace tl
                 const size_t bufferSampleCount = getSampleCount(audioThread.buffer);
                 if (outputSamples <= bufferSampleCount)
                 {
-                    move(audioThread.buffer, outputBuffer, outputSamples);
+                    moveAudio(audioThread.buffer, outputBuffer, outputSamples);
                 }
 
                 // Update the frame counter.

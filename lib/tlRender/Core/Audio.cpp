@@ -101,7 +101,7 @@ namespace tl
         std::memset(_data, 0, _byteCount);
     }
 
-    std::shared_ptr<Audio> combine(const std::list<std::shared_ptr<Audio> >& chunks)
+    std::shared_ptr<Audio> combineAudio(const std::list<std::shared_ptr<Audio> >& chunks)
     {
         std::shared_ptr<Audio> out;
         size_t size = 0;
@@ -177,7 +177,7 @@ namespace tl
         }
     }
 
-    std::shared_ptr<Audio> mix(
+    std::shared_ptr<Audio> mixAudio(
         const std::vector<std::shared_ptr<Audio> >& in,
         float volume,
         const std::vector<bool>& channelMute)
@@ -276,7 +276,7 @@ namespace tl
         }
     }
 
-    std::shared_ptr<Audio> reverse(const std::shared_ptr<Audio>& audio)
+    std::shared_ptr<Audio> reverseAudio(const std::shared_ptr<Audio>& audio)
     {
         const AudioInfo& info = audio->getInfo();
         const size_t sampleCount = audio->getSampleCount();
@@ -327,7 +327,7 @@ namespace tl
         }
     }
 
-    std::shared_ptr<Audio> changeSpeed(const std::shared_ptr<Audio>& audio, double mult)
+    std::shared_ptr<Audio> changeAudioSpeed(const std::shared_ptr<Audio>& audio, double mult)
     {
         const AudioInfo& info = audio->getInfo();
         const size_t inSampleCount = audio->getSampleCount();
@@ -504,7 +504,7 @@ namespace tl
         } \
     }
 
-    std::shared_ptr<Audio> convert(const std::shared_ptr<Audio>& in, AudioType type)
+    std::shared_ptr<Audio> convertAudio(const std::shared_ptr<Audio>& in, AudioType type)
     {
         const AudioType inType = in->getType();
         const size_t sampleCount = in->getSampleCount();
@@ -590,7 +590,7 @@ namespace tl
         return out;
     }
 
-    void move(std::list<std::shared_ptr<Audio> >& in, uint8_t* out, size_t sampleCount)
+    void moveAudio(std::list<std::shared_ptr<Audio> >& in, uint8_t* out, size_t sampleCount)
     {
         size_t size = 0;
         while (!in.empty() && (size + in.front()->getSampleCount() <= sampleCount))
