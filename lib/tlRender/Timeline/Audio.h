@@ -12,7 +12,7 @@ namespace tl
         //! Audio layer.
         struct TL_API_TYPE AudioLayer
         {
-            std::shared_ptr<audio::Audio> audio;
+            std::shared_ptr<Audio> audio;
 
             TL_API bool operator == (const AudioLayer&) const;
             TL_API bool operator != (const AudioLayer&) const;

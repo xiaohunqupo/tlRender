@@ -83,17 +83,17 @@ namespace tl
                 std::vector<ftk::ImageOptions> imageOptions;
                 std::vector<timeline::DisplayOptions> displayOptions;
                 HDRMode hdrMode = HDRMode::FromFile;
-                image::HDRData hdrData;
+                HDRData hdrData;
                 timeline::CompareOptions compareOptions;
                 timeline::BackgroundOptions bgOptions;
                 timeline::ForegroundOptions fgOptions;
                 ftk::V2I viewPos;
                 double viewZoom = 1.0;
                 bool frameView = true;
-                OTIO_NS::TimeRange timeRange = time::invalidTimeRange;
+                OTIO_NS::TimeRange timeRange = invalidTimeRange;
                 timeline::Playback playback = timeline::Playback::Stop;
                 double speed = 0.0;
-                OTIO_NS::RationalTime currentTime = time::invalidTime;
+                OTIO_NS::RationalTime currentTime = invalidTime;
                 bool seek = false;
                 std::vector<timeline::VideoData> videoData;
                 std::shared_ptr<ftk::Image> overlay;
@@ -113,11 +113,11 @@ namespace tl
                 ftk::Size2I size;
                 PixelType outputPixelType = PixelType::None;
                 HDRMode hdrMode = HDRMode::FromFile;
-                image::HDRData hdrData;
+                HDRData hdrData;
                 ftk::V2I viewPos;
                 double viewZoom = 1.0;
                 bool frameView = true;
-                OTIO_NS::TimeRange timeRange = time::invalidTimeRange;
+                OTIO_NS::TimeRange timeRange = invalidTimeRange;
                 std::vector<timeline::VideoData> videoData;
                 std::shared_ptr<ftk::Image> overlay;
 
@@ -335,7 +335,7 @@ namespace tl
             p.thread.cv.notify_one();
         }
 
-        void OutputDevice::setHDR(HDRMode hdrMode, const image::HDRData& hdrData)
+        void OutputDevice::setHDR(HDRMode hdrMode, const HDRData& hdrData)
         {
             FTK_P();
             {
@@ -541,10 +541,10 @@ namespace tl
                 }
                 else
                 {
-                    p.mutex.timeRange = time::invalidTimeRange;
+                    p.mutex.timeRange = invalidTimeRange;
                     p.mutex.playback = timeline::Playback::Stop;
                     p.mutex.speed = 0.0;
-                    p.mutex.currentTime = time::invalidTime;
+                    p.mutex.currentTime = invalidTime;
                 }
                 p.mutex.videoData.clear();
                 p.mutex.audioData.clear();
@@ -589,7 +589,7 @@ namespace tl
             timeline::ForegroundOptions fgOptions;
             timeline::Playback playback = timeline::Playback::Stop;
             double speed = 0.0;
-            OTIO_NS::RationalTime currentTime = time::invalidTime;
+            OTIO_NS::RationalTime currentTime = invalidTime;
             bool seek = false;
             float volume = 1.F;
             bool mute = false;
@@ -898,7 +898,7 @@ namespace tl
                     throw std::runtime_error("Cannot get output");
                 }
 
-                const audio::Info audioInfo(2, audio::DataType::S16, 48000);
+                const AudioInfo audioInfo(2, AudioType::S16, 48000);
                 {
                     DLDisplayModeIteratorWrapper dlDisplayModeIterator;
                     if (p.thread.dl->output->GetDisplayModeIterator(&dlDisplayModeIterator.p) != S_OK)
@@ -946,7 +946,7 @@ namespace tl
                         arg(frameRate.num).
                         arg(frameRate.den).
                         arg(audioInfo.channelCount).
-                        arg(audioInfo.dataType).
+                        arg(audioInfo.type).
                         arg(audioInfo.sampleRate));
 
                     HRESULT r = p.thread.dl->output->EnableVideoOutput(

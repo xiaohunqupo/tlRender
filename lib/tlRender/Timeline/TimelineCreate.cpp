@@ -195,7 +195,7 @@ namespace tl
                         dynamic_cast<OTIO_NS::ExternalReference*>(clip->media_reference()))
                     {
                         const std::string mediaFileName = ftk::Path(
-                            url::decode(externalReference->target_url())).get();
+                            decodeURL(externalReference->target_url())).get();
 
                         int32_t err = mz_zip_reader_locate_entry(zipReader.reader, mediaFileName.c_str(), 0);
                         if (err != MZ_OK)
@@ -235,7 +235,7 @@ namespace tl
                             ++number)
                         {
                             const std::string mediaFileName = ftk::Path(
-                                url::decode(imageSeqReference->target_url_for_image_number(number))).get();
+                                decodeURL(imageSeqReference->target_url_for_image_number(number))).get();
 
                             int32_t err = mz_zip_reader_locate_entry(zipReader.reader, mediaFileName.c_str(), 0);
                             if (err != MZ_OK)
@@ -339,7 +339,7 @@ namespace tl
                 if (auto read = ioSystem->read(path, options.ioOptions))
                 {
                     const auto info = read->getInfo().get();
-                    OTIO_NS::RationalTime startTime = time::invalidTime;
+                    OTIO_NS::RationalTime startTime = invalidTime;
                     OTIO_NS::Track* videoTrack = nullptr;
                     OTIO_NS::Track* audioTrack = nullptr;
                     OTIO_NS::ErrorStatus errorStatus;
@@ -441,7 +441,7 @@ namespace tl
                     // Create the timeline.
                     out = new OTIO_NS::Timeline(path.get());
                     out->set_tracks(otioStack);
-                    if (time::isValid(startTime))
+                    if (isValid(startTime))
                     {
                         out->set_global_start_time(startTime);
                     }

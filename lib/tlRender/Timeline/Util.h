@@ -127,8 +127,8 @@ namespace tl
             double sampleRate);
 
         //! Copy audio data.
-        TL_API std::vector<std::shared_ptr<audio::Audio> > audioCopy(
-            const audio::Info&,
+        TL_API std::vector<std::shared_ptr<Audio> > audioCopy(
+            const AudioInfo&,
             const std::vector<AudioData>&,
             Playback,
             int64_t frame,

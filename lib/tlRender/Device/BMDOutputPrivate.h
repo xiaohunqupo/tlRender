@@ -82,7 +82,7 @@ namespace tl
             public IDeckLinkVideoFrameMetadataExtensions
         {
         public:
-            DLHDRVideoFrame(IDeckLinkMutableVideoFrame*, image::HDRData&);
+            DLHDRVideoFrame(IDeckLinkMutableVideoFrame*, HDRData&);
 
             virtual ~DLHDRVideoFrame();
 
@@ -111,11 +111,11 @@ namespace tl
 #endif // __APPLE__
             HRESULT GetBytes(BMDDeckLinkFrameMetadataID metadataID, void* buffer, uint32_t* bufferSize) override;
 
-            void UpdateHDRMetadata(const image::HDRData& metadata) { _hdrData = metadata; }
+            void UpdateHDRMetadata(const HDRData& metadata) { _hdrData = metadata; }
 
         private:
             IDeckLinkMutableVideoFrame* _frame = nullptr;
-            image::HDRData _hdrData;
+            HDRData _hdrData;
             std::atomic<ULONG> _refCount;
         };
 
@@ -123,7 +123,7 @@ namespace tl
         {
             timeline::Playback playback = timeline::Playback::Stop;
             double speed = 0.0;
-            OTIO_NS::RationalTime currentTime = time::invalidTime;
+            OTIO_NS::RationalTime currentTime = invalidTime;
             bool seek = false;
             float volume = 1.F;
             bool mute = false;
@@ -142,7 +142,7 @@ namespace tl
                 PixelType pixelType,
                 const FrameRate& frameRate,
                 int videoFrameDelay,
-                const audio::Info& audioInfo);
+                const AudioInfo& audioInfo);
 
             void setData(const DLOutputCallbackData&);
             void setVideo(const std::shared_ptr<DLVideoFrameWrapper>&);
@@ -162,7 +162,7 @@ namespace tl
             ftk::Size2I _size;
             PixelType _pixelType = PixelType::None;
             FrameRate _frameRate;
-            audio::Info _audioInfo;
+            AudioInfo _audioInfo;
             DLOutputCallbackData _data;
 
             std::atomic<size_t> _refCount;
@@ -191,14 +191,14 @@ namespace tl
             {
                 timeline::Playback playback = timeline::Playback::Stop;
                 double speed = 0.0;
-                OTIO_NS::RationalTime currentTime = time::invalidTime;
+                OTIO_NS::RationalTime currentTime = invalidTime;
                 float volume = 1.F;
                 bool mute = false;
                 std::vector<bool> channelMute;
                 double audioOffset = 0.0;
                 std::vector<timeline::AudioData> audioData;
                 bool reset = false;
-                OTIO_NS::RationalTime start = time::invalidTime;
+                OTIO_NS::RationalTime start = invalidTime;
                 std::mutex mutex;
             };
             AudioMutex _audioMutex;
@@ -206,7 +206,7 @@ namespace tl
             struct AudioThread
             {
                 size_t frame = 0;
-                std::shared_ptr<audio::AudioResample> resample;
+                std::shared_ptr<AudioResample> resample;
             };
             AudioThread _audioThread;
         };

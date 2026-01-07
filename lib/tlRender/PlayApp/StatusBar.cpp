@@ -124,7 +124,7 @@ namespace tl
                 {
                     const std::string s = ftk::Format("audio: {1} {2} {3}").
                         arg(ioInfo.audio.channelCount).
-                        arg(ioInfo.audio.dataType).
+                        arg(ioInfo.audio.type).
                         arg(ioInfo.audio.sampleRate);
                     text.push_back(s);
                     tooltip.push_back(s);

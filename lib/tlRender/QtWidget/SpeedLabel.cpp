@@ -14,7 +14,7 @@ namespace tl
     {
         struct SpeedLabel::Private
         {
-            OTIO_NS::RationalTime value = time::invalidTime;
+            OTIO_NS::RationalTime value = invalidTime;
             QLabel* label = nullptr;
         };
 
@@ -60,7 +60,7 @@ namespace tl
         {
             FTK_P();
             p.label->setText(QString("%1").
-                arg(time::isValid(p.value) ? p.value.rate() : 0.0, 0, 'f', 2));
+                arg(isValid(p.value) ? p.value.rate() : 0.0, 0, 'f', 2));
         }
     }
 }

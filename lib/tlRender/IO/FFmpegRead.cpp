@@ -83,10 +83,10 @@ namespace tl
                 std::stringstream ss(i->second);
                 ss >> p.options.audioConvertInfo.channelCount;
             }
-            i = options.find("FFmpeg/AudioDataType");
+            i = options.find("FFmpeg/AudioType");
             if (i != options.end())
             {
-                from_string(i->second, p.options.audioConvertInfo.dataType);
+                from_string(i->second, p.options.audioConvertInfo.type);
             }
             i = options.find("FFmpeg/AudioSampleRate");
             if (i != options.end())
@@ -486,7 +486,7 @@ namespace tl
                 {
                     io::AudioData audioData;
                     audioData.time = request->timeRange.start_time();
-                    audioData.audio = audio::Audio::create(p.info.audio, request->timeRange.duration().value());
+                    audioData.audio = Audio::create(p.info.audio, request->timeRange.duration().value());
                     audioData.audio->zero();
                     if (intersects)
                     {

@@ -321,13 +321,13 @@ namespace tl
             ///@{
 
             //! Get the audio device.
-            TL_API const audio::DeviceID& getAudioDevice() const;
+            TL_API const AudioDeviceID& getAudioDevice() const;
 
             //! Observe the audio devices.
-            TL_API std::shared_ptr<ftk::IObservable<audio::DeviceID> > observeAudioDevice() const;
+            TL_API std::shared_ptr<ftk::IObservable<AudioDeviceID> > observeAudioDevice() const;
 
             //! Set the audio device.
-            TL_API void setAudioDevice(const audio::DeviceID&);
+            TL_API void setAudioDevice(const AudioDeviceID&);
 
             //! Get the volume.
             TL_API float getVolume() const;

@@ -39,7 +39,7 @@ namespace tl
         struct ReadOptions
         {
             bool yuvToRGBConversion = false;
-            audio::Info audioConvertInfo;
+            AudioInfo audioConvertInfo;
             size_t threadCount = Options().threadCount;
             size_t requestTimeout = 5;
             size_t videoBufferSize = 4;
@@ -75,7 +75,7 @@ namespace tl
             std::string _fileName;
             ReadOptions _options;
             ftk::ImageInfo _info;
-            OTIO_NS::TimeRange _timeRange = time::invalidTimeRange;
+            OTIO_NS::TimeRange _timeRange = invalidTimeRange;
             ftk::ImageTags _tags;
 
             AVFormatContext* _avFormatContext = nullptr;
@@ -107,7 +107,7 @@ namespace tl
             ~ReadAudio();
 
             bool isValid() const;
-            const audio::Info& getInfo() const;
+            const AudioInfo& getInfo() const;
             const OTIO_NS::TimeRange& getTimeRange() const;
             const ftk::ImageTags& getTags() const;
 
@@ -125,8 +125,8 @@ namespace tl
 
             std::string _fileName;
             ReadOptions _options;
-            audio::Info _info;
-            OTIO_NS::TimeRange _timeRange = time::invalidTimeRange;
+            AudioInfo _info;
+            OTIO_NS::TimeRange _timeRange = invalidTimeRange;
             ftk::ImageTags _tags;
 
             AVFormatContext* _avFormatContext = nullptr;
@@ -138,7 +138,7 @@ namespace tl
             std::map<int, AVCodecContext*> _avCodecContext;
             AVFrame* _avFrame = nullptr;
             SwrContext* _swrContext = nullptr;
-            std::list<std::shared_ptr<audio::Audio> > _buffer;
+            std::list<std::shared_ptr<Audio> > _buffer;
             bool _eof = false;
         };
 
@@ -157,7 +157,7 @@ namespace tl
 
             struct VideoRequest
             {
-                OTIO_NS::RationalTime time = time::invalidTime;
+                OTIO_NS::RationalTime time = invalidTime;
                 io::Options options;
                 std::promise<io::VideoData> promise;
             };
@@ -172,7 +172,7 @@ namespace tl
             VideoMutex videoMutex;
             struct VideoThread
             {
-                OTIO_NS::RationalTime currentTime = time::invalidTime;
+                OTIO_NS::RationalTime currentTime = invalidTime;
                 std::chrono::steady_clock::time_point logTimer;
                 std::condition_variable cv;
                 std::thread thread;
@@ -182,7 +182,7 @@ namespace tl
 
             struct AudioRequest
             {
-                OTIO_NS::TimeRange timeRange = time::invalidTimeRange;
+                OTIO_NS::TimeRange timeRange = invalidTimeRange;
                 io::Options options;
                 std::promise<io::AudioData> promise;
             };
@@ -196,7 +196,7 @@ namespace tl
             AudioMutex audioMutex;
             struct AudioThread
             {
-                OTIO_NS::RationalTime currentTime = time::invalidTime;
+                OTIO_NS::RationalTime currentTime = invalidTime;
                 std::chrono::steady_clock::time_point logTimer;
                 std::condition_variable cv;
                 std::thread thread;

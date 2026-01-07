@@ -32,7 +32,7 @@ namespace tl
         struct TL_API_TYPE PlayerOptions
         {
             //! Audio device index.
-            audio::DeviceID audioDevice;
+            AudioDeviceID audioDevice;
 
             //! Cache options.
             PlayerCacheOptions cache;
@@ -53,7 +53,7 @@ namespace tl
             std::chrono::milliseconds sleepTimeout = std::chrono::milliseconds(5);
 
             //! Current time to start at.
-            OTIO_NS::RationalTime currentTime = time::invalidTime;
+            OTIO_NS::RationalTime currentTime = invalidTime;
 
             TL_API bool operator == (const PlayerOptions&) const;
             TL_API bool operator != (const PlayerOptions&) const;

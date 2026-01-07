@@ -12,17 +12,17 @@ namespace tl
 {
     namespace timeline
     {
-        const audio::DeviceID& Player::getAudioDevice() const
+        const AudioDeviceID& Player::getAudioDevice() const
         {
             return _p->audioDevice->get();
         }
 
-        std::shared_ptr<ftk::IObservable<audio::DeviceID> > Player::observeAudioDevice() const
+        std::shared_ptr<ftk::IObservable<AudioDeviceID> > Player::observeAudioDevice() const
         {
             return _p->audioDevice;
         }
 
-        void Player::setAudioDevice(const audio::DeviceID& value)
+        void Player::setAudioDevice(const AudioDeviceID& value)
         {
             FTK_P();
             if (p.audioDevice->setIfChanged(value))
@@ -142,29 +142,29 @@ namespace tl
         namespace
         {
 #if defined(TLRENDER_SDL2)
-            SDL_AudioFormat toSDL(audio::DataType value)
+            SDL_AudioFormat toSDL(AudioType value)
             {
                 SDL_AudioFormat out = 0;
                 switch (value)
                 {
-                case audio::DataType::S8: out = AUDIO_S8; break;
-                case audio::DataType::S16: out = AUDIO_S16; break;
-                case audio::DataType::S32: out = AUDIO_S32; break;
-                case audio::DataType::F32: out = AUDIO_F32; break;
+                case AudioType::S8: out = AUDIO_S8; break;
+                case AudioType::S16: out = AUDIO_S16; break;
+                case AudioType::S32: out = AUDIO_S32; break;
+                case AudioType::F32: out = AUDIO_F32; break;
                 default: break;
                 }
                 return out;
             }
 #elif defined(TLRENDER_SDL3)
-            SDL_AudioFormat toSDL(audio::DataType value)
+            SDL_AudioFormat toSDL(AudioType value)
             {
                 SDL_AudioFormat out = SDL_AUDIO_UNKNOWN;
                 switch (value)
                 {
-                case audio::DataType::S8: out = SDL_AUDIO_S8; break;
-                case audio::DataType::S16: out = SDL_AUDIO_S16; break;
-                case audio::DataType::S32: out = SDL_AUDIO_S32; break;
-                case audio::DataType::F32: out = SDL_AUDIO_F32; break;
+                case AudioType::S8: out = SDL_AUDIO_S8; break;
+                case AudioType::S16: out = SDL_AUDIO_S16; break;
+                case AudioType::S32: out = SDL_AUDIO_S32; break;
+                case AudioType::F32: out = SDL_AUDIO_F32; break;
                 default: break;
                 }
                 return out;
@@ -173,32 +173,32 @@ namespace tl
 
 #if defined(TLRENDER_SDL2) || defined(TLRENDER_SDL3)
             //! \todo This is duplicated in AudioSystem.cpp and PlayerAudio.cpp
-            audio::DataType fromSDL(SDL_AudioFormat value)
+            AudioType fromSDL(SDL_AudioFormat value)
             {
-                audio::DataType out = audio::DataType::F32;
+                AudioType out = AudioType::F32;
                 if (SDL_AUDIO_BITSIZE(value) == 8 &&
                     SDL_AUDIO_ISSIGNED(value) &&
                     !SDL_AUDIO_ISFLOAT(value))
                 {
-                    out = audio::DataType::S8;
+                    out = AudioType::S8;
                 }
                 else if (SDL_AUDIO_BITSIZE(value) == 16 &&
                     SDL_AUDIO_ISSIGNED(value) &&
                     !SDL_AUDIO_ISFLOAT(value))
                 {
-                    out = audio::DataType::S16;
+                    out = AudioType::S16;
                 }
                 else if (SDL_AUDIO_BITSIZE(value) == 32 &&
                     SDL_AUDIO_ISSIGNED(value) &&
                     !SDL_AUDIO_ISFLOAT(value))
                 {
-                    out = audio::DataType::S32;
+                    out = AudioType::S32;
                 }
                 else if (SDL_AUDIO_BITSIZE(value) == 32 &&
                     SDL_AUDIO_ISSIGNED(value) &&
                     SDL_AUDIO_ISFLOAT(value))
                 {
-                    out = audio::DataType::F32;
+                    out = AudioType::F32;
                 }
                 return out;
             }
@@ -223,13 +223,13 @@ namespace tl
             }
 #endif // TLRENDER_SDL2
 
-            audio::DeviceID id = audioDevice->get();
-            auto audioSystem = context->getSystem<audio::System>();
+            AudioDeviceID id = audioDevice->get();
+            auto audioSystem = context->getSystem<AudioSystem>();
             auto devices = audioSystem->getDevices();
             auto i = std::find_if(
                 devices.begin(),
                 devices.end(),
-                [id](const audio::DeviceInfo& value)
+                [id](const AudioDeviceInfo& value)
                 {
                     return id == value.id;
                 });
@@ -242,7 +242,7 @@ namespace tl
                     ss << "Opening audio device: " << id.number << " " << id.name << "\n" <<
                         "    buffer frames: " << playerOptions.audioBufferFrameCount << "\n" <<
                         "    channels: " << audioInfo.channelCount << "\n" <<
-                        "    data type: " << audioInfo.dataType << "\n" <<
+                        "    type: " << audioInfo.type << "\n" <<
                         "    sample rate: " << audioInfo.sampleRate;
                     context->log("tl::timeline::Player", ss.str());
                 }
@@ -256,7 +256,7 @@ namespace tl
 
                 SDL_AudioSpec spec;
                 spec.freq = audioInfo.sampleRate;
-                spec.format = toSDL(audioInfo.dataType);
+                spec.format = toSDL(audioInfo.type);
                 spec.channels = audioInfo.channelCount;
 #if defined(TLRENDER_SDL2)
                 spec.samples = playerOptions.audioBufferFrameCount;
@@ -273,7 +273,7 @@ namespace tl
                 if (sdlID > 0)
                 {
                     audioInfo.channelCount = outSpec.channels;
-                    audioInfo.dataType = fromSDL(outSpec.format);
+                    audioInfo.type = fromSDL(outSpec.format);
                     audioInfo.sampleRate = outSpec.freq;
 #elif defined(TLRENDER_SDL3)
                 sdlStream = SDL_OpenAudioDeviceStream(
@@ -288,7 +288,7 @@ namespace tl
                         std::stringstream ss;
                         ss << "Audio device: " << id.number << " " << id.name << "\n" <<
                         "    channels: " << audioInfo.channelCount << "\n" <<
-                        "    data type: " << audioInfo.dataType << "\n" <<
+                        "    type: " << audioInfo.type << "\n" <<
                         "    sample rate: " << audioInfo.sampleRate;
                         context->log("tl::timeline::Player", ss.str());
                     }
@@ -324,7 +324,7 @@ namespace tl
             // Get mutex protected values.
             AudioState state;
             bool reset = false;
-            OTIO_NS::RationalTime start = time::invalidTime;
+            OTIO_NS::RationalTime start = invalidTime;
             {
                 std::unique_lock<std::mutex> lock(audioMutex.mutex);
                 state = audioMutex.state;
@@ -341,11 +341,11 @@ namespace tl
             //std::cout << "start: " << start << std::endl;
 
             // Zero output audio data.
-            const audio::Info& outputInfo = audioThread.info;
+            const AudioInfo& outputInfo = audioThread.info;
             const size_t outputSamples = len / outputInfo.getByteCount();
             std::memset(outputBuffer, 0, outputSamples * outputInfo.getByteCount());
 
-            const audio::Info& inputInfo = ioInfo.audio;
+            const AudioInfo& inputInfo = ioInfo.audio;
             if (state.playback != Playback::Stop && inputInfo.sampleRate > 0)
             {
                 // Initialize on reset.
@@ -364,7 +364,7 @@ namespace tl
                 if (!audioThread.resample ||
                     (audioThread.resample && audioThread.resample->getInputInfo() != inputInfo))
                 {
-                    audioThread.resample = audio::AudioResample::create(inputInfo, outputInfo);
+                    audioThread.resample = AudioResample::create(inputInfo, outputInfo);
                 }
 
                 // Fill the audio buffer.
@@ -401,7 +401,7 @@ namespace tl
                         outputSamples * 2 * speedMult - static_cast<double>(getSampleCount(audioThread.buffer)),
                         outputInfo.sampleRate).
                         rescaled_to(inputInfo.sampleRate).value();
-                    std::vector<std::shared_ptr<audio::Audio> > audioLayers;
+                    std::vector<std::shared_ptr<Audio> > audioLayers;
                     if (copySize > 0)
                     {
                         audioLayers = audioCopy(
@@ -419,18 +419,18 @@ namespace tl
                         {
                             state.volume = 0.F;
                         }
-                        auto audio = audio::mix(audioLayers, state.volume, state.channelMute);
+                        auto audio = mix(audioLayers, state.volume, state.channelMute);
 
                         // Reverse the audio.
                         if (Playback::Reverse == state.playback)
                         {
-                            audio = audio::reverse(audio);
+                            audio = tl::reverse(audio);
                         }
 
                         // Change the audio speed.
                         if (state.speed != timeRange.duration().rate() && state.speed > 0.0)
                         {
-                            audio = audio::changeSpeed(audio, timeRange.duration().rate() / state.speed);
+                            audio = changeSpeed(audio, timeRange.duration().rate() / state.speed);
                         }
 
                         // Resample the audio and add it to the buffer.
@@ -453,7 +453,7 @@ namespace tl
                 const size_t bufferSampleCount = getSampleCount(audioThread.buffer);
                 if (outputSamples <= bufferSampleCount)
                 {
-                    audio::move(audioThread.buffer, outputBuffer, outputSamples);
+                    move(audioThread.buffer, outputBuffer, outputSamples);
                 }
 
                 // Update the frame counter.

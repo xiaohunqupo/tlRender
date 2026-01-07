@@ -23,7 +23,7 @@ namespace tl
             PixelType pixelType,
             const FrameRate& frameRate,
             int videoFrameDelay,
-            const audio::Info& audioInfo) :
+            const AudioInfo& audioInfo) :
             _dlOutput(dlOutput),
             _size(size),
             _pixelType(pixelType),
@@ -63,7 +63,7 @@ namespace tl
             std::vector<uint8_t> emptyAudio(
                 audioPrerollSamples *
                 audioInfo.channelCount *
-                audio::getByteCount(audioInfo.dataType), 0);
+                getByteCount(audioInfo.dataType), 0);
             uint32_t audioSamplesWritten = 0;
             _dlOutput->ScheduleAudioSamples(
                 emptyAudio.data(),
@@ -227,14 +227,14 @@ namespace tl
             // Get values.
             timeline::Playback playback = timeline::Playback::Stop;
             double speed = 0.0;
-            OTIO_NS::RationalTime currentTime = time::invalidTime;
+            OTIO_NS::RationalTime currentTime = invalidTime;
             float volume = 1.F;
             bool mute = false;
             std::vector<bool> channelMute;
             double audioOffset = 0.0;
             std::vector<timeline::AudioData> audioDataList;
             bool reset = false;
-            OTIO_NS::RationalTime start = time::invalidTime;
+            OTIO_NS::RationalTime start = invalidTime;
             {
                 std::unique_lock<std::mutex> lock(_audioMutex.mutex);
                 playback = _audioMutex.playback;
@@ -264,7 +264,7 @@ namespace tl
                 _dlOutput->FlushBufferedAudioSamples();
             }
 
-            audio::Info inputInfo;
+            AudioInfo inputInfo;
             if (!audioDataList.empty() &&
                 !audioDataList[0].layers.empty() &&
                 audioDataList[0].layers[0].audio)
@@ -277,7 +277,7 @@ namespace tl
                 if (!_audioThread.resample ||
                     (_audioThread.resample && _audioThread.resample->getInputInfo() != inputInfo))
                 {
-                    _audioThread.resample = audio::AudioResample::create(
+                    _audioThread.resample = AudioResample::create(
                         inputInfo,
                         _audioInfo);
                 }
@@ -303,7 +303,7 @@ namespace tl
                         t -= _audioThread.frame;
                     }
                     const int64_t copySize = audioBufferCount * 2 * speedMult - bufferedSampleCount;
-                    std::vector<std::shared_ptr<audio::Audio> > audioLayers;
+                    std::vector<std::shared_ptr<Audio> > audioLayers;
                     if (copySize > 0)
                     {
                         audioLayers = audioCopy(
@@ -319,18 +319,18 @@ namespace tl
                         //std::cout << "t: " << t << std::endl;
 
                         // Mix the audio layers.
-                        auto audio = audio::mix(audioLayers, mute ? 0.F : volume, channelMute);
+                        auto audio = mix(audioLayers, mute ? 0.F : volume, channelMute);
 
                         // Reverse the audio.
                         if (timeline::Playback::Reverse == playback)
                         {
-                            audio = audio::reverse(audio);
+                            audio = reverse(audio);
                         }
 
                         // Change the audio speed.
                         if (speed != currentTime.rate() && speed > 0.0)
                         {
-                            audio = audio::changeSpeed(audio, currentTime.rate() / speed);
+                            audio = changeSpeed(audio, currentTime.rate() / speed);
                         }
 
                         // Resample the audio.

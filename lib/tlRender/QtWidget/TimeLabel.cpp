@@ -14,7 +14,7 @@ namespace tl
     {
         struct TimeLabel::Private
         {
-            OTIO_NS::RationalTime value = time::invalidTime;
+            OTIO_NS::RationalTime value = invalidTime;
             timeline::TimeUnits timeUnits = timeline::TimeUnits::Timecode;
             QLabel* label = nullptr;
             qt::TimeObject* timeObject = nullptr;

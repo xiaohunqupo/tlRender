@@ -45,7 +45,7 @@ namespace tl
             return AVRational({ value.den, value.num });
         }
 
-        void toHDRData(AVFrameSideData** sideData, int size, image::HDRData& hdr)
+        void toHDRData(AVFrameSideData** sideData, int size, HDRData& hdr)
         {
             for (int i = 0; i < size; ++i)
             {
@@ -76,33 +76,33 @@ namespace tl
             }
         }
 
-        audio::DataType toAudioType(AVSampleFormat value)
+        AudioType toAudioType(AVSampleFormat value)
         {
-            audio::DataType out = audio::DataType::None;
+            AudioType out = AudioType::None;
             switch (value)
             {
-            case AV_SAMPLE_FMT_S16:  out = audio::DataType::S16; break;
-            case AV_SAMPLE_FMT_S32:  out = audio::DataType::S32; break;
-            case AV_SAMPLE_FMT_FLT:  out = audio::DataType::F32; break;
-            case AV_SAMPLE_FMT_DBL:  out = audio::DataType::F64; break;
-            case AV_SAMPLE_FMT_S16P: out = audio::DataType::S16; break;
-            case AV_SAMPLE_FMT_S32P: out = audio::DataType::S32; break;
-            case AV_SAMPLE_FMT_FLTP: out = audio::DataType::F32; break;
-            case AV_SAMPLE_FMT_DBLP: out = audio::DataType::F64; break;
+            case AV_SAMPLE_FMT_S16:  out = AudioType::S16; break;
+            case AV_SAMPLE_FMT_S32:  out = AudioType::S32; break;
+            case AV_SAMPLE_FMT_FLT:  out = AudioType::F32; break;
+            case AV_SAMPLE_FMT_DBL:  out = AudioType::F64; break;
+            case AV_SAMPLE_FMT_S16P: out = AudioType::S16; break;
+            case AV_SAMPLE_FMT_S32P: out = AudioType::S32; break;
+            case AV_SAMPLE_FMT_FLTP: out = AudioType::F32; break;
+            case AV_SAMPLE_FMT_DBLP: out = AudioType::F64; break;
             default: break;
             }
             return out;
         }
 
-        AVSampleFormat fromAudioType(audio::DataType value)
+        AVSampleFormat fromAudioType(AudioType value)
         {
             AVSampleFormat out = AV_SAMPLE_FMT_NONE;
             switch (value)
             {
-            case audio::DataType::S16: out = AV_SAMPLE_FMT_S16; break;
-            case audio::DataType::S32: out = AV_SAMPLE_FMT_S32; break;
-            case audio::DataType::F32: out = AV_SAMPLE_FMT_FLT; break;
-            case audio::DataType::F64: out = AV_SAMPLE_FMT_DBL; break;
+            case AudioType::S16: out = AV_SAMPLE_FMT_S16; break;
+            case AudioType::S32: out = AV_SAMPLE_FMT_S32; break;
+            case AudioType::F32: out = AV_SAMPLE_FMT_FLT; break;
+            case AudioType::F64: out = AV_SAMPLE_FMT_DBL; break;
             default: break;
             }
             return out;

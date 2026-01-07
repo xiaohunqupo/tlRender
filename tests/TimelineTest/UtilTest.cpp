@@ -284,13 +284,13 @@ namespace tl
         void UtilTest::_audio()
         {
             {
-                audio::Info info(2, audio::DataType::S32, 48000);
+                AudioInfo info(2, AudioType::S32, 48000);
                 std::vector<AudioData> data;
                 auto out = audioCopy(info, data, Playback::Forward, 0, 2000);
                 FTK_ASSERT(out.empty());
 
-                auto audio = audio::Audio::create(info, info.sampleRate);
-                audio::S32_T* audioP = reinterpret_cast<audio::S32_T*>(audio->getData());
+                auto audio = Audio::create(info, info.sampleRate);
+                int32_t* audioP = reinterpret_cast<int32_t*>(audio->getData());
                 for (size_t i = 0; i < info.sampleRate; ++i, audioP += 2)
                 {
                     audioP[0] = i;
@@ -300,7 +300,7 @@ namespace tl
                 out = audioCopy(info, data, Playback::Forward, 0, 2000);
                 FTK_ASSERT(1 == out.size());
                 FTK_ASSERT(2000 == out[0]->getSampleCount());
-                audioP = reinterpret_cast<audio::S32_T*>(out[0]->getData());
+                audioP = reinterpret_cast<int32_t*>(out[0]->getData());
                 for (size_t i = 0; i < out[0]->getSampleCount(); ++i, audioP += 2)
                 {
                     FTK_ASSERT(i == audioP[0]);
@@ -310,7 +310,7 @@ namespace tl
                 out = audioCopy(info, data, Playback::Forward, info.sampleRate - 1000, 2000);
                 FTK_ASSERT(1 == out.size());
                 FTK_ASSERT(1000 == out[0]->getSampleCount());
-                audioP = reinterpret_cast<audio::S32_T*>(out[0]->getData());
+                audioP = reinterpret_cast<int32_t*>(out[0]->getData());
                 for (size_t i = 0, j = info.sampleRate - 1000; i < out[0]->getSampleCount(); ++i, ++j, audioP += 2)
                 {
                     FTK_ASSERT(j == audioP[0]);
@@ -321,7 +321,7 @@ namespace tl
                 out = audioCopy(info, data, Playback::Forward, info.sampleRate - 1000, 2000);
                 FTK_ASSERT(1 == out.size());
                 FTK_ASSERT(2000 == out[0]->getSampleCount());
-                audioP = reinterpret_cast<audio::S32_T*>(out[0]->getData());
+                audioP = reinterpret_cast<int32_t*>(out[0]->getData());
                 size_t i = 0;
                 size_t j = info.sampleRate - 1000;
                 for (; i < 1000; ++i, ++j, audioP += 2)
@@ -340,7 +340,7 @@ namespace tl
                 out = audioCopy(info, data, Playback::Reverse, info.sampleRate, 2000);
                 FTK_ASSERT(1 == out.size());
                 FTK_ASSERT(2000 == out[0]->getSampleCount());
-                audioP = reinterpret_cast<audio::S32_T*>(out[0]->getData());
+                audioP = reinterpret_cast<int32_t*>(out[0]->getData());
                 i = 0;
                 j = info.sampleRate - 2000;
                 for (; i < 2000; ++i, ++j, audioP += 2)
@@ -352,7 +352,7 @@ namespace tl
                 out = audioCopy(info, data, Playback::Reverse, info.sampleRate + 1000, 2000);
                 FTK_ASSERT(1 == out.size());
                 FTK_ASSERT(2000 == out[0]->getSampleCount());
-                audioP = reinterpret_cast<audio::S32_T*>(out[0]->getData());
+                audioP = reinterpret_cast<int32_t*>(out[0]->getData());
                 i = 0;
                 j = info.sampleRate - 1000;
                 for (; i < 1000; ++i, ++j, audioP += 2)

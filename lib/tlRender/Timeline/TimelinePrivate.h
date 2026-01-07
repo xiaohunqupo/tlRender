@@ -43,8 +43,8 @@ namespace tl
                 const OTIO_NS::TimeRange&,
                 const io::Options&);
 
-            std::shared_ptr<audio::Audio> padAudioToOneSecond(
-                const std::shared_ptr<audio::Audio>&,
+            std::shared_ptr<Audio> padAudioToOneSecond(
+                const std::shared_ptr<Audio>&,
                 double seconds,
                 const OTIO_NS::TimeRange&);
 
@@ -54,7 +54,7 @@ namespace tl
             ftk::Path audioPath;
             Options options;
             ftk::LRUCache<std::string, std::shared_ptr<io::IRead> > readCache;
-            OTIO_NS::TimeRange timeRange = time::invalidTimeRange;
+            OTIO_NS::TimeRange timeRange = invalidTimeRange;
             io::Info ioInfo;
             uint64_t requestId = 0;
 
@@ -74,7 +74,7 @@ namespace tl
                 VideoRequest(VideoRequest&&) = default;
 
                 uint64_t id = 0;
-                OTIO_NS::RationalTime time = time::invalidTime;
+                OTIO_NS::RationalTime time = invalidTime;
                 io::Options options;
                 std::promise<VideoData> promise;
 

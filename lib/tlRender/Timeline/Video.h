@@ -34,7 +34,7 @@ namespace tl
         struct TL_API_TYPE VideoData
         {
             ftk::Size2I             size;
-            OTIO_NS::RationalTime   time   = time::invalidTime;
+            OTIO_NS::RationalTime   time   = invalidTime;
             std::vector<VideoLayer> layers;
 
             TL_API bool operator == (const VideoData&) const;

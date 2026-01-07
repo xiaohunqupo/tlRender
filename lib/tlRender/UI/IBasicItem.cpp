@@ -54,7 +54,7 @@ namespace tl
             const std::shared_ptr<ItemData>& itemData,
             const std::shared_ptr<ftk::IWidget>& parent)
         {
-            OTIO_NS::TimeRange timeRange = time::invalidTimeRange;
+            OTIO_NS::TimeRange timeRange = invalidTimeRange;
             const auto timeRangeOpt = item->trimmed_range_in_parent();
             if (timeRangeOpt.has_value())
             {

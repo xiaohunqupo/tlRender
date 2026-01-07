@@ -16,8 +16,8 @@ namespace tl
             const std::shared_ptr<ItemData>& itemData,
             const std::shared_ptr<IWidget>& parent)
         {
-            OTIO_NS::TimeRange timeRange = time::invalidTimeRange;
-            OTIO_NS::TimeRange availableRange = time::invalidTimeRange;
+            OTIO_NS::TimeRange timeRange = invalidTimeRange;
+            OTIO_NS::TimeRange availableRange = invalidTimeRange;
             const auto timeRangeOpt = transition->trimmed_range_in_parent();
             if (timeRangeOpt.has_value())
             {

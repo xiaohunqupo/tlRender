@@ -53,7 +53,7 @@ namespace tl
 
             PlayerOptions playerOptions;
             std::shared_ptr<Timeline> timeline;
-            OTIO_NS::TimeRange timeRange = time::invalidTimeRange;
+            OTIO_NS::TimeRange timeRange = invalidTimeRange;
             io::Info ioInfo;
 
             std::shared_ptr<ftk::Observable<double> > speed;
@@ -69,7 +69,7 @@ namespace tl
             std::shared_ptr<ftk::Observable<int> > videoLayer;
             std::shared_ptr<ftk::ObservableList<int> > compareVideoLayers;
             std::shared_ptr<ftk::ObservableList<VideoData> > currentVideoData;
-            std::shared_ptr<ftk::Observable<audio::DeviceID> > audioDevice;
+            std::shared_ptr<ftk::Observable<AudioDeviceID> > audioDevice;
             std::shared_ptr<ftk::Observable<float> > volume;
             std::shared_ptr<ftk::Observable<bool> > mute;
             std::shared_ptr<ftk::ObservableList<bool> > channelMute;
@@ -77,14 +77,14 @@ namespace tl
             std::shared_ptr<ftk::ObservableList<AudioData> > currentAudioData;
             std::shared_ptr<ftk::Observable<PlayerCacheOptions> > cacheOptions;
             std::shared_ptr<ftk::Observable<PlayerCacheInfo> > cacheInfo;
-            std::shared_ptr<ftk::ListObserver<audio::DeviceInfo> > audioDevicesObserver;
-            std::shared_ptr<ftk::Observer<audio::DeviceInfo> > defaultAudioDeviceObserver;
+            std::shared_ptr<ftk::ListObserver<AudioDeviceInfo> > audioDevicesObserver;
+            std::shared_ptr<ftk::Observer<AudioDeviceInfo> > defaultAudioDeviceObserver;
 
             int accelerate = 0;
             tl::timeline::Playback toggle = tl::timeline::Playback::Forward;
 
             bool audioDevices = false;
-            audio::Info audioInfo;
+            AudioInfo audioInfo;
 #if defined(TLRENDER_SDL2)
             int sdlID = 0;
 #elif defined(TLRENDER_SDL3)
@@ -96,8 +96,8 @@ namespace tl
             struct PlaybackState
             {
                 Playback playback = Playback::Stop;
-                OTIO_NS::RationalTime currentTime = time::invalidTime;
-                OTIO_NS::TimeRange inOutRange = time::invalidTimeRange;
+                OTIO_NS::RationalTime currentTime = invalidTime;
+                OTIO_NS::TimeRange inOutRange = invalidTimeRange;
                 std::vector<std::shared_ptr<Timeline> > compare;
                 CompareTime compareTime = CompareTime::Relative;
                 io::Options ioOptions;
@@ -155,7 +155,7 @@ namespace tl
                 AudioState state;
                 std::map<int64_t, AudioData> cache;
                 bool reset = false;
-                OTIO_NS::RationalTime start = time::invalidTime;
+                OTIO_NS::RationalTime start = invalidTime;
                 int64_t frame = 0;
                 std::mutex mutex;
             };
@@ -163,19 +163,19 @@ namespace tl
 
             struct AudioThread
             {
-                audio::Info info;
+                AudioInfo info;
                 int64_t inputFrame = 0;
                 int64_t outputFrame = 0;
-                std::shared_ptr<audio::AudioResample> resample;
-                std::list<std::shared_ptr<audio::Audio> > buffer;
-                std::shared_ptr<audio::Audio> silence;
+                std::shared_ptr<AudioResample> resample;
+                std::list<std::shared_ptr<Audio> > buffer;
+                std::shared_ptr<Audio> silence;
             };
             AudioThread audioThread;
 
             struct NoAudio
             {
                 std::chrono::steady_clock::time_point playbackTimer;
-                OTIO_NS::RationalTime start = time::invalidTime;
+                OTIO_NS::RationalTime start = invalidTime;
             };
             NoAudio noAudio;
         };

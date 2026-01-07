@@ -512,8 +512,8 @@ namespace tl
             const std::string id = ftk::Format("tl::timeline::Player {0}").arg(this);
 
             // Get values.
-            OTIO_NS::RationalTime currentTime = time::invalidTime;
-            OTIO_NS::TimeRange inOutRange = time::invalidTimeRange;
+            OTIO_NS::RationalTime currentTime = invalidTime;
+            OTIO_NS::TimeRange inOutRange = invalidTimeRange;
             io::Options ioOptions;
             PlayerCacheInfo cacheInfo;
             {

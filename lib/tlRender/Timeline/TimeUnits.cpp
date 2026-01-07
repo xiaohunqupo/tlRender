@@ -26,15 +26,15 @@ namespace tl
             {
             case timeline::TimeUnits::Frames:
                 out = ftk::Format("{0}").
-                    arg(time::isValid(time) ? time.to_frames() : 0);
+                    arg(isValid(time) ? time.to_frames() : 0);
                 break;
             case timeline::TimeUnits::Seconds:
                 out = ftk::Format("{0}").
-                    arg(time::isValid(time) ? time.to_seconds() : 0.0, 2);
+                    arg(isValid(time) ? time.to_seconds() : 0.0, 2);
                 break;
             case timeline::TimeUnits::Timecode:
             {
-                if (time::isValid(time))
+                if (isValid(time))
                 {
                     out = time.to_timecode();
                 }
@@ -55,7 +55,7 @@ namespace tl
             timeline::TimeUnits units,
             opentime::ErrorStatus* errorStatus)
         {
-            OTIO_NS::RationalTime out = time::invalidTime;
+            OTIO_NS::RationalTime out = invalidTime;
             switch (units)
             {
             case timeline::TimeUnits::Frames:

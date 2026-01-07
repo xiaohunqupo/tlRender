@@ -32,7 +32,7 @@ namespace tl
             bool                     deviceEnabled = true;
             BoolOptions              boolOptions;
             HDRMode                  hdrMode = HDRMode::FromFile;
-            image::HDRData           hdrData;
+            HDRData                  hdrData;
 
             TL_API bool operator == (const DevicesModelData&) const;
         };
@@ -76,7 +76,7 @@ namespace tl
             TL_API void setHDRMode(HDRMode);
 
             //! Set the HDR data.
-            TL_API void setHDRData(const image::HDRData&);
+            TL_API void setHDRData(const HDRData&);
 
         private:
             void _update();

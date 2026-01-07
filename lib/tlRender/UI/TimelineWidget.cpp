@@ -36,9 +36,9 @@ namespace tl
             std::vector<int> frameMarkers;
             std::shared_ptr<ftk::Observable<ItemOptions> > itemOptions;
             std::shared_ptr<ftk::Observable<DisplayOptions> > displayOptions;
-            OTIO_NS::TimeRange timeRange = time::invalidTimeRange;
+            OTIO_NS::TimeRange timeRange = invalidTimeRange;
             timeline::Playback playback = timeline::Playback::Stop;
-            OTIO_NS::RationalTime currentTime = time::invalidTime;
+            OTIO_NS::RationalTime currentTime = invalidTime;
             double scale = 500.0;
             bool sizeInit = true;
             float displayScale = 0.F;
@@ -87,7 +87,7 @@ namespace tl
             p.autoScroll = ftk::Observable<bool>::create(true);
             p.stopOnScrub = ftk::Observable<bool>::create(true);
             p.scrub = ftk::Observable<bool>::create(false);
-            p.timeScrub = ftk::Observable<OTIO_NS::RationalTime>::create(time::invalidTime);
+            p.timeScrub = ftk::Observable<OTIO_NS::RationalTime>::create(invalidTime);
             p.itemOptions = ftk::Observable<ItemOptions>::create();
             p.displayOptions = ftk::Observable<DisplayOptions>::create();
 
@@ -151,7 +151,7 @@ namespace tl
             p.itemData->info.clear();
             p.itemData->thumbnails.clear();
             p.itemData->waveforms.clear();
-            p.timeRange = time::invalidTimeRange;
+            p.timeRange = invalidTimeRange;
             p.playback = timeline::Playback::Stop;
             p.playbackObserver.reset();
             p.currentTimeObserver.reset();

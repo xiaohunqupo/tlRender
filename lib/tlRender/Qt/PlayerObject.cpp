@@ -34,7 +34,7 @@ namespace tl
             std::shared_ptr<ftk::Observer<int> > videoLayerObserver;
             std::shared_ptr<ftk::ListObserver<int> > compareVideoLayersObserver;
             std::shared_ptr<ftk::ListObserver<timeline::VideoData> > currentVideoObserver;
-            std::shared_ptr<ftk::Observer<audio::DeviceID> > audioDeviceObserver;
+            std::shared_ptr<ftk::Observer<AudioDeviceID> > audioDeviceObserver;
             std::shared_ptr<ftk::Observer<float> > volumeObserver;
             std::shared_ptr<ftk::Observer<bool> > muteObserver;
             std::shared_ptr<ftk::ListObserver<bool> > channelMuteObserver;
@@ -130,9 +130,9 @@ namespace tl
                 },
                 ftk::ObserverAction::Suppress);
 
-            p.audioDeviceObserver = ftk::Observer<audio::DeviceID>::create(
+            p.audioDeviceObserver = ftk::Observer<AudioDeviceID>::create(
                 p.player->observeAudioDevice(),
-                [this](const audio::DeviceID& value)
+                [this](const AudioDeviceID& value)
                 {
                     Q_EMIT audioDeviceChanged(value);
                 });
@@ -310,7 +310,7 @@ namespace tl
             return _p->player->getCurrentVideo();
         }
 
-        const audio::DeviceID& PlayerObject::audioDevice() const
+        const AudioDeviceID& PlayerObject::audioDevice() const
         {
             return _p->player->getAudioDevice();
         }
@@ -468,7 +468,7 @@ namespace tl
             _p->player->setCompareVideoLayers(value);
         }
 
-        void PlayerObject::setAudioDevice(const audio::DeviceID& value)
+        void PlayerObject::setAudioDevice(const AudioDeviceID& value)
         {
             _p->player->setAudioDevice(value);
         }

@@ -119,25 +119,25 @@ namespace tl
                 }
 
                 const size_t fileChannelCount = _avCodecParameters[_avStream]->ch_layout.nb_channels;
-                const audio::DataType fileDataType = toAudioType(static_cast<AVSampleFormat>(
+                const AudioType fileAudioType = toAudioType(static_cast<AVSampleFormat>(
                     _avCodecParameters[_avStream]->format));
-                if (audio::DataType::None == fileDataType)
+                if (AudioType::None == fileAudioType)
                 {
                     throw std::runtime_error(ftk::Format("Unsupported audio format: \"{0}\"").arg(fileName));
                 }
                 const size_t fileSampleRate = _avCodecParameters[_avStream]->sample_rate;
 
                 size_t channelCount = fileChannelCount;
-                audio::DataType dataType = fileDataType;
+                AudioType audioType = fileAudioType;
                 size_t sampleRate = fileSampleRate;
                 if (options.audioConvertInfo.isValid())
                 {
                     channelCount = options.audioConvertInfo.channelCount;
-                    dataType = options.audioConvertInfo.dataType;
+                    audioType = options.audioConvertInfo.type;
                     sampleRate = options.audioConvertInfo.sampleRate;
                 }
                 _info.channelCount = channelCount;
-                _info.dataType = dataType;
+                _info.type = audioType;
                 _info.sampleRate = sampleRate;
 
                 int64_t sampleCount = 0;
@@ -162,7 +162,7 @@ namespace tl
                         r);
                 }
 
-                OTIO_NS::RationalTime timeReference = time::invalidTime;
+                OTIO_NS::RationalTime timeReference = invalidTime;
                 ftk::ImageTags tags;
                 AVDictionaryEntry* tag = nullptr;
                 while ((tag = av_dict_get(_avFormatContext->metadata, "", tag, AV_DICT_IGNORE_SUFFIX)))
@@ -219,8 +219,8 @@ namespace tl
                 }
                 {
                     std::stringstream ss;
-                    ss << fileDataType;
-                    _tags["Audio Data Type"] = ss.str();
+                    ss << fileAudioType;
+                    _tags["Audio Type"] = ss.str();
                 }
                 {
                     std::stringstream ss;
@@ -287,7 +287,7 @@ namespace tl
             return _avStream != -1;
         }
 
-        const audio::Info& ReadAudio::getInfo() const
+        const AudioInfo& ReadAudio::getInfo() const
         {
             return _info;
         }
@@ -318,7 +318,7 @@ namespace tl
                 int r = swr_alloc_set_opts2(
                     &_swrContext,
                     &channelLayout,
-                    fromAudioType(_info.dataType),
+                    fromAudioType(_info.type),
                     _info.sampleRate,
                     &avCodecParameters->ch_layout,
                     static_cast<AVSampleFormat>(avCodecParameters->format),
@@ -381,7 +381,7 @@ namespace tl
             size_t sampleCount)
         {
             bool out = false;
-            const size_t bufferSampleCount = audio::getSampleCount(_buffer);
+            const size_t bufferSampleCount = getSampleCount(_buffer);
             if (_avStream != -1 && bufferSampleCount < sampleCount)
             {
                 Packet packet;
@@ -423,11 +423,11 @@ namespace tl
                         }
                         else if (AVERROR_EOF == decoding)
                         {
-                            const size_t bufferSize = audio::getSampleCount(_buffer);
+                            const size_t bufferSize = getSampleCount(_buffer);
                             const size_t bufferMax = _options.audioBufferSize.rescaled_to(_info.sampleRate).value();
                             if (bufferSize < bufferMax)
                             {
-                                auto audio = audio::Audio::create(_info, bufferMax - bufferSize);
+                                auto audio = Audio::create(_info, bufferMax - bufferSize);
                                 audio->zero();
                                 _buffer.push_back(audio);
                             }
@@ -460,12 +460,12 @@ namespace tl
 
         size_t ReadAudio::getBufferSize() const
         {
-            return audio::getSampleCount(_buffer);
+            return getSampleCount(_buffer);
         }
 
         void ReadAudio::bufferCopy(uint8_t* out, size_t sampleCount)
         {
-            audio::move(_buffer, out, sampleCount);
+            move(_buffer, out, sampleCount);
         }
 
         namespace
@@ -535,7 +535,7 @@ namespace tl
                     //std::cout << "nb_samples: " << _avFrame->nb_samples << std::endl;
                     const int swrOutputSamples = swr_get_out_samples(_swrContext, _avFrame->nb_samples);
                     //std::cout << "swrOutputSamples: " << swrOutputSamples << std::endl;
-                    auto swrOutputBuffer = audio::Audio::create(_info, swrOutputSamples);
+                    auto swrOutputBuffer = Audio::create(_info, swrOutputSamples);
 
                     std::vector<const uint8_t*> swrInputBufferP;
                     if (av_sample_fmt_is_planar(static_cast<AVSampleFormat>(_avFrame->format)))
@@ -581,7 +581,7 @@ namespace tl
                         size);
                     //std::cout << "swrOutputCount: " << swrOutputCount << std::endl << std::endl;
 
-                    auto tmp = audio::Audio::create(_info, swrOutputCount > 0 ? swrOutputCount : 0);
+                    auto tmp = Audio::create(_info, swrOutputCount > 0 ? swrOutputCount : 0);
                     memcpy(tmp->getData(), swrOutputBuffer->getData(), tmp->getByteCount());
                     _buffer.push_back(tmp);
                     out = 1;

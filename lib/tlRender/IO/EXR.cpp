@@ -548,7 +548,7 @@ namespace tl
             TLRENDER_DESERIALIZE_STD_ATTR(Wrapmodes, std::string);
             TLRENDER_DESERIALIZE_STD_ATTR(XDensity, float);
             {
-                const auto speedRational = time::toRational(speed);
+                const auto speedRational = toRational(speed);
                 addFramesPerSecond(
                     header,
                     Imf::Rational(speedRational.first, speedRational.second));

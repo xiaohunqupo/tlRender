@@ -9,8 +9,6 @@
 
 #include <sstream>
 
-using namespace tl::time;
-
 namespace tl
 {
     namespace core_tests
@@ -78,7 +76,7 @@ namespace tl
                 };
                 const std::vector<Data> data =
                 {
-                    Data({ time::invalidTimeRange, {} }),
+                    Data({ invalidTimeRange, {} }),
                     Data({
                         OTIO_NS::TimeRange(
                             OTIO_NS::RationalTime(0.0, 24.0),
@@ -114,7 +112,7 @@ namespace tl
                 };
                 for (const auto& i : data)
                 {
-                    const auto frames = time::frames(i.range);
+                    const auto frames = tl::frames(i.range);
                     FTK_ASSERT(frames == i.frames);
                 }
             }
@@ -126,7 +124,7 @@ namespace tl
                 };
                 const std::vector<Data> data =
                 {
-                    Data({time::invalidTimeRange, {}}),
+                    Data({invalidTimeRange, {}}),
                     Data({
                         OTIO_NS::TimeRange(
                             OTIO_NS::RationalTime(0.0, 24.0),
@@ -214,7 +212,7 @@ namespace tl
                 };
                 for (const auto& i : data)
                 {
-                    const auto seconds = time::seconds(i.range);
+                    const auto seconds = tl::seconds(i.range);
                     FTK_ASSERT(seconds == i.seconds);
                 }
             }

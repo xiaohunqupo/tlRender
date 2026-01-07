@@ -5,8 +5,6 @@
 
 #include <tlRender/Core/HDR.h>
 
-using namespace tl::image;
-
 namespace tl
 {
     namespace core_tests
@@ -39,7 +37,7 @@ namespace tl
                 HDRData a;
                 HDRData b;
                 FTK_ASSERT(a == b);
-                a.eotf = image::HDR_EOTF::ST2084;
+                a.eotf = HDR_EOTF::ST2084;
                 FTK_ASSERT(a != b);
             }
         }
@@ -48,7 +46,7 @@ namespace tl
         {
             {
                 HDRData value;
-                value.eotf = image::HDR_EOTF::ST2084;
+                value.eotf = HDR_EOTF::ST2084;
                 value.primaries[0].x = .1F;
                 value.primaries[0].y = .2F;
                 value.primaries[1].x = .3F;

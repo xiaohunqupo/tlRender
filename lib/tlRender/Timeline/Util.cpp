@@ -245,7 +245,7 @@ namespace tl
 
         OTIO_NS::TimeRange getTimeRange(const OTIO_NS::Timeline* otioTimeline)
         {
-            OTIO_NS::TimeRange out = time::invalidTimeRange;
+            OTIO_NS::TimeRange out = invalidTimeRange;
             auto duration = timeline::getDuration(otioTimeline, OTIO_NS::Track::Kind::video);
             if (!duration.has_value())
             {
@@ -305,7 +305,7 @@ namespace tl
             const std::string& directory,
             const ftk::PathOptions& pathOptions)
         {
-            ftk::Path out(url::decode(url), pathOptions);
+            ftk::Path out(decodeURL(url), pathOptions);
             if (!out.hasProtocol() && !out.isAbs())
             {
                 out.setDir(ftk::appendSeparator(directory) + out.getDir());
@@ -554,14 +554,14 @@ namespace tl
             return out;
         }
 
-        std::vector<std::shared_ptr<audio::Audio> > audioCopy(
-            const audio::Info& info,
+        std::vector<std::shared_ptr<Audio> > audioCopy(
+            const AudioInfo& info,
             const std::vector<AudioData>& data,
             Playback playback,
             int64_t frame,
             int64_t size)
         {
-            std::vector<std::shared_ptr<audio::Audio> > out;
+            std::vector<std::shared_ptr<Audio> > out;
 
             // Adjust the frame for reverse playback.
             if (Playback::Reverse == playback)
@@ -602,7 +602,7 @@ namespace tl
                 // Create the output audio.
                 for (size_t i = 0; i < secondsIt->layers.size(); ++i)
                 {
-                    auto audio = audio::Audio::create(info, outSize);
+                    auto audio = Audio::create(info, outSize);
                     audio->zero();
                     out.push_back(audio);
                 }

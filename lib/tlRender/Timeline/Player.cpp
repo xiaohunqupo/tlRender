@@ -100,7 +100,7 @@ namespace tl
             p.playback = ftk::Observable<Playback>::create(Playback::Stop);
             p.loop = ftk::Observable<Loop>::create(Loop::Loop);
             p.currentTime = ftk::Observable<OTIO_NS::RationalTime>::create(
-                playerOptions.currentTime != time::invalidTime ?
+                playerOptions.currentTime != invalidTime ?
                 playerOptions.currentTime :
                 p.timeRange.start_time());
             p.seek = ftk::Observable<OTIO_NS::RationalTime>::create(p.currentTime->get());
@@ -111,7 +111,7 @@ namespace tl
             p.videoLayer = ftk::Observable<int>::create(0);
             p.compareVideoLayers = ftk::ObservableList<int>::create();
             p.currentVideoData = ftk::ObservableList<VideoData>::create();
-            p.audioDevice = ftk::Observable<audio::DeviceID>::create(playerOptions.audioDevice);
+            p.audioDevice = ftk::Observable<AudioDeviceID>::create(playerOptions.audioDevice);
             p.volume = ftk::Observable<float>::create(1.F);
             p.mute = ftk::Observable<bool>::create(false);
             p.channelMute = ftk::ObservableList<bool>::create();
@@ -119,11 +119,11 @@ namespace tl
             p.currentAudioData = ftk::ObservableList<AudioData>::create();
             p.cacheOptions = ftk::Observable<PlayerCacheOptions>::create(playerOptions.cache);
             p.cacheInfo = ftk::Observable<PlayerCacheInfo>::create();
-            auto audioSystem = context->getSystem<audio::System>();
+            auto audioSystem = context->getSystem<AudioSystem>();
             auto weak = std::weak_ptr<Player>(shared_from_this());
-            p.audioDevicesObserver = ftk::ListObserver<audio::DeviceInfo>::create(
+            p.audioDevicesObserver = ftk::ListObserver<AudioDeviceInfo>::create(
                 audioSystem->observeDevices(),
-                [weak](const std::vector<audio::DeviceInfo>&)
+                [weak](const std::vector<AudioDeviceInfo>&)
                 {
                     if (auto player = weak.lock())
                     {
@@ -133,13 +133,13 @@ namespace tl
                         }
                     }
                 });
-            p.defaultAudioDeviceObserver = ftk::Observer<audio::DeviceInfo>::create(
+            p.defaultAudioDeviceObserver = ftk::Observer<AudioDeviceInfo>::create(
                 audioSystem->observeDefaultDevice(),
-                [weak](const audio::DeviceInfo&)
+                [weak](const AudioDeviceInfo&)
                 {
                     if (auto player = weak.lock())
                     {
-                        if (audio::DeviceID() == player->_p->audioDevice->get())
+                        if (AudioDeviceID() == player->_p->audioDevice->get())
                         {
                             if (auto context = player->getContext())
                             {
@@ -810,7 +810,7 @@ namespace tl
             const auto playback = p.playback->get();
             if (playback != Playback::Stop && timelineSpeed > 0.0)
             {
-                OTIO_NS::RationalTime start = time::invalidTime;
+                OTIO_NS::RationalTime start = invalidTime;
                 double t = 0.0;
                 if (p.hasAudio())
                 {

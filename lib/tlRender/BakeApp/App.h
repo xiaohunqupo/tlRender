@@ -103,9 +103,9 @@ namespace tl
             std::shared_ptr<timeline::Timeline> _timeline;
             ftk::Size2I _renderSize;
             ftk::ImageInfo _outputInfo;
-            OTIO_NS::TimeRange _timeRange = time::invalidTimeRange;
-            OTIO_NS::RationalTime _inputTime = time::invalidTime;
-            OTIO_NS::RationalTime _outputTime = time::invalidTime;
+            OTIO_NS::TimeRange _timeRange = invalidTimeRange;
+            OTIO_NS::RationalTime _inputTime = invalidTime;
+            OTIO_NS::RationalTime _outputTime = invalidTime;
 
             std::shared_ptr<ftk::gl::Window> _window;
             std::shared_ptr<io::IPlugin> _usdPlugin;

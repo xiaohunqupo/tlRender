@@ -112,7 +112,7 @@ namespace tl
             {
                 _print(ftk::Format("Audio: {0} {1} {2}").
                     arg(ioInfo.audio.channelCount).
-                    arg(ioInfo.audio.dataType).
+                    arg(ioInfo.audio.type).
                     arg(ioInfo.audio.sampleRate));
             }
             _print(ftk::Format("Default speed: {0}").arg(defaultSpeed));
@@ -156,7 +156,7 @@ namespace tl
 
             // Test the current time.
             player->setPlayback(Playback::Stop);
-            OTIO_NS::RationalTime currentTime = time::invalidTime;
+            OTIO_NS::RationalTime currentTime = invalidTime;
             auto currentTimeObserver = ftk::Observer<OTIO_NS::RationalTime>::create(
                 player->observeCurrentTime(),
                 [&currentTime](const OTIO_NS::RationalTime& value)
@@ -191,7 +191,7 @@ namespace tl
             player->timeAction(TimeAction::JumpBack10s);
 
             // Test the in/out points.
-            OTIO_NS::TimeRange inOutRange = time::invalidTimeRange;
+            OTIO_NS::TimeRange inOutRange = invalidTimeRange;
             auto inOutRangeObserver = ftk::Observer<OTIO_NS::TimeRange>::create(
                 player->observeInOutRange(),
                 [&inOutRange](const OTIO_NS::TimeRange& value)

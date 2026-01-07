@@ -36,7 +36,7 @@ namespace tl
                 VideoRequest() {}
                 VideoRequest(VideoRequest&&) = default;
 
-                OTIO_NS::RationalTime time = time::invalidTime;
+                OTIO_NS::RationalTime time = invalidTime;
                 Options options;
                 std::promise<VideoData> promise;
                 std::future<VideoData> future;

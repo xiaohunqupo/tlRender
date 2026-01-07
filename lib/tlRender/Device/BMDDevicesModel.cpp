@@ -37,7 +37,7 @@ namespace tl
             bool deviceEnabled = true;
             BoolOptions boolOptions;
             HDRMode hdrMode = HDRMode::FromFile;
-            image::HDRData hdrData;
+            HDRData hdrData;
             std::shared_ptr<ftk::Observable<DevicesModelData> > data;
             std::shared_ptr<ftk::ListObserver<DeviceInfo> > deviceInfoObserver;
         };
@@ -137,7 +137,7 @@ namespace tl
             _update();
         }
 
-        void DevicesModel::setHDRData(const image::HDRData& value)
+        void DevicesModel::setHDRData(const HDRData& value)
         {
             FTK_P();
             if (value == p.hdrData)

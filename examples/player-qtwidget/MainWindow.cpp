@@ -53,8 +53,8 @@ namespace tl
                 addToolBar(Qt::BottomToolBarArea, toolBar);
 
                 // Update the widget.
-                _currentTimeUpdate(time::invalidTime);
-                _durationUpdate(time::invalidTime);
+                _currentTimeUpdate(invalidTime);
+                _durationUpdate(invalidTime);
                 _playbackUpdate(timeline::Playback::Stop);
 
                 // Setup connections.
@@ -98,8 +98,8 @@ namespace tl
                 _viewport->setPlayer(player);
                 _timelineWidget->setPlayer(player ? player->player() : nullptr);
 
-                _currentTimeUpdate(player ? player->currentTime() : time::invalidTime);
-                _durationUpdate(player ? player->timeRange().duration() : time::invalidTime);
+                _currentTimeUpdate(player ? player->currentTime() : invalidTime);
+                _durationUpdate(player ? player->timeRange().duration() : invalidTime);
                 _playbackUpdate(player ? player->playback() : timeline::Playback::Stop);
 
                 if (player)

@@ -9,9 +9,9 @@ namespace tl
         {
             return
                 video == other.video &&
-                time::compareExact(videoTime, other.videoTime) &&
+                compareExact(videoTime, other.videoTime) &&
                 audio == other.audio &&
-                time::compareExact(audioTime, other.audioTime) &&
+                compareExact(audioTime, other.audioTime) &&
                 tags == other.tags;
         }
 
@@ -55,7 +55,7 @@ namespace tl
 
         inline AudioData::AudioData(
             const OTIO_NS::RationalTime& time,
-            const std::shared_ptr<audio::Audio>& audio) :
+            const std::shared_ptr<Audio>& audio) :
             time(time),
             audio(audio)
         {}

@@ -127,8 +127,8 @@ namespace tl
                     }
                     else
                     {
-                        _currentTimeEdit->setValue(time::invalidTime);
-                        _durationLabel->setValue(time::invalidTime);
+                        _currentTimeEdit->setValue(invalidTime);
+                        _durationLabel->setValue(invalidTime);
                         _speedMultLabel->setText("1X");
                         _speedMultLabel->setBackgroundRole(ftk::ColorRole::None);
 

@@ -213,7 +213,7 @@ namespace tl
 
         OTIO_NS::RationalTime IItem::posToTime(float value) const
         {
-            OTIO_NS::RationalTime out = time::invalidTime;
+            OTIO_NS::RationalTime out = invalidTime;
             const ftk::Box2I& g = getGeometry();
             if (g.w() > 0)
             {

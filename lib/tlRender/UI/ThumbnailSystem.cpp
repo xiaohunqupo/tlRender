@@ -248,7 +248,7 @@ namespace tl
                 ftk::Path path;
                 std::vector<ftk::MemFile> memoryRead;
                 int height = 0;
-                OTIO_NS::RationalTime time = time::invalidTime;
+                OTIO_NS::RationalTime time = invalidTime;
                 io::Options options;
                 std::promise<std::shared_ptr<ftk::Image> > promise;
             };
@@ -260,7 +260,7 @@ namespace tl
                 ftk::Path path;
                 std::vector<ftk::MemFile> memoryRead;
                 ftk::Size2I size;
-                OTIO_NS::TimeRange timeRange = time::invalidTimeRange;
+                OTIO_NS::TimeRange timeRange = invalidTimeRange;
                 io::Options options;
                 std::promise<std::shared_ptr<ftk::TriMesh2F> > promise;
             };
@@ -756,7 +756,7 @@ namespace tl
                                     p.thumbnailThread.buffer = ftk::gl::OffscreenBuffer::create(size, options);
                                 }
                                 const OTIO_NS::RationalTime time =
-                                    request->time != time::invalidTime ?
+                                    request->time != invalidTime ?
                                     request->time :
                                     info.videoTime.start_time();
                                 const auto videoData = read->readVideo(time, request->options).get();
@@ -856,7 +856,7 @@ namespace tl
         namespace
         {
             std::shared_ptr<ftk::TriMesh2F> audioMesh(
-                const std::shared_ptr<audio::Audio>& audio,
+                const std::shared_ptr<Audio>& audio,
                 const ftk::Size2I& size)
             {
                 auto out = std::shared_ptr<ftk::TriMesh2F>(new ftk::TriMesh2F);
@@ -864,11 +864,11 @@ namespace tl
                 const size_t sampleCount = audio->getSampleCount();
                 if (sampleCount > 0)
                 {
-                    switch (info.dataType)
+                    switch (info.type)
                     {
-                    case audio::DataType::F32:
+                    case AudioType::F32:
                     {
-                        const audio::F32_T* data = reinterpret_cast<const audio::F32_T*>(
+                        const float* data = reinterpret_cast<const float*>(
                             audio->getData());
                         for (int x = 0; x < size.w; ++x)
                         {
@@ -879,15 +879,15 @@ namespace tl
                                 static_cast<size_t>((x + 1) / static_cast<double>(size.w - 1) * (sampleCount - 1)),
                                 sampleCount - 1);
                             //std::cout << x << ": " << x0 << " " << x1 << std::endl;
-                            audio::F32_T min = 0.F;
-                            audio::F32_T max = 0.F;
+                            float min = 0.F;
+                            float max = 0.F;
                             if (x0 <= x1)
                             {
-                                min = audio::F32Range.max();
-                                max = audio::F32Range.min();
+                                min = std::numeric_limits<float>::max();
+                                max = std::numeric_limits<float>::min();
                                 for (int i = x0; i <= x1 && i < sampleCount; ++i)
                                 {
-                                    const audio::F32_T v = *(data + i * info.channelCount);
+                                    const float v = *(data + i * info.channelCount);
                                     min = std::min(min, v);
                                     max = std::max(max, v);
                                 }
@@ -920,7 +920,7 @@ namespace tl
             }
 
             std::shared_ptr<ftk::Image> audioImage(
-                const std::shared_ptr<audio::Audio>& audio,
+                const std::shared_ptr<Audio>& audio,
                 const ftk::Size2I& size)
             {
                 auto out = ftk::Image::create(size.w, size.h, ftk::ImageType::L_U8);
@@ -928,11 +928,11 @@ namespace tl
                 const size_t sampleCount = audio->getSampleCount();
                 if (sampleCount > 0)
                 {
-                    switch (info.dataType)
+                    switch (info.type)
                     {
-                    case audio::DataType::F32:
+                    case AudioType::F32:
                     {
-                        const audio::F32_T* data = reinterpret_cast<const audio::F32_T*>(
+                        const float* data = reinterpret_cast<const float*>(
                             audio->getData());
                         for (int x = 0; x < size.w; ++x)
                         {
@@ -943,15 +943,15 @@ namespace tl
                                 static_cast<size_t>((x + 1) / static_cast<double>(size.w - 1) * (sampleCount - 1)),
                                 sampleCount - 1);
                             //std::cout << x << ": " << x0 << " " << x1 << std::endl;
-                            audio::F32_T min = 0.F;
-                            audio::F32_T max = 0.F;
+                            float min = 0.F;
+                            float max = 0.F;
                             if (x0 < x1)
                             {
-                                min = audio::F32Range.max();
-                                max = audio::F32Range.min();
+                                min = std::numeric_limits<float>::max();
+                                max = std::numeric_limits<float>::min();
                                 for (int i = x0; i < x1; ++i)
                                 {
-                                    const audio::F32_T v = *(data + i * info.channelCount);
+                                    const float v = *(data + i * info.channelCount);
                                     min = std::min(min, v);
                                     max = std::max(max, v);
                                 }
@@ -1021,7 +1021,7 @@ namespace tl
                             {
                                 const auto info = read->getInfo().get();
                                 const OTIO_NS::TimeRange timeRange =
-                                    request->timeRange != time::invalidTimeRange ?
+                                    request->timeRange != invalidTimeRange ?
                                     request->timeRange :
                                     OTIO_NS::TimeRange(
                                         OTIO_NS::RationalTime(0.0, 1.0),
@@ -1029,9 +1029,9 @@ namespace tl
                                 const auto audioData = read->readAudio(timeRange, request->options).get();
                                 if (audioData.audio && p.waveformThread.running)
                                 {
-                                    auto resample = audio::AudioResample::create(
+                                    auto resample = AudioResample::create(
                                         audioData.audio->getInfo(),
-                                        audio::Info(1, audio::DataType::F32, audioData.audio->getSampleRate()));
+                                        AudioInfo(1, AudioType::F32, audioData.audio->getSampleRate()));
                                     const auto resampledAudio = resample->process(audioData.audio);
                                     mesh = audioMesh(resampledAudio, request->size);
                                 }

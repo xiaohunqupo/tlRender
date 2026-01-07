@@ -16,8 +16,8 @@ namespace tl
     {
         void time(py::module_& m)
         {
-            m.attr("invalidTime") = time::invalidTime;
-            m.attr("invaliinvalidTimeRangedTime") = time::invalidTimeRange;
+            m.attr("invalidTime") = invalidTime;
+            m.attr("invaliinvalidTimeRangedTime") = invalidTimeRange;
         }
     }
 }

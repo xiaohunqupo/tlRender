@@ -16,7 +16,7 @@ namespace tl
         struct TimeEdit::Private
         {
             std::shared_ptr<timeline::TimeUnitsModel> timeUnitsModel;
-            OTIO_NS::RationalTime value = time::invalidTime;
+            OTIO_NS::RationalTime value = invalidTime;
             std::function<void(const OTIO_NS::RationalTime&)> callback;
             std::shared_ptr<ftk::LineEdit> lineEdit;
             std::shared_ptr<ftk::IncButtons> incButtons;
@@ -196,7 +196,7 @@ namespace tl
         void TimeEdit::_commitValue(const std::string& value)
         {
             FTK_P();
-            OTIO_NS::RationalTime tmp = time::invalidTime;
+            OTIO_NS::RationalTime tmp = invalidTime;
             opentime::ErrorStatus errorStatus;
             if (p.timeUnitsModel)
             {
@@ -208,7 +208,7 @@ namespace tl
                     &errorStatus);
             }
             const bool valid =
-                tmp != time::invalidTime &&
+                tmp != invalidTime &&
                 !opentime::is_error(errorStatus);
             if (valid)
             {

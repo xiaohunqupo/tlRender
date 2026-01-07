@@ -24,13 +24,13 @@ namespace tl
         AVRational swap(AVRational);
 
         //! Convert to HDR data.
-        void toHDRData(AVFrameSideData**, int size, image::HDRData&);
+        void toHDRData(AVFrameSideData**, int size, HDRData&);
 
         //! Convert from FFmpeg.
-        audio::DataType toAudioType(AVSampleFormat);
+        AudioType toAudioType(AVSampleFormat);
 
         //! Convert to FFmpeg.
-        AVSampleFormat fromAudioType(audio::DataType);
+        AVSampleFormat fromAudioType(AudioType);
 
         //! Get the timecode from a data stream if it exists.
         std::string getTimecodeFromDataStream(AVFormatContext*);

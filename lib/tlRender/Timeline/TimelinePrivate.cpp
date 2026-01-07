@@ -370,7 +370,7 @@ namespace tl
                     }
                     if (data.layers.empty())
                     {
-                        auto audio = audio::Audio::create(ioInfo.audio, ioInfo.audio.sampleRate);
+                        auto audio = Audio::create(ioInfo.audio, ioInfo.audio.sampleRate);
                         audio->zero();
                         data.layers.push_back({ audio });
                     }
@@ -546,12 +546,12 @@ namespace tl
             return out;
         }
 
-        std::shared_ptr<audio::Audio> Timeline::Private::padAudioToOneSecond(
-            const std::shared_ptr<audio::Audio>& audio,
+        std::shared_ptr<Audio> Timeline::Private::padAudioToOneSecond(
+            const std::shared_ptr<Audio>& audio,
             double seconds,
             const OTIO_NS::TimeRange& timeRange)
         {
-            std::list<std::shared_ptr<audio::Audio> > list;
+            std::list<std::shared_ptr<Audio> > list;
             const double s = seconds - this->timeRange.start_time().rescaled_to(1.0).value();
             if (timeRange.start_time().value() > s)
             {
@@ -559,7 +559,7 @@ namespace tl
                     timeRange.start_time() - OTIO_NS::RationalTime(s, 1.0);
                 const OTIO_NS::RationalTime t2 =
                     t.rescaled_to(audio->getInfo().sampleRate);
-                auto silence = audio::Audio::create(audio->getInfo(), t2.value());
+                auto silence = Audio::create(audio->getInfo(), t2.value());
                 silence->zero();
                 list.push_back(silence);
             }
@@ -570,13 +570,13 @@ namespace tl
                     OTIO_NS::RationalTime(s + 1.0, 1.0) - timeRange.end_time_exclusive();
                 const OTIO_NS::RationalTime t2 =
                     t.rescaled_to(audio->getInfo().sampleRate);
-                auto silence = audio::Audio::create(audio->getInfo(), t2.value());
+                auto silence = Audio::create(audio->getInfo(), t2.value());
                 silence->zero();
                 list.push_back(silence);
             }
-            size_t sampleCount = audio::getSampleCount(list);
-            auto out = audio::Audio::create(audio->getInfo(), sampleCount);
-            audio::move(list, out->getData(), sampleCount);
+            size_t sampleCount = getSampleCount(list);
+            auto out = Audio::create(audio->getInfo(), sampleCount);
+            move(list, out->getData(), sampleCount);
             return out;
         }
     }

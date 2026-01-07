@@ -309,14 +309,14 @@ namespace tl
 
             struct VideoRequest
             {
-                OTIO_NS::RationalTime time = time::invalidTime;
+                OTIO_NS::RationalTime time = invalidTime;
                 io::Options options;
                 std::promise<io::VideoData> promise;
             };
 
             struct AudioRequest
             {
-                OTIO_NS::TimeRange timeRange = time::invalidTimeRange;
+                OTIO_NS::TimeRange timeRange = invalidTimeRange;
                 io::Options options;
                 std::promise<io::AudioData> promise;
             };
@@ -333,8 +333,8 @@ namespace tl
 
             struct Thread
             {
-                OTIO_NS::RationalTime videoTime = time::invalidTime;
-                OTIO_NS::RationalTime audioTime = time::invalidTime;
+                OTIO_NS::RationalTime videoTime = invalidTime;
+                OTIO_NS::RationalTime audioTime = invalidTime;
                 std::chrono::steady_clock::time_point logTimer;
                 std::condition_variable cv;
                 std::thread thread;
@@ -411,7 +411,7 @@ namespace tl
                 double getDuration() const;
                 const ftk::ImageInfo& getImageInfo() const;
                 double getVideoSpeed() const;
-                const audio::Info& WMFObject::getAudioInfo() const;
+                const AudioInfo& WMFObject::getAudioInfo() const;
 
                 std::shared_ptr<ftk::Image> readImage(const OTIO_NS::RationalTime&);
 
@@ -428,7 +428,7 @@ namespace tl
                 ftk::ImageInfo _imageInfo;
                 double _videoSpeed = 0.0;
                 int _audioStream = -1;
-                audio::Info _audioInfo;
+                AudioInfo _audioInfo;
                 OTIO_NS::RationalTime _time;
 
                 /*AVPixelFormat _avInputPixelFormat = AV_PIX_FMT_P010;
@@ -766,18 +766,18 @@ namespace tl
                     switch (bitsPerSample)
                     {
                     case 16:
-                        _audioInfo.dataType = audio::DataType::S16;
+                        _audioInfo.type = AudioType::S16;
                         _audioInfo.sampleRate = samplesPerSecond;
                         break;
                     case 32:
                         if (samplesPerSecond > 0)
                         {
-                            _audioInfo.dataType = audio::DataType::S32;
+                            _audioInfo.type = AudioType::S32;
                             _audioInfo.sampleRate = samplesPerSecond;
                         }
                         else if (samplesPerSecondF > 0.0)
                         {
-                            _audioInfo.dataType = audio::DataType::F32;
+                            _audioInfo.type = AudioType::F32;
                             _audioInfo.sampleRate = samplesPerSecondF;
                         }
                         break;
@@ -858,7 +858,7 @@ namespace tl
                 return _videoSpeed;
             }
 
-            const audio::Info& WMFObject::getAudioInfo() const
+            const AudioInfo& WMFObject::getAudioInfo() const
             {
                 return _audioInfo;
             }
@@ -1327,7 +1327,7 @@ namespace tl
                 {
                     io::AudioData audioData;
                     audioData.time = audioRequest->timeRange.start_time();
-                    audioData.audio = audio::Audio::create(p.info.audio, audioRequest->timeRange.duration().value());
+                    audioData.audio = Audio::create(p.info.audio, audioRequest->timeRange.duration().value());
                     audioData.audio->zero();
                     audioRequest->promise.set_value(audioData);
 

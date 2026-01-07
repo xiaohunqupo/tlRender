@@ -9,8 +9,6 @@
 
 #include <sstream>
 
-using namespace tl::url;
-
 namespace tl
 {
     namespace core_tests
@@ -33,11 +31,11 @@ namespace tl
         void URLTest::_util()
         {
             {
-                const std::string scheme = url::scheme("file://path");
+                const std::string scheme = getURLScheme("file://path");
                 FTK_ASSERT("file://" == scheme);
             }
             {
-                const std::string scheme = url::scheme("path");
+                const std::string scheme = getURLScheme("path");
                 FTK_ASSERT(scheme.empty());
             }
         }
@@ -59,9 +57,9 @@ namespace tl
             };
             for (const auto& i : data)
             {
-                const std::string decoded = decode(i.encoded);
+                const std::string decoded = decodeURL(i.encoded);
                 FTK_ASSERT(decoded == i.decoded);
-                const std::string encoded = encode(decoded);
+                const std::string encoded = encodeURL(decoded);
                 FTK_ASSERT(encoded == i.encoded);
             }
         }

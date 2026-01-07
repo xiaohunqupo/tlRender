@@ -20,7 +20,7 @@ Q_DECLARE_METATYPE(ftk::ImageFilter);
 Q_DECLARE_METATYPE(ftk::InputVideoLevels);
 Q_DECLARE_METATYPE(ftk::Size2I);
 
-Q_DECLARE_METATYPE(tl::audio::DataType);
+Q_DECLARE_METATYPE(tl::AudioType);
 
 Q_DECLARE_METATYPE(tl::io::FileType);
 

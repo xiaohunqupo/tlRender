@@ -104,7 +104,7 @@ namespace tl
         TL_ENUM(HDRMode);
 
         //! Get HDR data from timeline video data.
-        TL_API std::shared_ptr<image::HDRData> getHDRData(const timeline::VideoData&);
+        TL_API std::shared_ptr<HDRData> getHDRData(const timeline::VideoData&);
     }
 }
 

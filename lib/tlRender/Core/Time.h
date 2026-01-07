@@ -17,79 +17,75 @@
 
 namespace tl
 {
-    //! Time
-    namespace time
-    {
-        //! Invalid time.
-        constexpr OTIO_NS::RationalTime invalidTime(-1.0, -1.0);
+    //! Invalid time.
+    constexpr OTIO_NS::RationalTime invalidTime(-1.0, -1.0);
 
-        //! Invalid time range.
-        constexpr OTIO_NS::TimeRange invalidTimeRange(invalidTime, invalidTime);
+    //! Invalid time range.
+    constexpr OTIO_NS::TimeRange invalidTimeRange(invalidTime, invalidTime);
 
-        //! Check whether the given time is valid. This function should be
-        //! used instead of comparing a time to the "invalidTime" constant.
-        bool isValid(const OTIO_NS::RationalTime&);
+    //! Check whether the given time is valid. This function should be
+    //! used instead of comparing a time to the "invalidTime" constant.
+    bool isValid(const OTIO_NS::RationalTime&);
 
-        //! Check whether the given time range is valid. This function
-        //! should be used instead of comparing a time range to the
-        //! "invalidTimeRange" constant.
-        bool isValid(const OTIO_NS::TimeRange&);
+    //! Check whether the given time range is valid. This function
+    //! should be used instead of comparing a time range to the
+    //! "invalidTimeRange" constant.
+    bool isValid(const OTIO_NS::TimeRange&);
 
-        //! Compare two time ranges. This function compares the values
-        //! exactly, unlike the "==" operator which rescales the values.
-        constexpr bool compareExact(const OTIO_NS::TimeRange&, const OTIO_NS::TimeRange&);
+    //! Compare two time ranges. This function compares the values
+    //! exactly, unlike the "==" operator which rescales the values.
+    constexpr bool compareExact(const OTIO_NS::TimeRange&, const OTIO_NS::TimeRange&);
 
-        //! Get the frames in a time range.
-        TL_API std::vector<OTIO_NS::RationalTime> frames(const OTIO_NS::TimeRange&);
+    //! Get the frames in a time range.
+    TL_API std::vector<OTIO_NS::RationalTime> frames(const OTIO_NS::TimeRange&);
 
-        //! Split a time range at into seconds.
-        TL_API std::vector<OTIO_NS::TimeRange> seconds(const OTIO_NS::TimeRange&);
+    //! Split a time range at into seconds.
+    TL_API std::vector<OTIO_NS::TimeRange> seconds(const OTIO_NS::TimeRange&);
 
-        //! Convert a floating point rate to a rational.
-        TL_API std::pair<int, int> toRational(double);
+    //! Convert a floating point rate to a rational.
+    TL_API std::pair<int, int> toRational(double);
 
-        //! \name Keycode
-        ///@{
+    //! \name Keycode
+    ///@{
 
-        TL_API std::string keycodeToString(
-            int id,
-            int type,
-            int prefix,
-            int count,
-            int offset);
+    TL_API std::string keycodeToString(
+        int id,
+        int type,
+        int prefix,
+        int count,
+        int offset);
 
-        TL_API void stringToKeycode(
-            const std::string&,
-            int& id,
-            int& type,
-            int& prefix,
-            int& count,
-            int& offset);
+    TL_API void stringToKeycode(
+        const std::string&,
+        int& id,
+        int& type,
+        int& prefix,
+        int& count,
+        int& offset);
 
-        ///@}
+    ///@}
 
-        //! \name Timecode
-        ///@{
+    //! \name Timecode
+    ///@{
 
-        TL_API void timecodeToTime(
-            uint32_t,
-            int& hour,
-            int& minute,
-            int& second,
-            int& frame);
+    TL_API void timecodeToTime(
+        uint32_t,
+        int& hour,
+        int& minute,
+        int& second,
+        int& frame);
 
-        TL_API uint32_t timeToTimecode(
-            int hour,
-            int minute,
-            int second,
-            int frame);
+    TL_API uint32_t timeToTimecode(
+        int hour,
+        int minute,
+        int second,
+        int frame);
 
-        TL_API std::string timecodeToString(uint32_t);
+    TL_API std::string timecodeToString(uint32_t);
 
-        TL_API void stringToTimecode(const std::string&, uint32_t&);
+    TL_API void stringToTimecode(const std::string&, uint32_t&);
 
-        ///@}
-    }
+    ///@}
 }
 
 namespace opentime
@@ -117,4 +113,3 @@ namespace opentime
 }
 
 #include <tlRender/Core/TimeInline.h>
-

@@ -52,7 +52,7 @@ namespace tl
             p.player = player;
 
             p.scrub = ftk::Observable<bool>::create(false);
-            p.timeScrub = ftk::Observable<OTIO_NS::RationalTime>::create(time::invalidTime);
+            p.timeScrub = ftk::Observable<OTIO_NS::RationalTime>::create(invalidTime);
 
             p.thumbnailGenerator = ThumbnailGenerator::create(
                 context->getSystem<ThumbnailSystem>()->getCache(),
@@ -568,8 +568,8 @@ namespace tl
             const ftk::DrawEvent& event)
         {
             FTK_P();
-            if (!time::compareExact(_p->inOutRange, time::invalidTimeRange) &&
-                !time::compareExact(_p->inOutRange, _timeRange))
+            if (!compareExact(_p->inOutRange, invalidTimeRange) &&
+                !compareExact(_p->inOutRange, _timeRange))
             {
                 const ftk::Box2I& g = getGeometry();
                 const ftk::Color4F color(.4F, .5F, .9F);
@@ -736,7 +736,7 @@ namespace tl
             const ftk::DrawEvent& event)
         {
             FTK_P();
-            if (_timeRange != time::invalidTimeRange)
+            if (_timeRange != invalidTimeRange)
             {
                 const ftk::Box2I& g = getGeometry();
                 const int w = getSizeHint().w;
@@ -785,7 +785,7 @@ namespace tl
             const ftk::DrawEvent& event)
         {
             FTK_P();
-            if (_timeRange != time::invalidTimeRange)
+            if (_timeRange != invalidTimeRange)
             {
                 const ftk::Box2I& g = getGeometry();
                 const int w = getSizeHint().w;

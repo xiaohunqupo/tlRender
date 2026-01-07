@@ -37,7 +37,7 @@ namespace tl
         {
             uint64_t id = 0;
             int height = 0;
-            OTIO_NS::RationalTime time = time::invalidTime;
+            OTIO_NS::RationalTime time = invalidTime;
             std::future<std::shared_ptr<ftk::Image> > future;
         };
 
@@ -46,7 +46,7 @@ namespace tl
         {
             uint64_t id = 0;
             ftk::Size2I size;
-            OTIO_NS::TimeRange timeRange = time::invalidTimeRange;
+            OTIO_NS::TimeRange timeRange = invalidTimeRange;
             std::future<std::shared_ptr<ftk::TriMesh2F> > future;
         };
 
@@ -181,7 +181,7 @@ namespace tl
                 intptr_t id,
                 const ftk::Path&,
                 int height,
-                const OTIO_NS::RationalTime& = time::invalidTime,
+                const OTIO_NS::RationalTime& = invalidTime,
                 const io::Options& = io::Options());
 
             //! Get a video thumbnail.
@@ -190,7 +190,7 @@ namespace tl
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
                 int height,
-                const OTIO_NS::RationalTime& = time::invalidTime,
+                const OTIO_NS::RationalTime& = invalidTime,
                 const io::Options& = io::Options());
 
             //! Get an audio waveform.
@@ -198,7 +198,7 @@ namespace tl
                 intptr_t id,
                 const ftk::Path&,
                 const ftk::Size2I&,
-                const OTIO_NS::TimeRange& = time::invalidTimeRange,
+                const OTIO_NS::TimeRange& = invalidTimeRange,
                 const io::Options& = io::Options());
 
             //! Get an audio waveform.
@@ -207,7 +207,7 @@ namespace tl
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
                 const ftk::Size2I&,
-                const OTIO_NS::TimeRange& = time::invalidTimeRange,
+                const OTIO_NS::TimeRange& = invalidTimeRange,
                 const io::Options& = io::Options());
 
             //! Cancel pending requests.
@@ -248,7 +248,7 @@ namespace tl
                 intptr_t id,
                 const ftk::Path&,
                 int height,
-                const OTIO_NS::RationalTime& = time::invalidTime,
+                const OTIO_NS::RationalTime& = invalidTime,
                 const io::Options& = io::Options());
 
             //! Get an audio waveform.
@@ -256,7 +256,7 @@ namespace tl
                 intptr_t id,
                 const ftk::Path&,
                 const ftk::Size2I&,
-                const OTIO_NS::TimeRange& = time::invalidTimeRange,
+                const OTIO_NS::TimeRange& = invalidTimeRange,
                 const io::Options& = io::Options());
 
             //! Cancel pending requests.

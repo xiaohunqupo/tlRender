@@ -101,7 +101,7 @@ namespace tl
             TL_API void setDisplayOptions(const std::vector<timeline::DisplayOptions>&);
 
             //! Set the HDR mode and metadata.
-            TL_API void setHDR(HDRMode, const image::HDRData&);
+            TL_API void setHDR(HDRMode, const HDRData&);
 
             //! Set the comparison options.
             TL_API void setCompareOptions(const timeline::CompareOptions&);

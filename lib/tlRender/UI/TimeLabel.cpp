@@ -16,7 +16,7 @@ namespace tl
         struct TimeLabel::Private
         {
             std::shared_ptr<timeline::TimeUnitsModel> timeUnitsModel;
-            OTIO_NS::RationalTime value = time::invalidTime;
+            OTIO_NS::RationalTime value = invalidTime;
             std::string text;
             std::string format;
             ftk::SizeRole marginRole = ftk::SizeRole::None;

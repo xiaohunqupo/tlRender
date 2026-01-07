@@ -7,7 +7,7 @@ namespace tl
 {
     namespace bmd
     {
-        DLHDRVideoFrame::DLHDRVideoFrame(IDeckLinkMutableVideoFrame* frame, image::HDRData& hdrData) :
+        DLHDRVideoFrame::DLHDRVideoFrame(IDeckLinkMutableVideoFrame* frame, HDRData& hdrData) :
             _frame(frame),
             _hdrData(hdrData),
             _refCount(1)

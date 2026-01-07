@@ -7,42 +7,39 @@
 
 namespace tl
 {
-    namespace audio
+    //! Resample audio data.
+    class TL_API_TYPE AudioResample
     {
+        FTK_NON_COPYABLE(AudioResample);
+
+    protected:
+        void _init(
+            const AudioInfo& input,
+            const AudioInfo& output);
+
+        AudioResample();
+
+    public:
+        TL_API ~AudioResample();
+
+        //! Create a new resampler.
+        TL_API static std::shared_ptr<AudioResample> create(
+            const AudioInfo& input,
+            const AudioInfo& ouput);
+
+        //! Get the input audio information.
+        TL_API const AudioInfo& getInputInfo() const;
+
+        //! Get the output audio information.
+        TL_API const AudioInfo& getOutputInfo() const;
+
         //! Resample audio data.
-        class TL_API_TYPE AudioResample
-        {
-            FTK_NON_COPYABLE(AudioResample);
+        TL_API std::shared_ptr<Audio> process(const std::shared_ptr<Audio>&);
 
-        protected:
-            void _init(
-                const audio::Info& input,
-                const audio::Info& output);
+        //! Flush any remaining data.
+        TL_API void flush();
 
-            AudioResample();
-
-        public:
-            TL_API ~AudioResample();
-
-            //! Create a new resampler.
-            TL_API static std::shared_ptr<AudioResample> create(
-                const audio::Info& input,
-                const audio::Info& ouput);
-
-            //! Get the input audio information.
-            TL_API const audio::Info& getInputInfo() const;
-
-            //! Get the output audio information.
-            TL_API const audio::Info& getOutputInfo() const;
-
-            //! Resample audio data.
-            TL_API std::shared_ptr<Audio> process(const std::shared_ptr<Audio>&);
-
-            //! Flush any remaining data.
-            TL_API void flush();
-
-        private:
-            FTK_PRIVATE();
-        };
-    }
+    private:
+        FTK_PRIVATE();
+    };
 }

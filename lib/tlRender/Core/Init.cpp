@@ -18,6 +18,6 @@ namespace tl
             "tl::init",
             ftk::Format("tlRender version: {0}").arg(TLRENDER_VERSION_FULL));
 
-        audio::System::create(context);
+        AudioSystem::create(context);
     }
 }

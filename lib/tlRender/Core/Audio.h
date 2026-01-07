@@ -16,198 +16,146 @@
 
 namespace tl
 {
-    //! Audio
-    namespace audio
+    //! \name Audio Types
+    ///@{
+
+    //! Audio data types.
+    enum class TL_API_TYPE AudioType
     {
-        //! \name Audio Types
-        ///@{
+        None,
+        S8,
+        S16,
+        S32,
+        F32,
+        F64,
 
-        //! Audio data types.
-        enum class TL_API_TYPE DataType
-        {
-            None,
-            S8,
-            S16,
-            S32,
-            F32,
-            F64,
+        Count,
+        First = None
+    };
+    TL_ENUM(AudioType);
 
-            Count,
-            First = None
-        };
-        TL_ENUM(DataType);
+    //! Get the byte count for the given data type.
+    TL_API size_t getByteCount(AudioType);
 
-        typedef int8_t   S8_T;
-        typedef int16_t S16_T;
-        typedef int32_t S32_T;
-        typedef float   F32_T;
-        typedef double  F64_T;
+    //! Determine the integer data type for a given byte count.
+    TL_API AudioType getIntAudioType(size_t);
 
-        const ftk::Range<S8_T> S8Range(
-            std::numeric_limits<S8_T>::min(),
-            std::numeric_limits<S8_T>::max());
-        const ftk::Range<S16_T> S16Range(
-            std::numeric_limits<S16_T>::min(),
-            std::numeric_limits<S16_T>::max());
-        const ftk::Range<S32_T> S32Range(
-            std::numeric_limits<S32_T>::min(),
-            std::numeric_limits<S32_T>::max());
-        const ftk::Range<F32_T> F32Range(-1.F, 1.F);
-        const ftk::Range<F64_T> F64Range(-1.F, 1.F);
+    //! Determine the floating point data type for a given byte count.
+    TL_API AudioType getFloatAudioType(size_t);
 
-        //! Get the byte count for the given data type.
-        TL_API size_t getByteCount(DataType);
+    ///@}
 
-        //! Determine the integer data type for a given byte count.
-        TL_API DataType getIntType(size_t);
+    //! Audio data information.
+    class TL_API_TYPE AudioInfo
+    {
+    public:
+        TL_API AudioInfo();
+        TL_API AudioInfo(
+            size_t    channelCount,
+            AudioType type,
+            size_t    sampleRate);
 
-        //! Determine the floating point data type for a given byte count.
-        TL_API DataType getFloatType(size_t);
+        std::string name         = "Default";
+        size_t      channelCount = 0;
+        AudioType   type         = AudioType::None;
+        size_t      sampleRate   = 0;
 
-        ///@}
+        //! Is the audio valid?
+        bool isValid() const;
 
-        //! \name Audio Type Conversion
-        ///@{
+        //! Get the byte count.
+        size_t getByteCount() const;
 
-        void S8ToS16(S8_T, S16_T&);
-        void S8ToS32(S8_T, S32_T&);
-        void S8ToF32(S8_T, F32_T&);
-        void S8ToF64(S8_T, F64_T&);
+        bool operator == (const AudioInfo&) const;
+        bool operator != (const AudioInfo&) const;
+    };
 
-        void S16ToS8(S16_T, S8_T&);
-        void S16ToS32(S16_T, S32_T&);
-        void S16ToF32(S16_T, F32_T&);
-        void S16ToF64(S16_T, F64_T&);
+    //! Audio data.
+    class TL_API_TYPE Audio : public std::enable_shared_from_this<Audio>
+    {
+        FTK_NON_COPYABLE(Audio);
 
-        void S32ToS8(S32_T, S8_T&);
-        void S32ToS16(S32_T, S16_T&);
-        void S32ToF32(S32_T, F32_T&);
-        void S32ToF64(S32_T, F64_T&);
+    protected:
+        Audio(const AudioInfo&, size_t sampleCount);
 
-        void F32ToS8(F32_T, S8_T&);
-        void F32ToS16(F32_T, S16_T&);
-        void F32ToS32(F32_T, S32_T&);
-        void F32ToF64(F32_T, F64_T&);
+    public:
+        TL_API ~Audio();
 
-        void F64ToS8(F64_T, S8_T&);
-        void F64ToS16(F64_T, S16_T&);
-        void F64ToS32(F64_T, S32_T&);
-        void F64ToF32(F64_T, F32_T&);
+        //! Create new audio.
+        TL_API static std::shared_ptr<Audio> create(
+            const AudioInfo& info,
+            size_t           sampleCount);
 
-        ///@}
+        //! Get the audio information.
+        TL_API const AudioInfo& getInfo() const;
 
-        //! Audio data information.
-        class TL_API_TYPE Info
-        {
-        public:
-            TL_API Info();
-            TL_API Info(
-                size_t   channelCount,
-                DataType dataType,
-                size_t   sampleRate);
+        //! Get the audio channel count.
+        TL_API size_t getChannelCount() const;
 
-            std::string name         = "Default";
-            size_t      channelCount = 0;
-            DataType    dataType     = DataType::None;
-            size_t      sampleRate   = 0;
+        //! Get the audio data type.
+        TL_API AudioType getType() const;
 
-            //! Is the audio valid?
-            bool isValid() const;
+        //! Get the audio sample rate.
+        TL_API size_t getSampleRate() const;
 
-            //! Get the byte count.
-            size_t getByteCount() const;
+        //! Get the audio sample count.
+        TL_API size_t getSampleCount() const;
 
-            bool operator == (const Info&) const;
-            bool operator != (const Info&) const;
-        };
+        //! Is the audio valid?
+        TL_API bool isValid() const;
 
-        //! Audio data.
-        class TL_API_TYPE Audio : public std::enable_shared_from_this<Audio>
-        {
-            FTK_NON_COPYABLE(Audio);
+        //! Get the audio data byte count.
+        TL_API size_t getByteCount() const;
 
-        protected:
-            Audio(const Info&, size_t sampleCount);
+        //! Get the audio data.
+        TL_API uint8_t* getData();
 
-        public:
-            TL_API ~Audio();
+        //! Get the audio data.
+        TL_API const uint8_t* getData() const;
 
-            //! Create new audio.
-            TL_API static std::shared_ptr<Audio> create(
-                const Info& info,
-                size_t      sampleCount);
+        //! Zero the audio data.
+        TL_API void zero();
 
-            //! Get the audio information.
-            TL_API const Info& getInfo() const;
+    private:
+        AudioInfo _info;
+        size_t    _sampleCount = 0;
+        size_t    _byteCount   = 0;
+        uint8_t*  _data        = nullptr;
+    };
 
-            //! Get the audio channel count.
-            TL_API size_t getChannelCount() const;
+    //! \name Utility
+    ///@{
 
-            //! Get the audio data type.
-            TL_API DataType getDataType() const;
+    //! Combine chunks of audio. The chunks should all have the same
+    //! number of channels and type.
+    TL_API std::shared_ptr<Audio> combine(
+        const std::list<std::shared_ptr<Audio> >&);
 
-            //! Get the audio sample rate.
-            TL_API size_t getSampleRate() const;
+    //! Mix audio sources.
+    TL_API std::shared_ptr<Audio> mix(
+        const std::vector<std::shared_ptr<Audio> >&,
+        float volume,
+        const std::vector<bool>& channelMute = {});
 
-            //! Get the audio sample count.
-            TL_API size_t getSampleCount() const;
+    //! Reverse audio.
+    TL_API std::shared_ptr<Audio> reverse(const std::shared_ptr<Audio>&);
 
-            //! Is the audio valid?
-            TL_API bool isValid() const;
+    //! Change audio speed.
+    TL_API std::shared_ptr<Audio> changeSpeed(const std::shared_ptr<Audio>&, double);
 
-            //! Get the audio data byte count.
-            TL_API size_t getByteCount() const;
+    //! Convert audio data.
+    TL_API std::shared_ptr<Audio> convert(const std::shared_ptr<Audio>&, AudioType);
 
-            //! Get the audio data.
-            TL_API uint8_t* getData();
+    //! Get the total sample count from a list of audio data.
+    TL_API size_t getSampleCount(const std::list<std::shared_ptr<Audio> >&);
 
-            //! Get the audio data.
-            TL_API const uint8_t* getData() const;
+    //! Move audio data.
+    TL_API void move(
+        std::list<std::shared_ptr<Audio> >& in,
+        uint8_t* out,
+        size_t sampleCount);
 
-            //! Zero the audio data.
-            TL_API void zero();
-
-        private:
-            Info     _info;
-            size_t   _sampleCount = 0;
-            size_t   _byteCount   = 0;
-            uint8_t* _data        = nullptr;
-        };
-
-        //! \name Utility
-        ///@{
-
-        //! Combine chunks of audio. The chunks should all have the same
-        //! number of channels and type.
-        TL_API std::shared_ptr<audio::Audio> combine(
-            const std::list<std::shared_ptr<audio::Audio> >&);
-
-        //! Mix audio sources.
-        TL_API std::shared_ptr<Audio> mix(
-            const std::vector<std::shared_ptr<Audio> >&,
-            float volume,
-            const std::vector<bool>& channelMute = {});
-
-        //! Reverse audio.
-        TL_API std::shared_ptr<Audio> reverse(const std::shared_ptr<Audio>&);
-
-        //! Change audio speed.
-        TL_API std::shared_ptr<Audio> changeSpeed(const std::shared_ptr<Audio>&, double);
-
-        //! Convert audio data.
-        TL_API std::shared_ptr<Audio> convert(const std::shared_ptr<Audio>&, DataType);
-
-        //! Get the total sample count from a list of audio data.
-        TL_API size_t getSampleCount(const std::list<std::shared_ptr<audio::Audio> >&);
-
-        //! Move audio data.
-        TL_API void move(
-            std::list<std::shared_ptr<Audio> >& in,
-            uint8_t* out,
-            size_t sampleCount);
-
-        ///@}
-    }
+    ///@}
 }
 
 #include <tlRender/Core/AudioInline.h>

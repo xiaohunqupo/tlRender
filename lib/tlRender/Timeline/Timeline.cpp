@@ -100,11 +100,11 @@ namespace tl
                                 p.options.ioOptions["FFmpeg/AudioChannelCount"] =
                                     ftk::Format("{0}").arg(p.ioInfo.audio.channelCount);
                             }
-                            j = p.options.ioOptions.find("FFmpeg/AudioDataType");
+                            j = p.options.ioOptions.find("FFmpeg/AudioType");
                             if (j == p.options.ioOptions.end())
                             {
-                                p.options.ioOptions["FFmpeg/AudioDataType"] =
-                                    ftk::Format("{0}").arg(p.ioInfo.audio.dataType);
+                                p.options.ioOptions["FFmpeg/AudioType"] =
+                                    ftk::Format("{0}").arg(p.ioInfo.audio.type);
                             }
                             j = p.options.ioOptions.find("FFmpeg/AudioSampleRate");
                             if (j == p.options.ioOptions.end())
@@ -142,7 +142,7 @@ namespace tl
                 arg(!p.ioInfo.video.empty() ? p.ioInfo.video[0].size : ftk::Size2I()).
                 arg(!p.ioInfo.video.empty() ? p.ioInfo.video[0].type : ftk::ImageType::None).
                 arg(p.ioInfo.audio.channelCount).
-                arg(p.ioInfo.audio.dataType).
+                arg(p.ioInfo.audio.type).
                 arg(p.ioInfo.audio.sampleRate));
 
             // Create a new thread.

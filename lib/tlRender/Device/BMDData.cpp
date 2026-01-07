@@ -106,9 +106,9 @@ namespace tl
             "FromFile",
             "Custom");
 
-        std::shared_ptr<image::HDRData> getHDRData(const timeline::VideoData& videoData)
+        std::shared_ptr<HDRData> getHDRData(const timeline::VideoData& videoData)
         {
-            std::shared_ptr<image::HDRData> out;
+            std::shared_ptr<HDRData> out;
             for (const auto& layer : videoData.layers)
             {
                 if (layer.image)
@@ -117,7 +117,7 @@ namespace tl
                     const auto k = tags.find("hdr");
                     if (k != tags.end())
                     {
-                        out = std::shared_ptr<image::HDRData>(new image::HDRData);
+                        out = std::shared_ptr<HDRData>(new HDRData);
                         try
                         {
                             auto json = nlohmann::json::parse(k->second);

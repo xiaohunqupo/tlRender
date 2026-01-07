@@ -15,63 +15,60 @@
 
 namespace tl
 {
-    namespace image
+    //! HDR EOTF.
+    enum class TL_API_TYPE HDR_EOTF
     {
-        //! HDR EOTF.
-        enum class TL_API_TYPE HDR_EOTF
+        SDR,
+        HDR,
+        ST2084,
+
+        Count,
+        First = SDR
+    };
+    TL_ENUM(HDR_EOTF);
+
+    //! HDR color primaries.
+    enum class TL_API_TYPE HDRPrimaries
+    {
+        Red,
+        Green,
+        Blue,
+        White,
+
+        Count,
+        First = Red
+    };
+    TL_ENUM(HDRPrimaries);
+
+    //! HDR data.
+    struct TL_API_TYPE HDRData
+    {
+        HDR_EOTF eotf = HDR_EOTF::SDR;
+
+        //! Default Rec. 2020 color primaries (red, green, blue, white).
+        std::array<ftk::V2F, static_cast<size_t>(HDRPrimaries::Count)> primaries =
         {
-            SDR,
-            HDR,
-            ST2084,
-
-            Count,
-            First = SDR
+            ftk::V2F(.708F,  .292F),
+            ftk::V2F(.170F,  .797F),
+            ftk::V2F(.131F,  .046F),
+            ftk::V2F(.3127F, .3290F)
         };
-        TL_ENUM(HDR_EOTF);
+        ftk::RangeF displayMasteringLuminance = ftk::RangeF(0.F, 1000.F);
+        float maxCLL = 1000.F;
+        float maxFALL = 400.F;
 
-        //! HDR color primaries.
-        enum class TL_API_TYPE HDRPrimaries
-        {
-            Red,
-            Green,
-            Blue,
-            White,
+        TL_API bool operator == (const HDRData&) const;
+        TL_API bool operator != (const HDRData&) const;
+    };
 
-            Count,
-            First = Red
-        };
-        TL_ENUM(HDRPrimaries);
+    //! \name Serialize
+    ///@{
 
-        //! HDR data.
-        struct TL_API_TYPE HDRData
-        {
-            HDR_EOTF eotf = HDR_EOTF::SDR;
+    TL_API void to_json(nlohmann::json&, const HDRData&);
 
-            //! Default Rec. 2020 color primaries (red, green, blue, white).
-            std::array<ftk::V2F, static_cast<size_t>(HDRPrimaries::Count)> primaries =
-            {
-                ftk::V2F(.708F,  .292F),
-                ftk::V2F(.170F,  .797F),
-                ftk::V2F(.131F,  .046F),
-                ftk::V2F(.3127F, .3290F)
-            };
-            ftk::RangeF displayMasteringLuminance = ftk::RangeF(0.F, 1000.F);
-            float maxCLL  = 1000.F;
-            float maxFALL = 400.F;
+    TL_API void from_json(const nlohmann::json&, HDRData&);
 
-            TL_API bool operator == (const HDRData&) const;
-            TL_API bool operator != (const HDRData&) const;
-        };
-
-        //! \name Serialize
-        ///@{
-
-        TL_API void to_json(nlohmann::json&, const HDRData&);
-
-        TL_API void from_json(const nlohmann::json&, HDRData&);
-
-        ///@}
-    }
+    ///@}
 }
 
 #include <tlRender/Core/HDRInline.h>

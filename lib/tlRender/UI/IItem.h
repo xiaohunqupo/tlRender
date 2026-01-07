@@ -180,9 +180,9 @@ namespace tl
 
             virtual void _timeUnitsUpdate();
 
-            OTIO_NS::TimeRange _timeRange = time::invalidTimeRange;
-            OTIO_NS::TimeRange _availableRange = time::invalidTimeRange;
-            OTIO_NS::TimeRange _trimmedRange = time::invalidTimeRange;
+            OTIO_NS::TimeRange _timeRange = invalidTimeRange;
+            OTIO_NS::TimeRange _availableRange = invalidTimeRange;
+            OTIO_NS::TimeRange _trimmedRange = invalidTimeRange;
             double _scale = 500.0;
             ItemOptions _options;
             DisplayOptions _displayOptions;

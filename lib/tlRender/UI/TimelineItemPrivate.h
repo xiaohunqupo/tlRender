@@ -15,8 +15,8 @@ namespace tl
         struct TimelineItem::Private
         {
             std::shared_ptr<timeline::Player> player;
-            OTIO_NS::RationalTime currentTime = time::invalidTime;
-            OTIO_NS::TimeRange inOutRange = time::invalidTimeRange;
+            OTIO_NS::RationalTime currentTime = invalidTime;
+            OTIO_NS::TimeRange inOutRange = invalidTimeRange;
             timeline::PlayerCacheInfo cacheInfo;
             bool stopOnScrub = true;
             std::shared_ptr<ftk::Observable<bool> > scrub;

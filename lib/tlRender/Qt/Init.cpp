@@ -48,11 +48,11 @@ namespace tl
             QMetaType::registerComparators<ftk::InputVideoLevels>();
 #endif // QT_VERSION
 
-            qRegisterMetaType<audio::DataType>("tl::audio::DataType");
-            qRegisterMetaType<audio::DeviceID>("tl::audio::DeviceID");
-            qRegisterMetaType<audio::DeviceInfo>("tl::audio::DeviceInfo");
+            qRegisterMetaType<AudioType>("tl::AudioType");
+            qRegisterMetaType<AudioDeviceID>("tl::AudioDeviceID");
+            qRegisterMetaType<AudioDeviceInfo>("tl::AudioDeviceInfo");
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            QMetaType::registerComparators<audio::DataType>();
+            QMetaType::registerComparators<AudioType>();
 #endif // QT_VERSION
 
             qRegisterMetaType<io::FileType>("tl::io::FileType");
