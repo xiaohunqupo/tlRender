@@ -11,369 +11,368 @@
 
 namespace tl
 {
-    namespace io
+    namespace
     {
-        namespace
+        const std::chrono::milliseconds requestTimeout(5);
+    }
+
+    void ISeqRead::_init(
+        const ftk::Path& path,
+        const std::vector<ftk::MemFile>& mem,
+        const IOOptions& options,
+        const std::shared_ptr<ftk::LogSystem>& logSystem)
+    {
+        IRead::_init(path, mem, options, logSystem);
+        FTK_P();
+
+        const std::string& num = path.getNum();
+        if (!num.empty())
         {
-            const std::chrono::milliseconds requestTimeout(5);
+            if (!_mem.empty())
+            {
+                std::stringstream ss(num);
+                ss >> _startFrame;
+                _endFrame = _startFrame + _mem.size() - 1;
+            }
+            else if (path.getFrames().has_value())
+            {
+                const ftk::RangeI64& frames = path.getFrames().value();
+                _startFrame = frames.min();
+                _endFrame = frames.max();
+            }
         }
 
-        void ISeqRead::_init(
-            const ftk::Path& path,
-            const std::vector<ftk::MemFile>& mem,
-            const Options& options,
-            const std::shared_ptr<ftk::LogSystem>& logSystem)
+        auto i = options.find("SeqIO/ThreadCount");
+        if (i != options.end())
         {
-            IRead::_init(path, mem, options, logSystem);
-            FTK_P();
+            std::stringstream ss(i->second);
+            ss >> p.threadCount;
+        }
+        i = options.find("SeqIO/DefaultSpeed");
+        if (i != options.end())
+        {
+            std::stringstream ss(i->second);
+            ss >> _defaultSpeed;
+        }
 
-            const std::string& num = path.getNum();
-            if (!num.empty())
+        p.thread.running = true;
+        p.thread.thread = std::thread(
+            [this]
             {
-                if (!_mem.empty())
+                FTK_P();
+                try
                 {
-                    std::stringstream ss(num);
-                    ss >> _startFrame;
-                    _endFrame = _startFrame + _mem.size() - 1;
+                    p.info = _getInfo(
+                        _path.getFileName(true),
+                        !_mem.empty() ? &_mem[0] : nullptr);
+                    p.addTags(p.info);
+                    _thread();
                 }
-                else if (path.getFrames().has_value())
+                catch (const std::exception& e)
                 {
-                    const ftk::RangeI64& frames = path.getFrames().value();
-                    _startFrame = frames.min();
-                    _endFrame = frames.max();
-                }
-            }
-
-            auto i = options.find("SeqIO/ThreadCount");
-            if (i != options.end())
-            {
-                std::stringstream ss(i->second);
-                ss >> p.threadCount;
-            }
-            i = options.find("SeqIO/DefaultSpeed");
-            if (i != options.end())
-            {
-                std::stringstream ss(i->second);
-                ss >> _defaultSpeed;
-            }
-
-            p.thread.running = true;
-            p.thread.thread = std::thread(
-                [this]
-                {
-                    FTK_P();
-                    try
+                    //! \todo How should this be handled?
+                    if (auto logSystem = _logSystem.lock())
                     {
-                        p.info = _getInfo(
-                            _path.getFileName(true),
-                            !_mem.empty() ? &_mem[0] : nullptr);
-                        p.addTags(p.info);
-                        _thread();
+                        logSystem->print(
+                            "tl::io::ISeqRead",
+                            e.what(),
+                            ftk::LogType::Error);
                     }
-                    catch (const std::exception& e)
-                    {
-                        //! \todo How should this be handled?
-                        if (auto logSystem = _logSystem.lock())
-                        {
-                            logSystem->print(
-                                "tl::io::ISeqRead",
-                                e.what(),
-                                ftk::LogType::Error);
-                        }
-                    }
-                    _finishRequests();
-                    {
-                        std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                        p.mutex.stopped = true;
-                    }
-                    _cancelRequests();
-                });
-        }
-
-        ISeqRead::ISeqRead() :
-            _p(new Private)
-        {}
-
-        ISeqRead::~ISeqRead()
-        {}
-
-        std::future<Info> ISeqRead::getInfo()
-        {
-            FTK_P();
-            auto request = std::make_shared<Private::InfoRequest>();
-            auto future = request->promise.get_future();
-            bool valid = false;
-            {
-                std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                if (!p.mutex.stopped)
-                {
-                    valid = true;
-                    p.mutex.infoRequests.push_back(request);
                 }
-            }
-            if (valid)
-            {
-                p.thread.cv.notify_one();
-            }
-            else
-            {
-                request->promise.set_value(Info());
-            }
-            return future;
-        }
-
-        std::future<VideoData> ISeqRead::readVideo(
-            const OTIO_NS::RationalTime& time,
-            const Options& options)
-        {
-            FTK_P();
-            auto request = std::make_shared<Private::VideoRequest>();
-            request->time = time;
-            request->options = merge(options, _options);
-            auto future = request->promise.get_future();
-            bool valid = false;
-            {
-                std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                if (!p.mutex.stopped)
-                {
-                    valid = true;
-                    p.mutex.videoRequests.push_back(request);
-                }
-            }
-            if (valid)
-            {
-                p.thread.cv.notify_one();
-            }
-            else
-            {
-                request->promise.set_value(VideoData());
-            }
-            return future;
-        }
-
-        void ISeqRead::cancelRequests()
-        {
-            _cancelRequests();
-        }
-
-        void ISeqRead::_finish()
-        {
-            FTK_P();
-            p.thread.running = false;
-            if (p.thread.thread.joinable())
-            {
-                p.thread.thread.join();
-            }
-        }
-
-        void ISeqRead::_thread()
-        {
-            FTK_P();
-            p.thread.logTimer = std::chrono::steady_clock::now();
-            while (p.thread.running)
-            {
-                // Check requests.
-                std::list<std::shared_ptr<Private::InfoRequest> > infoRequests;
-                std::list<std::shared_ptr<Private::VideoRequest> > videoRequests;
+                _finishRequests();
                 {
                     std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                    if (p.thread.cv.wait_for(
-                        lock,
-                        requestTimeout,
-                        [this]
-                        {
-                            return
-                                !_p->mutex.infoRequests.empty() ||
-                                !_p->mutex.videoRequests.empty() ||
-                                !_p->thread.videoRequestsInProgress.empty();
-                        }))
-                    {
-                        infoRequests = std::move(p.mutex.infoRequests);
-                        while (!p.mutex.videoRequests.empty() &&
-                            (p.thread.videoRequestsInProgress.size() + videoRequests.size()) < p.threadCount)
-                        {
-                            videoRequests.push_back(p.mutex.videoRequests.front());
-                            p.mutex.videoRequests.pop_front();
-                        }
-                    }
+                    p.mutex.stopped = true;
                 }
+                _cancelRequests();
+            });
+    }
 
-                // Information rquests.
-                for (const auto& request : infoRequests)
-                {
-                    request->promise.set_value(p.info);
-                }
+    ISeqRead::ISeqRead() :
+        _p(new Private)
+    {
+    }
 
-                // Initialize video requests.
-                while (!videoRequests.empty())
-                {
-                    auto request = videoRequests.front();
-                    videoRequests.pop_front();
+    ISeqRead::~ISeqRead()
+    {
+    }
 
-                    bool seq = false;
-                    std::string fileName;
-                    if (!_path.getNum().empty())
-                    {
-                        seq = true;
-                        fileName = _path.getFrame(static_cast<int>(request->time.value()), true);
-                    }
-                    else
-                    {
-                        fileName = _path.getFileName(true);
-                    }
-                    const OTIO_NS::RationalTime time = request->time;
-                    const Options options = request->options;
-                    request->future = std::async(
-                        std::launch::async,
-                        [this, seq, fileName, time, options]
-                        {
-                            VideoData out;
-                            try
-                            {
-                                const int64_t frame = time.value();
-                                const int64_t memIndex = seq ? (frame - _startFrame) : 0;
-                                out = _readVideo(
-                                    fileName,
-                                    memIndex >= 0 && memIndex < _mem.size() ? &_mem[memIndex] : nullptr,
-                                    time,
-                                    options);
-                            }
-                            catch (const std::exception&)
-                            {
-                                //! \todo How should this be handled?
-                            }
-                            return out;
-                        });
-                    p.thread.videoRequestsInProgress.push_back(request);
-                }
-
-                // Check for finished video requests.
-                //if (!p.thread.videoRequestsInProgress.empty())
-                //{
-                //    std::cout << "in progress: " << p.thread.videoRequestsInProgress.size() << std::endl;
-                //}
-                auto requestIt = p.thread.videoRequestsInProgress.begin();
-                while (requestIt != p.thread.videoRequestsInProgress.end())
-                {
-                    if ((*requestIt)->future.valid() &&
-                        (*requestIt)->future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
-                    {
-                        //std::cout << "finished: " << requestIt->time << std::endl;
-                        auto videoData = (*requestIt)->future.get();
-                        (*requestIt)->promise.set_value(videoData);
-                        requestIt = p.thread.videoRequestsInProgress.erase(requestIt);
-                        continue;
-                    }
-                    ++requestIt;
-                }
-
-                // Logging.
-                if (auto logSystem = _logSystem.lock())
-                {
-                    const auto now = std::chrono::steady_clock::now();
-                    const std::chrono::duration<float> diff = now - p.thread.logTimer;
-                    if (diff.count() > 10.F)
-                    {
-                        p.thread.logTimer = now;
-                        const std::string id = ftk::Format("tl::io::ISeqRead {0}").arg(this);
-                        size_t requestsSize = 0;
-                        {
-                            std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                            requestsSize = p.mutex.videoRequests.size();
-                        }
-                        logSystem->print(id, ftk::Format(
-                            "\n"
-                            "    Path: {0}\n"
-                            "    Requests: {1}, {2} in progress\n"
-                            "    Thread count: {3}").
-                            arg(_path.get()).
-                            arg(requestsSize).
-                            arg(p.thread.videoRequestsInProgress.size()).
-                            arg(p.threadCount));
-                    }
-                }
-            }
-        }
-
-        void ISeqRead::_finishRequests()
+    std::future<IOInfo> ISeqRead::getInfo()
+    {
+        FTK_P();
+        auto request = std::make_shared<Private::InfoRequest>();
+        auto future = request->promise.get_future();
+        bool valid = false;
         {
-            FTK_P();
-            for (auto& request : p.thread.videoRequestsInProgress)
+            std::unique_lock<std::mutex> lock(p.mutex.mutex);
+            if (!p.mutex.stopped)
             {
-                VideoData data;
-                data.time = request->time;
-                if (request->future.valid())
-                {
-                    data = request->future.get();
-                }
-                request->promise.set_value(data);
+                valid = true;
+                p.mutex.infoRequests.push_back(request);
             }
-            p.thread.videoRequestsInProgress.clear();
         }
-
-        void ISeqRead::_cancelRequests()
+        if (valid)
         {
-            FTK_P();
+            p.thread.cv.notify_one();
+        }
+        else
+        {
+            request->promise.set_value(IOInfo());
+        }
+        return future;
+    }
+
+    std::future<VideoData> ISeqRead::readVideo(
+        const OTIO_NS::RationalTime& time,
+        const IOOptions& options)
+    {
+        FTK_P();
+        auto request = std::make_shared<Private::VideoRequest>();
+        request->time = time;
+        request->options = merge(options, _options);
+        auto future = request->promise.get_future();
+        bool valid = false;
+        {
+            std::unique_lock<std::mutex> lock(p.mutex.mutex);
+            if (!p.mutex.stopped)
+            {
+                valid = true;
+                p.mutex.videoRequests.push_back(request);
+            }
+        }
+        if (valid)
+        {
+            p.thread.cv.notify_one();
+        }
+        else
+        {
+            request->promise.set_value(VideoData());
+        }
+        return future;
+    }
+
+    void ISeqRead::cancelRequests()
+    {
+        _cancelRequests();
+    }
+
+    void ISeqRead::_finish()
+    {
+        FTK_P();
+        p.thread.running = false;
+        if (p.thread.thread.joinable())
+        {
+            p.thread.thread.join();
+        }
+    }
+
+    void ISeqRead::_thread()
+    {
+        FTK_P();
+        p.thread.logTimer = std::chrono::steady_clock::now();
+        while (p.thread.running)
+        {
+            // Check requests.
             std::list<std::shared_ptr<Private::InfoRequest> > infoRequests;
             std::list<std::shared_ptr<Private::VideoRequest> > videoRequests;
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                infoRequests = std::move(p.mutex.infoRequests);
-                videoRequests = std::move(p.mutex.videoRequests);
+                if (p.thread.cv.wait_for(
+                    lock,
+                    requestTimeout,
+                    [this]
+                    {
+                        return
+                            !_p->mutex.infoRequests.empty() ||
+                            !_p->mutex.videoRequests.empty() ||
+                            !_p->thread.videoRequestsInProgress.empty();
+                    }))
+                {
+                    infoRequests = std::move(p.mutex.infoRequests);
+                    while (!p.mutex.videoRequests.empty() &&
+                        (p.thread.videoRequestsInProgress.size() + videoRequests.size()) < p.threadCount)
+                    {
+                        videoRequests.push_back(p.mutex.videoRequests.front());
+                        p.mutex.videoRequests.pop_front();
+                    }
+                }
             }
-            for (auto& request : infoRequests)
+
+            // Information rquests.
+            for (const auto& request : infoRequests)
             {
-                request->promise.set_value(Info());
+                request->promise.set_value(p.info);
             }
-            for (auto& request : videoRequests)
+
+            // Initialize video requests.
+            while (!videoRequests.empty())
             {
-                request->promise.set_value(VideoData());
+                auto request = videoRequests.front();
+                videoRequests.pop_front();
+
+                bool seq = false;
+                std::string fileName;
+                if (!_path.getNum().empty())
+                {
+                    seq = true;
+                    fileName = _path.getFrame(static_cast<int>(request->time.value()), true);
+                }
+                else
+                {
+                    fileName = _path.getFileName(true);
+                }
+                const OTIO_NS::RationalTime time = request->time;
+                const IOOptions options = request->options;
+                request->future = std::async(
+                    std::launch::async,
+                    [this, seq, fileName, time, options]
+                    {
+                        VideoData out;
+                        try
+                        {
+                            const int64_t frame = time.value();
+                            const int64_t memIndex = seq ? (frame - _startFrame) : 0;
+                            out = _readVideo(
+                                fileName,
+                                memIndex >= 0 && memIndex < _mem.size() ? &_mem[memIndex] : nullptr,
+                                time,
+                                options);
+                        }
+                        catch (const std::exception&)
+                        {
+                            //! \todo How should this be handled?
+                        }
+                        return out;
+                    });
+                p.thread.videoRequestsInProgress.push_back(request);
+            }
+
+            // Check for finished video requests.
+            //if (!p.thread.videoRequestsInProgress.empty())
+            //{
+            //    std::cout << "in progress: " << p.thread.videoRequestsInProgress.size() << std::endl;
+            //}
+            auto requestIt = p.thread.videoRequestsInProgress.begin();
+            while (requestIt != p.thread.videoRequestsInProgress.end())
+            {
+                if ((*requestIt)->future.valid() &&
+                    (*requestIt)->future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+                {
+                    //std::cout << "finished: " << requestIt->time << std::endl;
+                    auto videoData = (*requestIt)->future.get();
+                    (*requestIt)->promise.set_value(videoData);
+                    requestIt = p.thread.videoRequestsInProgress.erase(requestIt);
+                    continue;
+                }
+                ++requestIt;
+            }
+
+            // Logging.
+            if (auto logSystem = _logSystem.lock())
+            {
+                const auto now = std::chrono::steady_clock::now();
+                const std::chrono::duration<float> diff = now - p.thread.logTimer;
+                if (diff.count() > 10.F)
+                {
+                    p.thread.logTimer = now;
+                    const std::string id = ftk::Format("tl::io::ISeqRead {0}").arg(this);
+                    size_t requestsSize = 0;
+                    {
+                        std::unique_lock<std::mutex> lock(p.mutex.mutex);
+                        requestsSize = p.mutex.videoRequests.size();
+                    }
+                    logSystem->print(id, ftk::Format(
+                        "\n"
+                        "    Path: {0}\n"
+                        "    Requests: {1}, {2} in progress\n"
+                        "    Thread count: {3}").
+                        arg(_path.get()).
+                        arg(requestsSize).
+                        arg(p.thread.videoRequestsInProgress.size()).
+                        arg(p.threadCount));
+                }
             }
         }
+    }
 
-        void ISeqRead::Private::addTags(Info& info)
+    void ISeqRead::_finishRequests()
+    {
+        FTK_P();
+        for (auto& request : p.thread.videoRequestsInProgress)
         {
-            if (!info.video.empty())
+            VideoData data;
+            data.time = request->time;
+            if (request->future.valid())
             {
-                {
-                    std::stringstream ss;
-                    ss << info.video[0].size.w << " " << info.video[0].size.h;
-                    info.tags["Video Resolution"] = ss.str();
-                }
-                {
-                    std::stringstream ss;
-                    ss.precision(2);
-                    ss << std::fixed;
-                    ss << info.video[0].pixelAspectRatio;
-                    info.tags["Video Pixel Aspect Ratio"] = ss.str();
-                }
-                {
-                    std::stringstream ss;
-                    ss << info.video[0].type;
-                    info.tags["Video Pixel Type"] = ss.str();
-                }
-                {
-                    std::stringstream ss;
-                    ss << info.video[0].videoLevels;
-                    info.tags["Video Levels"] = ss.str();
-                }
-                {
-                    std::stringstream ss;
-                    ss << info.videoTime.start_time().to_timecode();
-                    info.tags["Video Start Time"] = ss.str();
-                }
-                {
-                    std::stringstream ss;
-                    ss << info.videoTime.duration().to_timecode();
-                    info.tags["Video Duration"] = ss.str();
-                }
-                {
-                    std::stringstream ss;
-                    ss.precision(2);
-                    ss << std::fixed;
-                    ss << info.videoTime.start_time().rate() << " FPS";
-                    info.tags["Video Speed"] = ss.str();
-                }
+                data = request->future.get();
+            }
+            request->promise.set_value(data);
+        }
+        p.thread.videoRequestsInProgress.clear();
+    }
+
+    void ISeqRead::_cancelRequests()
+    {
+        FTK_P();
+        std::list<std::shared_ptr<Private::InfoRequest> > infoRequests;
+        std::list<std::shared_ptr<Private::VideoRequest> > videoRequests;
+        {
+            std::unique_lock<std::mutex> lock(p.mutex.mutex);
+            infoRequests = std::move(p.mutex.infoRequests);
+            videoRequests = std::move(p.mutex.videoRequests);
+        }
+        for (auto& request : infoRequests)
+        {
+            request->promise.set_value(IOInfo());
+        }
+        for (auto& request : videoRequests)
+        {
+            request->promise.set_value(VideoData());
+        }
+    }
+
+    void ISeqRead::Private::addTags(IOInfo& info)
+    {
+        if (!info.video.empty())
+        {
+            {
+                std::stringstream ss;
+                ss << info.video[0].size.w << " " << info.video[0].size.h;
+                info.tags["Video Resolution"] = ss.str();
+            }
+            {
+                std::stringstream ss;
+                ss.precision(2);
+                ss << std::fixed;
+                ss << info.video[0].pixelAspectRatio;
+                info.tags["Video Pixel Aspect Ratio"] = ss.str();
+            }
+            {
+                std::stringstream ss;
+                ss << info.video[0].type;
+                info.tags["Video Pixel Type"] = ss.str();
+            }
+            {
+                std::stringstream ss;
+                ss << info.video[0].videoLevels;
+                info.tags["Video Levels"] = ss.str();
+            }
+            {
+                std::stringstream ss;
+                ss << info.videoTime.start_time().to_timecode();
+                info.tags["Video Start Time"] = ss.str();
+            }
+            {
+                std::stringstream ss;
+                ss << info.videoTime.duration().to_timecode();
+                info.tags["Video Duration"] = ss.str();
+            }
+            {
+                std::stringstream ss;
+                ss.precision(2);
+                ss << std::fixed;
+                ss << info.videoTime.start_time().rate() << " FPS";
+                info.tags["Video Speed"] = ss.str();
             }
         }
     }

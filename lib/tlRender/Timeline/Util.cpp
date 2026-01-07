@@ -37,12 +37,12 @@ namespace tl
             int types)
         {
             std::vector<std::string> out;
-            if (types & static_cast<int>(io::FileType::Media))
+            if (types & static_cast<int>(FileType::Media))
             {
                 out.push_back(".otio");
                 out.push_back(".otioz");
             }
-            if (auto ioSystem = context->getSystem<io::ReadSystem>())
+            if (auto ioSystem = context->getSystem<ReadSystem>())
             {
                 for (const auto& plugin : ioSystem->getPlugins())
                 {
@@ -269,7 +269,7 @@ namespace tl
             std::vector<ftk::Path> out;
             if (std::filesystem::is_directory(std::filesystem::u8path(path.get())))
             {
-                auto ioSystem = context->getSystem<io::ReadSystem>();
+                auto ioSystem = context->getSystem<ReadSystem>();
                 ftk::DirListOptions listOptions;
                 listOptions.seqNegative = pathOptions.seqNegative;
                 listOptions.seqMaxDigits = pathOptions.seqMaxDigits;
@@ -280,8 +280,8 @@ namespace tl
                     const std::string ext = ftk::toLower(path.getExt());
                     switch (ioSystem->getFileType(ext))
                     {
-                    case io::FileType::Media:
-                    case io::FileType::Seq:
+                    case FileType::Media:
+                    case FileType::Seq:
                         out.push_back(path);
                         break;
                     default:
@@ -556,7 +556,7 @@ namespace tl
 
         std::vector<std::shared_ptr<Audio> > audioCopy(
             const AudioInfo& info,
-            const std::vector<AudioData>& data,
+            const std::vector<AudioFrame>& audioFrame,
             Playback playback,
             int64_t frame,
             int64_t size)
@@ -572,29 +572,29 @@ namespace tl
             // Find the first chunk of audio data.
             const int64_t seconds = std::floor(frame / static_cast<double>(info.sampleRate));
             auto secondsIt = std::find_if(
-                data.begin(),
-                data.end(),
-                [seconds](const AudioData& data)
+                audioFrame.begin(),
+                audioFrame.end(),
+                [seconds](const AudioFrame& audioFrame)
                 {
-                    return seconds == data.seconds;
+                    return seconds == audioFrame.seconds;
                 });
 
             // Find the second chunk of audio data.
             const int64_t secondsPlusOne = seconds + 1;
             auto secondsPlusOneIt = std::find_if(
-                data.begin(),
-                data.end(),
-                [secondsPlusOne](const AudioData& data)
+                audioFrame.begin(),
+                audioFrame.end(),
+                [secondsPlusOne](const AudioFrame& audioFrame)
                 {
-                    return secondsPlusOne == data.seconds;
+                    return secondsPlusOne == audioFrame.seconds;
                 });
 
-            if (secondsIt != data.end())
+            if (secondsIt != audioFrame.end())
             {
                 // Adjust the size if necessary.
                 const int64_t offset = frame - seconds * info.sampleRate;
                 int64_t outSize = size;
-                if ((offset + outSize) > info.sampleRate && secondsPlusOneIt == data.end())
+                if ((offset + outSize) > info.sampleRate && secondsPlusOneIt == audioFrame.end())
                 {
                     outSize = info.sampleRate - offset;
                 }
@@ -621,7 +621,7 @@ namespace tl
                     }
                 }
 
-                if (sizeTmp < outSize && secondsPlusOneIt != data.end())
+                if (sizeTmp < outSize && secondsPlusOneIt != audioFrame.end())
                 {
                     // Copy audio from the second chunk.
                     for (size_t i = 0; i < secondsIt->layers.size() && i < secondsPlusOneIt->layers.size(); ++i)

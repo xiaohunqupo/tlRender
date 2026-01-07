@@ -24,7 +24,7 @@ namespace tl
             std::string dir;
             timeline::Options options;
             std::shared_ptr<timeline::ITimeUnitsModel> timeUnitsModel;
-            std::map<std::string, std::shared_ptr<io::Info> > info;
+            std::map<std::string, std::shared_ptr<IOInfo> > info;
             std::map<std::string, std::shared_ptr<ftk::Image> > thumbnails;
             std::map<std::string, std::shared_ptr<ftk::TriMesh2F> > waveforms;
         };

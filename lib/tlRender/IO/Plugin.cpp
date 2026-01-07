@@ -7,69 +7,66 @@
 
 namespace tl
 {
-    namespace io
+    void IIO::_init(
+        const ftk::Path& path,
+        const IOOptions& options,
+        const std::shared_ptr<ftk::LogSystem>& logSystem)
     {
-        void IIO::_init(
-            const ftk::Path& path,
-            const Options& options,
-            const std::shared_ptr<ftk::LogSystem>& logSystem)
+        _path = path;
+        _options = options;
+        _logSystem = logSystem;
+    }
+
+    IIO::IIO()
+    {}
+
+    IIO::~IIO()
+    {}
+
+    const ftk::Path& IIO::getPath() const
+    {
+        return _path;
+    }
+
+    struct IIOPlugin::Private
+    {
+        std::string name;
+        std::map<std::string, FileType> exts;
+    };
+
+    void IIOPlugin::_init(
+        const std::string& name,
+        const std::map<std::string, FileType>& exts,
+        const std::shared_ptr<ftk::LogSystem>& logSystem)
+    {
+        FTK_P();
+        _logSystem = logSystem;
+        p.name = name;
+        p.exts = exts;
+    }
+
+    IIOPlugin::IIOPlugin() :
+        _p(new Private)
+    {}
+
+    IIOPlugin::~IIOPlugin()
+    {}
+
+    const std::string& IIOPlugin::getName() const
+    {
+        return _p->name;
+    }
+
+    std::set<std::string> IIOPlugin::getExts(int types) const
+    {
+        std::set<std::string> out;
+        for (const auto& i : _p->exts)
         {
-            _path = path;
-            _options = options;
-            _logSystem = logSystem;
-        }
-
-        IIO::IIO()
-        {}
-
-        IIO::~IIO()
-        {}
-
-        const ftk::Path& IIO::getPath() const
-        {
-            return _path;
-        }
-
-        struct IPlugin::Private
-        {
-            std::string name;
-            std::map<std::string, FileType> exts;
-        };
-
-        void IPlugin::_init(
-            const std::string& name,
-            const std::map<std::string, FileType>& exts,
-            const std::shared_ptr<ftk::LogSystem>& logSystem)
-        {
-            FTK_P();
-            _logSystem = logSystem;
-            p.name = name;
-            p.exts = exts;
-        }
-
-        IPlugin::IPlugin() :
-            _p(new Private)
-        {}
-
-        IPlugin::~IPlugin()
-        {}
-
-        const std::string& IPlugin::getName() const
-        {
-            return _p->name;
-        }
-
-        std::set<std::string> IPlugin::getExts(int types) const
-        {
-            std::set<std::string> out;
-            for (const auto& i : _p->exts)
+            if (static_cast<int>(i.second) & types)
             {
-                if (static_cast<int>(i.second) & types)
-                {
-                    out.insert(i.first);
-                }
+                out.insert(i.first);
             }
-            return out;
         }
+        return out;
     }
 }

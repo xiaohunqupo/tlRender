@@ -18,17 +18,17 @@ namespace tl
             TL_API bool operator != (const AudioLayer&) const;
         };
 
-        //! Audio data.
-        struct TL_API_TYPE AudioData
+        //! Audio frame.
+        struct TL_API_TYPE AudioFrame
         {
             double                  seconds = -1.0;
             std::vector<AudioLayer> layers;
 
-            TL_API bool operator == (const AudioData&) const;
-            TL_API bool operator != (const AudioData&) const;
+            TL_API bool operator == (const AudioFrame&) const;
+            TL_API bool operator != (const AudioFrame&) const;
         };
 
-        //! Compare the time values of audio data.
-        TL_API bool isTimeEqual(const AudioData&, const AudioData&);
+        //! Compare the time values of audio frames.
+        TL_API bool isTimeEqual(const AudioFrame&, const AudioFrame&);
     }
 }

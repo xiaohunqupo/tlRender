@@ -11,8 +11,6 @@
 
 #include <sstream>
 
-using namespace tl::io;
-
 namespace tl
 {
     namespace io_tests
@@ -77,14 +75,14 @@ namespace tl
         namespace
         {
             void write(
-                const std::shared_ptr<io::IWritePlugin>& plugin,
+                const std::shared_ptr<IWritePlugin>& plugin,
                 const std::shared_ptr<ftk::Image>& image,
                 const ftk::Path& path,
                 const ftk::ImageInfo& imageInfo,
                 const ftk::ImageTags& tags,
-                const Options& options)
+                const IOOptions& options)
             {
-                Info info;
+                IOInfo info;
                 info.video.push_back(imageInfo);
                 info.videoTime = OTIO_NS::TimeRange(OTIO_NS::RationalTime(0.0, 24.0), OTIO_NS::RationalTime(1.0, 24.0));
                 info.tags = tags;
@@ -93,16 +91,16 @@ namespace tl
             }
 
             void read(
-                const std::shared_ptr<io::IReadPlugin>& plugin,
+                const std::shared_ptr<IReadPlugin>& plugin,
                 const std::shared_ptr<ftk::Image>& image,
                 const ftk::Path& path,
                 bool memoryIO,
                 const ftk::ImageTags& tags,
-                const Options& options)
+                const IOOptions& options)
             {
                 std::vector<uint8_t> memoryData;
                 std::vector<ftk::MemFile> memory;
-                std::shared_ptr<io::IRead> read;
+                std::shared_ptr<IRead> read;
                 if (memoryIO)
                 {
                     auto fileIO = ftk::FileIO::create(path.get(), ftk::FileMode::Read);
@@ -137,11 +135,11 @@ namespace tl
             }
 
             void readError(
-                const std::shared_ptr<io::IReadPlugin>& plugin,
+                const std::shared_ptr<IReadPlugin>& plugin,
                 const std::shared_ptr<ftk::Image>& image,
                 const ftk::Path& path,
                 bool memoryIO,
-                const Options& options)
+                const IOOptions& options)
             {
                 {
                     auto fileIO = ftk::FileIO::create(path.get(), ftk::FileMode::Read);
@@ -293,7 +291,7 @@ namespace tl
                         {
                             for (const auto& option : options)
                             {
-                                Options options;
+                                IOOptions options;
                                 options[option.first] = option.second;
                                 const auto imageInfo = writePlugin->getInfo(ftk::ImageInfo(size, pixelType));
                                 if (imageInfo.isValid())

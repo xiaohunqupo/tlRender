@@ -98,7 +98,7 @@ namespace tl
             const PlayerOptions& playerOptions = player->getPlayerOptions();
             const Options options = player->getOptions();
             const OTIO_NS::TimeRange& timeRange = player->getTimeRange();
-            const io::Info& ioInfo = player->getIOInfo();
+            const IOInfo& ioInfo = player->getIOInfo();
             const double defaultSpeed = player->getDefaultSpeed();
             double speed = player->getSpeed();
             _print(ftk::Format("Path: {0}").arg(path.get()));
@@ -219,14 +219,14 @@ namespace tl
             FTK_ASSERT(OTIO_NS::TimeRange(timeRange.start_time(), timeRange.duration()) == inOutRange);
 
             // Test the I/O options.
-            io::Options ioOptions;
-            auto ioOptionsObserver = ftk::Observer<io::Options>::create(
+            IOOptions ioOptions;
+            auto ioOptionsObserver = ftk::Observer<IOOptions>::create(
                 player->observeIOOptions(),
-                [&ioOptions](const io::Options& value)
+                [&ioOptions](const IOOptions& value)
                 {
                     ioOptions = value;
                 });
-            io::Options ioOptions2;
+            IOOptions ioOptions2;
             ioOptions2["Layer"] = "1";
             player->setIOOptions(ioOptions2);
             FTK_ASSERT(ioOptions2 == player->getIOOptions());
@@ -322,9 +322,9 @@ namespace tl
                 player->setCacheOptions(cacheOptions);
                 FTK_ASSERT(cacheOptions == player->getCacheOptions());
 
-                auto currentVideoObserver = ftk::ListObserver<timeline::VideoData>::create(
+                auto currentVideoObserver = ftk::ListObserver<timeline::VideoFrame>::create(
                     player->observeCurrentVideo(),
-                    [this](const std::vector<timeline::VideoData>& value)
+                    [this](const std::vector<timeline::VideoFrame>& value)
                     {
                         std::stringstream ss;
                         ss << "Video time: ";
@@ -334,9 +334,9 @@ namespace tl
                         }
                         _print(ss.str());
                     });
-                auto currentAudioObserver = ftk::ListObserver<timeline::AudioData>::create(
+                auto currentAudioObserver = ftk::ListObserver<timeline::AudioFrame>::create(
                     player->observeCurrentAudio(),
-                    [this](const std::vector<timeline::AudioData>& value)
+                    [this](const std::vector<timeline::AudioFrame>& value)
                     {
                         for (const auto& i : value)
                         {

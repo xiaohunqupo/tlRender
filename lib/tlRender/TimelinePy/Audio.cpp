@@ -26,16 +26,16 @@ namespace tl
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
-            py::class_<AudioData>(m, "AudioData")
+            py::class_<AudioFrame>(m, "AudioFrame")
                 .def(py::init())
-                .def_readwrite("seconds", &AudioData::seconds)
-                .def_readwrite("layers", &AudioData::layers)
+                .def_readwrite("seconds", &AudioFrame::seconds)
+                .def_readwrite("layers", &AudioFrame::layers)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
             m.def(
                 "isTimeEqual",
-                [](const AudioData& a, const AudioData& b)
+                [](const AudioFrame& a, const AudioFrame& b)
                 {
                     return isTimeEqual(a, b);
                 });

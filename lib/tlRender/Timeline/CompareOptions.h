@@ -55,13 +55,13 @@ namespace tl
         TL_API std::vector<ftk::Box2I> getBoxes(Compare, const std::vector<ftk::ImageInfo>&);
 
         //! Get the boxes for the given compare mode.
-        TL_API std::vector<ftk::Box2I> getBoxes(Compare, const std::vector<VideoData>&);
+        TL_API std::vector<ftk::Box2I> getBoxes(Compare, const std::vector<VideoFrame>&);
 
         //! Get the render size for the given compare mode.
         TL_API ftk::Size2I getRenderSize(Compare, const std::vector<ftk::ImageInfo>&);
 
         //! Get the render size for the given compare mode.
-        TL_API ftk::Size2I getRenderSize(Compare, const std::vector<VideoData>&);
+        TL_API ftk::Size2I getRenderSize(Compare, const std::vector<VideoFrame>&);
 
         //! Get a compare time.
         TL_API OTIO_NS::RationalTime getCompareTime(

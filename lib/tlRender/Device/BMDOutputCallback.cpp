@@ -145,10 +145,10 @@ namespace tl
             }
         }
 
-        void DLOutputCallback::setAudioData(const std::vector<timeline::AudioData>& value)
+        void DLOutputCallback::setAudio(const std::vector<timeline::AudioFrame>& value)
         {
             std::unique_lock<std::mutex> lock(_audioMutex.mutex);
-            _audioMutex.audioData = value;
+            _audioMutex.audioFrame = value;
         }
 
         HRESULT DLOutputCallback::QueryInterface(REFIID iid, LPVOID* ppv)
@@ -232,7 +232,7 @@ namespace tl
             bool mute = false;
             std::vector<bool> channelMute;
             double audioOffset = 0.0;
-            std::vector<timeline::AudioData> audioDataList;
+            std::vector<timeline::AudioFrame> audioFrameList;
             bool reset = false;
             OTIO_NS::RationalTime start = invalidTime;
             {
@@ -244,7 +244,7 @@ namespace tl
                 mute = _audioMutex.mute;
                 channelMute = _audioMutex.channelMute;
                 audioOffset = _audioMutex.audioOffset;
-                audioDataList = _audioMutex.audioData;
+                audioFrameList = _audioMutex.audioFrame;
                 reset = _audioMutex.reset;
                 _audioMutex.reset = false;
                 start = _audioMutex.start;
@@ -265,11 +265,11 @@ namespace tl
             }
 
             AudioInfo inputInfo;
-            if (!audioDataList.empty() &&
-                !audioDataList[0].layers.empty() &&
-                audioDataList[0].layers[0].audio)
+            if (!audioFrameList.empty() &&
+                !audioFrameList[0].layers.empty() &&
+                audioFrameList[0].layers[0].audio)
             {
-                inputInfo = audioDataList[0].layers[0].audio->getInfo();
+                inputInfo = audioFrameList[0].layers[0].audio->getInfo();
             }
             if (playback != timeline::Playback::Stop && inputInfo.sampleRate > 0)
             {
@@ -308,7 +308,7 @@ namespace tl
                     {
                         audioLayers = audioCopy(
                             inputInfo,
-                            audioDataList,
+                            audioFrameList,
                             playback,
                             t,
                             copySize);

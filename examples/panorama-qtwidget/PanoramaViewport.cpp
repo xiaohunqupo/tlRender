@@ -59,28 +59,28 @@ namespace tl
                 {
                     disconnect(
                         _player.get(),
-                        SIGNAL(currentVideoChanged(const std::vector<tl::timeline::VideoData>&)),
+                        SIGNAL(currentVideoChanged(const std::vector<tl::timeline::VideoFrame>&)),
                         this,
-                        SLOT(_currentVideoCallback(const std::vector<tl::timeline::VideoData>&)));
+                        SLOT(_currentVideoCallback(const std::vector<tl::timeline::VideoFrame>&)));
                 }
                 _player = player;
-                _videoData.clear();
+                _video.clear();
                 if (_player)
                 {
                     const auto& ioInfo = _player->ioInfo();
                     _videoSize = !ioInfo.video.empty() ? ioInfo.video[0].size : ftk::Size2I();
-                    _videoData = _player->currentVideo();
+                    _video = _player->currentVideo();
                     connect(
                         _player.get(),
-                        SIGNAL(currentVideoChanged(const std::vector<tl::timeline::VideoData>&)),
-                        SLOT(_currentVideoCallback(const std::vector<tl::timeline::VideoData>&)));
+                        SIGNAL(currentVideoChanged(const std::vector<tl::timeline::VideoFrame>&)),
+                        SLOT(_currentVideoCallback(const std::vector<tl::timeline::VideoFrame>&)));
                 }
                 update();
             }
 
-            void PanoramaViewport::_currentVideoCallback(const std::vector<timeline::VideoData>& value)
+            void PanoramaViewport::_currentVideoCallback(const std::vector<timeline::VideoFrame>& value)
             {
-                _videoData = value;
+                _video = value;
                 update();
             }
 
@@ -148,7 +148,7 @@ namespace tl
                     _buffer = ftk::gl::OffscreenBuffer::create(offscreenBufferSize, offscreenBufferOptions);
                 }
 
-                // Render the video data into the offscreen buffer.
+                // Render the video into the offscreen buffer.
                 if (_buffer)
                 {
                     ftk::gl::OffscreenBufferBinding binding(_buffer);
@@ -156,7 +156,7 @@ namespace tl
                     _render->setOCIOOptions(_ocioOptions);
                     _render->setLUTOptions(_lutOptions);
                     _render->drawVideo(
-                        { _videoData },
+                        { _video },
                         { ftk::Box2I(0, 0, _videoSize.w, _videoSize.h) },
                         { _imageOptions });
                     _render->end();

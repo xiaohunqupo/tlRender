@@ -32,8 +32,8 @@ namespace tl
 
         void Write::_init(
             const ftk::Path& path,
-            const io::Info& info,
-            const io::Options& options,
+            const IOInfo& info,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             IWrite::_init(path, options, info, logSystem);
@@ -249,8 +249,8 @@ namespace tl
 
         std::shared_ptr<Write> Write::create(
             const ftk::Path& path,
-            const io::Info& info,
-            const io::Options& options,
+            const IOInfo& info,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             auto out = std::shared_ptr<Write>(new Write);
@@ -261,7 +261,7 @@ namespace tl
         void Write::writeVideo(
             const OTIO_NS::RationalTime& time,
             const std::shared_ptr<ftk::Image>& image,
-            const io::Options&)
+            const IOOptions&)
         {
             FTK_P();
 

@@ -107,16 +107,16 @@ namespace tl
             p.inOutRange = ftk::Observable<OTIO_NS::TimeRange>::create(p.timeRange);
             p.compare = ftk::ObservableList<std::shared_ptr<Timeline> >::create();
             p.compareTime = ftk::Observable<CompareTime>::create(CompareTime::Relative);
-            p.ioOptions = ftk::Observable<io::Options>::create();
+            p.ioOptions = ftk::Observable<IOOptions>::create();
             p.videoLayer = ftk::Observable<int>::create(0);
             p.compareVideoLayers = ftk::ObservableList<int>::create();
-            p.currentVideoData = ftk::ObservableList<VideoData>::create();
+            p.currentVideoFrame = ftk::ObservableList<VideoFrame>::create();
             p.audioDevice = ftk::Observable<AudioDeviceID>::create(playerOptions.audioDevice);
             p.volume = ftk::Observable<float>::create(1.F);
             p.mute = ftk::Observable<bool>::create(false);
             p.channelMute = ftk::ObservableList<bool>::create();
             p.audioOffset = ftk::Observable<double>::create(0.0);
-            p.currentAudioData = ftk::ObservableList<AudioData>::create();
+            p.currentAudioFrame = ftk::ObservableList<AudioFrame>::create();
             p.cacheOptions = ftk::Observable<PlayerCacheOptions>::create(playerOptions.cache);
             p.cacheInfo = ftk::Observable<PlayerCacheInfo>::create();
             auto audioSystem = context->getSystem<AudioSystem>();
@@ -244,7 +244,7 @@ namespace tl
             return _p->timeRange.duration();
         }
 
-        const io::Info& Player::getIOInfo() const
+        const IOInfo& Player::getIOInfo() const
         {
             return _p->ioInfo;
         }
@@ -675,17 +675,17 @@ namespace tl
             }
         }
 
-        const io::Options& Player::getIOOptions() const
+        const IOOptions& Player::getIOOptions() const
         {
             return _p->ioOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservable<io::Options> > Player::observeIOOptions() const
+        std::shared_ptr<ftk::IObservable<IOOptions> > Player::observeIOOptions() const
         {
             return _p->ioOptions;
         }
 
-        void Player::setIOOptions(const io::Options& value)
+        void Player::setIOOptions(const IOOptions& value)
         {
             FTK_P();
             if (p.ioOptions->setIfChanged(value))
@@ -741,14 +741,14 @@ namespace tl
             }
         }
 
-        const std::vector<VideoData>& Player::getCurrentVideo() const
+        const std::vector<VideoFrame>& Player::getCurrentVideo() const
         {
-            return _p->currentVideoData->get();
+            return _p->currentVideoFrame->get();
         }
 
-        std::shared_ptr<ftk::IObservableList<VideoData> > Player::observeCurrentVideo() const
+        std::shared_ptr<ftk::IObservableList<VideoFrame> > Player::observeCurrentVideo() const
         {
-            return _p->currentVideoData;
+            return _p->currentVideoFrame;
         }
 
         const PlayerCacheOptions& Player::getCacheOptions() const
@@ -846,18 +846,18 @@ namespace tl
             }
 
             // Sync with the thread.
-            std::vector<VideoData> currentVideoData;
-            std::vector<AudioData> currentAudioData;
+            std::vector<VideoFrame> currentVideoFrame;
+            std::vector<AudioFrame> currentAudioFrame;
             PlayerCacheInfo cacheInfo;
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.state.currentTime = p.currentTime->get();
-                currentVideoData = p.mutex.currentVideoData;
-                currentAudioData = p.mutex.currentAudioData;
+                currentVideoFrame = p.mutex.currentVideoFrame;
+                currentAudioFrame = p.mutex.currentAudioFrame;
                 cacheInfo = p.mutex.cacheInfo;
             }
-            p.currentVideoData->setIfChanged(currentVideoData);
-            p.currentAudioData->setIfChanged(currentAudioData);
+            p.currentVideoFrame->setIfChanged(currentVideoFrame);
+            p.currentAudioFrame->setIfChanged(currentAudioFrame);
             p.cacheInfo->setIfChanged(cacheInfo);
         }
 
@@ -909,21 +909,21 @@ namespace tl
                 // Update the cache.
                 p.cacheUpdate();
 
-                // Update the current video data.
+                // Update the current video frame.
                 if (!p.ioInfo.video.empty())
                 {
                     const auto i = p.thread.videoCache.find(p.thread.state.currentTime);
                     if (i != p.thread.videoCache.end())
                     {
                         std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                        p.mutex.currentVideoData = i->second;
+                        p.mutex.currentVideoFrame = i->second;
                     }
                     else if (p.thread.state.playback != Playback::Stop)
                     {
                         if (!p.timeRange.contains(p.thread.state.currentTime))
                         {
                             std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                            p.mutex.currentVideoData.clear();
+                            p.mutex.currentVideoFrame.clear();
                         }
                         const auto now = std::chrono::steady_clock::now();
                         if (now > p.audioMutex.state.muteTimeout)
@@ -944,15 +944,15 @@ namespace tl
                         std::unique_lock<std::mutex> lock(p.mutex.mutex);
                         if (!p.timeRange.contains(p.thread.state.currentTime))
                         {
-                            p.mutex.currentVideoData.clear();
+                            p.mutex.currentVideoFrame.clear();
                         }
                     }
                 }
 
-                // Update the current audio data.
+                // Update the current audio frames.
                 if (p.ioInfo.audio.isValid())
                 {
-                    std::vector<AudioData> audioDataList;
+                    std::vector<AudioFrame> audioFrameList;
                     {
                         const int64_t seconds =
                             p.thread.state.currentTime.rescaled_to(1.0).value() -
@@ -963,13 +963,13 @@ namespace tl
                             const auto i = p.audioMutex.cache.find(s);
                             if (i != p.audioMutex.cache.end())
                             {
-                                audioDataList.push_back(i->second);
+                                audioFrameList.push_back(i->second);
                             }
                         }
                     }
                     {
                         std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                        p.mutex.currentAudioData = audioDataList;
+                        p.mutex.currentAudioFrame = audioFrameList;
                     }
                 }
 

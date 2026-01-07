@@ -14,8 +14,8 @@ namespace tl
     {
         void Write::_init(
             const ftk::Path& path,
-            const io::Info& info,
-            const io::Options& options,
+            const IOInfo& info,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             ISeqWrite::_init(path, info, options, logSystem);
@@ -41,8 +41,8 @@ namespace tl
 
         std::shared_ptr<Write> Write::create(
             const ftk::Path& path,
-            const io::Info& info,
-            const io::Options& options,
+            const IOInfo& info,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             auto out = std::shared_ptr<Write>(new Write);
@@ -54,7 +54,7 @@ namespace tl
             const std::string& fileName,
             const OTIO_NS::RationalTime&,
             const std::shared_ptr<ftk::Image>& image,
-            const io::Options&)
+            const IOOptions&)
         {
             const auto& info = image->getInfo();
             Imf::Header header(
@@ -66,7 +66,7 @@ namespace tl
                 Imf::INCREASING_Y,
                 toImf(_compression));
             header.dwaCompressionLevel() = _dwaCompressionLevel;
-            writeTags(image->getTags(), io::SeqOptions().defaultSpeed, header);
+            writeTags(image->getTags(), SeqOptions().defaultSpeed, header);
             Imf::RgbaOutputFile f(fileName.c_str(), header);
             const size_t scanlineSize = static_cast<size_t>(info.size.w) * 4 * 2;
             const uint8_t* p = image->getData() + (info.size.h - 1) * scanlineSize;

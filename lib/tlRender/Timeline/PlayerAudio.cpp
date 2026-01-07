@@ -120,14 +120,14 @@ namespace tl
             }
         }
 
-        const std::vector<AudioData>& Player::getCurrentAudio() const
+        const std::vector<AudioFrame>& Player::getCurrentAudio() const
         {
-            return _p->currentAudioData->get();
+            return _p->currentAudioFrame->get();
         }
 
-        std::shared_ptr<ftk::IObservableList<AudioData> > Player::observeCurrentAudio() const
+        std::shared_ptr<ftk::IObservableList<AudioFrame> > Player::observeCurrentAudio() const
         {
-            return _p->currentAudioData;
+            return _p->currentAudioFrame;
         }
 
         bool Player::Private::hasAudio() const
@@ -384,7 +384,7 @@ namespace tl
                     {
                         t -= audioThread.inputFrame;
                     }
-                    std::vector<AudioData> audioDataList;
+                    std::vector<AudioFrame> audioFrameList;
                     {
                         const int64_t seconds = std::floor(t / static_cast<double>(inputInfo.sampleRate));
                         std::unique_lock<std::mutex> lock(audioMutex.mutex);
@@ -393,7 +393,7 @@ namespace tl
                             const auto j = audioMutex.cache.find(i);
                             if (j != audioMutex.cache.end())
                             {
-                                audioDataList.push_back(j->second);
+                                audioFrameList.push_back(j->second);
                             }
                         }
                     }
@@ -406,7 +406,7 @@ namespace tl
                     {
                         audioLayers = audioCopy(
                             inputInfo,
-                            audioDataList,
+                            audioFrameList,
                             state.playback,
                             t,
                             copySize);

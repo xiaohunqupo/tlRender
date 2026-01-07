@@ -50,10 +50,10 @@ namespace tl
                     QOpenGLFramebufferObject* fbo = framebufferObject();
                     const ftk::Size2I size(fbo->width(), fbo->height());
                     _render->begin(size);
-                    if (!_videoData.empty())
+                    if (!_video.empty())
                     {
                         _render->drawVideo(
-                            { _videoData.front() },
+                            { _video.front() },
                             { ftk::Box2I(0, 0, size.w, size.h) });
                     }
                     _render->end();
@@ -65,20 +65,20 @@ namespace tl
 
                 void synchronize(QQuickFramebufferObject*) override
                 {
-                    _videoData = _framebufferObject->video();
+                    _video = _framebufferObject->video();
                 }
 
             private:
                 const GLFramebufferObject* _framebufferObject = nullptr;
                 bool _init = false;
-                std::vector<timeline::VideoData> _videoData;
+                std::vector<timeline::VideoFrame> _video;
                 std::shared_ptr<timeline::IRender> _render;
             };
         }
 
         struct GLFramebufferObject::Private
         {
-            std::vector<timeline::VideoData> videoData;
+            std::vector<timeline::VideoFrame> video;
         };
 
         GLFramebufferObject::GLFramebufferObject(QQuickItem* parent) :
@@ -91,9 +91,9 @@ namespace tl
         GLFramebufferObject::~GLFramebufferObject()
         {}
 
-        const std::vector<timeline::VideoData>& GLFramebufferObject::video() const
+        const std::vector<timeline::VideoFrame>& GLFramebufferObject::video() const
         {
-            return _p->videoData;
+            return _p->video;
         }
 
         QQuickFramebufferObject::Renderer* GLFramebufferObject::createRenderer() const
@@ -101,9 +101,9 @@ namespace tl
             return new qtquick::Renderer(this);
         }
 
-        void GLFramebufferObject::setVideo(const std::vector<timeline::VideoData>& value)
+        void GLFramebufferObject::setVideo(const std::vector<timeline::VideoFrame>& value)
         {
-            _p->videoData = value;
+            _p->video = value;
             update();
         }
     }

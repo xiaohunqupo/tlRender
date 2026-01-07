@@ -31,17 +31,17 @@ namespace tl
             void requests();
             void finishRequests();
 
-            std::shared_ptr<io::IRead> getRead(
+            std::shared_ptr<IRead> getRead(
                 const OTIO_NS::Clip*,
-                const io::Options&);
-            std::future<io::VideoData> readVideo(
+                const IOOptions&);
+            std::future<VideoData> readVideo(
                 const OTIO_NS::Clip*,
                 const OTIO_NS::RationalTime&,
-                const io::Options&);
-            std::future<io::AudioData> readAudio(
+                const IOOptions&);
+            std::future<AudioData> readAudio(
                 const OTIO_NS::Clip*,
                 const OTIO_NS::TimeRange&,
-                const io::Options&);
+                const IOOptions&);
 
             std::shared_ptr<Audio> padAudioToOneSecond(
                 const std::shared_ptr<Audio>&,
@@ -53,9 +53,9 @@ namespace tl
             ftk::Path path;
             ftk::Path audioPath;
             Options options;
-            ftk::LRUCache<std::string, std::shared_ptr<io::IRead> > readCache;
+            ftk::LRUCache<std::string, std::shared_ptr<IRead> > readCache;
             OTIO_NS::TimeRange timeRange = invalidTimeRange;
-            io::Info ioInfo;
+            IOInfo ioInfo;
             uint64_t requestId = 0;
 
             struct VideoLayerData
@@ -63,8 +63,8 @@ namespace tl
                 VideoLayerData() {};
                 VideoLayerData(VideoLayerData&&) = default;
 
-                std::future<io::VideoData> image;
-                std::future<io::VideoData> imageB;
+                std::future<VideoData> image;
+                std::future<VideoData> imageB;
                 Transition transition = Transition::None;
                 float transitionValue = 0.F;
             };
@@ -75,8 +75,8 @@ namespace tl
 
                 uint64_t id = 0;
                 OTIO_NS::RationalTime time = invalidTime;
-                io::Options options;
-                std::promise<VideoData> promise;
+                IOOptions options;
+                std::promise<VideoFrame> promise;
 
                 std::vector<VideoLayerData> layerData;
             };
@@ -88,7 +88,7 @@ namespace tl
 
                 double seconds = -1.0;
                 OTIO_NS::TimeRange timeRange;
-                std::future<io::AudioData> audio;
+                std::future<AudioData> audio;
             };
             struct AudioRequest
             {
@@ -97,8 +97,8 @@ namespace tl
 
                 uint64_t id = 0;
                 double seconds = -1.0;
-                io::Options options;
-                std::promise<AudioData> promise;
+                IOOptions options;
+                std::promise<AudioFrame> promise;
 
                 std::vector<AudioLayerData> layerData;
             };

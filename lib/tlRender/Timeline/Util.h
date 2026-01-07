@@ -18,8 +18,8 @@ namespace tl
         TL_API std::vector<std::string> getExts(
             const std::shared_ptr<ftk::Context>&,
             int types =
-                static_cast<int>(io::FileType::Media) |
-                static_cast<int>(io::FileType::Seq));
+                static_cast<int>(FileType::Media) |
+                static_cast<int>(FileType::Seq));
 
         //! Convert frames to ranges.
         TL_API std::vector<OTIO_NS::TimeRange> toRanges(std::vector<OTIO_NS::RationalTime>);
@@ -129,7 +129,7 @@ namespace tl
         //! Copy audio data.
         TL_API std::vector<std::shared_ptr<Audio> > audioCopy(
             const AudioInfo&,
-            const std::vector<AudioData>&,
+            const std::vector<AudioFrame>&,
             Playback,
             int64_t frame,
             int64_t size);

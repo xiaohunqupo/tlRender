@@ -100,7 +100,7 @@ namespace tl
                         otioTrack->append_child(otioClip);
 
                         // Create the I/O plugin.
-                        auto writerPlugin = _context->getSystem<io::WriteSystem>()->getPlugin(ftk::Path(output));
+                        auto writerPlugin = _context->getSystem<WriteSystem>()->getPlugin(ftk::Path(output));
                         if (!writerPlugin)
                         {
                             throw std::runtime_error(ftk::Format("Cannot open: \"{0}\"").arg(output));
@@ -114,7 +114,7 @@ namespace tl
                         {
                             throw std::runtime_error(ftk::Format("Cannot open: \"{0}\"").arg(output));
                         }
-                        io::Info ioInfo;
+                        IOInfo ioInfo;
                         ioInfo.video.push_back(info);
                         ioInfo.videoTime = timeRange;
                         auto writer = writerPlugin->write(ftk::Path(output), ioInfo);

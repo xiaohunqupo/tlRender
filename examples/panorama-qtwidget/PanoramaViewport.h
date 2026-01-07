@@ -46,7 +46,7 @@ namespace tl
                 void setPlayer(const QSharedPointer<qt::PlayerObject>&);
 
             private Q_SLOTS:
-                void _currentVideoCallback(const std::vector<tl::timeline::VideoData>&);
+                void _currentVideoCallback(const std::vector<tl::timeline::VideoFrame>&);
 
             protected:
                 void initializeGL() override;
@@ -62,7 +62,7 @@ namespace tl
                 ftk::ImageOptions _imageOptions;
                 QSharedPointer<qt::PlayerObject> _player;
                 ftk::Size2I _videoSize;
-                std::vector<timeline::VideoData> _videoData;
+                std::vector<timeline::VideoFrame> _video;
                 ftk::V2F _cameraRotation;
                 float _cameraFOV = 45.F;
                 ftk::TriMesh3F _sphereMesh;

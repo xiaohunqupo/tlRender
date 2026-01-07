@@ -361,21 +361,21 @@ namespace tl
                             Layer layer;
                             if (imfHalfNames.size() > 0 && imfHalfNames.size() <= 4)
                             {
-                                info.type = io::getFloatType(imfHalfNames.size(), 16);
+                                info.type = getFloatImageType(imfHalfNames.size(), 16);
                                 reorderChannels(imfHalfNames);
                                 layer.channels.insert(layer.channels.end(), imfHalfNames.begin(), imfHalfNames.end());
                                 layer.pixelType = Imf::PixelType::HALF;
                             }
                             else if (imfFloatNames.size() > 0 && imfFloatNames.size() <= 4)
                             {
-                                info.type = io::getFloatType(imfFloatNames.size(), 32);
+                                info.type = getFloatImageType(imfFloatNames.size(), 32);
                                 reorderChannels(imfFloatNames);
                                 layer.channels.insert(layer.channels.end(), imfFloatNames.begin(), imfFloatNames.end());
                                 layer.pixelType = Imf::PixelType::FLOAT;
                             }
                             else if (imfUIntNames.size() > 0 && imfUIntNames.size() <= 4)
                             {
-                                info.type = io::getIntType(imfUIntNames.size(), 16);
+                                info.type = getIntImageType(imfUIntNames.size(), 16);
                                 reorderChannels(imfUIntNames);
                                 layer.channels.insert(layer.channels.end(), imfUIntNames.begin(), imfUIntNames.end());
                                 layer.pixelType = Imf::PixelType::UINT;
@@ -399,17 +399,17 @@ namespace tl
                     }
                 }
 
-                const io::Info& getInfo() const
+                const IOInfo& getInfo() const
                 {
                     return _info;
                 }
 
-                io::VideoData read(
+                VideoData read(
                     const std::string& fileName,
                     const OTIO_NS::RationalTime& time,
-                    const io::Options& options)
+                    const IOOptions& options)
                 {
-                    io::VideoData out;
+                    VideoData out;
                     int layer = 0;
                     const auto i = options.find("Layer");
                     if (i != options.end())
@@ -500,7 +500,7 @@ namespace tl
             private:
                 std::unique_ptr<Imf::IStream> _s;
                 std::unique_ptr<Imf::MultiPartInputFile> _f;
-                io::Info _info;
+                IOInfo _info;
 
                 struct Layer
                 {
@@ -515,7 +515,7 @@ namespace tl
         void Read::_init(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& mem,
-            const io::Options& options,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             ISeqRead::_init(path, mem, options, logSystem);
@@ -531,7 +531,7 @@ namespace tl
 
         std::shared_ptr<Read> Read::create(
             const ftk::Path& path,
-            const io::Options& options,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             auto out = std::shared_ptr<Read>(new Read);
@@ -542,7 +542,7 @@ namespace tl
         std::shared_ptr<Read> Read::create(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& mem,
-            const io::Options& options,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             auto out = std::shared_ptr<Read>(new Read);
@@ -550,11 +550,11 @@ namespace tl
             return out;
         }
 
-        io::Info Read::_getInfo(
+        IOInfo Read::_getInfo(
             const std::string& fileName,
             const ftk::MemFile* mem)
         {
-            io::Info out = File(fileName, mem, _logSystem.lock()).getInfo();
+            IOInfo out = File(fileName, mem, _logSystem.lock()).getInfo();
             float speed = _defaultSpeed;
             const auto i = out.tags.find("Frame Per Second");
             if (i != out.tags.end())
@@ -567,11 +567,11 @@ namespace tl
             return out;
         }
 
-        io::VideoData Read::_readVideo(
+        VideoData Read::_readVideo(
             const std::string& fileName,
             const ftk::MemFile* mem,
             const OTIO_NS::RationalTime& time,
-            const io::Options& options)
+            const IOOptions& options)
         {
             return File(fileName, mem, _logSystem.lock()).read(fileName, time, options);
         }

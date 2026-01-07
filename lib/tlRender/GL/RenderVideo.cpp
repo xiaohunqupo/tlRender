@@ -72,7 +72,7 @@ namespace tl
         }
 
         void Render::drawVideo(
-            const std::vector<timeline::VideoData>& videoData,
+            const std::vector<timeline::VideoFrame>& videoFrame,
             const std::vector<ftk::Box2I>& boxes,
             const std::vector<ftk::ImageOptions>& imageOptions,
             const std::vector<timeline::DisplayOptions>& displayOptions,
@@ -83,7 +83,7 @@ namespace tl
             {
             case timeline::Compare::A:
                 _drawVideoA(
-                    videoData,
+                    videoFrame,
                     boxes,
                     imageOptions,
                     displayOptions,
@@ -92,7 +92,7 @@ namespace tl
                 break;
             case timeline::Compare::B:
                 _drawVideoB(
-                    videoData,
+                    videoFrame,
                     boxes,
                     imageOptions,
                     displayOptions,
@@ -101,7 +101,7 @@ namespace tl
                 break;
             case timeline::Compare::Wipe:
                 _drawVideoWipe(
-                    videoData,
+                    videoFrame,
                     boxes,
                     imageOptions,
                     displayOptions,
@@ -110,7 +110,7 @@ namespace tl
                 break;
             case timeline::Compare::Overlay:
                 _drawVideoOverlay(
-                    videoData,
+                    videoFrame,
                     boxes,
                     imageOptions,
                     displayOptions,
@@ -118,10 +118,10 @@ namespace tl
                     colorBuffer);
                 break;
             case timeline::Compare::Difference:
-                if (videoData.size() > 1)
+                if (videoFrame.size() > 1)
                 {
                     _drawVideoDifference(
-                        videoData,
+                        videoFrame,
                         boxes,
                         imageOptions,
                         displayOptions,
@@ -131,7 +131,7 @@ namespace tl
                 else
                 {
                     _drawVideoA(
-                        videoData,
+                        videoFrame,
                         boxes,
                         imageOptions,
                         displayOptions,
@@ -143,7 +143,7 @@ namespace tl
             case timeline::Compare::Vertical:
             case timeline::Compare::Tile:
                 _drawVideoTile(
-                    videoData,
+                    videoFrame,
                     boxes,
                     imageOptions,
                     displayOptions,
@@ -155,17 +155,17 @@ namespace tl
         }
 
         void Render::_drawVideoA(
-            const std::vector<timeline::VideoData>& videoData,
+            const std::vector<timeline::VideoFrame>& videoFrame,
             const std::vector<ftk::Box2I>& boxes,
             const std::vector<ftk::ImageOptions>& imageOptions,
             const std::vector<timeline::DisplayOptions>& displayOptions,
             const timeline::CompareOptions& compareOptions,
             ftk::ImageType colorBuffer)
         {
-            if (!videoData.empty() && !boxes.empty())
+            if (!videoFrame.empty() && !boxes.empty())
             {
                 _drawVideo(
-                    videoData[0],
+                    videoFrame[0],
                     boxes[0],
                     !imageOptions.empty() ? std::make_shared<ftk::ImageOptions>(imageOptions[0]) : nullptr,
                     !displayOptions.empty() ? displayOptions[0] : timeline::DisplayOptions(),
@@ -174,17 +174,17 @@ namespace tl
         }
 
         void Render::_drawVideoB(
-            const std::vector<timeline::VideoData>& videoData,
+            const std::vector<timeline::VideoFrame>& videoFrame,
             const std::vector<ftk::Box2I>& boxes,
             const std::vector<ftk::ImageOptions>& imageOptions,
             const std::vector<timeline::DisplayOptions>& displayOptions,
             const timeline::CompareOptions& compareOptions,
             ftk::ImageType colorBuffer)
         {
-            if (videoData.size() > 1 && boxes.size() > 1)
+            if (videoFrame.size() > 1 && boxes.size() > 1)
             {
                 _drawVideo(
-                    videoData[1],
+                    videoFrame[1],
                     boxes[1],
                     imageOptions.size() > 1 ? std::make_shared<ftk::ImageOptions>(imageOptions[1]) : nullptr,
                     displayOptions.size() > 1 ? displayOptions[1] : timeline::DisplayOptions(),
@@ -193,7 +193,7 @@ namespace tl
         }
 
         void Render::_drawVideoWipe(
-            const std::vector<timeline::VideoData>& videoData,
+            const std::vector<timeline::VideoFrame>& videoFrame,
             const std::vector<ftk::Box2I>& boxes,
             const std::vector<ftk::ImageOptions>& imageOptions,
             const std::vector<timeline::DisplayOptions>& displayOptions,
@@ -257,10 +257,10 @@ namespace tl
             }
             glStencilFunc(GL_EQUAL, 1, 0xFF);
             glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-            if (!videoData.empty() && !boxes.empty())
+            if (!videoFrame.empty() && !boxes.empty())
             {
                 _drawVideo(
-                    videoData[0],
+                    videoFrame[0],
                     boxes[0],
                     !imageOptions.empty() ? std::make_shared<ftk::ImageOptions>(imageOptions[0]) : nullptr,
                     !displayOptions.empty() ? displayOptions[0] : timeline::DisplayOptions(),
@@ -299,10 +299,10 @@ namespace tl
             }
             glStencilFunc(GL_EQUAL, 1, 0xFF);
             glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-            if (videoData.size() > 1 && boxes.size() > 1)
+            if (videoFrame.size() > 1 && boxes.size() > 1)
             {
                 _drawVideo(
-                    videoData[1],
+                    videoFrame[1],
                     boxes[1],
                     imageOptions.size() > 1 ? std::make_shared<ftk::ImageOptions>(imageOptions[1]) : nullptr,
                     displayOptions.size() > 1 ? displayOptions[1] : timeline::DisplayOptions(),
@@ -311,7 +311,7 @@ namespace tl
         }
 
         void Render::_drawVideoOverlay(
-            const std::vector<timeline::VideoData>& videoData,
+            const std::vector<timeline::VideoFrame>& videoFrame,
             const std::vector<ftk::Box2I>& boxes,
             const std::vector<ftk::ImageOptions>& imageOptions,
             const std::vector<timeline::DisplayOptions>& displayOptions,
@@ -320,16 +320,16 @@ namespace tl
         {
             FTK_P();
 
-            if (videoData.size() > 1 && boxes.size() > 1)
+            if (videoFrame.size() > 1 && boxes.size() > 1)
             {
                 _drawVideo(
-                    videoData[1],
+                    videoFrame[1],
                     boxes[1],
                     imageOptions.size() > 1 ? std::make_shared<ftk::ImageOptions>(imageOptions[1]) : nullptr,
                     displayOptions.size() > 1 ? displayOptions[1] : timeline::DisplayOptions(),
                     colorBuffer);
             }
-            if (!videoData.empty() && !boxes.empty())
+            if (!videoFrame.empty() && !boxes.empty())
             {
                 const ftk::Size2I offscreenBufferSize(
                     boxes[0].w(),
@@ -375,7 +375,7 @@ namespace tl
                             1.F));
 
                     _drawVideo(
-                        videoData[0],
+                        videoFrame[0],
                         ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h),
                         !imageOptions.empty() ? std::make_shared<ftk::ImageOptions>(imageOptions[0]) : nullptr,
                         !displayOptions.empty() ? displayOptions[0] : timeline::DisplayOptions(),
@@ -420,7 +420,7 @@ namespace tl
         }
 
         void Render::_drawVideoDifference(
-            const std::vector<timeline::VideoData>& videoData,
+            const std::vector<timeline::VideoFrame>& videoFrame,
             const std::vector<ftk::Box2I>& boxes,
             const std::vector<ftk::ImageOptions>& imageOptions,
             const std::vector<timeline::DisplayOptions>& displayOptions,
@@ -428,7 +428,7 @@ namespace tl
             ftk::ImageType colorBuffer)
         {
             FTK_P();
-            if (!videoData.empty() && !boxes.empty())
+            if (!videoFrame.empty() && !boxes.empty())
             {
                 const ftk::Size2I offscreenBufferSize(
                     boxes[0].w(),
@@ -474,7 +474,7 @@ namespace tl
                             1.F));
 
                     _drawVideo(
-                        videoData[0],
+                        videoFrame[0],
                         ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h),
                         !imageOptions.empty() ? std::make_shared<ftk::ImageOptions>(imageOptions[0]) : nullptr,
                         !displayOptions.empty() ? displayOptions[0] : timeline::DisplayOptions(),
@@ -484,7 +484,7 @@ namespace tl
                     p.shaders["display"]->setUniform("transform.mvp", getTransform());
                 }
 
-                if (videoData.size() > 1)
+                if (videoFrame.size() > 1)
                 {
                     offscreenBufferOptions = ftk::gl::OffscreenBufferOptions();
                     offscreenBufferOptions.color = colorBuffer;
@@ -527,7 +527,7 @@ namespace tl
                                 1.F));
 
                         _drawVideo(
-                            videoData[1],
+                            videoFrame[1],
                             ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h),
                             imageOptions.size() > 1 ? std::make_shared<ftk::ImageOptions>(imageOptions[1]) : nullptr,
                             displayOptions.size() > 1 ? displayOptions[1] : timeline::DisplayOptions(),
@@ -577,17 +577,17 @@ namespace tl
         }
 
         void Render::_drawVideoTile(
-            const std::vector<timeline::VideoData>& videoData,
+            const std::vector<timeline::VideoFrame>& videoFrame,
             const std::vector<ftk::Box2I>& boxes,
             const std::vector<ftk::ImageOptions>& imageOptions,
             const std::vector<timeline::DisplayOptions>& displayOptions,
             const timeline::CompareOptions& compareOptions,
             ftk::ImageType colorBuffer)
         {
-            for (size_t i = 0; i < videoData.size() && i < boxes.size(); ++i)
+            for (size_t i = 0; i < videoFrame.size() && i < boxes.size(); ++i)
             {
                 _drawVideo(
-                    videoData[i],
+                    videoFrame[i],
                     boxes[i],
                     i < imageOptions.size() ? std::make_shared<ftk::ImageOptions>(imageOptions[i]) : nullptr,
                     i < displayOptions.size() ? displayOptions[i] : timeline::DisplayOptions(),
@@ -628,7 +628,7 @@ namespace tl
         }
 
         void Render::_drawVideo(
-            const timeline::VideoData& videoData,
+            const timeline::VideoFrame& videoFrame,
             const ftk::Box2I& box,
             const std::shared_ptr<ftk::ImageOptions>& imageOptions,
             const timeline::DisplayOptions& displayOptions,
@@ -673,7 +673,7 @@ namespace tl
                 glClearColor(0.F, 0.F, 0.F, 0.F);
                 glClear(GL_COLOR_BUFFER_BIT);
 
-                for (const auto& layer : videoData.layers)
+                for (const auto& layer : videoFrame.layers)
                 {
                     switch (layer.transition)
                     {

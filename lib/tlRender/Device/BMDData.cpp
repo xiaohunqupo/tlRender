@@ -106,10 +106,10 @@ namespace tl
             "FromFile",
             "Custom");
 
-        std::shared_ptr<HDRData> getHDRData(const timeline::VideoData& videoData)
+        std::shared_ptr<HDRData> getHDRData(const timeline::VideoFrame& videoFrame)
         {
             std::shared_ptr<HDRData> out;
-            for (const auto& layer : videoData.layers)
+            for (const auto& layer : videoFrame.layers)
             {
                 if (layer.image)
                 {

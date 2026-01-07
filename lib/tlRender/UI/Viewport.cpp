@@ -30,7 +30,7 @@ namespace tl
             std::shared_ptr<ftk::Observable<timeline::ForegroundOptions> > fgOptions;
             std::shared_ptr<ftk::Observable<ftk::ImageType> > colorBuffer;
             std::shared_ptr<timeline::Player> player;
-            std::vector<timeline::VideoData> videoData;
+            std::vector<timeline::VideoFrame> videoFrame;
             std::shared_ptr<ftk::Observable<ftk::V2I> > viewPos;
             std::shared_ptr<ftk::Observable<double> > viewZoom;
             std::shared_ptr<ftk::Observable<std::pair<ftk::V2I, double> > > viewPosZoom;
@@ -85,7 +85,7 @@ namespace tl
             MouseData mouse;
 
             std::shared_ptr<ftk::Observer<timeline::Playback> > playbackObserver;
-            std::shared_ptr<ftk::ListObserver<timeline::VideoData> > videoDataObserver;
+            std::shared_ptr<ftk::ListObserver<timeline::VideoFrame> > videoFrameObserver;
         };
 
         void Viewport::_init(
@@ -308,7 +308,7 @@ namespace tl
             p.droppedFrames->setIfChanged(0);
             p.droppedFramesData.reset();
             p.playbackObserver.reset();
-            p.videoDataObserver.reset();
+            p.videoFrameObserver.reset();
 
             p.player = value;
 
@@ -336,12 +336,12 @@ namespace tl
                         }
                     });
 
-                p.videoDataObserver = ftk::ListObserver<timeline::VideoData>::create(
+                p.videoFrameObserver = ftk::ListObserver<timeline::VideoFrame>::create(
                     p.player->observeCurrentVideo(),
-                    [this](const std::vector<timeline::VideoData>& value)
+                    [this](const std::vector<timeline::VideoFrame>& value)
                     {
                         FTK_P();
-                        p.videoData = value;
+                        p.videoFrame = value;
 
                         if (p.fpsData.has_value())
                         {
@@ -362,9 +362,9 @@ namespace tl
                         setDrawUpdate();
                     });
             }
-            else if (!p.videoData.empty())
+            else if (!p.videoFrame.empty())
             {
-                p.videoData.clear();
+                p.videoFrame.clear();
                 p.doRender = true;
                 setDrawUpdate();
             }
@@ -635,7 +635,7 @@ namespace tl
                         -1.F,
                         1.F);
                     const timeline::CompareOptions& compareOptions = p.compareOptions->get();
-                    const auto boxes = timeline::getBoxes(compareOptions.compare, p.videoData);
+                    const auto boxes = timeline::getBoxes(compareOptions.compare, p.videoFrame);
                     const ftk::V2I& viewPos = p.viewPos->get();
                     const double viewZoom = p.viewZoom->get();
                     const ftk::M44F vm =
@@ -661,16 +661,16 @@ namespace tl
                         render->setLUTOptions(p.lutOptions->get());
                         render->setTransform(pm * vm);
                         render->drawVideo(
-                            p.videoData,
+                            p.videoFrame,
                             boxes,
                             p.imageOptions->get(),
                             p.displayOptions->get(),
                             compareOptions,
                             p.colorBuffer->get());
 
-                        if (!p.videoData.empty() && p.fpsData.has_value())
+                        if (!p.videoFrame.empty() && p.fpsData.has_value())
                         {
-                            _droppedFramesUpdate(p.videoData[0].time);
+                            _droppedFramesUpdate(p.videoFrame[0].time);
                         }
                     }
 
@@ -781,7 +781,7 @@ namespace tl
                 {
                     if (p.player)
                     {
-                        const io::Info& ioInfo = p.player->getIOInfo();
+                        const IOInfo& ioInfo = p.player->getIOInfo();
                         if (!ioInfo.video.empty())
                         {
                             const ftk::V2I& viewPos = p.viewPos->get();
@@ -937,7 +937,7 @@ namespace tl
         ftk::Size2I Viewport::_getRenderSize() const
         {
             FTK_P();
-            return timeline::getRenderSize(p.compareOptions->get().compare, p.videoData);
+            return timeline::getRenderSize(p.compareOptions->get().compare, p.videoFrame);
         }
 
         ftk::V2I Viewport::_getViewportCenter() const

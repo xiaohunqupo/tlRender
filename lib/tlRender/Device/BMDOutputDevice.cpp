@@ -65,8 +65,8 @@ namespace tl
             std::shared_ptr<ftk::Observer<double> > speedObserver;
             std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > currentTimeObserver;
             std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > seekObserver;
-            std::shared_ptr<ftk::ListObserver<timeline::VideoData> > videoObserver;
-            std::shared_ptr<ftk::ListObserver<timeline::AudioData> > audioObserver;
+            std::shared_ptr<ftk::ListObserver<timeline::VideoFrame> > videoObserver;
+            std::shared_ptr<ftk::ListObserver<timeline::AudioFrame> > audioObserver;
 
             std::shared_ptr<ftk::gl::Window> window;
 
@@ -95,13 +95,13 @@ namespace tl
                 double speed = 0.0;
                 OTIO_NS::RationalTime currentTime = invalidTime;
                 bool seek = false;
-                std::vector<timeline::VideoData> videoData;
+                std::vector<timeline::VideoFrame> videoFrames;
                 std::shared_ptr<ftk::Image> overlay;
                 float volume = 1.F;
                 bool mute = false;
                 std::vector<bool> channelMute;
                 double audioOffset = 0.0;
-                std::vector<timeline::AudioData> audioData;
+                std::vector<timeline::AudioFrame> audioFrames;
                 std::mutex mutex;
             };
             Mutex mutex;
@@ -118,7 +118,7 @@ namespace tl
                 double viewZoom = 1.0;
                 bool frameView = true;
                 OTIO_NS::TimeRange timeRange = invalidTimeRange;
-                std::vector<timeline::VideoData> videoData;
+                std::vector<timeline::VideoFrame> videoFrames;
                 std::shared_ptr<ftk::Image> overlay;
 
                 std::shared_ptr<timeline::IRender> render;
@@ -500,29 +500,29 @@ namespace tl
                         }
                     },
                     ftk::ObserverAction::Suppress);
-                p.videoObserver = ftk::ListObserver<timeline::VideoData>::create(
+                p.videoObserver = ftk::ListObserver<timeline::VideoFrame>::create(
                     p.player->observeCurrentVideo(),
-                    [weak](const std::vector<timeline::VideoData>& value)
+                    [weak](const std::vector<timeline::VideoFrame>& value)
                     {
                         if (auto device = weak.lock())
                         {
                             {
                                 std::unique_lock<std::mutex> lock(device->_p->mutex.mutex);
-                                device->_p->mutex.videoData = value;
+                                device->_p->mutex.videoFrames = value;
                             }
                             device->_p->thread.cv.notify_one();
                         }
                     },
                     ftk::ObserverAction::Suppress);
-                p.audioObserver = ftk::ListObserver<timeline::AudioData>::create(
+                p.audioObserver = ftk::ListObserver<timeline::AudioFrame>::create(
                     p.player->observeCurrentAudio(),
-                    [weak](const std::vector<timeline::AudioData>& value)
+                    [weak](const std::vector<timeline::AudioFrame>& value)
                     {
                         if (auto device = weak.lock())
                         {
                             {
                                 std::unique_lock<std::mutex> lock(device->_p->mutex.mutex);
-                                device->_p->mutex.audioData = value;
+                                device->_p->mutex.audioFrames = value;
                             }
                             device->_p->thread.cv.notify_one();
                         }
@@ -546,12 +546,12 @@ namespace tl
                     p.mutex.speed = 0.0;
                     p.mutex.currentTime = invalidTime;
                 }
-                p.mutex.videoData.clear();
-                p.mutex.audioData.clear();
+                p.mutex.videoFrames.clear();
+                p.mutex.audioFrames.clear();
                 if (p.player)
                 {
-                    p.mutex.videoData = p.player->getCurrentVideo();
-                    p.mutex.audioData = p.player->getCurrentAudio();
+                    p.mutex.videoFrames = p.player->getCurrentVideo();
+                    p.mutex.audioFrames = p.player->getCurrentAudio();
                 }
             }
         }
@@ -595,7 +595,7 @@ namespace tl
             bool mute = false;
             std::vector<bool> channelMute;
             double audioOffset = 0.0;
-            std::vector<timeline::AudioData> audioData;
+            std::vector<timeline::AudioFrame> audioFrames;
             std::shared_ptr<ftk::Image> overlay;
 
             p.thread.render = timeline_gl::Render::create(
@@ -607,7 +607,7 @@ namespace tl
             {
                 bool createDevice = false;
                 bool doRender = false;
-                bool audioDataChanged = false;
+                bool audioChanged = false;
                 {
                     std::unique_lock<std::mutex> lock(p.mutex.mutex);
                     if (p.thread.cv.wait_for(
@@ -617,7 +617,7 @@ namespace tl
                         ocioOptions, lutOptions, imageOptions,
                         displayOptions, compareOptions, bgOptions, fgOptions,
                         playback, speed, currentTime, seek,
-                        volume, mute, channelMute, audioOffset, audioData]
+                        volume, mute, channelMute, audioOffset, audioFrames]
                         {
                             return
                                 config != _p->mutex.config ||
@@ -640,13 +640,13 @@ namespace tl
                                 speed != _p->mutex.speed ||
                                 currentTime != _p->mutex.currentTime ||
                                 _p->mutex.seek ||
-                                _p->thread.videoData != _p->mutex.videoData ||
+                                _p->thread.videoFrames != _p->mutex.videoFrames ||
                                 _p->thread.overlay != _p->mutex.overlay ||
                                 volume != _p->mutex.volume ||
                                 mute != _p->mutex.mute ||
                                 channelMute != _p->mutex.channelMute ||
                                 audioOffset != _p->mutex.audioOffset ||
-                                audioData != _p->mutex.audioData;
+                                audioFrames != _p->mutex.audioFrames;
                         }))
                     {
                         createDevice =
@@ -678,7 +678,7 @@ namespace tl
                             p.thread.viewPos != p.mutex.viewPos ||
                             p.thread.viewZoom != p.mutex.viewZoom ||
                             p.thread.frameView != p.mutex.frameView ||
-                            p.thread.videoData != p.mutex.videoData ||
+                            p.thread.videoFrames != p.mutex.videoFrames ||
                             p.thread.overlay != p.mutex.overlay;
                         ocioOptions = p.mutex.ocioOptions;
                         lutOptions = p.mutex.lutOptions;
@@ -692,17 +692,17 @@ namespace tl
                         p.thread.viewPos = p.mutex.viewPos;
                         p.thread.viewZoom = p.mutex.viewZoom;
                         p.thread.frameView = p.mutex.frameView;
-                        p.thread.videoData = p.mutex.videoData;
+                        p.thread.videoFrames = p.mutex.videoFrames;
                         p.thread.overlay = p.mutex.overlay;
 
-                        audioDataChanged =
+                        audioChanged =
                             createDevice ||
-                            audioData != p.mutex.audioData;
+                            audioFrames != p.mutex.audioFrames;
                         volume = p.mutex.volume;
                         mute = p.mutex.mute;
                         channelMute = p.mutex.channelMute;
                         audioOffset = p.mutex.audioOffset;
-                        audioData = p.mutex.audioData;
+                        audioFrames = p.mutex.audioFrames;
                     }
                 }
 
@@ -791,9 +791,9 @@ namespace tl
                     data.audioOffset = audioOffset;
                     p.thread.dl->outputCallback->setData(data);
                 }
-                if (p.thread.dl && p.thread.dl->outputCallback && audioDataChanged)
+                if (p.thread.dl && p.thread.dl->outputCallback && audioChanged)
                 {
-                    p.thread.dl->outputCallback->setAudioData(audioData);
+                    p.thread.dl->outputCallback->setAudio(audioFrames);
                 }
 
                 if (p.thread.dl && p.thread.dl->output && p.thread.dl->outputCallback &&
@@ -1017,7 +1017,7 @@ namespace tl
             // Create the offscreen buffer.
             const ftk::Size2I renderSize = timeline::getRenderSize(
                 compareOptions.compare,
-                p.thread.videoData);
+                p.thread.videoFrames);
             ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
             offscreenBufferOptions.color = getColorBuffer(p.thread.outputPixelType);
             if (!displayOptions.empty())
@@ -1049,7 +1049,7 @@ namespace tl
                     1.F);
                 p.thread.render->setTransform(pm);
 
-                const auto boxes = timeline::getBoxes(compareOptions.compare, p.thread.videoData);
+                const auto boxes = timeline::getBoxes(compareOptions.compare, p.thread.videoFrames);
                 ftk::V2I viewPosTmp = p.thread.viewPos;
                 double viewZoomTmp = p.thread.viewZoom;
                 if (p.thread.frameView)
@@ -1071,7 +1071,7 @@ namespace tl
 
                 p.thread.render->setTransform(pm * vm);
                 p.thread.render->drawVideo(
-                    p.thread.videoData,
+                    p.thread.videoFrames,
                     boxes,
                     imageOptions,
                     displayOptions,

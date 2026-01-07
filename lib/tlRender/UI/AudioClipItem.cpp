@@ -28,7 +28,7 @@ namespace tl
             SizeData size;
 
             InfoRequest infoRequest;
-            std::shared_ptr<io::Info> ioInfo;
+            std::shared_ptr<IOInfo> ioInfo;
             std::map<OTIO_NS::RationalTime, WaveformRequest> waveformRequests;
         };
 
@@ -167,7 +167,7 @@ namespace tl
             if (p.infoRequest.future.valid() &&
                 p.infoRequest.future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
             {
-                p.ioInfo = std::make_shared<io::Info>(p.infoRequest.future.get());
+                p.ioInfo = std::make_shared<IOInfo>(p.infoRequest.future.get());
                 const std::string infoCacheKey = ThumbnailCache::getInfoKey(
                     reinterpret_cast<intptr_t>(this),
                     p.path,

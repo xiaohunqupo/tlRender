@@ -17,7 +17,7 @@ namespace tl
         void Read::_init(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& memory,
-            const io::Options& options,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             ISeqRead::_init(path, memory, options, logSystem);
@@ -33,7 +33,7 @@ namespace tl
 
         std::shared_ptr<Read> Read::create(
             const ftk::Path& path,
-            const io::Options& options,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             auto out = std::shared_ptr<Read>(new Read);
@@ -44,7 +44,7 @@ namespace tl
         std::shared_ptr<Read> Read::create(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& memory,
-            const io::Options& options,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             auto out = std::shared_ptr<Read>(new Read);
@@ -109,7 +109,7 @@ namespace tl
             }
         }
 
-        io::Info Read::_getInfo(
+        IOInfo Read::_getInfo(
             const std::string& fileName,
             const ftk::MemFile* memory)
         {
@@ -129,7 +129,7 @@ namespace tl
             }
 
             // Get file information.
-            io::Info out;
+            IOInfo out;
             auto oiioSpec = oiioInput->spec();
             for (const auto& i : oiioSpec.extra_attribs)
             {
@@ -167,11 +167,11 @@ namespace tl
             return out;
         }
 
-        io::VideoData Read::_readVideo(
+        VideoData Read::_readVideo(
             const std::string& fileName,
             const ftk::MemFile* memory,
             const OTIO_NS::RationalTime& time,
-            const io::Options& options)
+            const IOOptions& options)
         {
             // Open the file.
             std::unique_ptr<OIIO::Filesystem::IOMemReader> oiioMemReader;
@@ -222,7 +222,7 @@ namespace tl
             }
 
             // Read the image.
-            io::VideoData out;
+            VideoData out;
             out.time = time;
             out.image = ftk::Image::create(imageInfo);
             out.image->setTags(tags);

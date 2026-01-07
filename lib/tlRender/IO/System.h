@@ -10,119 +10,116 @@
 
 namespace tl
 {
-    namespace io
+    //! Read system.
+    class TL_API_TYPE ReadSystem : public ftk::ISystem
     {
-        //! Read system.
-        class TL_API_TYPE ReadSystem : public ftk::ISystem
-        {
-            FTK_NON_COPYABLE(ReadSystem);
+        FTK_NON_COPYABLE(ReadSystem);
 
-        protected:
-            ReadSystem(const std::shared_ptr<ftk::Context>&);
+    protected:
+        ReadSystem(const std::shared_ptr<ftk::Context>&);
 
-        public:
-            TL_API virtual ~ReadSystem();
+    public:
+        TL_API virtual ~ReadSystem();
 
-            //! Create a new system.
-            TL_API static std::shared_ptr<ReadSystem> create(const std::shared_ptr<ftk::Context>&);
+        //! Create a new system.
+        TL_API static std::shared_ptr<ReadSystem> create(const std::shared_ptr<ftk::Context>&);
 
-            //! Get the list of plugins.
-            const std::vector<std::shared_ptr<IReadPlugin> >& getPlugins() const;
-            
-            //! Add a plugin.
-            TL_API void addPlugin(const std::shared_ptr<IReadPlugin>&);
-            
-            //! Remove a plugin.
-            TL_API void removePlugin(const std::shared_ptr<IReadPlugin>&);
+        //! Get the list of plugins.
+        const std::vector<std::shared_ptr<IReadPlugin> >& getPlugins() const;
 
-            //! Get a plugin.
-            template<typename T>
-            std::shared_ptr<T> getPlugin() const;
+        //! Add a plugin.
+        TL_API void addPlugin(const std::shared_ptr<IReadPlugin>&);
 
-            //! Get a plugin for the given path.
-            TL_API std::shared_ptr<IReadPlugin> getPlugin(const ftk::Path&) const;
+        //! Remove a plugin.
+        TL_API void removePlugin(const std::shared_ptr<IReadPlugin>&);
 
-            //! Get the plugin names.
-            TL_API const std::vector<std::string>& getNames() const;
+        //! Get a plugin.
+        template<typename T>
+        std::shared_ptr<T> getPlugin() const;
 
-            //! Get the supported file extensions.
-            TL_API std::set<std::string> getExts(int types =
-                static_cast<int>(FileType::Media) |
-                static_cast<int>(FileType::Seq)) const;
+        //! Get a plugin for the given path.
+        TL_API std::shared_ptr<IReadPlugin> getPlugin(const ftk::Path&) const;
 
-            //! Get the file type for the given extension.
-            TL_API FileType getFileType(const std::string&) const;
+        //! Get the plugin names.
+        TL_API const std::vector<std::string>& getNames() const;
 
-            //! Create a reader for the given path.
-            TL_API std::shared_ptr<IRead> read(
-                const ftk::Path&,
-                const Options& = Options());
+        //! Get the supported file extensions.
+        TL_API std::set<std::string> getExts(int types =
+            static_cast<int>(FileType::Media) |
+            static_cast<int>(FileType::Seq)) const;
 
-            //! Create a reader for the given path and memory locations.
-            TL_API std::shared_ptr<IRead> read(
-                const ftk::Path&,
-                const std::vector<ftk::MemFile>&,
-                const Options& = Options());
+        //! Get the file type for the given extension.
+        TL_API FileType getFileType(const std::string&) const;
 
-        private:
-            std::vector<std::shared_ptr<IReadPlugin> > _plugins;
+        //! Create a reader for the given path.
+        TL_API std::shared_ptr<IRead> read(
+            const ftk::Path&,
+            const IOOptions& = IOOptions());
 
-            FTK_PRIVATE();
-        };
+        //! Create a reader for the given path and memory locations.
+        TL_API std::shared_ptr<IRead> read(
+            const ftk::Path&,
+            const std::vector<ftk::MemFile>&,
+            const IOOptions& = IOOptions());
 
-        //! Write system.
-        class TL_API_TYPE WriteSystem : public ftk::ISystem
-        {
-            FTK_NON_COPYABLE(WriteSystem);
+    private:
+        std::vector<std::shared_ptr<IReadPlugin> > _plugins;
 
-        protected:
-            WriteSystem(const std::shared_ptr<ftk::Context>&);
+        FTK_PRIVATE();
+    };
 
-        public:
-            TL_API virtual ~WriteSystem();
+    //! Write system.
+    class TL_API_TYPE WriteSystem : public ftk::ISystem
+    {
+        FTK_NON_COPYABLE(WriteSystem);
 
-            //! Create a new system.
-            TL_API static std::shared_ptr<WriteSystem> create(const std::shared_ptr<ftk::Context>&);
+    protected:
+        WriteSystem(const std::shared_ptr<ftk::Context>&);
 
-            //! Get the list of plugins.
-            const std::vector<std::shared_ptr<IWritePlugin> >& getPlugins() const;
+    public:
+        TL_API virtual ~WriteSystem();
 
-            //! Add a plugin.
-            TL_API void addPlugin(const std::shared_ptr<IWritePlugin>&);
+        //! Create a new system.
+        TL_API static std::shared_ptr<WriteSystem> create(const std::shared_ptr<ftk::Context>&);
 
-            //! Remove a plugin.
-            TL_API void removePlugin(const std::shared_ptr<IWritePlugin>&);
+        //! Get the list of plugins.
+        const std::vector<std::shared_ptr<IWritePlugin> >& getPlugins() const;
 
-            //! Get a plugin.
-            template<typename T>
-            std::shared_ptr<T> getPlugin() const;
+        //! Add a plugin.
+        TL_API void addPlugin(const std::shared_ptr<IWritePlugin>&);
 
-            //! Get a plugin for the given path.
-            TL_API std::shared_ptr<IWritePlugin> getPlugin(const ftk::Path&) const;
+        //! Remove a plugin.
+        TL_API void removePlugin(const std::shared_ptr<IWritePlugin>&);
 
-            //! Get the plugin names.
-            TL_API const std::vector<std::string>& getNames() const;
+        //! Get a plugin.
+        template<typename T>
+        std::shared_ptr<T> getPlugin() const;
 
-            //! Get the supported file extensions.
-            TL_API std::set<std::string> getExts(int types =
-                static_cast<int>(FileType::Media) |
-                static_cast<int>(FileType::Seq)) const;
+        //! Get a plugin for the given path.
+        TL_API std::shared_ptr<IWritePlugin> getPlugin(const ftk::Path&) const;
 
-            //! Get the file type for the given extension.
-            TL_API FileType getFileType(const std::string&) const;
+        //! Get the plugin names.
+        TL_API const std::vector<std::string>& getNames() const;
 
-            //! Create a writer for the given path.
-            TL_API std::shared_ptr<IWrite> write(
-                const ftk::Path&,
-                const Info&,
-                const Options & = Options());
+        //! Get the supported file extensions.
+        TL_API std::set<std::string> getExts(int types =
+            static_cast<int>(FileType::Media) |
+            static_cast<int>(FileType::Seq)) const;
 
-        private:
-            std::vector<std::shared_ptr<IWritePlugin> > _plugins;
+        //! Get the file type for the given extension.
+        TL_API FileType getFileType(const std::string&) const;
 
-            FTK_PRIVATE();
-        };
-    }
+        //! Create a writer for the given path.
+        TL_API std::shared_ptr<IWrite> write(
+            const ftk::Path&,
+            const IOInfo&,
+            const IOOptions& = IOOptions());
+
+    private:
+        std::vector<std::shared_ptr<IWritePlugin> > _plugins;
+
+        FTK_PRIVATE();
+    };
 }
 
 #include <tlRender/IO/SystemInline.h>

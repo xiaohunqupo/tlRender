@@ -13,53 +13,50 @@
 
 namespace tl
 {
-    namespace io
+    struct ISeqRead::Private
     {
-        struct ISeqRead::Private
+        void addTags(IOInfo&);
+
+        size_t threadCount = SeqOptions().threadCount;
+
+        IOInfo info;
+
+        struct InfoRequest
         {
-            void addTags(Info&);
+            InfoRequest() {}
+            InfoRequest(InfoRequest&&) = default;
 
-            size_t threadCount = SeqOptions().threadCount;
-
-            Info info;
-
-            struct InfoRequest
-            {
-                InfoRequest() {}
-                InfoRequest(InfoRequest&&) = default;
-
-                std::promise<Info> promise;
-            };
-
-            struct VideoRequest
-            {
-                VideoRequest() {}
-                VideoRequest(VideoRequest&&) = default;
-
-                OTIO_NS::RationalTime time = invalidTime;
-                Options options;
-                std::promise<VideoData> promise;
-                std::future<VideoData> future;
-            };
-
-            struct Mutex
-            {
-                std::list<std::shared_ptr<InfoRequest> > infoRequests;
-                std::list<std::shared_ptr<VideoRequest> > videoRequests;
-                bool stopped = false;
-                std::mutex mutex;
-            };
-            Mutex mutex;
-
-            struct Thread
-            {
-                std::list<std::shared_ptr<VideoRequest> > videoRequestsInProgress;
-                std::chrono::steady_clock::time_point logTimer;
-                std::condition_variable cv;
-                std::thread thread;
-                std::atomic<bool> running;
-            };
-            Thread thread;
+            std::promise<IOInfo> promise;
         };
-    }
+
+        struct VideoRequest
+        {
+            VideoRequest() {}
+            VideoRequest(VideoRequest&&) = default;
+
+            OTIO_NS::RationalTime time = invalidTime;
+            IOOptions options;
+            std::promise<VideoData> promise;
+            std::future<VideoData> future;
+        };
+
+        struct Mutex
+        {
+            std::list<std::shared_ptr<InfoRequest> > infoRequests;
+            std::list<std::shared_ptr<VideoRequest> > videoRequests;
+            bool stopped = false;
+            std::mutex mutex;
+        };
+        Mutex mutex;
+
+        struct Thread
+        {
+            std::list<std::shared_ptr<VideoRequest> > videoRequestsInProgress;
+            std::chrono::steady_clock::time_point logTimer;
+            std::condition_variable cv;
+            std::thread thread;
+            std::atomic<bool> running;
+        };
+        Thread thread;
+    };
 }

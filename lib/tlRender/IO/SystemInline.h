@@ -3,42 +3,39 @@
 
 namespace tl
 {
-    namespace io
+    inline const std::vector<std::shared_ptr<IReadPlugin> >& ReadSystem::getPlugins() const
     {
-        inline const std::vector<std::shared_ptr<IReadPlugin> >& ReadSystem::getPlugins() const
-        {
-            return _plugins;
-        }
+        return _plugins;
+    }
 
-        template<typename T>
-        inline std::shared_ptr<T> ReadSystem::getPlugin() const
+    template<typename T>
+    inline std::shared_ptr<T> ReadSystem::getPlugin() const
+    {
+        for (const auto& i : _plugins)
         {
-            for (const auto& i : _plugins)
+            if (auto plugin = std::dynamic_pointer_cast<T>(i))
             {
-                if (auto plugin = std::dynamic_pointer_cast<T>(i))
-                {
-                    return plugin;
-                }
+                return plugin;
             }
-            return nullptr;
         }
+        return nullptr;
+    }
 
-        inline const std::vector<std::shared_ptr<IWritePlugin> >& WriteSystem::getPlugins() const
-        {
-            return _plugins;
-        }
+    inline const std::vector<std::shared_ptr<IWritePlugin> >& WriteSystem::getPlugins() const
+    {
+        return _plugins;
+    }
 
-        template<typename T>
-        inline std::shared_ptr<T> WriteSystem::getPlugin() const
+    template<typename T>
+    inline std::shared_ptr<T> WriteSystem::getPlugin() const
+    {
+        for (const auto& i : _plugins)
         {
-            for (const auto& i : _plugins)
+            if (auto plugin = std::dynamic_pointer_cast<T>(i))
             {
-                if (auto plugin = std::dynamic_pointer_cast<T>(i))
-                {
-                    return plugin;
-                }
+                return plugin;
             }
-            return nullptr;
         }
+        return nullptr;
     }
 }

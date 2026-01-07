@@ -13,7 +13,7 @@ namespace tl
     {
         void ReadPlugin::_init(const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
-            std::map<std::string, io::FileType> exts;
+            std::map<std::string, FileType> exts;
             for (const auto& i : OIIO::get_extension_map())
             {
                 //! Filter out FFmpeg extensions.
@@ -21,7 +21,7 @@ namespace tl
                 {
                     for (const auto& ext : i.second)
                     {
-                        exts["." + ext] = io::FileType::Seq;
+                        exts["." + ext] = FileType::Seq;
                     }
                 }
             }
@@ -36,29 +36,29 @@ namespace tl
             return out;
         }
 
-        std::shared_ptr<io::IRead> ReadPlugin::read(
+        std::shared_ptr<IRead> ReadPlugin::read(
             const ftk::Path& path,
-            const io::Options& options)
+            const IOOptions& options)
         {
             return Read::create(path, options, _logSystem.lock());
         }
 
-        std::shared_ptr<io::IRead> ReadPlugin::read(
+        std::shared_ptr<IRead> ReadPlugin::read(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& memory,
-            const io::Options& options)
+            const IOOptions& options)
         {
             return Read::create(path, memory, options, _logSystem.lock());
         }
 
         void WritePlugin::_init(const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
-            std::map<std::string, io::FileType> exts;
+            std::map<std::string, FileType> exts;
             for (const auto& i : OIIO::get_extension_map())
             {
                 for (const auto& ext : i.second)
                 {
-                    exts[ext] = io::FileType::Seq;
+                    exts[ext] = FileType::Seq;
                 }
             }
             IWritePlugin::_init("OIIO", exts, logSystem);
@@ -74,7 +74,7 @@ namespace tl
 
         ftk::ImageInfo WritePlugin::getInfo(
             const ftk::ImageInfo& info,
-            const io::Options& options) const
+            const IOOptions& options) const
         {
             ftk::ImageInfo out;
             out.size = info.size;
@@ -107,10 +107,10 @@ namespace tl
             return out;
         }
 
-        std::shared_ptr<io::IWrite> WritePlugin::write(
+        std::shared_ptr<IWrite> WritePlugin::write(
             const ftk::Path& path,
-            const io::Info& info,
-            const io::Options& options)
+            const IOInfo& info,
+            const IOOptions& options)
         {
             if (info.video.empty() || (!info.video.empty() && !_isCompatible(info.video[0], options)))
                 throw std::runtime_error(ftk::Format("Unsupported video: \"{0}\"").

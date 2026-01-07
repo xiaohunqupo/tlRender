@@ -22,7 +22,7 @@ Q_DECLARE_METATYPE(ftk::Size2I);
 
 Q_DECLARE_METATYPE(tl::AudioType);
 
-Q_DECLARE_METATYPE(tl::io::FileType);
+Q_DECLARE_METATYPE(tl::FileType);
 
 Q_DECLARE_METATYPE(tl::timeline::Compare);
 Q_DECLARE_METATYPE(tl::timeline::CompareTime);

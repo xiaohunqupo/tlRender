@@ -31,17 +31,17 @@ namespace tl
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
-            py::class_<VideoData>(m, "VideoData")
+            py::class_<VideoFrame>(m, "VideoFrame")
                 .def(py::init())
-                .def_readwrite("size", &VideoData::size)
-                .def_readwrite("time", &VideoData::time)
-                .def_readwrite("layers", &VideoData::layers)
+                .def_readwrite("size", &VideoFrame::size)
+                .def_readwrite("time", &VideoFrame::time)
+                .def_readwrite("layers", &VideoFrame::layers)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
             m.def(
                 "isTimeEqual",
-                [](const VideoData& a, const VideoData& b)
+                [](const VideoFrame& a, const VideoFrame& b)
                 {
                     return isTimeEqual(a, b);
                 });

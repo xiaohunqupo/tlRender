@@ -116,7 +116,7 @@ namespace tl
             audio = Audio::create(AudioInfo(1, AudioType::S8, 41000), 1);
             audio->getData()[0] = 3;
             list.push_back(audio);
-            auto combined = combine(list);
+            auto combined = combineAudio(list);
             FTK_ASSERT(3 == combined->getSampleCount());
             FTK_ASSERT(1 == combined->getData()[0]);
             FTK_ASSERT(2 == combined->getData()[1]);
@@ -146,7 +146,7 @@ namespace tl
                 p1[3] = std::numeric_limits<T>::min();
                 p1[4] = std::numeric_limits<T>::max();
 
-                auto out = mix({ audio0, audio1 }, 1.0);
+                auto out = mixAudio({ audio0, audio1 }, 1.0);
                 const T* outP = reinterpret_cast<T*>(out->getData());
                 FTK_ASSERT(0 == outP[0]);
                 FTK_ASSERT(std::numeric_limits<T>::max() == outP[1]);
@@ -176,7 +176,7 @@ namespace tl
                 p1[3] = -1;
                 p1[4] = 1;
 
-                auto out = mix({ audio0, audio1 }, 1.0);
+                auto out = mixAudio({ audio0, audio1 }, 1.0);
                 const T* outP = reinterpret_cast<T*>(out->getData());
                 FTK_ASSERT(0 == outP[0]);
                 FTK_ASSERT(2 == outP[1]);
@@ -212,7 +212,7 @@ namespace tl
                 p1[6] = 1; p1[7] = 1;
                 p1[8] = 1; p1[9] = 1;
 
-                auto out = mix({ audio0, audio1 }, 1.0, { false, false });
+                auto out = mixAudio({ audio0, audio1 }, 1.0, { false, false });
                 const float* outP = reinterpret_cast<float*>(out->getData());
                 FTK_ASSERT(2 == outP[0]); FTK_ASSERT(2 == outP[1]);
                 FTK_ASSERT(2 == outP[2]); FTK_ASSERT(2 == outP[3]);
@@ -220,7 +220,7 @@ namespace tl
                 FTK_ASSERT(2 == outP[6]); FTK_ASSERT(2 == outP[7]);
                 FTK_ASSERT(2 == outP[8]); FTK_ASSERT(2 == outP[9]);
 
-                out = mix({ audio0, audio1 }, 1.0, { true, false });
+                out = mixAudio({ audio0, audio1 }, 1.0, { true, false });
                 outP = reinterpret_cast<float*>(out->getData());
                 FTK_ASSERT(0 == outP[0]); FTK_ASSERT(2 == outP[1]);
                 FTK_ASSERT(0 == outP[2]); FTK_ASSERT(2 == outP[3]);
@@ -228,7 +228,7 @@ namespace tl
                 FTK_ASSERT(0 == outP[6]); FTK_ASSERT(2 == outP[7]);
                 FTK_ASSERT(0 == outP[8]); FTK_ASSERT(2 == outP[9]);
 
-                out = mix({ audio0, audio1 }, 1.0, { false, true });
+                out = mixAudio({ audio0, audio1 }, 1.0, { false, true });
                 outP = reinterpret_cast<float*>(out->getData());
                 FTK_ASSERT(2 == outP[0]); FTK_ASSERT(0 == outP[1]);
                 FTK_ASSERT(2 == outP[2]); FTK_ASSERT(0 == outP[3]);
@@ -236,7 +236,7 @@ namespace tl
                 FTK_ASSERT(2 == outP[6]); FTK_ASSERT(0 == outP[7]);
                 FTK_ASSERT(2 == outP[8]); FTK_ASSERT(0 == outP[9]);
 
-                out = mix({ audio0, audio1 }, 1.0, { true, true });
+                out = mixAudio({ audio0, audio1 }, 1.0, { true, true });
                 outP = reinterpret_cast<float*>(out->getData());
                 FTK_ASSERT(0 == outP[0]); FTK_ASSERT(0 == outP[1]);
                 FTK_ASSERT(0 == outP[2]); FTK_ASSERT(0 == outP[3]);
@@ -252,7 +252,7 @@ namespace tl
             audio->getData()[0] = 1;
             audio->getData()[1] = 2;
             audio->getData()[2] = 3;
-            auto reversed = reverse(audio);
+            auto reversed = reverseAudio(audio);
             FTK_ASSERT(3 == reversed->getData()[0]);
             FTK_ASSERT(2 == reversed->getData()[1]);
             FTK_ASSERT(1 == reversed->getData()[2]);
@@ -266,7 +266,7 @@ namespace tl
                 in->zero();
                 for (auto j : getAudioTypeEnums())
                 {
-                    const auto out = convert(in, j);
+                    const auto out = convertAudio(in, j);
                     FTK_ASSERT(out->getChannelCount() == in->getChannelCount());
                     FTK_ASSERT(out->getType() == j);
                     FTK_ASSERT(out->getSampleRate() == in->getSampleRate());
@@ -291,7 +291,7 @@ namespace tl
                     list.push_back(item);
                 }
 
-                move(list, data.data(), 10);
+                moveAudio(list, data.data(), 10);
 
                 FTK_ASSERT(list.empty());
                 FTK_ASSERT(0 == getSampleCount(list));
@@ -316,7 +316,7 @@ namespace tl
                     list.push_back(item);
                 }
 
-                move(list, data.data(), 10);
+                moveAudio(list, data.data(), 10);
 
                 FTK_ASSERT(list.empty());
                 uint16_t* p = reinterpret_cast<uint16_t*>(data.data());
@@ -346,7 +346,7 @@ namespace tl
                     list.push_back(item);
                 }
 
-                move(list, data.data(), 10);
+                moveAudio(list, data.data(), 10);
 
                 FTK_ASSERT(5 == list.size());
                 FTK_ASSERT(5 == getSampleCount(list));
@@ -374,7 +374,7 @@ namespace tl
                     list.push_back(item);
                 }
 
-                move(list, data.data(), 10);
+                moveAudio(list, data.data(), 10);
 
                 FTK_ASSERT(2 == list.size());
                 FTK_ASSERT(6 == getSampleCount(list));

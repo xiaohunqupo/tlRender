@@ -30,18 +30,18 @@ namespace tl
             TL_API bool operator != (const VideoLayer&) const;
         };
 
-        //! Video data.
-        struct TL_API_TYPE VideoData
+        //! Video frame.
+        struct TL_API_TYPE VideoFrame
         {
             ftk::Size2I             size;
             OTIO_NS::RationalTime   time   = invalidTime;
             std::vector<VideoLayer> layers;
 
-            TL_API bool operator == (const VideoData&) const;
-            TL_API bool operator != (const VideoData&) const;
+            TL_API bool operator == (const VideoFrame&) const;
+            TL_API bool operator != (const VideoFrame&) const;
         };
 
-        //! Compare the time values of video data.
-        TL_API bool isTimeEqual(const VideoData&, const VideoData&);
+        //! Compare the time values of video frames.
+        TL_API bool isTimeEqual(const VideoFrame&, const VideoFrame&);
     }
 }

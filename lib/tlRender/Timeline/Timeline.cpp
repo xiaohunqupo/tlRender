@@ -209,14 +209,14 @@ namespace tl
             return _p->timeRange.duration();
         }
 
-        const io::Info& Timeline::getIOInfo() const
+        const IOInfo& Timeline::getIOInfo() const
         {
             return _p->ioInfo;
         }
 
         VideoRequest Timeline::getVideo(
             const OTIO_NS::RationalTime& time,
-            const io::Options& options)
+            const IOOptions& options)
         {
             FTK_P();
             (p.requestId)++;
@@ -242,14 +242,14 @@ namespace tl
             }
             else
             {
-                request->promise.set_value(VideoData());
+                request->promise.set_value(VideoFrame());
             }
             return out;
         }
 
         AudioRequest Timeline::getAudio(
             double seconds,
-            const io::Options& options)
+            const IOOptions& options)
         {
             FTK_P();
             (p.requestId)++;
@@ -275,7 +275,7 @@ namespace tl
             }
             else
             {
-                request->promise.set_value(AudioData());
+                request->promise.set_value(AudioFrame());
             }
             return out;
         }

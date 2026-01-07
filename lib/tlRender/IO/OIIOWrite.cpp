@@ -17,8 +17,8 @@ namespace tl
     {
         void Write::_init(
             const ftk::Path& path,
-            const io::Info& info,
-            const io::Options& options,
+            const IOInfo& info,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             ISeqWrite::_init(path, info, options, logSystem);
@@ -32,8 +32,8 @@ namespace tl
 
         std::shared_ptr<Write> Write::create(
             const ftk::Path& path,
-            const io::Info& info,
-            const io::Options& options,
+            const IOInfo& info,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             auto out = std::shared_ptr<Write>(new Write);
@@ -88,7 +88,7 @@ namespace tl
             const std::string& fileName,
             const OTIO_NS::RationalTime&,
             const std::shared_ptr<ftk::Image>& image,
-            const io::Options& options)
+            const IOOptions& options)
         {
             // Open the file.
             auto oiioOutput = OIIO::ImageOutput::create(fileName);

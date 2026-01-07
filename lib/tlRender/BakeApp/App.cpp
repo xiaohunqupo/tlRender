@@ -28,7 +28,7 @@ namespace tl
         {
             std::vector<std::string> ffmpegCodecs;
 #if defined(TLRENDER_FFMPEG)
-            auto ioSystem = context->getSystem<io::WriteSystem>();
+            auto ioSystem = context->getSystem<WriteSystem>();
             auto ffmpegPlugin = ioSystem->getPlugin<ffmpeg::WritePlugin>();
             ffmpegCodecs = ffmpegPlugin->getCodecs();
 #endif // TLRENDER_FFMPEG
@@ -86,12 +86,12 @@ namespace tl
                 { "-sequenceDefaultSpeed" },
                 "Default speed for image sequences.",
                 "Image Sequences",
-                io::SeqOptions().defaultSpeed);
+                SeqOptions().defaultSpeed);
             _cmdLine.sequenceThreadCount = ftk::CmdLineValueOption<int>::create(
                 { "-sequenceThreadCount" },
                 "Number of threads for image sequence I/O.",
                 "Image Sequences",
-                static_cast<int>(io::SeqOptions().threadCount));
+                static_cast<int>(SeqOptions().threadCount));
 #if defined(TLRENDER_EXR)
             _cmdLine.exrCompression = ftk::CmdLineValueOption<exr::Compression>::create(
                 { "-exrCompression" },
@@ -273,7 +273,7 @@ namespace tl
 
             // Create the writer.
             const std::string output = _cmdLine.output->getValue();
-            _writerPlugin = _context->getSystem<io::WriteSystem>()->getPlugin(ftk::Path(output));
+            _writerPlugin = _context->getSystem<WriteSystem>()->getPlugin(ftk::Path(output));
             if (!_writerPlugin)
             {
                 throw std::runtime_error(ftk::Format("Cannot open: \"{0}\"").arg(output));
@@ -294,7 +294,7 @@ namespace tl
                 arg(_outputInfo.size).
                 arg(_outputInfo.type));
             _outputImage = ftk::Image::create(_outputInfo);
-            io::Info ioInfo;
+            IOInfo ioInfo;
             ioInfo.video.push_back(_outputInfo);
             ioInfo.videoTime = _timeRange;
             _writer = _writerPlugin->write(ftk::Path(output), ioInfo, _getIOOptions());
@@ -358,9 +358,9 @@ namespace tl
             _print(ftk::Format("Average FPS: {0}").arg(_timeRange.duration().value() / diff.count()));
         }
 
-        io::Options App::_getIOOptions() const
+        IOOptions App::_getIOOptions() const
         {
-            io::Options out;
+            IOOptions out;
             if (_cmdLine.sequenceDefaultSpeed->hasValue())
             {
                 std::stringstream ss;

@@ -11,13 +11,13 @@ namespace tl
     namespace oiio
     {
         //! OpenImageIO reader.
-        class TL_API_TYPE Read : public io::ISeqRead
+        class TL_API_TYPE Read : public ISeqRead
         {
         protected:
             void _init(
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
-                const io::Options&,
+                const IOOptions&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
             Read();
@@ -28,35 +28,35 @@ namespace tl
             //! Create a new reader.
             TL_API static std::shared_ptr<Read> create(
                 const ftk::Path&,
-                const io::Options&,
+                const IOOptions&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
             //! Create a new reader.
             TL_API static std::shared_ptr<Read> create(
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
-                const io::Options&,
+                const IOOptions&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
         protected:
-            io::Info _getInfo(
+            IOInfo _getInfo(
                 const std::string& fileName,
                 const ftk::MemFile*) override;
-            io::VideoData _readVideo(
+            VideoData _readVideo(
                 const std::string& fileName,
                 const ftk::MemFile*,
                 const OTIO_NS::RationalTime&,
-                const io::Options&) override;
+                const IOOptions&) override;
         };
 
         //! OpenImageIO writer.
-        class TL_API_TYPE Write : public io::ISeqWrite
+        class TL_API_TYPE Write : public ISeqWrite
         {
         protected:
             void _init(
                 const ftk::Path&,
-                const io::Info&,
-                const io::Options&,
+                const IOInfo&,
+                const IOOptions&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
             Write();
@@ -67,8 +67,8 @@ namespace tl
             //! Create a new writer.
             TL_API static std::shared_ptr<Write> create(
                 const ftk::Path&,
-                const io::Info&,
-                const io::Options&,
+                const IOInfo&,
+                const IOOptions&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
         protected:
@@ -76,11 +76,11 @@ namespace tl
                 const std::string& fileName,
                 const OTIO_NS::RationalTime&,
                 const std::shared_ptr<ftk::Image>&,
-                const io::Options&) override;
+                const IOOptions&) override;
         };
 
         //! OpenImageIO read plugin.
-        class TL_API_TYPE ReadPlugin : public io::IReadPlugin
+        class TL_API_TYPE ReadPlugin : public IReadPlugin
         {
         protected:
             void _init(const std::shared_ptr<ftk::LogSystem>&);
@@ -92,17 +92,17 @@ namespace tl
             TL_API static std::shared_ptr<ReadPlugin> create(
                 const std::shared_ptr<ftk::LogSystem>&);
 
-            TL_API std::shared_ptr<io::IRead> read(
+            TL_API std::shared_ptr<IRead> read(
                 const ftk::Path&,
-                const io::Options& = io::Options()) override;
-            TL_API std::shared_ptr<io::IRead> read(
+                const IOOptions& = IOOptions()) override;
+            TL_API std::shared_ptr<IRead> read(
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
-                const io::Options & = io::Options()) override;
+                const IOOptions & = IOOptions()) override;
         };
 
         //! OpenImageIO write plugin.
-        class TL_API_TYPE WritePlugin : public io::IWritePlugin
+        class TL_API_TYPE WritePlugin : public IWritePlugin
         {
         protected:
             void _init(const std::shared_ptr<ftk::LogSystem>&);
@@ -116,11 +116,11 @@ namespace tl
 
             TL_API ftk::ImageInfo getInfo(
                 const ftk::ImageInfo&,
-                const io::Options & = io::Options()) const override;
-            TL_API std::shared_ptr<io::IWrite> write(
+                const IOOptions & = IOOptions()) const override;
+            TL_API std::shared_ptr<IWrite> write(
                 const ftk::Path&,
-                const io::Info&,
-                const io::Options & = io::Options()) override;
+                const IOInfo&,
+                const IOOptions & = IOOptions()) override;
         };
     }
 }

@@ -17,18 +17,19 @@ namespace tl
             return !(*this == other);
         }
 
-        bool AudioData::operator == (const AudioData& other) const
+        bool AudioFrame::operator == (const AudioFrame& other) const
         {
-            return seconds == other.seconds &&
+            return
+                seconds == other.seconds &&
                 layers == other.layers;
         }
 
-        bool AudioData::operator != (const AudioData& other) const
+        bool AudioFrame::operator != (const AudioFrame& other) const
         {
             return !(*this == other);
         }
 
-        bool isTimeEqual(const AudioData& a, const AudioData& b)
+        bool isTimeEqual(const AudioFrame& a, const AudioFrame& b)
         {
             return a.seconds == b.seconds;
         }

@@ -582,7 +582,7 @@ namespace tl
         {
             IReadPlugin::_init(
                 "OpenEXR",
-                { { ".exr", io::FileType::Seq } },
+                { { ".exr", FileType::Seq } },
                 logSystem);
 
             Imf::setGlobalThreadCount(0);
@@ -599,17 +599,17 @@ namespace tl
             return out;
         }
 
-        std::shared_ptr<io::IRead> ReadPlugin::read(
+        std::shared_ptr<IRead> ReadPlugin::read(
             const ftk::Path& path,
-            const io::Options& options)
+            const IOOptions& options)
         {
             return Read::create(path, options, _logSystem.lock());
         }
 
-        std::shared_ptr<io::IRead> ReadPlugin::read(
+        std::shared_ptr<IRead> ReadPlugin::read(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& memory,
-            const io::Options& options)
+            const IOOptions& options)
         {
             return Read::create(path, memory, options, _logSystem.lock());
         }
@@ -619,7 +619,7 @@ namespace tl
         {
             IWritePlugin::_init(
                 "OpenEXR",
-                { { ".exr", io::FileType::Seq } },
+                { { ".exr", FileType::Seq } },
                 logSystem);
 
             Imf::setGlobalThreadCount(0);
@@ -638,7 +638,7 @@ namespace tl
 
         ftk::ImageInfo WritePlugin::getInfo(
             const ftk::ImageInfo& info,
-            const io::Options& options) const
+            const IOOptions& options) const
         {
             ftk::ImageInfo out;
             out.size = info.size;
@@ -653,10 +653,10 @@ namespace tl
             return out;
         }
 
-        std::shared_ptr<io::IWrite> WritePlugin::write(
+        std::shared_ptr<IWrite> WritePlugin::write(
             const ftk::Path& path,
-            const io::Info& info,
-            const io::Options& options)
+            const IOInfo& info,
+            const IOOptions& options)
         {
             if (info.video.empty() || (!info.video.empty() && !_isCompatible(info.video[0], options)))
                 throw std::runtime_error(ftk::Format("Unsupported video: \"{0}\"").

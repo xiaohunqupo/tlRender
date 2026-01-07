@@ -65,7 +65,7 @@ namespace tl
         void Read::_init(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& mem,
-            const io::Options& options,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             IRead::_init(path, mem, options, logSystem);
@@ -164,7 +164,7 @@ namespace tl
                                     {
                                         //! \todo How should this be handled?
                                         logSystem->print(
-                                            "tl::io::ffmpeg::Read",
+                                            "tl::ffmpeg::Read",
                                             e.what(),
                                             ftk::LogType::Error);
                                     }
@@ -178,7 +178,7 @@ namespace tl
                         if (auto logSystem = _logSystem.lock())
                         {
                             logSystem->print(
-                                "tl::io::ffmpeg::Read",
+                                "tl::ffmpeg::Read",
                                 e.what(),
                                 ftk::LogType::Error);
                         }
@@ -218,7 +218,7 @@ namespace tl
 
         std::shared_ptr<Read> Read::create(
             const ftk::Path& path,
-            const io::Options& options,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             auto out = std::shared_ptr<Read>(new Read);
@@ -229,7 +229,7 @@ namespace tl
         std::shared_ptr<Read> Read::create(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& mem,
-            const io::Options& options,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             auto out = std::shared_ptr<Read>(new Read);
@@ -237,7 +237,7 @@ namespace tl
             return out;
         }
 
-        std::future<io::Info> Read::getInfo()
+        std::future<IOInfo> Read::getInfo()
         {
             FTK_P();
             auto request = std::make_shared<Private::InfoRequest>();
@@ -257,19 +257,19 @@ namespace tl
             }
             else
             {
-                request->promise.set_value(io::Info());
+                request->promise.set_value(IOInfo());
             }
             return future;
         }
 
-        std::future<io::VideoData> Read::readVideo(
+        std::future<VideoData> Read::readVideo(
             const OTIO_NS::RationalTime& time,
-            const io::Options& options)
+            const IOOptions& options)
         {
             FTK_P();
             auto request = std::make_shared<Private::VideoRequest>();
             request->time = time;
-            request->options = io::merge(options, _options);
+            request->options = merge(options, _options);
             auto future = request->promise.get_future();
             bool valid = false;
             {
@@ -286,19 +286,19 @@ namespace tl
             }
             else
             {
-                request->promise.set_value(io::VideoData());
+                request->promise.set_value(VideoData());
             }
             return future;
         }
 
-        std::future<io::AudioData> Read::readAudio(
+        std::future<AudioData> Read::readAudio(
             const OTIO_NS::TimeRange& timeRange,
-            const io::Options& options)
+            const IOOptions& options)
         {
             FTK_P();
             auto request = std::make_shared<Private::AudioRequest>();
             request->timeRange = timeRange;
-            request->options = io::merge(options, _options);
+            request->options = merge(options, _options);
             auto future = request->promise.get_future();
             bool valid = false;
             {
@@ -315,7 +315,7 @@ namespace tl
             }
             else
             {
-                request->promise.set_value(io::AudioData());
+                request->promise.set_value(AudioData());
             }
             return future;
         }
@@ -383,7 +383,7 @@ namespace tl
                 // Handle request.
                 if (videoRequest)
                 {
-                    io::VideoData data;
+                    VideoData data;
                     data.time = videoRequest->time;
                     if (!p.readVideo->isBufferEmpty())
                     {
@@ -403,7 +403,7 @@ namespace tl
                         p.videoThread.logTimer = now;
                         if (auto logSystem = _logSystem.lock())
                         {
-                            const std::string id = ftk::Format("tl::io::ffmpeg::Read {0}").arg(this);
+                            const std::string id = ftk::Format("tl::ffmpeg::Read {0}").arg(this);
                             size_t requestsSize = 0;
                             {
                                 std::unique_lock<std::mutex> lock(p.videoMutex.mutex);
@@ -484,7 +484,7 @@ namespace tl
                 // Handle request.
                 if (request)
                 {
-                    io::AudioData audioData;
+                    AudioData audioData;
                     audioData.time = request->timeRange.start_time();
                     audioData.audio = Audio::create(p.info.audio, request->timeRange.duration().value());
                     audioData.audio->zero();
@@ -513,7 +513,7 @@ namespace tl
                         p.audioThread.logTimer = now;
                         if (auto logSystem = _logSystem.lock())
                         {
-                            const std::string id = ftk::Format("tl::io::ffmpeg::Read {0}").arg(this);
+                            const std::string id = ftk::Format("tl::ffmpeg::Read {0}").arg(this);
                             size_t requestsSize = 0;
                             {
                                 std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
@@ -543,11 +543,11 @@ namespace tl
             }
             for (auto& request : infoRequests)
             {
-                request->promise.set_value(io::Info());
+                request->promise.set_value(IOInfo());
             }
             for (auto& request : videoRequests)
             {
-                request->promise.set_value(io::VideoData());
+                request->promise.set_value(VideoData());
             }
         }
 
@@ -561,7 +561,7 @@ namespace tl
             }
             for (auto& request : requests)
             {
-                request->promise.set_value(io::AudioData());
+                request->promise.set_value(AudioData());
             }
         }
     }

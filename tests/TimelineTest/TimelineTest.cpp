@@ -129,19 +129,19 @@ namespace tl
         {
             // Get video from the timeline.
             const OTIO_NS::TimeRange& timeRange = timeline->getTimeRange();
-            std::vector<timeline::VideoData> videoData;
+            std::vector<timeline::VideoFrame> videoFrame;
             std::vector<timeline::VideoRequest> videoRequests;
             for (size_t i = 0; i < static_cast<size_t>(timeRange.duration().value()); ++i)
             {
                 videoRequests.push_back(timeline->getVideo(OTIO_NS::RationalTime(i, 24.0)));
             }
-            io::Options ioOptions;
+            IOOptions ioOptions;
             ioOptions["Layer"] = "1";
             for (size_t i = 0; i < static_cast<size_t>(timeRange.duration().value()); ++i)
             {
                 videoRequests.push_back(timeline->getVideo(OTIO_NS::RationalTime(i, 24.0), ioOptions));
             }
-            while (videoData.size() < static_cast<size_t>(timeRange.duration().value()) * 2)
+            while (videoFrame.size() < static_cast<size_t>(timeRange.duration().value()) * 2)
             {
                 auto i = videoRequests.begin();
                 while (i != videoRequests.end())
@@ -149,7 +149,7 @@ namespace tl
                     if (i->future.valid() &&
                         i->future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
                     {
-                        videoData.push_back(i->future.get());
+                        videoFrame.push_back(i->future.get());
                         i = videoRequests.erase(i);
                     }
                     else
@@ -161,13 +161,13 @@ namespace tl
             FTK_ASSERT(videoRequests.empty());
 
             // Get audio from the timeline.
-            std::vector<timeline::AudioData> audioData;
+            std::vector<timeline::AudioFrame> audioFrame;
             std::vector<timeline::AudioRequest> audioRequests;
             for (size_t i = 0; i < static_cast<size_t>(timeRange.duration().rescaled_to(1.0).value()); ++i)
             {
                 audioRequests.push_back(timeline->getAudio(i));
             }
-            while (audioData.size() < static_cast<size_t>(timeRange.duration().rescaled_to(1.0).value()))
+            while (audioFrame.size() < static_cast<size_t>(timeRange.duration().rescaled_to(1.0).value()))
             {
                 auto i = audioRequests.begin();
                 while (i != audioRequests.end())
@@ -175,7 +175,7 @@ namespace tl
                     if (i->future.valid() &&
                         i->future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
                     {
-                        audioData.push_back(i->future.get());
+                        audioFrame.push_back(i->future.get());
                         i = audioRequests.erase(i);
                     }
                     else
@@ -187,9 +187,9 @@ namespace tl
             FTK_ASSERT(audioRequests.empty());
 
             // Cancel requests.
-            videoData.clear();
+            videoFrame.clear();
             videoRequests.clear();
-            audioData.clear();
+            audioFrame.clear();
             audioRequests.clear();
             for (size_t i = 0; i < static_cast<size_t>(timeRange.duration().value()); ++i)
             {

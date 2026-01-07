@@ -10,89 +10,85 @@
 
 namespace tl
 {
-    //! Audio and video I/O.
-    namespace io
+    //! File types.
+    enum class TL_API_TYPE FileType
     {
-        //! File types.
-        enum class TL_API_TYPE FileType
-        {
-            Unknown = 0,
-            Media   = 1,
-            Seq     = 2,
+        Unknown = 0,
+        Media = 1,
+        Seq = 2,
 
-            Count,
-            First = Unknown
-        };
+        Count,
+        First = Unknown
+    };
 
-        //! I/O information.
-        struct TL_API_TYPE Info
-        {
-            //! Video layer information.
-            std::vector<ftk::ImageInfo> video;
+    //! I/O information.
+    struct TL_API_TYPE IOInfo
+    {
+        //! Video layer information.
+        std::vector<ftk::ImageInfo> video;
 
-            //! Video time range.
-            OTIO_NS::TimeRange videoTime = invalidTimeRange;
+        //! Video time range.
+        OTIO_NS::TimeRange videoTime = invalidTimeRange;
 
-            //! Audio information.
-            AudioInfo audio;
+        //! Audio information.
+        AudioInfo audio;
 
-            //! Audio time range.
-            OTIO_NS::TimeRange audioTime = invalidTimeRange;
+        //! Audio time range.
+        OTIO_NS::TimeRange audioTime = invalidTimeRange;
 
-            //! Metadata tags.
-            ftk::ImageTags tags;
+        //! Metadata tags.
+        ftk::ImageTags tags;
 
-            bool operator == (const Info&) const;
-            bool operator != (const Info&) const;
-        };
+        bool operator == (const IOInfo&) const;
+        bool operator != (const IOInfo&) const;
+    };
 
-        //! Video I/O data.
-        struct TL_API_TYPE VideoData
-        {
-            VideoData();
-            VideoData(
-                const OTIO_NS::RationalTime&,
-                uint16_t layer,
-                const std::shared_ptr<ftk::Image>&);
+    //! Video I/O data.
+    struct TL_API_TYPE VideoData
+    {
+        VideoData();
+        VideoData(
+            const OTIO_NS::RationalTime&,
+            uint16_t layer,
+            const std::shared_ptr<ftk::Image>&);
 
-            OTIO_NS::RationalTime       time = invalidTime;
-            uint16_t                    layer = 0;
-            std::shared_ptr<ftk::Image> image;
+        OTIO_NS::RationalTime       time = invalidTime;
+        uint16_t                    layer = 0;
+        std::shared_ptr<ftk::Image> image;
 
-            bool operator == (const VideoData&) const;
-            bool operator != (const VideoData&) const;
-            bool operator < (const VideoData&) const;
-        };
+        bool operator == (const VideoData&) const;
+        bool operator != (const VideoData&) const;
+        bool operator < (const VideoData&) const;
+    };
 
-        //! Audio I/O data.
-        struct AudioData
-        {
-            AudioData();
-            AudioData(
-                const OTIO_NS::RationalTime&,
-                const std::shared_ptr<Audio>&);
+    //! Audio I/O data.
+    struct AudioData
+    {
+        AudioData();
+        AudioData(
+            const OTIO_NS::RationalTime&,
+            const std::shared_ptr<Audio>&);
 
-            OTIO_NS::RationalTime  time = invalidTime;
-            std::shared_ptr<Audio> audio;
+        OTIO_NS::RationalTime  time = invalidTime;
+        std::shared_ptr<Audio> audio;
 
-            bool operator == (const AudioData&) const;
-            bool operator != (const AudioData&) const;
-            bool operator < (const AudioData&) const;
-        };
+        bool operator == (const AudioData&) const;
+        bool operator != (const AudioData&) const;
+        bool operator < (const AudioData&) const;
+    };
 
-        //! Get an integer image type for the given channel count and bit depth.
-        TL_API ftk::ImageType getIntType(size_t channelCount, size_t bitDepth);
+    //! Get an integer image type for the given channel count and bit depth.
+    TL_API ftk::ImageType getIntImageType(size_t channelCount, size_t bitDepth);
 
-        //! Get a floating point image type for the given channel count and bit
-        //! depth.
-        TL_API ftk::ImageType getFloatType(size_t channelCount, size_t bitDepth);
+    //! Get a floating point image type for the given channel count and bit
+    //! depth.
+    TL_API ftk::ImageType getFloatImageType(size_t channelCount, size_t bitDepth);
 
-        //! Options.
-        typedef std::map<std::string, std::string> Options;
+    //! Options.
+    typedef std::map<std::string, std::string> IOOptions;
 
-        //! Merge options.
-        TL_API Options merge(const Options&, const Options&);
-    }
+    //! Merge options.
+    TL_API IOOptions merge(const IOOptions&, const IOOptions&);
 }
 
 #include <tlRender/IO/IOInline.h>

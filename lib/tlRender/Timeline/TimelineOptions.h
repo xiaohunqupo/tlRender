@@ -50,7 +50,7 @@ namespace tl
             std::chrono::milliseconds requestTimeout = std::chrono::milliseconds(5);
 
             //! I/O options.
-            io::Options ioOptions;
+            IOOptions ioOptions;
 
             //! Path options.
             ftk::PathOptions pathOptions;

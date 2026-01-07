@@ -18,68 +18,59 @@ namespace ftk
 
 namespace tl
 {
-    namespace io
+    //! Base class for readers and writers.
+    class TL_API_TYPE IIO : public std::enable_shared_from_this<IIO>
     {
-        //! Options.
-        typedef std::map<std::string, std::string> Options;
+        FTK_NON_COPYABLE(IIO);
 
-        //! Merge options.
-        TL_API Options merge(const Options&, const Options&);
+    protected:
+        void _init(
+            const ftk::Path&,
+            const IOOptions&,
+            const std::shared_ptr<ftk::LogSystem>&);
 
-        //! Base class for readers and writers.
-        class TL_API_TYPE IIO : public std::enable_shared_from_this<IIO>
-        {
-            FTK_NON_COPYABLE(IIO);
+        IIO();
 
-        protected:
-            void _init(
-                const ftk::Path&,
-                const Options&,
-                const std::shared_ptr<ftk::LogSystem>&);
+    public:
+        TL_API virtual ~IIO() = 0;
 
-            IIO();
+        //! Get the path.
+        TL_API const ftk::Path& getPath() const;
 
-        public:
-            TL_API virtual ~IIO() = 0;
+    protected:
+        ftk::Path _path;
+        IOOptions _options;
+        std::weak_ptr<ftk::LogSystem> _logSystem;
+    };
 
-            //! Get the path.
-            TL_API const ftk::Path& getPath() const;
+    //! Base class for I/O plugins.
+    class TL_API_TYPE IIOPlugin : public std::enable_shared_from_this<IIOPlugin>
+    {
+        FTK_NON_COPYABLE(IIOPlugin);
 
-        protected:
-            ftk::Path _path;
-            Options _options;
-            std::weak_ptr<ftk::LogSystem> _logSystem;
-        };
+    protected:
+        void _init(
+            const std::string& name,
+            const std::map<std::string, FileType>& exts,
+            const std::shared_ptr<ftk::LogSystem>&);
 
-        //! Base class for I/O plugins.
-        class TL_API_TYPE IPlugin : public std::enable_shared_from_this<IPlugin>
-        {
-            FTK_NON_COPYABLE(IPlugin);
+        IIOPlugin();
 
-        protected:
-            void _init(
-                const std::string& name,
-                const std::map<std::string, FileType>& exts,
-                const std::shared_ptr<ftk::LogSystem>&);
+    public:
+        TL_API virtual ~IIOPlugin() = 0;
 
-            IPlugin();
+        //! Get the plugin name.
+        TL_API const std::string& getName() const;
 
-        public:
-            TL_API virtual ~IPlugin() = 0;
+        //! Get the supported file extensions.
+        TL_API std::set<std::string> getExts(int types =
+            static_cast<int>(FileType::Media) |
+            static_cast<int>(FileType::Seq)) const;
 
-            //! Get the plugin name.
-            TL_API const std::string& getName() const;
+    protected:
+        std::weak_ptr<ftk::LogSystem> _logSystem;
 
-            //! Get the supported file extensions.
-            TL_API std::set<std::string> getExts(int types =
-                static_cast<int>(FileType::Media) |
-                static_cast<int>(FileType::Seq)) const;
-
-        protected:
-            std::weak_ptr<ftk::LogSystem> _logSystem;
-
-        private:
-            FTK_PRIVATE();
-        };
-    }
+    private:
+        FTK_PRIVATE();
+    };
 }

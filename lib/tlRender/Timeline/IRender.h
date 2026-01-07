@@ -36,7 +36,7 @@ namespace tl
 
             //! Draw timeline video data.
             TL_API virtual void drawVideo(
-                const std::vector<timeline::VideoData>&,
+                const std::vector<timeline::VideoFrame>&,
                 const std::vector<ftk::Box2I>&,
                 const std::vector<ftk::ImageOptions>& = {},
                 const std::vector<DisplayOptions>& = {},

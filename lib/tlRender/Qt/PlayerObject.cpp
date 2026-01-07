@@ -30,16 +30,16 @@ namespace tl
             std::shared_ptr<ftk::Observer<OTIO_NS::TimeRange> > inOutRangeObserver;
             std::shared_ptr<ftk::ListObserver<std::shared_ptr<timeline::Timeline> > > compareObserver;
             std::shared_ptr<ftk::Observer<timeline::CompareTime> > compareTimeObserver;
-            std::shared_ptr<ftk::Observer<io::Options> > ioOptionsObserver;
+            std::shared_ptr<ftk::Observer<IOOptions> > ioOptionsObserver;
             std::shared_ptr<ftk::Observer<int> > videoLayerObserver;
             std::shared_ptr<ftk::ListObserver<int> > compareVideoLayersObserver;
-            std::shared_ptr<ftk::ListObserver<timeline::VideoData> > currentVideoObserver;
+            std::shared_ptr<ftk::ListObserver<timeline::VideoFrame> > currentVideoObserver;
             std::shared_ptr<ftk::Observer<AudioDeviceID> > audioDeviceObserver;
             std::shared_ptr<ftk::Observer<float> > volumeObserver;
             std::shared_ptr<ftk::Observer<bool> > muteObserver;
             std::shared_ptr<ftk::ListObserver<bool> > channelMuteObserver;
             std::shared_ptr<ftk::Observer<double> > audioOffsetObserver;
-            std::shared_ptr<ftk::ListObserver<timeline::AudioData> > currentAudioObserver;
+            std::shared_ptr<ftk::ListObserver<timeline::AudioFrame> > currentAudioObserver;
             std::shared_ptr<ftk::Observer<timeline::PlayerCacheOptions> > cacheOptionsObserver;
             std::shared_ptr<ftk::Observer<timeline::PlayerCacheInfo> > cacheInfoObserver;
         };
@@ -101,9 +101,9 @@ namespace tl
                     Q_EMIT compareTimeChanged(value);
                 });
 
-            p.ioOptionsObserver = ftk::Observer<io::Options>::create(
+            p.ioOptionsObserver = ftk::Observer<IOOptions>::create(
                 p.player->observeIOOptions(),
-                [this](const io::Options& value)
+                [this](const IOOptions& value)
                 {
                     Q_EMIT ioOptionsChanged(value);
                 });
@@ -122,9 +122,9 @@ namespace tl
                     Q_EMIT compareVideoLayersChanged(value);
                 });
 
-            p.currentVideoObserver = ftk::ListObserver<timeline::VideoData>::create(
+            p.currentVideoObserver = ftk::ListObserver<timeline::VideoFrame>::create(
                 p.player->observeCurrentVideo(),
-                [this](const std::vector<timeline::VideoData>& value)
+                [this](const std::vector<timeline::VideoFrame>& value)
                 {
                     Q_EMIT currentVideoChanged(value);
                 },
@@ -165,9 +165,9 @@ namespace tl
                     Q_EMIT audioOffsetChanged(value);
                 });
 
-            p.currentAudioObserver = ftk::ListObserver<timeline::AudioData>::create(
+            p.currentAudioObserver = ftk::ListObserver<timeline::AudioFrame>::create(
                 p.player->observeCurrentAudio(),
-                [this](const std::vector<timeline::AudioData>& value)
+                [this](const std::vector<timeline::AudioFrame>& value)
                 {
                     Q_EMIT currentAudioChanged(value);
                 });
@@ -240,7 +240,7 @@ namespace tl
             return _p->player->getTimeRange();
         }
 
-        const io::Info& PlayerObject::ioInfo() const
+        const IOInfo& PlayerObject::ioInfo() const
         {
             return _p->player->getIOInfo();
         }
@@ -290,7 +290,7 @@ namespace tl
             return _p->player->getCompareTime();
         }
 
-        const io::Options& PlayerObject::ioOptions() const
+        const IOOptions& PlayerObject::ioOptions() const
         {
             return _p->player->getIOOptions();
         }
@@ -305,7 +305,7 @@ namespace tl
             return _p->player->getCompareVideoLayers();
         }
 
-        const std::vector<timeline::VideoData>& PlayerObject::currentVideo() const
+        const std::vector<timeline::VideoFrame>& PlayerObject::currentVideo() const
         {
             return _p->player->getCurrentVideo();
         }
@@ -335,7 +335,7 @@ namespace tl
             return _p->player->getAudioOffset();
         }
 
-        const std::vector<timeline::AudioData>& PlayerObject::currentAudio() const
+        const std::vector<timeline::AudioFrame>& PlayerObject::currentAudio() const
         {
             return _p->player->getCurrentAudio();
         }
@@ -443,7 +443,7 @@ namespace tl
             _p->player->resetOutPoint();
         }
 
-        void PlayerObject::setIOOptions(const io::Options& value)
+        void PlayerObject::setIOOptions(const IOOptions& value)
         {
             _p->player->setIOOptions(value);
         }

@@ -23,7 +23,7 @@ namespace tl
             return !(*this == other);
         }
 
-        bool VideoData::operator == (const VideoData& other) const
+        bool VideoFrame::operator == (const VideoFrame& other) const
         {
             return
                 size == other.size &&
@@ -31,12 +31,12 @@ namespace tl
                 layers == other.layers;
         }
 
-        bool VideoData::operator != (const VideoData& other) const
+        bool VideoFrame::operator != (const VideoFrame& other) const
         {
             return !(*this == other);
         }
 
-        bool isTimeEqual(const VideoData& a, const VideoData& b)
+        bool isTimeEqual(const VideoFrame& a, const VideoFrame& b)
         {
             return a.time.strictly_equal(b.time);
         }

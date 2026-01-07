@@ -51,7 +51,7 @@ namespace tl
         struct TL_API_TYPE VideoRequest
         {
             uint64_t id = 0;
-            std::future<VideoData> future;
+            std::future<VideoFrame> future;
         };
 
         //! Audio size request.
@@ -65,7 +65,7 @@ namespace tl
         struct TL_API_TYPE AudioRequest
         {
             uint64_t id = 0;
-            std::future<AudioData> future;
+            std::future<AudioFrame> future;
         };
 
         //! Timeline.
@@ -147,22 +147,22 @@ namespace tl
 
             //! Get the I/O information. This information is retrieved from
             //! the first clip in the timeline.
-            TL_API const io::Info& getIOInfo() const;
+            TL_API const IOInfo& getIOInfo() const;
 
             ///@}
 
-            //! \name Video and Audio Data
+            //! \name Video and Audio
             ///@{
 
-            //! Get video data.
+            //! Get video.
             TL_API VideoRequest getVideo(
                 const OTIO_NS::RationalTime&,
-                const io::Options& = io::Options());
+                const IOOptions& = IOOptions());
 
-            //! Get audio data.
+            //! Get audio.
             TL_API AudioRequest getAudio(
                 double seconds,
-                const io::Options& = io::Options());
+                const IOOptions& = IOOptions());
 
             //! Cancel requests.
             TL_API void cancelRequests(const std::vector<uint64_t>&);

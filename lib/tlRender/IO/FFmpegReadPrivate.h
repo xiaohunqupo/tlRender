@@ -149,17 +149,17 @@ namespace tl
             std::shared_ptr<ReadVideo> readVideo;
             std::shared_ptr<ReadAudio> readAudio;
 
-            io::Info info;
+            IOInfo info;
             struct InfoRequest
             {
-                std::promise<io::Info> promise;
+                std::promise<IOInfo> promise;
             };
 
             struct VideoRequest
             {
                 OTIO_NS::RationalTime time = invalidTime;
-                io::Options options;
-                std::promise<io::VideoData> promise;
+                IOOptions options;
+                std::promise<VideoData> promise;
             };
             struct VideoMutex
             {
@@ -183,8 +183,8 @@ namespace tl
             struct AudioRequest
             {
                 OTIO_NS::TimeRange timeRange = invalidTimeRange;
-                io::Options options;
-                std::promise<io::AudioData> promise;
+                IOOptions options;
+                std::promise<AudioData> promise;
             };
             struct AudioMutex
             {

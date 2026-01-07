@@ -57,7 +57,7 @@ namespace tl
                 WRITE setCompareTime
                 NOTIFY compareTimeChanged)
             Q_PROPERTY(
-                tl::io::Options ioOptions
+                tl::IOOptions ioOptions
                 READ ioOptions
                 WRITE setIOOptions
                 NOTIFY ioOptionsChanged)
@@ -72,7 +72,7 @@ namespace tl
                 WRITE setCompareVideoLayers
                 NOTIFY compareVideoLayersChanged)
             Q_PROPERTY(
-                std::vector<tl::timeline::VideoData>
+                std::vector<tl::timeline::VideoFrame>
                 currentVideo
                 READ currentVideo
                 NOTIFY currentVideoChanged)
@@ -102,7 +102,7 @@ namespace tl
                 WRITE setAudioOffset
                 NOTIFY audioOffsetChanged)
             Q_PROPERTY(
-                std::vector<tl::timeline::AudioData>
+                std::vector<tl::timeline::AudioFrame>
                 currentAudio
                 READ currentAudio
                 NOTIFY currentAudioChanged)
@@ -157,7 +157,7 @@ namespace tl
 
             //! Get the I/O information. This information is retrieved from
             //! the first clip in the timeline.
-            const io::Info& ioInfo() const;
+            const IOInfo& ioInfo() const;
 
             ///@}
 
@@ -201,7 +201,7 @@ namespace tl
             ///@{
 
             //! Get the I/O options.
-            const io::Options& ioOptions() const;
+            const IOOptions& ioOptions() const;
 
             ///@}
 
@@ -225,8 +225,8 @@ namespace tl
             //! Get the comparison video layers.
             const std::vector<int>& compareVideoLayers() const;
 
-            //! Get the current video data.
-            const std::vector<timeline::VideoData>& currentVideo() const;
+            //! Get the current video.
+            const std::vector<timeline::VideoFrame>& currentVideo() const;
 
             ///@}
 
@@ -248,8 +248,8 @@ namespace tl
             //! Get the audio sync offset (in seconds).
             double audioOffset() const;
 
-            //! Get the current audio data.
-            const std::vector<timeline::AudioData>& currentAudio() const;
+            //! Get the current audio.
+            const std::vector<timeline::AudioFrame>& currentAudio() const;
 
             ///@}
 
@@ -338,7 +338,7 @@ namespace tl
             ///@{
 
             //! Set the I/O options.
-            void setIOOptions(const tl::io::Options&);
+            void setIOOptions(const IOOptions&);
 
             ///@}
 
@@ -428,7 +428,7 @@ namespace tl
             ///@{
 
             //! This signal is emitted when the I/O options are changed.
-            void ioOptionsChanged(const tl::io::Options&);
+            void ioOptionsChanged(const tl::IOOptions&);
 
             ///@}
 
@@ -441,8 +441,8 @@ namespace tl
             //! This signal is emitted when the comparison video layers are changed.
             void compareVideoLayersChanged(const std::vector<int>&);
 
-            //! This signal is emitted when the current video data is changed.
-            void currentVideoChanged(const std::vector<tl::timeline::VideoData>&);
+            //! This signal is emitted when the current video is changed.
+            void currentVideoChanged(const std::vector<tl::timeline::VideoFrame>&);
 
             ///@}
 
@@ -464,8 +464,8 @@ namespace tl
             //! This signal is emitted when the audio sync offset is changed.
             void audioOffsetChanged(double);
 
-            //! This signal is emitted when the current audio data is changed.
-            void currentAudioChanged(const std::vector<tl::timeline::AudioData>&);
+            //! This signal is emitted when the current audio is changed.
+            void currentAudioChanged(const std::vector<tl::timeline::AudioFrame>&);
 
             ///@}
 

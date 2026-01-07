@@ -55,15 +55,15 @@ namespace tl
             QMetaType::registerComparators<AudioType>();
 #endif // QT_VERSION
 
-            qRegisterMetaType<io::FileType>("tl::io::FileType");
-            qRegisterMetaType<io::Info>("tl::io::Info");
-            qRegisterMetaType<io::VideoData>("tl::io::VideoData");
-            qRegisterMetaType<io::AudioData>("tl::io::AudioData");
+            qRegisterMetaType<FileType>("tl::FileType");
+            qRegisterMetaType<IOInfo>("tl::IOInfo");
+            qRegisterMetaType<VideoData>("tl::VideoData");
+            qRegisterMetaType<AudioData>("tl::AudioData");
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
             QMetaType::registerComparators<io::FileType>();
 #endif // QT_VERSION
 
-            qRegisterMetaType<timeline::AudioData>("tl::timeline::AudioData");
+            qRegisterMetaType<timeline::AudioFrame>("tl::timeline::AudioFrame");
             qRegisterMetaType<timeline::AudioLayer>("tl::timeline::AudioLayer");
             qRegisterMetaType<timeline::Color>("tl::timeline::Color");
             qRegisterMetaType<timeline::Compare>("tl::timeline::Compare");
@@ -83,7 +83,7 @@ namespace tl
             qRegisterMetaType<timeline::TimeAction>("tl::timeline::TimeAction");
             qRegisterMetaType<timeline::TimeUnits>("tl::timeline::TimeUnits");
             qRegisterMetaType<timeline::Transition>("tl::timeline::Transition");
-            qRegisterMetaType<timeline::VideoData>("tl::timeline::VideoData");
+            qRegisterMetaType<timeline::VideoFrame>("tl::timeline::VideoFrame");
             qRegisterMetaType<timeline::VideoLayer>("tl::timeline::VideoLayer");
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
             QMetaType::registerComparators<timeline::Compare>();

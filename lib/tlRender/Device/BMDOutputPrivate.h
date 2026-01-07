@@ -146,7 +146,7 @@ namespace tl
 
             void setData(const DLOutputCallbackData&);
             void setVideo(const std::shared_ptr<DLVideoFrameWrapper>&);
-            void setAudioData(const std::vector<timeline::AudioData>&);
+            void setAudio(const std::vector<timeline::AudioFrame>&);
 
             HRESULT STDMETHODCALLTYPE ScheduledFrameCompleted(IDeckLinkVideoFrame*, BMDOutputFrameCompletionResult) override;
             HRESULT STDMETHODCALLTYPE ScheduledPlaybackHasStopped() override;
@@ -196,7 +196,7 @@ namespace tl
                 bool mute = false;
                 std::vector<bool> channelMute;
                 double audioOffset = 0.0;
-                std::vector<timeline::AudioData> audioData;
+                std::vector<timeline::AudioFrame> audioFrame;
                 bool reset = false;
                 OTIO_NS::RationalTime start = invalidTime;
                 std::mutex mutex;

@@ -33,7 +33,7 @@ namespace tl
                     // The first video clip defines the video information for the timeline.
                     if (auto read = getRead(clip, options.ioOptions))
                     {
-                        const io::Info& ioInfo = read->getInfo().get();
+                        const IOInfo& ioInfo = read->getInfo().get();
                         this->ioInfo.video = ioInfo.video;
                         this->ioInfo.videoTime = ioInfo.videoTime;
                         this->ioInfo.tags.insert(ioInfo.tags.begin(), ioInfo.tags.end());
@@ -63,7 +63,7 @@ namespace tl
                     // The first audio clip defines the audio information for the timeline.
                     if (auto read = getRead(clip, options.ioOptions))
                     {
-                        const io::Info& ioInfo = read->getInfo().get();
+                        const IOInfo& ioInfo = read->getInfo().get();
                         this->ioInfo.audio = ioInfo.audio;
                         this->ioInfo.audioTime = ioInfo.audioTime;
                         this->ioInfo.tags.insert(ioInfo.tags.begin(), ioInfo.tags.end());
@@ -181,27 +181,27 @@ namespace tl
                                 const auto range = otioItem->trimmed_range_in_parent(&errorStatus);
                                 if (range.has_value() && range.value().contains(requestTime))
                                 {
-                                    VideoLayerData videoData;
+                                    VideoLayerData videoLayerData;
                                     try
                                     {
                                         if (auto otioClip = dynamic_cast<const OTIO_NS::Clip*>(otioItem))
                                         {
-                                            videoData.image = readVideo(otioClip, requestTime, request->options);
+                                            videoLayerData.image = readVideo(otioClip, requestTime, request->options);
                                         }
                                         const auto neighbors = otioTrack->neighbors_of(otioItem, &errorStatus);
                                         if (auto otioTransition = dynamic_cast<OTIO_NS::Transition*>(neighbors.second.value))
                                         {
                                             if (requestTime > range.value().end_time_inclusive() - otioTransition->in_offset())
                                             {
-                                                videoData.transition = toTransition(otioTransition->transition_type());
-                                                videoData.transitionValue = transitionValue(
+                                                videoLayerData.transition = toTransition(otioTransition->transition_type());
+                                                videoLayerData.transitionValue = transitionValue(
                                                     requestTime.value(),
                                                     range.value().end_time_inclusive().value() - otioTransition->in_offset().value(),
                                                     range.value().end_time_inclusive().value() + otioTransition->out_offset().value() + 1.0);
                                                 const auto transitionNeighbors = otioTrack->neighbors_of(otioTransition, &errorStatus);
                                                 if (const auto otioClipB = dynamic_cast<OTIO_NS::Clip*>(transitionNeighbors.second.value))
                                                 {
-                                                    videoData.imageB = readVideo(otioClipB, requestTime, request->options);
+                                                    videoLayerData.imageB = readVideo(otioClipB, requestTime, request->options);
                                                 }
                                             }
                                         }
@@ -209,16 +209,16 @@ namespace tl
                                         {
                                             if (requestTime < range.value().start_time() + otioTransition->out_offset())
                                             {
-                                                std::swap(videoData.image, videoData.imageB);
-                                                videoData.transition = toTransition(otioTransition->transition_type());
-                                                videoData.transitionValue = transitionValue(
+                                                std::swap(videoLayerData.image, videoLayerData.imageB);
+                                                videoLayerData.transition = toTransition(otioTransition->transition_type());
+                                                videoLayerData.transitionValue = transitionValue(
                                                     requestTime.value(),
                                                     range.value().start_time().value() - otioTransition->in_offset().value() - 1.0,
                                                     range.value().start_time().value() + otioTransition->out_offset().value());
                                                 const auto transitionNeighbors = otioTrack->neighbors_of(otioTransition, &errorStatus);
                                                 if (const auto otioClipB = dynamic_cast<OTIO_NS::Clip*>(transitionNeighbors.first.value))
                                                 {
-                                                    videoData.image = readVideo(otioClipB, requestTime, request->options);
+                                                    videoLayerData.image = readVideo(otioClipB, requestTime, request->options);
                                                 }
                                             }
                                         }
@@ -227,7 +227,7 @@ namespace tl
                                     {
                                         //! \todo How should this be handled?
                                     }
-                                    request->layerData.push_back(std::move(videoData));
+                                    request->layerData.push_back(std::move(videoLayerData));
                                 }
                             }
                         }
@@ -311,12 +311,12 @@ namespace tl
                 }
                 if (valid)
                 {
-                    VideoData data;
+                    VideoFrame frame;
                     if (!ioInfo.video.empty())
                     {
-                        data.size = ioInfo.video.front().size;
+                        frame.size = ioInfo.video.front().size;
                     }
-                    data.time = (*videoRequestIt)->time;
+                    frame.time = (*videoRequestIt)->time;
                     for (auto& j : (*videoRequestIt)->layerData)
                     {
                         VideoLayer layer;
@@ -330,9 +330,9 @@ namespace tl
                         }
                         layer.transition = j.transition;
                         layer.transitionValue = j.transitionValue;
-                        data.layers.push_back(layer);
+                        frame.layers.push_back(layer);
                     }
-                    (*videoRequestIt)->promise.set_value(data);
+                    (*videoRequestIt)->promise.set_value(frame);
                     videoRequestIt = thread.videoRequestsInProgress.erase(videoRequestIt);
                     continue;
                 }
@@ -353,8 +353,8 @@ namespace tl
                 }
                 if (valid)
                 {
-                    AudioData data;
-                    data.seconds = (*audioRequestIt)->seconds;
+                    AudioFrame frame;
+                    frame.seconds = (*audioRequestIt)->seconds;
                     for (auto& j : (*audioRequestIt)->layerData)
                     {
                         AudioLayer layer;
@@ -366,15 +366,15 @@ namespace tl
                                 layer.audio = padAudioToOneSecond(audioData.audio, j.seconds, j.timeRange);
                             }
                         }
-                        data.layers.push_back(layer);
+                        frame.layers.push_back(layer);
                     }
-                    if (data.layers.empty())
+                    if (frame.layers.empty())
                     {
                         auto audio = Audio::create(ioInfo.audio, ioInfo.audio.sampleRate);
                         audio->zero();
-                        data.layers.push_back({ audio });
+                        frame.layers.push_back({ audio });
                     }
-                    (*audioRequestIt)->promise.set_value(data);
+                    (*audioRequestIt)->promise.set_value(frame);
                     audioRequestIt = thread.audioRequestsInProgress.erase(audioRequestIt);
                     continue;
                 }
@@ -405,8 +405,8 @@ namespace tl
                 thread.audioRequestsInProgress.clear();
                 for (auto& request : videoRequests)
                 {
-                    VideoData data;
-                    data.time = request->time;
+                    VideoFrame frame;
+                    frame.time = request->time;
                     for (auto& i : request->layerData)
                     {
                         VideoLayer layer;
@@ -420,14 +420,14 @@ namespace tl
                         }
                         layer.transition = i.transition;
                         layer.transitionValue = i.transitionValue;
-                        data.layers.push_back(layer);
+                        frame.layers.push_back(layer);
                     }
-                    request->promise.set_value(data);
+                    request->promise.set_value(frame);
                 }
                 for (auto& request : audioRequests)
                 {
-                    AudioData data;
-                    data.seconds = request->seconds;
+                    AudioFrame frame;
+                    frame.seconds = request->seconds;
                     for (auto& i : request->layerData)
                     {
                         AudioLayer layer;
@@ -435,9 +435,9 @@ namespace tl
                         {
                             layer.audio = i.audio.get().audio;
                         }
-                        data.layers.push_back(layer);
+                        frame.layers.push_back(layer);
                     }
-                    request->promise.set_value(data);
+                    request->promise.set_value(frame);
                 }
             }
         }
@@ -453,11 +453,11 @@ namespace tl
             }
         }
 
-        std::shared_ptr<io::IRead> Timeline::Private::getRead(
+        std::shared_ptr<IRead> Timeline::Private::getRead(
             const OTIO_NS::Clip* clip,
-            const io::Options& ioOptions)
+            const IOOptions& ioOptions)
         {
-            std::shared_ptr<io::IRead> out;
+            std::shared_ptr<IRead> out;
             const auto path = timeline::getPath(
                 clip->media_reference(),
                 this->path.getDir(),
@@ -468,9 +468,9 @@ namespace tl
                 if (auto context = this->context.lock())
                 {
                     const auto memRead = getMemRead(clip->media_reference());
-                    io::Options options = ioOptions;
+                    IOOptions options = ioOptions;
                     options["SeqIO/DefaultSpeed"] = ftk::Format("{0}").arg(timeRange.duration().rate());
-                    const auto ioSystem = context->getSystem<io::ReadSystem>();
+                    const auto ioSystem = context->getSystem<ReadSystem>();
                     out = ioSystem->read(path, memRead, options);
                     readCache.add(key, out);
                 }
@@ -478,19 +478,19 @@ namespace tl
             return out;
         }
 
-        std::future<io::VideoData> Timeline::Private::readVideo(
+        std::future<VideoData> Timeline::Private::readVideo(
             const OTIO_NS::Clip* clip,
             const OTIO_NS::RationalTime& time,
-            const io::Options& options)
+            const IOOptions& options)
         {
-            std::future<io::VideoData> out;
-            io::Options optionsMerged = io::merge(options, this->options.ioOptions);
+            std::future<VideoData> out;
+            IOOptions optionsMerged = merge(options, this->options.ioOptions);
             optionsMerged["USD/CameraName"] = clip->name();
             auto read = getRead(clip, optionsMerged);
             const auto timeRangeOpt = clip->trimmed_range_in_parent();
             if (read && timeRangeOpt.has_value())
             {
-                const io::Info& ioInfo = read->getInfo().get();
+                const IOInfo& ioInfo = read->getInfo().get();
                 OTIO_NS::TimeRange availableRange = clip->available_range();
                 OTIO_NS::TimeRange trimmedRange = clip->trimmed_range();
                 if (this->options.compat &&
@@ -513,18 +513,18 @@ namespace tl
             return out;
         }
 
-        std::future<io::AudioData> Timeline::Private::readAudio(
+        std::future<AudioData> Timeline::Private::readAudio(
             const OTIO_NS::Clip* clip,
             const OTIO_NS::TimeRange& timeRange,
-            const io::Options& options)
+            const IOOptions& options)
         {
-            std::future<io::AudioData> out;
-            io::Options optionsMerged = io::merge(options, this->options.ioOptions);
+            std::future<AudioData> out;
+            IOOptions optionsMerged = merge(options, this->options.ioOptions);
             auto read = getRead(clip, optionsMerged);
             const auto timeRangeOpt = clip->trimmed_range_in_parent();
             if (read && timeRangeOpt.has_value())
             {
-                const io::Info& ioInfo = read->getInfo().get();
+                const IOInfo& ioInfo = read->getInfo().get();
                 OTIO_NS::TimeRange trimmedRange = clip->trimmed_range();
                 if (this->options.compat &&
                     trimmedRange.start_time() < ioInfo.audioTime.start_time())

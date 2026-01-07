@@ -167,10 +167,10 @@ namespace tl
             return out;
         }
 
-        std::vector<ftk::Box2I> getBoxes(Compare compare, const std::vector<VideoData>& videoData)
+        std::vector<ftk::Box2I> getBoxes(Compare compare, const std::vector<VideoFrame>& videoFrame)
         {
             std::vector<ftk::ImageInfo> infos;
-            for (const auto& i : videoData)
+            for (const auto& i : videoFrame)
             {
                 ftk::ImageInfo info;
                 for (const auto& layer : i.layers)
@@ -209,10 +209,10 @@ namespace tl
             return out;
         }
 
-        ftk::Size2I getRenderSize(Compare compare, const std::vector<VideoData>& videoData)
+        ftk::Size2I getRenderSize(Compare compare, const std::vector<VideoFrame>& videoFrame)
         {
             std::vector<ftk::ImageInfo> infos;
-            for (const auto& i : videoData)
+            for (const auto& i : videoFrame)
             {
                 ftk::ImageInfo info;
                 for (const auto& layer : i.layers)

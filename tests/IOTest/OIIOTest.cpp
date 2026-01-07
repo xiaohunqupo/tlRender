@@ -8,16 +8,13 @@
 
 #include <sstream>
 
-using namespace tl::io;
-
 namespace tl
 {
     namespace io_tests
     {
         OIIOTest::OIIOTest(const std::shared_ptr<ftk::Context>& context) :
             ITest(context, "io_tests::OIIOTest")
-        {
-        }
+        {}
 
         std::shared_ptr<OIIOTest> OIIOTest::create(const std::shared_ptr<ftk::Context>& context)
         {
@@ -27,13 +24,13 @@ namespace tl
         namespace
         {
             void write(
-                const std::shared_ptr<io::IWritePlugin>& plugin,
+                const std::shared_ptr<IWritePlugin>& plugin,
                 const std::shared_ptr<ftk::Image>& image,
                 const ftk::Path& path,
                 const ftk::ImageInfo& imageInfo,
-                const Options& options)
+                const IOOptions& options)
             {
-                Info info;
+                IOInfo info;
                 info.video.push_back(imageInfo);
                 info.videoTime = OTIO_NS::TimeRange(OTIO_NS::RationalTime(0.0, 24.0), OTIO_NS::RationalTime(1.0, 24.0));
                 auto write = plugin->write(path, info, options);
@@ -41,15 +38,15 @@ namespace tl
             }
 
             void read(
-                const std::shared_ptr<io::IReadPlugin>& plugin,
+                const std::shared_ptr<IReadPlugin>& plugin,
                 const std::shared_ptr<ftk::Image>& image,
                 const ftk::Path& path,
                 bool memoryIO,
-                const Options& options)
+                const IOOptions& options)
             {
                 std::vector<uint8_t> memoryData;
                 std::vector<ftk::MemFile> memory;
-                std::shared_ptr<io::IRead> read;
+                std::shared_ptr<IRead> read;
                 if (memoryIO)
                 {
                     auto fileIO = ftk::FileIO::create(path.get(), ftk::FileMode::Read);
@@ -75,11 +72,11 @@ namespace tl
             }
 
             void readError(
-                const std::shared_ptr<io::IReadPlugin>& plugin,
+                const std::shared_ptr<IReadPlugin>& plugin,
                 const std::shared_ptr<ftk::Image>& image,
                 const ftk::Path& path,
                 bool memoryIO,
-                const Options& options)
+                const IOOptions& options)
             {
                 {
                     auto fileIO = ftk::FileIO::create(path.get(), ftk::FileMode::Read);
@@ -129,7 +126,7 @@ namespace tl
                 ftk::Size2I(1, 1),
                 ftk::Size2I(0, 0)
             };
-            const std::vector<io::Options> optionsList =
+            const std::vector<IOOptions> optionsList =
             {
                 {},
                 /*{

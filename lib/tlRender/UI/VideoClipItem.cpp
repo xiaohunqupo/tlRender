@@ -29,9 +29,9 @@ namespace tl
             };
             SizeData size;
 
-            io::Options ioOptions;
+            IOOptions ioOptions;
             InfoRequest infoRequest;
-            std::shared_ptr<io::Info> ioInfo;
+            std::shared_ptr<IOInfo> ioInfo;
             std::map<OTIO_NS::RationalTime, ThumbnailRequest> thumbnailRequests;
         };
 
@@ -172,7 +172,7 @@ namespace tl
             if (p.infoRequest.future.valid() &&
                 p.infoRequest.future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
             {
-                p.ioInfo = std::make_shared<io::Info>(p.infoRequest.future.get());
+                p.ioInfo = std::make_shared<IOInfo>(p.infoRequest.future.get());
                 const std::string infoCacheKey = ThumbnailCache::getInfoKey(
                     reinterpret_cast<intptr_t>(this),
                     p.path,
@@ -342,11 +342,11 @@ namespace tl
                                     displayOptions.color.saturation.y = 0.F;
                                     displayOptions.color.saturation.z = 0.F;
                                 }
-                                timeline::VideoData videoData;
-                                videoData.size = i->second->getSize();
-                                videoData.layers.push_back({ i->second });
+                                timeline::VideoFrame videoFrame;
+                                videoFrame.size = i->second->getSize();
+                                videoFrame.layers.push_back({ i->second });
                                 render->drawVideo(
-                                    { videoData },
+                                    { videoFrame },
                                     { box },
                                     {},
                                     { displayOptions });

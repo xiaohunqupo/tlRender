@@ -29,7 +29,7 @@ namespace tl
         struct TL_API_TYPE InfoRequest
         {
             uint64_t id = 0;
-            std::future<io::Info> future;
+            std::future<IOInfo> future;
         };
 
         //! Video thumbnail request.
@@ -81,16 +81,16 @@ namespace tl
             TL_API static std::string getInfoKey(
                 intptr_t id,
                 const ftk::Path&,
-                const io::Options&);
+                const IOOptions&);
 
             //! Add I/O information to the cache.
-            TL_API void addInfo(const std::string& key, const io::Info&);
+            TL_API void addInfo(const std::string& key, const IOInfo&);
 
             //! Get whether the cache contains I/O information.
             TL_API bool containsInfo(const std::string& key);
 
             //! Get I/O information from the cache.
-            TL_API bool getInfo(const std::string& key, io::Info&) const;
+            TL_API bool getInfo(const std::string& key, IOInfo&) const;
             
             //! Get a thumbnail cache key.
             TL_API static std::string getThumbnailKey(
@@ -98,7 +98,7 @@ namespace tl
                 const ftk::Path&,
                 int height,
                 const OTIO_NS::RationalTime&,
-                const io::Options&);
+                const IOOptions&);
 
             //! Add a thumbnail to the cache.
             TL_API void addThumbnail(
@@ -119,7 +119,7 @@ namespace tl
                 const ftk::Path&,
                 const ftk::Size2I&,
                 const OTIO_NS::TimeRange&,
-                const io::Options&);
+                const IOOptions&);
 
             //! Add a waveform to the cache.
             TL_API void addWaveform(
@@ -167,14 +167,14 @@ namespace tl
             TL_API InfoRequest getInfo(
                 intptr_t id,
                 const ftk::Path&,
-                const io::Options& = io::Options());
+                const IOOptions& = IOOptions());
 
             //! Get information.
             TL_API InfoRequest getInfo(
                 intptr_t id,
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
-                const io::Options& = io::Options());
+                const IOOptions& = IOOptions());
 
             //! Get a video thumbnail.
             TL_API ThumbnailRequest getThumbnail(
@@ -182,7 +182,7 @@ namespace tl
                 const ftk::Path&,
                 int height,
                 const OTIO_NS::RationalTime& = invalidTime,
-                const io::Options& = io::Options());
+                const IOOptions& = IOOptions());
 
             //! Get a video thumbnail.
             TL_API ThumbnailRequest getThumbnail(
@@ -191,7 +191,7 @@ namespace tl
                 const std::vector<ftk::MemFile>&,
                 int height,
                 const OTIO_NS::RationalTime& = invalidTime,
-                const io::Options& = io::Options());
+                const IOOptions& = IOOptions());
 
             //! Get an audio waveform.
             TL_API WaveformRequest getWaveform(
@@ -199,7 +199,7 @@ namespace tl
                 const ftk::Path&,
                 const ftk::Size2I&,
                 const OTIO_NS::TimeRange& = invalidTimeRange,
-                const io::Options& = io::Options());
+                const IOOptions& = IOOptions());
 
             //! Get an audio waveform.
             TL_API WaveformRequest getWaveform(
@@ -208,7 +208,7 @@ namespace tl
                 const std::vector<ftk::MemFile>&,
                 const ftk::Size2I&,
                 const OTIO_NS::TimeRange& = invalidTimeRange,
-                const io::Options& = io::Options());
+                const IOOptions& = IOOptions());
 
             //! Cancel pending requests.
             TL_API void cancelRequests(const std::vector<uint64_t>&);
@@ -241,7 +241,7 @@ namespace tl
             TL_API InfoRequest getInfo(
                 intptr_t id,
                 const ftk::Path&,
-                const io::Options& = io::Options());
+                const IOOptions& = IOOptions());
 
             //! Get a video thumbnail.
             TL_API ThumbnailRequest getThumbnail(
@@ -249,7 +249,7 @@ namespace tl
                 const ftk::Path&,
                 int height,
                 const OTIO_NS::RationalTime& = invalidTime,
-                const io::Options& = io::Options());
+                const IOOptions& = IOOptions());
 
             //! Get an audio waveform.
             TL_API WaveformRequest getWaveform(
@@ -257,7 +257,7 @@ namespace tl
                 const ftk::Path&,
                 const ftk::Size2I&,
                 const OTIO_NS::TimeRange& = invalidTimeRange,
-                const io::Options& = io::Options());
+                const IOOptions& = IOOptions());
 
             //! Cancel pending requests.
             TL_API void cancelRequests(const std::vector<uint64_t>&);

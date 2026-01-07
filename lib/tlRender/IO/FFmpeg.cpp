@@ -32,9 +32,9 @@ namespace tl
             return !(*this == other);
         }
 
-        io::Options getOptions(const Options& value)
+        IOOptions getOptions(const Options& value)
         {
-            io::Options out;
+            IOOptions out;
             out["FFmpeg/YUVToRGB"] = ftk::Format("{0}").arg(value.yuvToRgb);
             out["FFmpeg/ThreadCount"] = ftk::Format("{0}").arg(value.threadCount);
             return out;
@@ -197,7 +197,7 @@ namespace tl
             }
 
             // Get formats.
-            std::map<std::string, io::FileType> extensions;
+            std::map<std::string, FileType> extensions;
             const AVInputFormat* avInputFormat = nullptr;
             void* avInputFormatIterate = nullptr;
             std::vector<std::string> formatLog;
@@ -211,14 +211,14 @@ namespace tl
                         {
                             extension.insert(0, ".");
                         }
-                        extensions[extension] = io::FileType::Media;
+                        extensions[extension] = FileType::Media;
                     }
                     formatLog.push_back(ftk::Format("    {0}: {1}").arg(avInputFormat->name).arg(avInputFormat->extensions));
                 }
             }
             //! \bug Why aren't these in the list of input formats?
-            extensions[".mxf"] = io::FileType::Media;
-            extensions[".wav"] = io::FileType::Media;
+            extensions[".mxf"] = FileType::Media;
+            extensions[".wav"] = FileType::Media;
 
             IReadPlugin::_init("FFmpeg", extensions, logSystem);
 
@@ -228,10 +228,10 @@ namespace tl
             av_log_set_callback(_logCallback);
 
             logSystem->print(
-                "tl::io::ffmpeg::ReadPlugin",
+                "tl::ffmpeg::ReadPlugin",
                 "Codecs: " + ftk::join(p.codecNames, ", "));
             logSystem->print(
-                "tl::io::ffmpeg::ReadPlugin",
+                "tl::ffmpeg::ReadPlugin",
                 "Formats:\n" + ftk::join(formatLog, '\n'));
         }
 
@@ -247,17 +247,17 @@ namespace tl
             return out;
         }
 
-        std::shared_ptr<io::IRead> ReadPlugin::read(
+        std::shared_ptr<IRead> ReadPlugin::read(
             const ftk::Path& path,
-            const io::Options& options)
+            const IOOptions& options)
         {
             return Read::create(path, options, _logSystem.lock());
         }
 
-        std::shared_ptr<io::IRead> ReadPlugin::read(
+        std::shared_ptr<IRead> ReadPlugin::read(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& memory,
-            const io::Options& options)
+            const IOOptions& options)
         {
             return Read::create(path, memory, options, _logSystem.lock());
         }
@@ -277,7 +277,7 @@ namespace tl
                     vsnprintf(buf, ftk::cStringSize, fmt, vl);
                     std::string s(buf);
                     ftk::removeTrailingNewlines(s);
-                    logSystem->print("tl::io::ffmpeg::ReadPlugin", s);
+                    logSystem->print("tl::ffmpeg::ReadPlugin", s);
                 }
                 break;
             case AV_LOG_VERBOSE:
@@ -311,7 +311,7 @@ namespace tl
             }
 
             // Get formats.
-            std::map<std::string, io::FileType> extensions;
+            std::map<std::string, FileType> extensions;
             const AVOutputFormat* avOutputFormat = nullptr;
             void* avOutputFormatIterate = nullptr;
             std::vector<std::string> formatLog;
@@ -325,7 +325,7 @@ namespace tl
                         {
                             extension.insert(0, ".");
                         }                            
-                        extensions[extension] = io::FileType::Media;
+                        extensions[extension] = FileType::Media;
                     }
                     formatLog.push_back(ftk::Format("    {0}: {1}").arg(avOutputFormat->name).arg(avOutputFormat->extensions));
                 }
@@ -339,10 +339,10 @@ namespace tl
             //av_log_set_callback(_logCallback);
 
             logSystem->print(
-                "tl::io::ffmpeg::WritePlugin",
+                "tl::ffmpeg::WritePlugin",
                 "Codecs: " + ftk::join(p.codecNames, ", "));
             logSystem->print(
-                "tl::io::ffmpeg::WritePlugin",
+                "tl::ffmpeg::WritePlugin",
                 "Formats:\n" + ftk::join(formatLog, '\n'));
         }
 
@@ -365,7 +365,7 @@ namespace tl
 
         ftk::ImageInfo WritePlugin::getInfo(
             const ftk::ImageInfo& info,
-            const io::Options& options) const
+            const IOOptions& options) const
         {
             ftk::ImageInfo out;
             out.size = info.size;
@@ -384,10 +384,10 @@ namespace tl
             return out;
         }
 
-        std::shared_ptr<io::IWrite> WritePlugin::write(
+        std::shared_ptr<IWrite> WritePlugin::write(
             const ftk::Path& path,
-            const io::Info& info,
-            const io::Options& options)
+            const IOInfo& info,
+            const IOOptions& options)
         {
             if (info.video.empty() || (!info.video.empty() && !_isCompatible(info.video[0], options)))
                 throw std::runtime_error(ftk::Format("Unsupported video: \"{0}\"").

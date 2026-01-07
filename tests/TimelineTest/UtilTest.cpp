@@ -46,8 +46,8 @@ namespace tl
         {
             for (const auto& i : getExts(
                 _context,
-                static_cast<int>(io::FileType::Media) |
-                static_cast<int>(io::FileType::Seq)))
+                static_cast<int>(FileType::Media) |
+                static_cast<int>(FileType::Seq)))
             {
                 std::stringstream ss;
                 ss << "Timeline extension: " << i;
@@ -285,8 +285,8 @@ namespace tl
         {
             {
                 AudioInfo info(2, AudioType::S32, 48000);
-                std::vector<AudioData> data;
-                auto out = audioCopy(info, data, Playback::Forward, 0, 2000);
+                std::vector<AudioFrame> frames;
+                auto out = audioCopy(info, frames, Playback::Forward, 0, 2000);
                 FTK_ASSERT(out.empty());
 
                 auto audio = Audio::create(info, info.sampleRate);
@@ -296,8 +296,8 @@ namespace tl
                     audioP[0] = i;
                     audioP[1] = i + 1;
                 }
-                data.push_back(AudioData({ 0.0, { { audio } } }));
-                out = audioCopy(info, data, Playback::Forward, 0, 2000);
+                frames.push_back(AudioFrame({ 0.0, { { audio } } }));
+                out = audioCopy(info, frames, Playback::Forward, 0, 2000);
                 FTK_ASSERT(1 == out.size());
                 FTK_ASSERT(2000 == out[0]->getSampleCount());
                 audioP = reinterpret_cast<int32_t*>(out[0]->getData());
@@ -307,7 +307,7 @@ namespace tl
                     FTK_ASSERT((i + 1) == audioP[1]);
                 }
 
-                out = audioCopy(info, data, Playback::Forward, info.sampleRate - 1000, 2000);
+                out = audioCopy(info, frames, Playback::Forward, info.sampleRate - 1000, 2000);
                 FTK_ASSERT(1 == out.size());
                 FTK_ASSERT(1000 == out[0]->getSampleCount());
                 audioP = reinterpret_cast<int32_t*>(out[0]->getData());
@@ -317,8 +317,8 @@ namespace tl
                     FTK_ASSERT((j + 1) == audioP[1]);
                 }
 
-                data.push_back(AudioData({ 1.0, { { audio } } }));
-                out = audioCopy(info, data, Playback::Forward, info.sampleRate - 1000, 2000);
+                frames.push_back(AudioFrame({ 1.0, { { audio } } }));
+                out = audioCopy(info, frames, Playback::Forward, info.sampleRate - 1000, 2000);
                 FTK_ASSERT(1 == out.size());
                 FTK_ASSERT(2000 == out[0]->getSampleCount());
                 audioP = reinterpret_cast<int32_t*>(out[0]->getData());
@@ -337,7 +337,7 @@ namespace tl
                     FTK_ASSERT((j + 1) == audioP[1]);
                 }
 
-                out = audioCopy(info, data, Playback::Reverse, info.sampleRate, 2000);
+                out = audioCopy(info, frames, Playback::Reverse, info.sampleRate, 2000);
                 FTK_ASSERT(1 == out.size());
                 FTK_ASSERT(2000 == out[0]->getSampleCount());
                 audioP = reinterpret_cast<int32_t*>(out[0]->getData());
@@ -349,7 +349,7 @@ namespace tl
                     FTK_ASSERT((j + 1) == audioP[1]);
                 }
 
-                out = audioCopy(info, data, Playback::Reverse, info.sampleRate + 1000, 2000);
+                out = audioCopy(info, frames, Playback::Reverse, info.sampleRate + 1000, 2000);
                 FTK_ASSERT(1 == out.size());
                 FTK_ASSERT(2000 == out[0]->getSampleCount());
                 audioP = reinterpret_cast<int32_t*>(out[0]->getData());

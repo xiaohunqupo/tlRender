@@ -23,8 +23,8 @@ namespace tl
                 &timeline::getExts,
                 py::arg("context"),
                 py::arg("types") =
-                    static_cast<int>(io::FileType::Media) |
-                    static_cast<int>(io::FileType::Seq));
+                    static_cast<int>(FileType::Media) |
+                    static_cast<int>(FileType::Seq));
         }
     }
 }

@@ -130,7 +130,7 @@ namespace tl
 
             //! Get the I/O information. The information is retrieved from
             //! the first clip in the timeline.
-            TL_API const io::Info& getIOInfo() const;
+            TL_API const IOInfo& getIOInfo() const;
 
             ///@}
 
@@ -278,13 +278,13 @@ namespace tl
             ///@{
 
             //! Get the I/O options.
-            TL_API const io::Options& getIOOptions() const;
+            TL_API const IOOptions& getIOOptions() const;
 
             //! Observe the I/O options.
-            TL_API std::shared_ptr<ftk::IObservable<io::Options> > observeIOOptions() const;
+            TL_API std::shared_ptr<ftk::IObservable<IOOptions> > observeIOOptions() const;
 
             //! Set the I/O options.
-            TL_API void setIOOptions(const io::Options&);
+            TL_API void setIOOptions(const IOOptions&);
 
             ///@}
 
@@ -309,11 +309,11 @@ namespace tl
             //! Set the comparison video layers.
             TL_API void setCompareVideoLayers(const std::vector<int>&);
 
-            //! Get the current video data.
-            TL_API const std::vector<VideoData>& getCurrentVideo() const;
+            //! Get the current video frame.
+            TL_API const std::vector<VideoFrame>& getCurrentVideo() const;
 
-            //! Observe the current video data.
-            TL_API std::shared_ptr<ftk::IObservableList<VideoData> > observeCurrentVideo() const;
+            //! Observe the current video frame.
+            TL_API std::shared_ptr<ftk::IObservableList<VideoFrame> > observeCurrentVideo() const;
 
             ///@}
 
@@ -365,11 +365,11 @@ namespace tl
             //! Set the audio sync offset (in seconds).
             TL_API void setAudioOffset(double);
 
-            //! Get the current audio data.
-            TL_API const std::vector<AudioData>& getCurrentAudio() const;
+            //! Get the current audio frames.
+            TL_API const std::vector<AudioFrame>& getCurrentAudio() const;
 
-            //! Observe the current audio data.
-            TL_API std::shared_ptr<ftk::IObservableList<AudioData> > observeCurrentAudio() const;
+            //! Observe the current audio frames.
+            TL_API std::shared_ptr<ftk::IObservableList<AudioFrame> > observeCurrentAudio() const;
 
             ///@}
 

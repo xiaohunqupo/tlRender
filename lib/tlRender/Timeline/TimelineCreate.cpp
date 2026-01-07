@@ -39,7 +39,7 @@ namespace tl
                 const ftk::PathOptions& pathOptions)
             {
                 ftk::Path out;
-                auto ioSystem = context->getSystem<io::ReadSystem>();
+                auto ioSystem = context->getSystem<ReadSystem>();
                 switch (imageSeqAudio)
                 {
                 case ImageSeqAudio::Ext:
@@ -306,12 +306,12 @@ namespace tl
 
             try
             {
-                auto ioSystem = context->getSystem<io::ReadSystem>();
+                auto ioSystem = context->getSystem<ReadSystem>();
 
                 // Is the input a sequence?
                 const std::vector<std::string> seqExts = getExts(
                     context,
-                    static_cast<int>(io::FileType::Seq));
+                    static_cast<int>(FileType::Seq));
                 const bool hasSeqExt = std::find(
                     seqExts.begin(),
                     seqExts.end(),

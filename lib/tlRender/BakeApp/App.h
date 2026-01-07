@@ -91,7 +91,7 @@ namespace tl
             void run() override;
 
         private:
-            io::Options _getIOOptions() const;
+            IOOptions _getIOOptions() const;
 
             void _tick();
             void _printProgress();
@@ -108,13 +108,13 @@ namespace tl
             OTIO_NS::RationalTime _outputTime = invalidTime;
 
             std::shared_ptr<ftk::gl::Window> _window;
-            std::shared_ptr<io::IPlugin> _usdPlugin;
+            std::shared_ptr<IIOPlugin> _usdPlugin;
             std::shared_ptr<timeline::IRender> _render;
             std::shared_ptr<ftk::gl::OffscreenBuffer> _buffer;
             std::shared_ptr<ftk::gl::OffscreenBuffer> _bufferFlip;
 
-            std::shared_ptr<io::IWritePlugin> _writerPlugin;
-            std::shared_ptr<io::IWrite> _writer;
+            std::shared_ptr<IWritePlugin> _writerPlugin;
+            std::shared_ptr<IWrite> _writer;
             std::shared_ptr<ftk::Image> _outputImage;
 
             bool _running = true;

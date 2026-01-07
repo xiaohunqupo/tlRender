@@ -8,105 +8,102 @@
 
 namespace tl
 {
-    namespace io
+    //! Sequence I/O options.
+    struct TL_API_TYPE SeqOptions
     {
-        //! Sequence I/O options.
-        struct TL_API_TYPE SeqOptions
-        {
-            double defaultSpeed = 24.0;
-            size_t threadCount = 16;
+        double defaultSpeed = 24.0;
+        size_t threadCount = 16;
 
-            TL_API bool operator == (const SeqOptions&) const;
-            TL_API bool operator != (const SeqOptions&) const;
-        };
+        TL_API bool operator == (const SeqOptions&) const;
+        TL_API bool operator != (const SeqOptions&) const;
+    };
 
-        //! Get sequence I/O options.
-        TL_API Options getOptions(const SeqOptions&);
+    //! Get sequence I/O options.
+    TL_API IOOptions getOptions(const SeqOptions&);
 
-        //! Base class for image sequence readers.
-        class TL_API_TYPE ISeqRead : public IRead
-        {
-        protected:
-            void _init(
-                const ftk::Path&,
-                const std::vector<ftk::MemFile>&,
-                const Options&,
-                const std::shared_ptr<ftk::LogSystem>&);
+    //! Base class for image sequence readers.
+    class TL_API_TYPE ISeqRead : public IRead
+    {
+    protected:
+        void _init(
+            const ftk::Path&,
+            const std::vector<ftk::MemFile>&,
+            const IOOptions&,
+            const std::shared_ptr<ftk::LogSystem>&);
 
-            ISeqRead();
+        ISeqRead();
 
-        public:
-            TL_API virtual ~ISeqRead();
+    public:
+        TL_API virtual ~ISeqRead();
 
-            TL_API std::future<Info> getInfo() override;
-            TL_API std::future<VideoData> readVideo(
-                const OTIO_NS::RationalTime&,
-                const Options& = Options()) override;
-            TL_API void cancelRequests() override;
+        TL_API std::future<IOInfo> getInfo() override;
+        TL_API std::future<VideoData> readVideo(
+            const OTIO_NS::RationalTime&,
+            const IOOptions& = IOOptions()) override;
+        TL_API void cancelRequests() override;
 
-        protected:
-            virtual Info _getInfo(
-                const std::string& fileName,
-                const ftk::MemFile*) = 0;
-            virtual VideoData _readVideo(
-                const std::string& fileName,
-                const ftk::MemFile*,
-                const OTIO_NS::RationalTime&,
-                const Options&) = 0;
+    protected:
+        virtual IOInfo _getInfo(
+            const std::string& fileName,
+            const ftk::MemFile*) = 0;
+        virtual VideoData _readVideo(
+            const std::string& fileName,
+            const ftk::MemFile*,
+            const OTIO_NS::RationalTime&,
+            const IOOptions&) = 0;
 
-            //! \bug This must be called in the sub-class destructor.
-            void _finish();
+        //! \bug This must be called in the sub-class destructor.
+        void _finish();
 
-            int64_t _startFrame = 0;
-            int64_t _endFrame = 0;
-            float _defaultSpeed = SeqOptions().defaultSpeed;
+        int64_t _startFrame = 0;
+        int64_t _endFrame = 0;
+        float _defaultSpeed = SeqOptions().defaultSpeed;
 
-        private:
-            void _thread();
-            void _finishRequests();
-            void _cancelRequests();
+    private:
+        void _thread();
+        void _finishRequests();
+        void _cancelRequests();
 
-            FTK_PRIVATE();
-        };
+        FTK_PRIVATE();
+    };
 
-        //! Base class for image sequence writers.
-        class TL_API_TYPE ISeqWrite : public IWrite
-        {
-        protected:
-            void _init(
-                const ftk::Path&,
-                const Info&,
-                const Options&,
-                const std::shared_ptr<ftk::LogSystem>&);
+    //! Base class for image sequence writers.
+    class TL_API_TYPE ISeqWrite : public IWrite
+    {
+    protected:
+        void _init(
+            const ftk::Path&,
+            const IOInfo&,
+            const IOOptions&,
+            const std::shared_ptr<ftk::LogSystem>&);
 
-            ISeqWrite();
+        ISeqWrite();
 
-        public:
-            TL_API virtual ~ISeqWrite();
+    public:
+        TL_API virtual ~ISeqWrite();
 
-            TL_API void writeVideo(
-                const OTIO_NS::RationalTime&,
-                const std::shared_ptr<ftk::Image>&,
-                const Options& = Options()) override;
+        TL_API void writeVideo(
+            const OTIO_NS::RationalTime&,
+            const std::shared_ptr<ftk::Image>&,
+            const IOOptions& = IOOptions()) override;
 
-        protected:
-            virtual void _writeVideo(
-                const std::string& fileName,
-                const OTIO_NS::RationalTime&,
-                const std::shared_ptr<ftk::Image>&,
-                const Options&) = 0;
+    protected:
+        virtual void _writeVideo(
+            const std::string& fileName,
+            const OTIO_NS::RationalTime&,
+            const std::shared_ptr<ftk::Image>&,
+            const IOOptions&) = 0;
 
-        private:
-            FTK_PRIVATE();
-        };
+    private:
+        FTK_PRIVATE();
+    };
 
-        //! \name Serialize
-        ///@{
+    //! \name Serialize
+    ///@{
 
-        TL_API void to_json(nlohmann::json&, const SeqOptions&);
+    TL_API void to_json(nlohmann::json&, const SeqOptions&);
 
-        TL_API void from_json(const nlohmann::json&, SeqOptions&);
+    TL_API void from_json(const nlohmann::json&, SeqOptions&);
 
-        ///@}
-    }
+    ///@}
 }

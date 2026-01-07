@@ -10,8 +10,6 @@
 
 #include <sstream>
 
-using namespace tl::io;
-
 namespace tl
 {
     namespace io_tests
@@ -67,7 +65,7 @@ namespace tl
             public:
                 std::shared_ptr<IRead> read(
                     const ftk::Path&,
-                    const Options& = Options()) override
+                    const IOOptions& = IOOptions()) override
                 {
                     return nullptr;
                 }
@@ -78,15 +76,15 @@ namespace tl
             public:
                 ftk::ImageInfo getInfo(
                     const ftk::ImageInfo&,
-                    const io::Options & = io::Options()) const override
+                    const IOOptions& = IOOptions()) const override
                 {
                     return ftk::ImageInfo();
                 }
 
                 std::shared_ptr<IWrite> write(
                     const ftk::Path&,
-                    const Info&,
-                    const Options & = Options()) override
+                    const IOInfo&,
+                    const IOOptions& = IOOptions()) override
                 {
                     return nullptr;
                 }
@@ -107,7 +105,7 @@ namespace tl
                 _print(ss.str());
             }
             {
-                std::map<std::string, std::shared_ptr<IPlugin> > plugins;
+                std::map<std::string, std::shared_ptr<IIOPlugin> > plugins;
                 for (const auto& plugin : readSystem->getPlugins())
                 {
                     const auto& exts = plugin->getExts();

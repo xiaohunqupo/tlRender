@@ -51,7 +51,7 @@ namespace tl
                 const ftk::M44F&,
                 const timeline::BackgroundOptions&) override;
             TL_API void drawVideo(
-                const std::vector<timeline::VideoData>&,
+                const std::vector<timeline::VideoFrame>&,
                 const std::vector<ftk::Box2I>&,
                 const std::vector<ftk::ImageOptions>& = {},
                 const std::vector<timeline::DisplayOptions>& = {},
@@ -121,49 +121,49 @@ namespace tl
             void _displayShader();
 
             void _drawVideoA(
-                const std::vector<timeline::VideoData>&,
+                const std::vector<timeline::VideoFrame>&,
                 const std::vector<ftk::Box2I>&,
                 const std::vector<ftk::ImageOptions>&,
                 const std::vector<timeline::DisplayOptions>&,
                 const timeline::CompareOptions&,
                 ftk::ImageType colorBuffer);
             void _drawVideoB(
-                const std::vector<timeline::VideoData>&,
+                const std::vector<timeline::VideoFrame>&,
                 const std::vector<ftk::Box2I>&,
                 const std::vector<ftk::ImageOptions>&,
                 const std::vector<timeline::DisplayOptions>&,
                 const timeline::CompareOptions&,
                 ftk::ImageType colorBuffer);
             void _drawVideoWipe(
-                const std::vector<timeline::VideoData>&,
+                const std::vector<timeline::VideoFrame>&,
                 const std::vector<ftk::Box2I>&,
                 const std::vector<ftk::ImageOptions>&,
                 const std::vector<timeline::DisplayOptions>&,
                 const timeline::CompareOptions&,
                 ftk::ImageType colorBuffer);
             void _drawVideoOverlay(
-                const std::vector<timeline::VideoData>&,
+                const std::vector<timeline::VideoFrame>&,
                 const std::vector<ftk::Box2I>&,
                 const std::vector<ftk::ImageOptions>&,
                 const std::vector<timeline::DisplayOptions>&,
                 const timeline::CompareOptions&,
                 ftk::ImageType colorBuffer);
             void _drawVideoDifference(
-                const std::vector<timeline::VideoData>&,
+                const std::vector<timeline::VideoFrame>&,
                 const std::vector<ftk::Box2I>&,
                 const std::vector<ftk::ImageOptions>&,
                 const std::vector<timeline::DisplayOptions>&,
                 const timeline::CompareOptions&,
                 ftk::ImageType colorBuffer);
             void _drawVideoTile(
-                const std::vector<timeline::VideoData>&,
+                const std::vector<timeline::VideoFrame>&,
                 const std::vector<ftk::Box2I>&,
                 const std::vector<ftk::ImageOptions>&,
                 const std::vector<timeline::DisplayOptions>&,
                 const timeline::CompareOptions&,
                 ftk::ImageType colorBuffer);
             void _drawVideo(
-                const timeline::VideoData&,
+                const timeline::VideoFrame&,
                 const ftk::Box2I&,
                 const std::shared_ptr<ftk::ImageOptions>&,
                 const timeline::DisplayOptions&,

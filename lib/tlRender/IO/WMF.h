@@ -17,16 +17,16 @@ namespace tl
         };
 
         //! Get WMF options.
-        TL_API io::Options getOptions(const Options&);
+        TL_API IOOptions getOptions(const Options&);
 
         //! WMF reader
-        class TL_API_TYPE Read : public io::IRead
+        class TL_API_TYPE Read : public IRead
         {
         protected:
             void _init(
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
-                const io::Options&,
+                const IOOptions&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
             Read();
@@ -37,23 +37,23 @@ namespace tl
             //! Create a new reader.
             TL_API static std::shared_ptr<Read> create(
                 const ftk::Path&,
-                const io::Options&,
+                const IOOptions&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
             //! Create a new reader.
             TL_API static std::shared_ptr<Read> create(
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
-                const io::Options&,
+                const IOOptions&,
                 const std::shared_ptr<ftk::LogSystem>&);
 
-            TL_API std::future<io::Info> getInfo() override;
-            TL_API std::future<io::VideoData> readVideo(
+            TL_API std::future<IOInfo> getInfo() override;
+            TL_API std::future<VideoData> readVideo(
                 const OTIO_NS::RationalTime&,
-                const io::Options& = io::Options()) override;
-            TL_API std::future<io::AudioData> readAudio(
+                const IOOptions& = IOOptions()) override;
+            TL_API std::future<AudioData> readAudio(
                 const OTIO_NS::TimeRange&,
-                const io::Options& = io::Options()) override;
+                const IOOptions& = IOOptions()) override;
             TL_API void cancelRequests() override;
 
         private:
@@ -63,7 +63,7 @@ namespace tl
         };
 
         //! WMF read plugin.
-        class TL_API_TYPE ReadPlugin : public io::IReadPlugin
+        class TL_API_TYPE ReadPlugin : public IReadPlugin
         {
         protected:
             void _init(const std::shared_ptr<ftk::LogSystem>&);
@@ -75,13 +75,13 @@ namespace tl
             TL_API static std::shared_ptr<ReadPlugin> create(
                 const std::shared_ptr<ftk::LogSystem>&);
 
-            TL_API std::shared_ptr<io::IRead> read(
+            TL_API std::shared_ptr<IRead> read(
                 const ftk::Path&,
-                const io::Options& = io::Options()) override;
-            TL_API std::shared_ptr<io::IRead> read(
+                const IOOptions& = IOOptions()) override;
+            TL_API std::shared_ptr<IRead> read(
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
-                const io::Options& = io::Options()) override;
+                const IOOptions& = IOOptions()) override;
 
         private:
             FTK_PRIVATE();

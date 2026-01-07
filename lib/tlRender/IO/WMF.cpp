@@ -17,9 +17,9 @@ namespace tl
             return !(*this == other);
         }
 
-        io::Options getOptions(const Options& value)
+        IOOptions getOptions(const Options& value)
         {
-            io::Options out;
+            IOOptions out;
             return out;
         }
 
@@ -31,14 +31,14 @@ namespace tl
         {
             FTK_P();
 
-            std::map<std::string, io::FileType> extensions;
-            extensions[".avi"] = io::FileType::Media;
-            extensions[".mp3"] = io::FileType::Media;
-            extensions[".m4a"] = io::FileType::Media;
-            extensions[".m4v"] = io::FileType::Media;
-            extensions[".mov"] = io::FileType::Media;
-            extensions[".mp4"] = io::FileType::Media;
-            extensions[".wav"] = io::FileType::Media;
+            std::map<std::string, FileType> extensions;
+            extensions[".avi"] = FileType::Media;
+            extensions[".mp3"] = FileType::Media;
+            extensions[".m4a"] = FileType::Media;
+            extensions[".m4v"] = FileType::Media;
+            extensions[".mov"] = FileType::Media;
+            extensions[".mp4"] = FileType::Media;
+            extensions[".wav"] = FileType::Media;
 
             IReadPlugin::_init("WMF", extensions, logSystem);
         }
@@ -55,17 +55,17 @@ namespace tl
             return out;
         }
 
-        std::shared_ptr<io::IRead> ReadPlugin::read(
+        std::shared_ptr<IRead> ReadPlugin::read(
             const ftk::Path& path,
-            const io::Options& options)
+            const IOOptions& options)
         {
             return Read::create(path, options, _logSystem.lock());
         }
 
-        std::shared_ptr<io::IRead> ReadPlugin::read(
+        std::shared_ptr<IRead> ReadPlugin::read(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& memory,
-            const io::Options& options)
+            const IOOptions& options)
         {
             return Read::create(path, memory, options, _logSystem.lock());
         }
