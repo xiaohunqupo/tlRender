@@ -133,7 +133,7 @@ namespace tl
             }
             FTK_ASSERT(!readSystem->read(ftk::Path()));
             auto writeSystem = _context->getSystem<WriteSystem>();
-            FTK_ASSERT(!writeSystem->write(ftk::Path(), Info()));
+            FTK_ASSERT(!writeSystem->write(ftk::Path(), IOInfo()));
         }
     }
 }

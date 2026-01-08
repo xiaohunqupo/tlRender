@@ -271,9 +271,9 @@ namespace tl
                 FTK_ASSERT(otioTrack == getParent<OTIO_NS::Track>(otioClip));
             }
             {
-                VideoData a;
+                VideoFrame a;
                 a.time = OTIO_NS::RationalTime(1.0, 24.0);
-                VideoData b;
+                VideoFrame b;
                 b.time = OTIO_NS::RationalTime(1.0, 24.0);
                 FTK_ASSERT(isTimeEqual(a, b));
             }

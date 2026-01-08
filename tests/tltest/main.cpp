@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
         context,
         qt::DefaultSurfaceFormat::OpenGL_4_1_CoreProfile);
 #else // TLRENDER_QT5 || TLRENDER_QT6
-    timeline::init(context);
+    tl::init(context);
 #endif // TLRENDER_QT5 || TLRENDER_QT6
 
     auto logObserver = ftk::ListObserver<ftk::LogItem>::create(
