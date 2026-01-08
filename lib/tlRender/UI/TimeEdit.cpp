@@ -15,19 +15,19 @@ namespace tl
     {
         struct TimeEdit::Private
         {
-            std::shared_ptr<timeline::TimeUnitsModel> timeUnitsModel;
+            std::shared_ptr<TimeUnitsModel> timeUnitsModel;
             OTIO_NS::RationalTime value = invalidTime;
             std::function<void(const OTIO_NS::RationalTime&)> callback;
             std::shared_ptr<ftk::LineEdit> lineEdit;
             std::shared_ptr<ftk::IncButtons> incButtons;
             std::shared_ptr<ftk::HorizontalLayout> layout;
 
-            std::shared_ptr<ftk::Observer<timeline::TimeUnits> > timeUnitsObserver;
+            std::shared_ptr<ftk::Observer<TimeUnits> > timeUnitsObserver;
         };
 
         void TimeEdit::_init(
             const std::shared_ptr<ftk::Context>& context,
-            const std::shared_ptr<timeline::TimeUnitsModel>& timeUnitsModel,
+            const std::shared_ptr<TimeUnitsModel>& timeUnitsModel,
             const std::shared_ptr<IWidget>& parent)
         {
             IWidget::_init(context, "tl::ui::TimeEdit", parent);
@@ -36,7 +36,7 @@ namespace tl
             p.timeUnitsModel = timeUnitsModel;
             if (!p.timeUnitsModel)
             {
-                p.timeUnitsModel = timeline::TimeUnitsModel::create(context);
+                p.timeUnitsModel = TimeUnitsModel::create(context);
             }
 
             p.lineEdit = ftk::LineEdit::create(context, shared_from_this());
@@ -77,9 +77,9 @@ namespace tl
                     _commitValue(_p->value + OTIO_NS::RationalTime(-1.0, _p->value.rate()));
                 });
 
-            p.timeUnitsObserver = ftk::Observer<timeline::TimeUnits>::create(
+            p.timeUnitsObserver = ftk::Observer<TimeUnits>::create(
                 p.timeUnitsModel->observeTimeUnits(),
-                [this](timeline::TimeUnits)
+                [this](TimeUnits)
                 {
                     _textUpdate();
                 });
@@ -94,7 +94,7 @@ namespace tl
 
         std::shared_ptr<TimeEdit> TimeEdit::create(
             const std::shared_ptr<ftk::Context>& context,
-            const std::shared_ptr<timeline::TimeUnitsModel>& timeUnitsModel,
+            const std::shared_ptr<TimeUnitsModel>& timeUnitsModel,
             const std::shared_ptr<IWidget>& parent)
         {
             auto out = std::shared_ptr<TimeEdit>(new TimeEdit);
@@ -102,7 +102,7 @@ namespace tl
             return out;
         }
 
-        const std::shared_ptr<timeline::TimeUnitsModel>& TimeEdit::getTimeUnitsModel() const
+        const std::shared_ptr<TimeUnitsModel>& TimeEdit::getTimeUnitsModel() const
         {
             return _p->timeUnitsModel;
         }
@@ -200,8 +200,8 @@ namespace tl
             opentime::ErrorStatus errorStatus;
             if (p.timeUnitsModel)
             {
-                const timeline::TimeUnits timeUnits = p.timeUnitsModel->getTimeUnits();
-                tmp = timeline::textToTime(
+                const TimeUnits timeUnits = p.timeUnitsModel->getTimeUnits();
+                tmp = textToTime(
                     value,
                     p.value.rate(),
                     timeUnits,
@@ -239,9 +239,9 @@ namespace tl
             std::string format;
             if (p.timeUnitsModel)
             {
-                const timeline::TimeUnits timeUnits = p.timeUnitsModel->getTimeUnits();
-                text = timeline::timeToText(p.value, timeUnits);
-                format = timeline::formatString(timeUnits);
+                const TimeUnits timeUnits = p.timeUnitsModel->getTimeUnits();
+                text = timeToText(p.value, timeUnits);
+                format = formatString(timeUnits);
             }
             p.lineEdit->setText(text);
             p.lineEdit->setFormat(format);

@@ -31,17 +31,17 @@ namespace tl
                 const std::filesystem::path&);
 
             //! Get the cache settings.
-            const timeline::PlayerCacheOptions& getCache() const;
+            const PlayerCacheOptions& getCache() const;
 
             //! Observe the cache settings.
-            std::shared_ptr<ftk::IObservable<timeline::PlayerCacheOptions> > observeCache() const;
+            std::shared_ptr<ftk::IObservable<PlayerCacheOptions> > observeCache() const;
 
             //! Set the cache settings.
-            void setCache(const timeline::PlayerCacheOptions&);
+            void setCache(const PlayerCacheOptions&);
 
         private:
             std::weak_ptr<ftk::FileBrowserSystem> _fileBrowserSystem;
-            std::shared_ptr<ftk::Observable<timeline::PlayerCacheOptions> > _cache;
+            std::shared_ptr<ftk::Observable<PlayerCacheOptions> > _cache;
         };
     }
 }

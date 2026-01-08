@@ -21,16 +21,16 @@ namespace tl
     {
         struct Viewport::Private
         {
-            std::shared_ptr<ftk::Observable<timeline::CompareOptions> > compareOptions;
-            std::shared_ptr<ftk::Observable<timeline::OCIOOptions> > ocioOptions;
-            std::shared_ptr<ftk::Observable<timeline::LUTOptions> > lutOptions;
+            std::shared_ptr<ftk::Observable<CompareOptions> > compareOptions;
+            std::shared_ptr<ftk::Observable<OCIOOptions> > ocioOptions;
+            std::shared_ptr<ftk::Observable<LUTOptions> > lutOptions;
             std::shared_ptr<ftk::ObservableList<ftk::ImageOptions> > imageOptions;
-            std::shared_ptr<ftk::ObservableList<timeline::DisplayOptions> > displayOptions;
-            std::shared_ptr<ftk::Observable<timeline::BackgroundOptions> > bgOptions;
-            std::shared_ptr<ftk::Observable<timeline::ForegroundOptions> > fgOptions;
+            std::shared_ptr<ftk::ObservableList<DisplayOptions> > displayOptions;
+            std::shared_ptr<ftk::Observable<BackgroundOptions> > bgOptions;
+            std::shared_ptr<ftk::Observable<ForegroundOptions> > fgOptions;
             std::shared_ptr<ftk::Observable<ftk::ImageType> > colorBuffer;
-            std::shared_ptr<timeline::Player> player;
-            std::vector<timeline::VideoFrame> videoFrame;
+            std::shared_ptr<Player> player;
+            std::vector<VideoFrame> videoFrame;
             std::shared_ptr<ftk::Observable<ftk::V2I> > viewPos;
             std::shared_ptr<ftk::Observable<double> > viewZoom;
             std::shared_ptr<ftk::Observable<std::pair<ftk::V2I, double> > > viewPosZoom;
@@ -84,8 +84,8 @@ namespace tl
             };
             MouseData mouse;
 
-            std::shared_ptr<ftk::Observer<timeline::Playback> > playbackObserver;
-            std::shared_ptr<ftk::ListObserver<timeline::VideoFrame> > videoFrameObserver;
+            std::shared_ptr<ftk::Observer<Playback> > playbackObserver;
+            std::shared_ptr<ftk::ListObserver<VideoFrame> > videoFrameObserver;
         };
 
         void Viewport::_init(
@@ -98,14 +98,14 @@ namespace tl
             setHStretch(ftk::Stretch::Expanding);
             setVStretch(ftk::Stretch::Expanding);
 
-            p.compareOptions = ftk::Observable<timeline::CompareOptions>::create();
-            p.ocioOptions = ftk::Observable<timeline::OCIOOptions>::create();
-            p.lutOptions = ftk::Observable<timeline::LUTOptions>::create();
+            p.compareOptions = ftk::Observable<CompareOptions>::create();
+            p.ocioOptions = ftk::Observable<OCIOOptions>::create();
+            p.lutOptions = ftk::Observable<LUTOptions>::create();
             p.imageOptions = ftk::ObservableList<ftk::ImageOptions>::create();
-            p.displayOptions = ftk::ObservableList<timeline::DisplayOptions>::create();
-            p.bgOptions = ftk::Observable<timeline::BackgroundOptions>::create();
-            p.fgOptions = ftk::Observable<timeline::ForegroundOptions>::create();
-            p.compareOptions = ftk::Observable<timeline::CompareOptions>::create();
+            p.displayOptions = ftk::ObservableList<DisplayOptions>::create();
+            p.bgOptions = ftk::Observable<BackgroundOptions>::create();
+            p.fgOptions = ftk::Observable<ForegroundOptions>::create();
+            p.compareOptions = ftk::Observable<CompareOptions>::create();
             p.colorBuffer = ftk::Observable<ftk::ImageType>::create(
                 ftk::ImageType::RGBA_U8);
             p.viewPos = ftk::Observable<ftk::V2I>::create();
@@ -134,17 +134,17 @@ namespace tl
             return out;
         }
 
-        const timeline::CompareOptions& Viewport::getCompareOptions() const
+        const CompareOptions& Viewport::getCompareOptions() const
         {
             return _p->compareOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservable<timeline::CompareOptions> > Viewport::observeCompareOptions() const
+        std::shared_ptr<ftk::IObservable<CompareOptions> > Viewport::observeCompareOptions() const
         {
             return _p->compareOptions;
         }
 
-        void Viewport::setCompareOptions(const timeline::CompareOptions& value)
+        void Viewport::setCompareOptions(const CompareOptions& value)
         {
             FTK_P();
             if (p.compareOptions->setIfChanged(value))
@@ -154,17 +154,17 @@ namespace tl
             }
         }
 
-        const timeline::OCIOOptions& Viewport::getOCIOOptions() const
+        const OCIOOptions& Viewport::getOCIOOptions() const
         {
             return _p->ocioOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservable<timeline::OCIOOptions> > Viewport::observeOCIOOptions() const
+        std::shared_ptr<ftk::IObservable<OCIOOptions> > Viewport::observeOCIOOptions() const
         {
             return _p->ocioOptions;
         }
 
-        void Viewport::setOCIOOptions(const timeline::OCIOOptions& value)
+        void Viewport::setOCIOOptions(const OCIOOptions& value)
         {
             FTK_P();
             if (p.ocioOptions->setIfChanged(value))
@@ -174,17 +174,17 @@ namespace tl
             }
         }
 
-        const timeline::LUTOptions& Viewport::getLUTOptions() const
+        const LUTOptions& Viewport::getLUTOptions() const
         {
             return _p->lutOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservable<timeline::LUTOptions> > Viewport::observeLUTOptions() const
+        std::shared_ptr<ftk::IObservable<LUTOptions> > Viewport::observeLUTOptions() const
         {
             return _p->lutOptions;
         }
 
-        void Viewport::setLUTOptions(const timeline::LUTOptions& value)
+        void Viewport::setLUTOptions(const LUTOptions& value)
         {
             FTK_P();
             if (p.lutOptions->setIfChanged(value))
@@ -214,17 +214,17 @@ namespace tl
             }
         }
 
-        const std::vector<timeline::DisplayOptions>& Viewport::getDisplayOptions() const
+        const std::vector<DisplayOptions>& Viewport::getDisplayOptions() const
         {
             return _p->displayOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservableList<timeline::DisplayOptions> > Viewport::observeDisplayOptions() const
+        std::shared_ptr<ftk::IObservableList<DisplayOptions> > Viewport::observeDisplayOptions() const
         {
             return _p->displayOptions;
         }
 
-        void Viewport::setDisplayOptions(const std::vector<timeline::DisplayOptions>& value)
+        void Viewport::setDisplayOptions(const std::vector<DisplayOptions>& value)
         {
             FTK_P();
             if (p.displayOptions->setIfChanged(value))
@@ -234,17 +234,17 @@ namespace tl
             }
         }
 
-        const timeline::BackgroundOptions& Viewport::getBackgroundOptions() const
+        const BackgroundOptions& Viewport::getBackgroundOptions() const
         {
             return _p->bgOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservable<timeline::BackgroundOptions> > Viewport::observeBackgroundOptions() const
+        std::shared_ptr<ftk::IObservable<BackgroundOptions> > Viewport::observeBackgroundOptions() const
         {
             return _p->bgOptions;
         }
 
-        void Viewport::setBackgroundOptions(const timeline::BackgroundOptions& value)
+        void Viewport::setBackgroundOptions(const BackgroundOptions& value)
         {
             FTK_P();
             if (p.bgOptions->setIfChanged(value))
@@ -254,17 +254,17 @@ namespace tl
             }
         }
 
-        const timeline::ForegroundOptions& Viewport::getForegroundOptions() const
+        const ForegroundOptions& Viewport::getForegroundOptions() const
         {
             return _p->fgOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservable<timeline::ForegroundOptions> > Viewport::observeForegroundOptions() const
+        std::shared_ptr<ftk::IObservable<ForegroundOptions> > Viewport::observeForegroundOptions() const
         {
             return _p->fgOptions;
         }
 
-        void Viewport::setForegroundOptions(const timeline::ForegroundOptions& value)
+        void Viewport::setForegroundOptions(const ForegroundOptions& value)
         {
             FTK_P();
             if (p.fgOptions->setIfChanged(value))
@@ -294,12 +294,12 @@ namespace tl
             }
         }
 
-        const std::shared_ptr<timeline::Player>& Viewport::getPlayer() const
+        const std::shared_ptr<Player>& Viewport::getPlayer() const
         {
             return _p->player;
         }
 
-        void Viewport::setPlayer(const std::shared_ptr<timeline::Player>& value)
+        void Viewport::setPlayer(const std::shared_ptr<Player>& value)
         {
             FTK_P();
 
@@ -314,15 +314,15 @@ namespace tl
 
             if (p.player)
             {
-                p.playbackObserver = ftk::Observer<timeline::Playback>::create(
+                p.playbackObserver = ftk::Observer<Playback>::create(
                     p.player->observePlayback(),
-                    [this](timeline::Playback value)
+                    [this](Playback value)
                     {
                         FTK_P();
                         switch (value)
                         {
-                        case timeline::Playback::Forward:
-                        case timeline::Playback::Reverse:
+                        case Playback::Forward:
+                        case Playback::Reverse:
                             p.fpsData = Private::FpsData();
                             p.fpsData->timer = std::chrono::steady_clock::now();
                             p.fpsData->frameCount = 0;
@@ -336,9 +336,9 @@ namespace tl
                         }
                     });
 
-                p.videoFrameObserver = ftk::ListObserver<timeline::VideoFrame>::create(
+                p.videoFrameObserver = ftk::ListObserver<VideoFrame>::create(
                     p.player->observeCurrentVideo(),
-                    [this](const std::vector<timeline::VideoFrame>& value)
+                    [this](const std::vector<VideoFrame>& value)
                     {
                         FTK_P();
                         p.videoFrame = value;
@@ -583,7 +583,7 @@ namespace tl
                 _frameView();
             }
 
-            auto render = std::dynamic_pointer_cast<timeline::IRender>(event.render);
+            auto render = std::dynamic_pointer_cast<IRender>(event.render);
             const ftk::Box2I& g = getGeometry();
             render->drawRect(g, ftk::Color4F(0.F, 0.F, 0.F));
 
@@ -634,8 +634,8 @@ namespace tl
                         0.F,
                         -1.F,
                         1.F);
-                    const timeline::CompareOptions& compareOptions = p.compareOptions->get();
-                    const auto boxes = timeline::getBoxes(compareOptions.compare, p.videoFrame);
+                    const CompareOptions& compareOptions = p.compareOptions->get();
+                    const auto boxes = getBoxes(compareOptions.compare, p.videoFrame);
                     const ftk::V2I& viewPos = p.viewPos->get();
                     const double viewZoom = p.viewZoom->get();
                     const ftk::M44F vm =
@@ -689,7 +689,7 @@ namespace tl
                         ftk::gl::OffscreenBufferBinding binding(p.fgBuffer);
                         render->clearViewport(ftk::Color4F(0.F, 0.F, 0.F, 0.F));
                         render->setTransform(pm);
-                        timeline::ForegroundOptions options = p.fgOptions->get();
+                        ForegroundOptions options = p.fgOptions->get();
                         options.grid.fontInfo.size *= p.size.displayScale;
                         options.grid.textMargin *= p.size.displayScale;
                         render->drawForeground(boxes, vm, options);
@@ -787,7 +787,7 @@ namespace tl
                             const ftk::V2I& viewPos = p.viewPos->get();
                             const double viewZoom = p.viewZoom->get();
                             const auto& imageInfo = ioInfo.video[0];
-                            timeline::CompareOptions compareOptions = p.compareOptions->get();
+                            CompareOptions compareOptions = p.compareOptions->get();
                             compareOptions.wipeCenter.x = (pos.x - viewPos.x) / viewZoom /
                                 static_cast<float>(imageInfo.size.w * imageInfo.pixelAspectRatio);
                             compareOptions.wipeCenter.y = (pos.y - viewPos.y) / viewZoom /
@@ -937,7 +937,7 @@ namespace tl
         ftk::Size2I Viewport::_getRenderSize() const
         {
             FTK_P();
-            return timeline::getRenderSize(p.compareOptions->get().compare, p.videoFrame);
+            return getRenderSize(p.compareOptions->get().compare, p.videoFrame);
         }
 
         ftk::V2I Viewport::_getViewportCenter() const

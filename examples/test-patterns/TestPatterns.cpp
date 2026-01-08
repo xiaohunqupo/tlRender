@@ -72,7 +72,7 @@ namespace tl
             }
 
             void CountTestPattern::render(
-                const std::shared_ptr<timeline::IRender>& render,
+                const std::shared_ptr<IRender>& render,
                 const OTIO_NS::RationalTime& time)
             {
                 if (auto context = _context.lock())
@@ -207,7 +207,7 @@ namespace tl
             }
 
             void SwatchesTestPattern::render(
-                const std::shared_ptr<timeline::IRender>& render,
+                const std::shared_ptr<IRender>& render,
                 const OTIO_NS::RationalTime& time)
             {
                 const std::array<ftk::Color4F, 8> colors =
@@ -249,7 +249,7 @@ namespace tl
             }
 
             void GridTestPattern::render(
-                const std::shared_ptr<timeline::IRender>& render,
+                const std::shared_ptr<IRender>& render,
                 const OTIO_NS::RationalTime& time)
             {
                 int cellSize = 2;

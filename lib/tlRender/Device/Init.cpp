@@ -17,7 +17,7 @@ namespace tl
     {
         void init(const std::shared_ptr<ftk::Context>& context)
         {
-            timeline::init(context);
+            tl::init(context);
 #if defined(TLRENDER_BMD)
             bmd::System::create(context);
 #endif // TLRENDER_BMD

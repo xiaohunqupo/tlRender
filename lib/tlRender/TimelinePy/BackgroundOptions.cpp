@@ -18,8 +18,6 @@ namespace tl
     {
         void backgroundOptions(py::module_& m)
         {
-            using namespace timeline;
-            
             py::enum_<Background>(m, "Background")
                 .value("Solid", Background::Solid)
                 .value("Checkers", Background::Checkers)
@@ -36,7 +34,7 @@ namespace tl
                 .def(pybind11::self != pybind11::self);
 
             m.def("to_json",
-                [](const timeline::BackgroundOptions& value)
+                [](const BackgroundOptions& value)
                 {
                     nlohmann::json json;
                     to_json(json, value);
@@ -44,7 +42,7 @@ namespace tl
                 });
 
             m.def("from_json",
-                [](const std::string& value, timeline::BackgroundOptions& out)
+                [](const std::string& value, BackgroundOptions& out)
                 {
                     from_json(nlohmann::json().parse(value), out);
                 });

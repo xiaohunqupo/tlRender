@@ -20,7 +20,7 @@ namespace tl
             const std::shared_ptr<ftk::Context>& context,
             DefaultSurfaceFormat defaultSurfaceFormat)
         {
-            timeline::init(context);
+            tl::init(context);
             System::create(context, defaultSurfaceFormat);
         }
 
@@ -63,37 +63,37 @@ namespace tl
             QMetaType::registerComparators<io::FileType>();
 #endif // QT_VERSION
 
-            qRegisterMetaType<timeline::AudioFrame>("tl::timeline::AudioFrame");
-            qRegisterMetaType<timeline::AudioLayer>("tl::timeline::AudioLayer");
-            qRegisterMetaType<timeline::Color>("tl::timeline::Color");
-            qRegisterMetaType<timeline::Compare>("tl::timeline::Compare");
-            qRegisterMetaType<timeline::CompareTime>("tl::timeline::CompareTime");
-            qRegisterMetaType<timeline::CompareOptions>("tl::timeline::CompareOptions");
-            qRegisterMetaType<timeline::EXRDisplay>("tl::timeline::EXRDisplay");
-            qRegisterMetaType<timeline::ImageSeqAudio>("tl::timeline::ImageSeqAudio");
-            qRegisterMetaType<timeline::LUTOptions>("tl::timeline::LUTOptions");
-            qRegisterMetaType<timeline::Levels>("tl::timeline::Levels");
-            qRegisterMetaType<timeline::Loop>("tl::timeline::Loop");
-            qRegisterMetaType<timeline::OCIOOptions>("tl::timeline::OCIOOptions");
-            qRegisterMetaType<timeline::Options>("tl::timeline::Options");
-            qRegisterMetaType<timeline::Playback>("tl::timeline::Playback");
-            qRegisterMetaType<timeline::PlayerCacheInfo>("tl::timeline::PlayerCacheInfo");
-            qRegisterMetaType<timeline::PlayerCacheOptions>("tl::timeline::PlayerCacheOptions");
-            qRegisterMetaType<timeline::PlayerOptions>("tl::timeline::PlayerOptions");
-            qRegisterMetaType<timeline::TimeAction>("tl::timeline::TimeAction");
-            qRegisterMetaType<timeline::TimeUnits>("tl::timeline::TimeUnits");
-            qRegisterMetaType<timeline::Transition>("tl::timeline::Transition");
-            qRegisterMetaType<timeline::VideoFrame>("tl::timeline::VideoFrame");
-            qRegisterMetaType<timeline::VideoLayer>("tl::timeline::VideoLayer");
+            qRegisterMetaType<AudioFrame>("tl::AudioFrame");
+            qRegisterMetaType<AudioLayer>("tl::AudioLayer");
+            qRegisterMetaType<Color>("tl::Color");
+            qRegisterMetaType<Compare>("tl::Compare");
+            qRegisterMetaType<CompareTime>("tl::CompareTime");
+            qRegisterMetaType<CompareOptions>("tl::CompareOptions");
+            qRegisterMetaType<EXRDisplay>("tl::EXRDisplay");
+            qRegisterMetaType<ImageSeqAudio>("tl::ImageSeqAudio");
+            qRegisterMetaType<LUTOptions>("tl::LUTOptions");
+            qRegisterMetaType<Levels>("tl::Levels");
+            qRegisterMetaType<Loop>("tl::Loop");
+            qRegisterMetaType<OCIOOptions>("tl::OCIOOptions");
+            qRegisterMetaType<Options>("tl::Options");
+            qRegisterMetaType<Playback>("tl::Playback");
+            qRegisterMetaType<PlayerCacheInfo>("tl::PlayerCacheInfo");
+            qRegisterMetaType<PlayerCacheOptions>("tl::PlayerCacheOptions");
+            qRegisterMetaType<PlayerOptions>("tl::PlayerOptions");
+            qRegisterMetaType<TimeAction>("tl::TimeAction");
+            qRegisterMetaType<TimeUnits>("tl::TimeUnits");
+            qRegisterMetaType<Transition>("tl::Transition");
+            qRegisterMetaType<VideoFrame>("tl::VideoFrame");
+            qRegisterMetaType<VideoLayer>("tl::VideoLayer");
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            QMetaType::registerComparators<timeline::Compare>();
-            QMetaType::registerComparators<timeline::CompareTime>();
-            QMetaType::registerComparators<timeline::ImageuenceAudio>();
-            QMetaType::registerComparators<timeline::Loop>();
-            QMetaType::registerComparators<timeline::Playback>();
-            QMetaType::registerComparators<timeline::TimeAction>();
-            QMetaType::registerComparators<timeline::TimeUnits>();
-            QMetaType::registerComparators<timeline::Transition>();
+            QMetaType::registerComparators<Compare>();
+            QMetaType::registerComparators<CompareTime>();
+            QMetaType::registerComparators<ImageuenceAudio>();
+            QMetaType::registerComparators<Loop>();
+            QMetaType::registerComparators<Playback>();
+            QMetaType::registerComparators<TimeAction>();
+            QMetaType::registerComparators<TimeUnits>();
+            QMetaType::registerComparators<Transition>();
 #endif // QT_VERSION
 
             switch (defaultSurfaceFormat)

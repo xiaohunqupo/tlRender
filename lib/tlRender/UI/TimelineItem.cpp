@@ -20,7 +20,7 @@ namespace tl
     {
         void TimelineItem::_init(
             const std::shared_ptr<ftk::Context>& context,
-            const std::shared_ptr<timeline::Player>& player,
+            const std::shared_ptr<Player>& player,
             const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Stack>& stack,
             double scale,
             const ItemOptions& options,
@@ -182,9 +182,9 @@ namespace tl
                     setDrawUpdate();
                 });
 
-            p.cacheInfoObserver = ftk::Observer<timeline::PlayerCacheInfo>::create(
+            p.cacheInfoObserver = ftk::Observer<PlayerCacheInfo>::create(
                 p.player->observeCacheInfo(),
-                [this](const timeline::PlayerCacheInfo& value)
+                [this](const PlayerCacheInfo& value)
                 {
                     _p->cacheInfo = value;
                     setDrawUpdate();
@@ -200,7 +200,7 @@ namespace tl
 
         std::shared_ptr<TimelineItem> TimelineItem::create(
             const std::shared_ptr<ftk::Context>& context,
-            const std::shared_ptr<timeline::Player>& player,
+            const std::shared_ptr<Player>& player,
             const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Stack>& stack,
             double scale,
             const ItemOptions& options,

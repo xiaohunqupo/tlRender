@@ -7,28 +7,25 @@
 
 namespace tl
 {
-    namespace timeline
+    //! Audio layer.
+    struct TL_API_TYPE AudioLayer
     {
-        //! Audio layer.
-        struct TL_API_TYPE AudioLayer
-        {
-            std::shared_ptr<Audio> audio;
+        std::shared_ptr<Audio> audio;
 
-            TL_API bool operator == (const AudioLayer&) const;
-            TL_API bool operator != (const AudioLayer&) const;
-        };
+        TL_API bool operator == (const AudioLayer&) const;
+        TL_API bool operator != (const AudioLayer&) const;
+    };
 
-        //! Audio frame.
-        struct TL_API_TYPE AudioFrame
-        {
-            double                  seconds = -1.0;
-            std::vector<AudioLayer> layers;
+    //! Audio frame.
+    struct TL_API_TYPE AudioFrame
+    {
+        double                  seconds = -1.0;
+        std::vector<AudioLayer> layers;
 
-            TL_API bool operator == (const AudioFrame&) const;
-            TL_API bool operator != (const AudioFrame&) const;
-        };
+        TL_API bool operator == (const AudioFrame&) const;
+        TL_API bool operator != (const AudioFrame&) const;
+    };
 
-        //! Compare the time values of audio frames.
-        TL_API bool isTimeEqual(const AudioFrame&, const AudioFrame&);
-    }
+    //! Compare the time values of audio frames.
+    TL_API bool isTimeEqual(const AudioFrame&, const AudioFrame&);
 }

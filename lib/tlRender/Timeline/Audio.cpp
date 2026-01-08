@@ -5,33 +5,30 @@
 
 namespace tl
 {
-    namespace timeline
+    bool AudioLayer::operator == (const AudioLayer& other) const
     {
-        bool AudioLayer::operator == (const AudioLayer& other) const
-        {
-            return audio == other.audio;
-        }
+        return audio == other.audio;
+    }
 
-        bool AudioLayer::operator != (const AudioLayer& other) const
-        {
-            return !(*this == other);
-        }
+    bool AudioLayer::operator != (const AudioLayer& other) const
+    {
+        return !(*this == other);
+    }
 
-        bool AudioFrame::operator == (const AudioFrame& other) const
-        {
-            return
-                seconds == other.seconds &&
-                layers == other.layers;
-        }
+    bool AudioFrame::operator == (const AudioFrame& other) const
+    {
+        return
+            seconds == other.seconds &&
+            layers == other.layers;
+    }
 
-        bool AudioFrame::operator != (const AudioFrame& other) const
-        {
-            return !(*this == other);
-        }
+    bool AudioFrame::operator != (const AudioFrame& other) const
+    {
+        return !(*this == other);
+    }
 
-        bool isTimeEqual(const AudioFrame& a, const AudioFrame& b)
-        {
-            return a.seconds == b.seconds;
-        }
+    bool isTimeEqual(const AudioFrame& a, const AudioFrame& b)
+    {
+        return a.seconds == b.seconds;
     }
 }

@@ -15,8 +15,8 @@ namespace tl
             const std::shared_ptr<App>& app)
         {
             auto appWeak = std::weak_ptr<App>(app);
-            auto labels = timeline::getCompareLabels();
-            const std::array<std::string, static_cast<size_t>(timeline::Compare::Count)> icons =
+            auto labels = getCompareLabels();
+            const std::array<std::string, static_cast<size_t>(Compare::Count)> icons =
             {
                 "CompareA",
                 "CompareB",
@@ -27,7 +27,7 @@ namespace tl
                 "CompareVertical",
                 "CompareTile",
             };
-            const std::array<ftk::Key, static_cast<size_t>(timeline::Compare::Count)> shortcuts =
+            const std::array<ftk::Key, static_cast<size_t>(Compare::Count)> shortcuts =
             {
                 ftk::Key::A,
                 ftk::Key::B,
@@ -37,7 +37,7 @@ namespace tl
                 ftk::Key::Unknown,
                 ftk::Key::Unknown
             };
-            const std::array<std::string, static_cast<size_t>(timeline::Compare::Count)> tooltips =
+            const std::array<std::string, static_cast<size_t>(Compare::Count)> tooltips =
             {
                 "Show the A file.",
                 "Show the B file.",
@@ -57,29 +57,29 @@ namespace tl
                     {
                         if (auto app = appWeak.lock())
                         {
-                            app->getFilesModel()->setCompare(static_cast<timeline::Compare>(i));
+                            app->getFilesModel()->setCompare(static_cast<Compare>(i));
                         }
                     });
                 _actions[labels[i]]->setTooltip(tooltips[i]);
             }
 
-            _playersObserver = ftk::ListObserver<std::shared_ptr<timeline::Player> >::create(
+            _playersObserver = ftk::ListObserver<std::shared_ptr<Player> >::create(
                 app->getFilesModel()->observePlayers(),
-                [this](const std::vector<std::shared_ptr<timeline::Player> >& value)
+                [this](const std::vector<std::shared_ptr<Player> >& value)
                 {
-                    for (const auto& label : timeline::getCompareLabels())
+                    for (const auto& label : getCompareLabels())
                     {
                         _actions[label]->setEnabled(value.size() > 0);
                     }
                 });
 
-            _compareObserver = ftk::Observer<timeline::Compare>::create(
+            _compareObserver = ftk::Observer<Compare>::create(
                 app->getFilesModel()->observeCompare(),
-                [this](timeline::Compare value)
+                [this](Compare value)
                 {
-                    for (auto compare : timeline::getCompareEnums())
+                    for (auto compare : getCompareEnums())
                     {
-                        _actions[timeline::getLabel(compare)]->setChecked(value == compare);
+                        _actions[getLabel(compare)]->setChecked(value == compare);
                     }
                 });
         }

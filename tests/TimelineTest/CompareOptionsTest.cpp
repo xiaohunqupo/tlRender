@@ -8,8 +8,6 @@
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/String.h>
 
-using namespace tl::timeline;
-
 namespace tl
 {
     namespace timeline_tests

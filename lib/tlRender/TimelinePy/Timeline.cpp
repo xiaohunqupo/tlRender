@@ -17,8 +17,6 @@ namespace tl
     {
         void timeline(py::module_& m)
         {
-            using namespace timeline;
-
             py::class_<Timeline, std::shared_ptr<Timeline> >(m, "Timeline")
                 .def(py::init(py::overload_cast<
                         const std::shared_ptr<ftk::Context>&,

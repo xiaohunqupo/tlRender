@@ -48,7 +48,7 @@ namespace tl
             std::shared_ptr<ftk::Menu> _activeMenu;
             std::vector<std::shared_ptr<ftk::Action> > _recentActions;
             std::shared_ptr<ftk::Menu> _recentMenu;
-            std::shared_ptr<ftk::ListObserver<std::shared_ptr<timeline::Player> > > _playersObserver;
+            std::shared_ptr<ftk::ListObserver<std::shared_ptr<Player> > > _playersObserver;
             std::shared_ptr<ftk::Observer<int> > _playerIndexObserver;
             std::shared_ptr<ftk::ListObserver<std::filesystem::path> > _recentObserver;
         };
@@ -80,7 +80,7 @@ namespace tl
             std::vector<std::shared_ptr<ftk::Action> > _bFileActions;
             std::shared_ptr<ftk::Menu> _bFileMenu;
             int _bPlayerIndex = -1;
-            std::shared_ptr<ftk::ListObserver<std::shared_ptr<timeline::Player> > > _playersObserver;
+            std::shared_ptr<ftk::ListObserver<std::shared_ptr<Player> > > _playersObserver;
             std::shared_ptr<ftk::Observer<int> > _bPlayerIndexObserver;
         };
 

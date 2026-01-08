@@ -3,22 +3,19 @@
 
 namespace tl
 {
-    namespace timeline
+    template<typename T>
+    inline const T* getParent(const OTIO_NS::Item* value)
     {
-        template<typename T>
-        inline const T* getParent(const OTIO_NS::Item* value)
+        const T* out = nullptr;
+        while (value)
         {
-            const T* out = nullptr;
-            while (value)
+            if (auto t = dynamic_cast<const T*>(value))
             {
-                if (auto t = dynamic_cast<const T*>(value))
-                {
-                    out = t;
-                    break;
-                }
-                value = value->parent();
+                out = t;
+                break;
             }
-            return out;
+            value = value->parent();
         }
+        return out;
     }
 }

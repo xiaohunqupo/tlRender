@@ -15,7 +15,7 @@ namespace tl
         struct TimeLabel::Private
         {
             OTIO_NS::RationalTime value = invalidTime;
-            timeline::TimeUnits timeUnits = timeline::TimeUnits::Timecode;
+            TimeUnits timeUnits = TimeUnits::Timecode;
             QLabel* label = nullptr;
             qt::TimeObject* timeObject = nullptr;
         };
@@ -52,9 +52,9 @@ namespace tl
             {
                 disconnect(
                     p.timeObject,
-                    SIGNAL(timeUnitsChanged(tl::timeline::TimeUnits)),
+                    SIGNAL(timeUnitsChanged(tl::TimeUnits)),
                     this,
-                    SLOT(setTimeUnits(tl::timeline::TimeUnits)));
+                    SLOT(setTimeUnits(tl::TimeUnits)));
             }
             p.timeObject = timeObject;
             if (p.timeObject)
@@ -62,8 +62,8 @@ namespace tl
                 p.timeUnits = p.timeObject->timeUnits();
                 connect(
                     p.timeObject,
-                    SIGNAL(timeUnitsChanged(tl::timeline::TimeUnits)),
-                    SLOT(setTimeUnits(tl::timeline::TimeUnits)));
+                    SIGNAL(timeUnitsChanged(tl::TimeUnits)),
+                    SLOT(setTimeUnits(tl::TimeUnits)));
             }
             _textUpdate();
             updateGeometry();
@@ -74,7 +74,7 @@ namespace tl
             return _p->value;
         }
 
-        timeline::TimeUnits TimeLabel::timeUnits() const
+        TimeUnits TimeLabel::timeUnits() const
         {
             return _p->timeUnits;
         }
@@ -89,7 +89,7 @@ namespace tl
             _textUpdate();
         }
 
-        void TimeLabel::setTimeUnits(timeline::TimeUnits value)
+        void TimeLabel::setTimeUnits(TimeUnits value)
         {
             FTK_P();
             if (value == p.timeUnits)
@@ -102,7 +102,7 @@ namespace tl
         void TimeLabel::_textUpdate()
         {
             FTK_P();
-            const std::string label = timeline::timeToText(p.value, p.timeUnits);
+            const std::string label = timeToText(p.value, p.timeUnits);
             p.label->setText(QString::fromUtf8(label.c_str()));
         }
     }

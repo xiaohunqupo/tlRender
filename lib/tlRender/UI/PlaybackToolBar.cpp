@@ -14,8 +14,8 @@ namespace tl
         struct PlaybackToolBar::Private
         {
             std::map<std::string, std::shared_ptr<ftk::Action> > actions;
-            std::shared_ptr<timeline::Player> player;
-            std::shared_ptr<ftk::Observer<timeline::Playback> > playbackObserver;
+            std::shared_ptr<Player> player;
+            std::shared_ptr<ftk::Observer<Playback> > playbackObserver;
         };
 
         void PlaybackToolBar::_init(
@@ -92,24 +92,24 @@ namespace tl
             return _p->actions;
         }
 
-        const std::shared_ptr<timeline::Player>& PlaybackToolBar::getPlayer() const
+        const std::shared_ptr<Player>& PlaybackToolBar::getPlayer() const
         {
             return _p->player;
         }
 
-        void PlaybackToolBar::setPlayer(const std::shared_ptr<timeline::Player>& player)
+        void PlaybackToolBar::setPlayer(const std::shared_ptr<Player>& player)
         {
             FTK_P();
             p.player = player;
             if (player)
             {
-                p.playbackObserver = ftk::Observer<timeline::Playback>::create(
+                p.playbackObserver = ftk::Observer<Playback>::create(
                     player->observePlayback(),
-                    [this](timeline::Playback value)
+                    [this](Playback value)
                     {
-                        _p->actions["Stop"]->setChecked(timeline::Playback::Stop == value);
-                        _p->actions["Forward"]->setChecked(timeline::Playback::Forward == value);
-                        _p->actions["Reverse"]->setChecked(timeline::Playback::Reverse == value);
+                        _p->actions["Stop"]->setChecked(Playback::Stop == value);
+                        _p->actions["Forward"]->setChecked(Playback::Forward == value);
+                        _p->actions["Reverse"]->setChecked(Playback::Reverse == value);
                     });
             }
             else

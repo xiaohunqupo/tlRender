@@ -62,7 +62,7 @@ namespace tl
     {
         void init(const std::shared_ptr<ftk::Context>& context)
         {
-            tl::timeline::init(context);
+            tl::init(context);
             ftk::uiInit(context);
             context->getSystem<ftk::gl::System>()->setRenderFactory(std::make_shared<timeline_gl::RenderFactory>());
             ThumbnailSystem::create(context);

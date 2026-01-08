@@ -17,7 +17,7 @@ namespace tl
         protected:
             void _init(
                 const std::shared_ptr<ftk::Context>&,
-                const std::shared_ptr<timeline::ITimeUnitsModel>&,
+                const std::shared_ptr<ITimeUnitsModel>&,
                 const std::shared_ptr<IWidget>& parent);
 
             TimelineWidget();
@@ -33,17 +33,17 @@ namespace tl
             //! Create a new widget.
             TL_API static std::shared_ptr<TimelineWidget> create(
                 const std::shared_ptr<ftk::Context>&,
-                const std::shared_ptr<timeline::ITimeUnitsModel>&,
+                const std::shared_ptr<ITimeUnitsModel>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
             //! Get the time units model.
-            TL_API const std::shared_ptr<timeline::ITimeUnitsModel>& getTimeUnitsModel() const;
+            TL_API const std::shared_ptr<ITimeUnitsModel>& getTimeUnitsModel() const;
 
             //! Get the timeline player.
-            TL_API std::shared_ptr<timeline::Player>& getPlayer() const;
+            TL_API std::shared_ptr<Player>& getPlayer() const;
 
             //! Set the timeline player.
-            TL_API void setPlayer(const std::shared_ptr<timeline::Player>&);
+            TL_API void setPlayer(const std::shared_ptr<Player>&);
 
             //! \name View
             ///@{

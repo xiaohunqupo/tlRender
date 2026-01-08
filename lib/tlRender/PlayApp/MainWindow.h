@@ -79,8 +79,8 @@ namespace tl
             std::shared_ptr<ftk::Splitter> _splitter2;
             std::shared_ptr<ftk::VerticalLayout> _layout;
 
-            std::shared_ptr<ftk::Observer<std::shared_ptr<timeline::Player> > > _playerObserver;
-            std::shared_ptr<ftk::Observer<timeline::Compare> > _compareObserver;
+            std::shared_ptr<ftk::Observer<std::shared_ptr<Player> > > _playerObserver;
+            std::shared_ptr<ftk::Observer<Compare> > _compareObserver;
         };
     }
 }

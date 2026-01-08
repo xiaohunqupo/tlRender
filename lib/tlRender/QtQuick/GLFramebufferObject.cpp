@@ -71,14 +71,14 @@ namespace tl
             private:
                 const GLFramebufferObject* _framebufferObject = nullptr;
                 bool _init = false;
-                std::vector<timeline::VideoFrame> _video;
-                std::shared_ptr<timeline::IRender> _render;
+                std::vector<VideoFrame> _video;
+                std::shared_ptr<IRender> _render;
             };
         }
 
         struct GLFramebufferObject::Private
         {
-            std::vector<timeline::VideoFrame> video;
+            std::vector<VideoFrame> video;
         };
 
         GLFramebufferObject::GLFramebufferObject(QQuickItem* parent) :
@@ -91,7 +91,7 @@ namespace tl
         GLFramebufferObject::~GLFramebufferObject()
         {}
 
-        const std::vector<timeline::VideoFrame>& GLFramebufferObject::video() const
+        const std::vector<VideoFrame>& GLFramebufferObject::video() const
         {
             return _p->video;
         }
@@ -101,7 +101,7 @@ namespace tl
             return new qtquick::Renderer(this);
         }
 
-        void GLFramebufferObject::setVideo(const std::vector<timeline::VideoFrame>& value)
+        void GLFramebufferObject::setVideo(const std::vector<VideoFrame>& value)
         {
             _p->video = value;
             update();

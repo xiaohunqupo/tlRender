@@ -24,7 +24,7 @@ namespace tl
         private:
             void _enums();
             void _player();
-            void _player(const std::shared_ptr<timeline::Player>&);
+            void _player(const std::shared_ptr<Player>&);
         };
     }
 }

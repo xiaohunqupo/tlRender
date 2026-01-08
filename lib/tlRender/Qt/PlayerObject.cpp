@@ -21,32 +21,32 @@ namespace tl
 
         struct PlayerObject::Private
         {
-            std::shared_ptr<timeline::Player> player;
+            std::shared_ptr<Player> player;
 
             std::shared_ptr<ftk::Observer<double> > speedObserver;
-            std::shared_ptr<ftk::Observer<timeline::Playback> > playbackObserver;
-            std::shared_ptr<ftk::Observer<timeline::Loop> > loopObserver;
+            std::shared_ptr<ftk::Observer<Playback> > playbackObserver;
+            std::shared_ptr<ftk::Observer<Loop> > loopObserver;
             std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > currentTimeObserver;
             std::shared_ptr<ftk::Observer<OTIO_NS::TimeRange> > inOutRangeObserver;
-            std::shared_ptr<ftk::ListObserver<std::shared_ptr<timeline::Timeline> > > compareObserver;
-            std::shared_ptr<ftk::Observer<timeline::CompareTime> > compareTimeObserver;
+            std::shared_ptr<ftk::ListObserver<std::shared_ptr<Timeline> > > compareObserver;
+            std::shared_ptr<ftk::Observer<CompareTime> > compareTimeObserver;
             std::shared_ptr<ftk::Observer<IOOptions> > ioOptionsObserver;
             std::shared_ptr<ftk::Observer<int> > videoLayerObserver;
             std::shared_ptr<ftk::ListObserver<int> > compareVideoLayersObserver;
-            std::shared_ptr<ftk::ListObserver<timeline::VideoFrame> > currentVideoObserver;
+            std::shared_ptr<ftk::ListObserver<VideoFrame> > currentVideoObserver;
             std::shared_ptr<ftk::Observer<AudioDeviceID> > audioDeviceObserver;
             std::shared_ptr<ftk::Observer<float> > volumeObserver;
             std::shared_ptr<ftk::Observer<bool> > muteObserver;
             std::shared_ptr<ftk::ListObserver<bool> > channelMuteObserver;
             std::shared_ptr<ftk::Observer<double> > audioOffsetObserver;
-            std::shared_ptr<ftk::ListObserver<timeline::AudioFrame> > currentAudioObserver;
-            std::shared_ptr<ftk::Observer<timeline::PlayerCacheOptions> > cacheOptionsObserver;
-            std::shared_ptr<ftk::Observer<timeline::PlayerCacheInfo> > cacheInfoObserver;
+            std::shared_ptr<ftk::ListObserver<AudioFrame> > currentAudioObserver;
+            std::shared_ptr<ftk::Observer<PlayerCacheOptions> > cacheOptionsObserver;
+            std::shared_ptr<ftk::Observer<PlayerCacheInfo> > cacheInfoObserver;
         };
 
         void PlayerObject::_init(
             const std::shared_ptr<ftk::Context>& context,
-            const std::shared_ptr<timeline::Player>& player)
+            const std::shared_ptr<Player>& player)
         {
             FTK_P();
 
@@ -59,16 +59,16 @@ namespace tl
                     Q_EMIT speedChanged(value);
                 });
 
-            p.playbackObserver = ftk::Observer<timeline::Playback>::create(
+            p.playbackObserver = ftk::Observer<Playback>::create(
                 p.player->observePlayback(),
-                [this](timeline::Playback value)
+                [this](Playback value)
                 {
                     Q_EMIT playbackChanged(value);
                 });
 
-            p.loopObserver = ftk::Observer<timeline::Loop>::create(
+            p.loopObserver = ftk::Observer<Loop>::create(
                 p.player->observeLoop(),
-                [this](timeline::Loop value)
+                [this](Loop value)
                 {
                     Q_EMIT loopChanged(value);
                 });
@@ -87,16 +87,16 @@ namespace tl
                     Q_EMIT inOutRangeChanged(value);
                 });
 
-            p.compareObserver = ftk::ListObserver<std::shared_ptr<timeline::Timeline> >::create(
+            p.compareObserver = ftk::ListObserver<std::shared_ptr<Timeline> >::create(
                 p.player->observeCompare(),
-                [this](const std::vector<std::shared_ptr<timeline::Timeline> >& value)
+                [this](const std::vector<std::shared_ptr<Timeline> >& value)
                 {
                     Q_EMIT compareChanged(value);
                 });
 
-            p.compareTimeObserver = ftk::Observer<timeline::CompareTime>::create(
+            p.compareTimeObserver = ftk::Observer<CompareTime>::create(
                 p.player->observeCompareTime(),
-                [this](timeline::CompareTime value)
+                [this](CompareTime value)
                 {
                     Q_EMIT compareTimeChanged(value);
                 });
@@ -122,9 +122,9 @@ namespace tl
                     Q_EMIT compareVideoLayersChanged(value);
                 });
 
-            p.currentVideoObserver = ftk::ListObserver<timeline::VideoFrame>::create(
+            p.currentVideoObserver = ftk::ListObserver<VideoFrame>::create(
                 p.player->observeCurrentVideo(),
-                [this](const std::vector<timeline::VideoFrame>& value)
+                [this](const std::vector<VideoFrame>& value)
                 {
                     Q_EMIT currentVideoChanged(value);
                 },
@@ -165,23 +165,23 @@ namespace tl
                     Q_EMIT audioOffsetChanged(value);
                 });
 
-            p.currentAudioObserver = ftk::ListObserver<timeline::AudioFrame>::create(
+            p.currentAudioObserver = ftk::ListObserver<AudioFrame>::create(
                 p.player->observeCurrentAudio(),
-                [this](const std::vector<timeline::AudioFrame>& value)
+                [this](const std::vector<AudioFrame>& value)
                 {
                     Q_EMIT currentAudioChanged(value);
                 });
 
-            p.cacheOptionsObserver = ftk::Observer<timeline::PlayerCacheOptions>::create(
+            p.cacheOptionsObserver = ftk::Observer<PlayerCacheOptions>::create(
                 p.player->observeCacheOptions(),
-                [this](const timeline::PlayerCacheOptions& value)
+                [this](const PlayerCacheOptions& value)
                 {
                     Q_EMIT cacheOptionsChanged(value);
                 });
 
-            p.cacheInfoObserver = ftk::Observer<timeline::PlayerCacheInfo>::create(
+            p.cacheInfoObserver = ftk::Observer<PlayerCacheInfo>::create(
                 p.player->observeCacheInfo(),
-                [this](const timeline::PlayerCacheInfo& value)
+                [this](const PlayerCacheInfo& value)
                 {
                     Q_EMIT cacheInfoChanged(value);
                 });
@@ -189,7 +189,7 @@ namespace tl
 
         PlayerObject::PlayerObject(
             const std::shared_ptr<ftk::Context>& context,
-            const std::shared_ptr<timeline::Player>& player,
+            const std::shared_ptr<Player>& player,
             QObject* parent) :
             QObject(parent),
             _p(new Private)
@@ -205,12 +205,12 @@ namespace tl
             return _p->player->getContext();
         }
 
-        const std::shared_ptr<timeline::Player>& PlayerObject::player() const
+        const std::shared_ptr<Player>& PlayerObject::player() const
         {
             return _p->player;
         }
 
-        const std::shared_ptr<timeline::Timeline>& PlayerObject::timeline() const
+        const std::shared_ptr<Timeline>& PlayerObject::timeline() const
         {
             return _p->player->getTimeline();
         }
@@ -225,12 +225,12 @@ namespace tl
             return _p->player->getAudioPath();
         }
 
-        const timeline::PlayerOptions& PlayerObject::getPlayerOptions() const
+        const PlayerOptions& PlayerObject::getPlayerOptions() const
         {
             return _p->player->getPlayerOptions();
         }
 
-        const timeline::Options& PlayerObject::getOptions() const
+        const Options& PlayerObject::getOptions() const
         {
             return _p->player->getOptions();
         }
@@ -255,7 +255,7 @@ namespace tl
             return _p->player->getSpeed();
         }
 
-        timeline::Playback PlayerObject::playback() const
+        Playback PlayerObject::playback() const
         {
             return _p->player->getPlayback();
         }
@@ -265,7 +265,7 @@ namespace tl
             return _p->player->isStopped();
         }
 
-        timeline::Loop PlayerObject::loop() const
+        Loop PlayerObject::loop() const
         {
             return _p->player->getLoop();
         }
@@ -280,12 +280,12 @@ namespace tl
             return _p->player->getInOutRange();
         }
 
-        const std::vector<std::shared_ptr<timeline::Timeline> >& PlayerObject::compare() const
+        const std::vector<std::shared_ptr<Timeline> >& PlayerObject::compare() const
         {
             return _p->player->getCompare();
         }
 
-        timeline::CompareTime PlayerObject::compareTime() const
+        CompareTime PlayerObject::compareTime() const
         {
             return _p->player->getCompareTime();
         }
@@ -305,7 +305,7 @@ namespace tl
             return _p->player->getCompareVideoLayers();
         }
 
-        const std::vector<timeline::VideoFrame>& PlayerObject::currentVideo() const
+        const std::vector<VideoFrame>& PlayerObject::currentVideo() const
         {
             return _p->player->getCurrentVideo();
         }
@@ -335,17 +335,17 @@ namespace tl
             return _p->player->getAudioOffset();
         }
 
-        const std::vector<timeline::AudioFrame>& PlayerObject::currentAudio() const
+        const std::vector<AudioFrame>& PlayerObject::currentAudio() const
         {
             return _p->player->getCurrentAudio();
         }
 
-        const timeline::PlayerCacheOptions& PlayerObject::cacheOptions() const
+        const PlayerCacheOptions& PlayerObject::cacheOptions() const
         {
             return _p->player->getCacheOptions();
         }
 
-        const timeline::PlayerCacheInfo& PlayerObject::cacheInfo() const
+        const PlayerCacheInfo& PlayerObject::cacheInfo() const
         {
             return _p->player->observeCacheInfo()->get();
         }
@@ -355,7 +355,7 @@ namespace tl
             _p->player->setSpeed(value);
         }
 
-        void PlayerObject::setPlayback(timeline::Playback value)
+        void PlayerObject::setPlayback(Playback value)
         {
             _p->player->setPlayback(value);
         }
@@ -378,12 +378,12 @@ namespace tl
         void PlayerObject::togglePlayback()
         {
             _p->player->setPlayback(
-                timeline::Playback::Stop == _p->player->getPlayback() ?
-                timeline::Playback::Forward :
-                timeline::Playback::Stop);
+                Playback::Stop == _p->player->getPlayback() ?
+                Playback::Forward :
+                Playback::Stop);
         }
 
-        void PlayerObject::setLoop(timeline::Loop value)
+        void PlayerObject::setLoop(Loop value)
         {
             _p->player->setLoop(value);
         }
@@ -393,7 +393,7 @@ namespace tl
             _p->player->seek(value);
         }
 
-        void PlayerObject::timeAction(timeline::TimeAction value)
+        void PlayerObject::timeAction(TimeAction value)
         {
             _p->player->timeAction(value);
         }
@@ -448,12 +448,12 @@ namespace tl
             _p->player->setIOOptions(value);
         }
 
-        void PlayerObject::setCompare(const std::vector<std::shared_ptr<timeline::Timeline> >& value)
+        void PlayerObject::setCompare(const std::vector<std::shared_ptr<Timeline> >& value)
         {
             _p->player->setCompare(value);
         }
 
-        void PlayerObject::setCompareTime(timeline::CompareTime value)
+        void PlayerObject::setCompareTime(CompareTime value)
         {
             _p->player->setCompareTime(value);
         }
@@ -493,7 +493,7 @@ namespace tl
             _p->player->setAudioOffset(value);
         }
 
-        void PlayerObject::setCacheOptions(const timeline::PlayerCacheOptions& value)
+        void PlayerObject::setCacheOptions(const PlayerCacheOptions& value)
         {
             _p->player->setCacheOptions(value);
         }

@@ -19,7 +19,7 @@ namespace tl
             
             mTimeline.def(
                 "init",
-                &timeline::init,
+                &init,
                 py::arg("context"),
                 "Initialize the library.");
 

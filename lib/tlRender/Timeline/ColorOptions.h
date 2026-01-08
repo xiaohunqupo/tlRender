@@ -15,72 +15,69 @@
 
 namespace tl
 {
-    namespace timeline
+    //! OpenColorIO configuration options.
+    enum class TL_API_TYPE OCIOConfig
     {
-        //! OpenColorIO configuration options.
-        enum class TL_API_TYPE OCIOConfig
-        {
-            BuiltIn,
-            EnvVar,
-            File,
+        BuiltIn,
+        EnvVar,
+        File,
 
-            Count,
-            First = BuiltIn
-        };
-        TL_ENUM(OCIOConfig);
+        Count,
+        First = BuiltIn
+    };
+    TL_ENUM(OCIOConfig);
 
-        //! OpenColorIO options.
-        struct TL_API_TYPE OCIOOptions
-        {
-            bool        enabled  = false;
-            OCIOConfig  config   = OCIOConfig::BuiltIn;
-            std::string fileName;
-            std::string input;
-            std::string display;
-            std::string view;
-            std::string look;
+    //! OpenColorIO options.
+    struct TL_API_TYPE OCIOOptions
+    {
+        bool        enabled  = false;
+        OCIOConfig  config   = OCIOConfig::BuiltIn;
+        std::string fileName;
+        std::string input;
+        std::string display;
+        std::string view;
+        std::string look;
 
-            TL_API bool operator == (const OCIOOptions&) const;
-            TL_API bool operator != (const OCIOOptions&) const;
-        };
+        TL_API bool operator == (const OCIOOptions&) const;
+        TL_API bool operator != (const OCIOOptions&) const;
+    };
 
-        //! LUT operation order.
-        enum class TL_API_TYPE LUTOrder
-        {
-            PostConfig,
-            PreConfig,
+    //! LUT operation order.
+    enum class TL_API_TYPE LUTOrder
+    {
+        PostConfig,
+        PreConfig,
 
-            Count,
-            First = PostConfig
-        };
-        FTK_ENUM(LUTOrder);
+        Count,
+        First = PostConfig
+    };
+    FTK_ENUM(LUTOrder);
 
-        //! LUT options.
-        struct TL_API_TYPE LUTOptions
-        {
-            bool        enabled  = false;
-            std::string fileName;
-            LUTOrder    order    = LUTOrder::First;
+    //! LUT options.
+    struct TL_API_TYPE LUTOptions
+    {
+        bool        enabled  = false;
+        std::string fileName;
+        LUTOrder    order    = LUTOrder::First;
 
-            TL_API bool operator == (const LUTOptions&) const;
-            TL_API bool operator != (const LUTOptions&) const;
-        };
+        TL_API bool operator == (const LUTOptions&) const;
+        TL_API bool operator != (const LUTOptions&) const;
+    };
 
-        //! Get the list of LUT format names.
-        TL_API std::vector<std::string> getLUTFormatNames();
+    //! Get the list of LUT format names.
+    TL_API std::vector<std::string> getLUTFormatNames();
 
-        //! Get the list of LUT format file extensions.
-        TL_API std::vector<std::string> getLUTFormatExtensions();
+    //! Get the list of LUT format file extensions.
+    TL_API std::vector<std::string> getLUTFormatExtensions();
 
-        //! \name Serialize
-        ///@{
+    //! \name Serialize
+    ///@{
 
-        TL_API void to_json(nlohmann::json&, const OCIOOptions&);
-        TL_API void to_json(nlohmann::json&, const LUTOptions&);
+    TL_API void to_json(nlohmann::json&, const OCIOOptions&);
+    TL_API void to_json(nlohmann::json&, const LUTOptions&);
 
-        TL_API void from_json(const nlohmann::json&, OCIOOptions&);
-        TL_API void from_json(const nlohmann::json&, LUTOptions&);
+    TL_API void from_json(const nlohmann::json&, OCIOOptions&);
+    TL_API void from_json(const nlohmann::json&, LUTOptions&);
 
-        ///@}
-    }
+    ///@}
 }

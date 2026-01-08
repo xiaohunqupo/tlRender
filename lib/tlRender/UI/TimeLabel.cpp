@@ -15,7 +15,7 @@ namespace tl
     {
         struct TimeLabel::Private
         {
-            std::shared_ptr<timeline::TimeUnitsModel> timeUnitsModel;
+            std::shared_ptr<TimeUnitsModel> timeUnitsModel;
             OTIO_NS::RationalTime value = invalidTime;
             std::string text;
             std::string format;
@@ -39,12 +39,12 @@ namespace tl
             };
             std::optional<DrawData> draw;
 
-            std::shared_ptr<ftk::Observer<timeline::TimeUnits> > timeUnitsObserver;
+            std::shared_ptr<ftk::Observer<TimeUnits> > timeUnitsObserver;
         };
 
         void TimeLabel::_init(
             const std::shared_ptr<ftk::Context>& context,
-            const std::shared_ptr<timeline::TimeUnitsModel>& timeUnitsModel,
+            const std::shared_ptr<TimeUnitsModel>& timeUnitsModel,
             const std::shared_ptr<IWidget>& parent)
         {
             IWidget::_init(context, "tl::ui::TimeLabel", parent);
@@ -55,14 +55,14 @@ namespace tl
             p.timeUnitsModel = timeUnitsModel;
             if (!p.timeUnitsModel)
             {
-                p.timeUnitsModel = timeline::TimeUnitsModel::create(context);
+                p.timeUnitsModel = TimeUnitsModel::create(context);
             }
 
             _textUpdate();
 
-            p.timeUnitsObserver = ftk::Observer<timeline::TimeUnits>::create(
+            p.timeUnitsObserver = ftk::Observer<TimeUnits>::create(
                 p.timeUnitsModel->observeTimeUnits(),
-                [this](timeline::TimeUnits)
+                [this](TimeUnits)
                 {
                     _textUpdate();
                 });
@@ -77,7 +77,7 @@ namespace tl
 
         std::shared_ptr<TimeLabel> TimeLabel::create(
             const std::shared_ptr<ftk::Context>& context,
-            const std::shared_ptr<timeline::TimeUnitsModel>& timeUnitsModel,
+            const std::shared_ptr<TimeUnitsModel>& timeUnitsModel,
             const std::shared_ptr<IWidget>& parent)
         {
             auto out = std::shared_ptr<TimeLabel>(new TimeLabel);
@@ -85,7 +85,7 @@ namespace tl
             return out;
         }
 
-        const std::shared_ptr<timeline::TimeUnitsModel>& TimeLabel::getTimeUnitsModel() const
+        const std::shared_ptr<TimeUnitsModel>& TimeLabel::getTimeUnitsModel() const
         {
             return _p->timeUnitsModel;
         }
@@ -207,9 +207,9 @@ namespace tl
             p.format = std::string();
             if (p.timeUnitsModel)
             {
-                const timeline::TimeUnits timeUnits = p.timeUnitsModel->getTimeUnits();
-                p.text = timeline::timeToText(p.value, timeUnits);
-                p.format = timeline::formatString(timeUnits);
+                const TimeUnits timeUnits = p.timeUnitsModel->getTimeUnits();
+                p.text = timeToText(p.value, timeUnits);
+                p.format = formatString(timeUnits);
             }
             p.size.displayScale.reset();
             setSizeUpdate();

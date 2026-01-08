@@ -40,9 +40,9 @@ namespace tl
                     _logUpdate(value);
                 });
 
-            _playerObserver = ftk::Observer<std::shared_ptr<timeline::Player> >::create(
+            _playerObserver = ftk::Observer<std::shared_ptr<Player> >::create(
                 app->getFilesModel()->observePlayer(),
-                [this](const std::shared_ptr<timeline::Player>& value)
+                [this](const std::shared_ptr<Player>& value)
                 {
                     _infoUpdate(value);
                 });
@@ -97,7 +97,7 @@ namespace tl
             }
         }
 
-        void StatusBar::_infoUpdate(const std::shared_ptr<timeline::Player>& player)
+        void StatusBar::_infoUpdate(const std::shared_ptr<Player>& player)
         {
             std::vector<std::string> text;
             std::vector<std::string> tooltip;

@@ -46,7 +46,7 @@ namespace tl
             std::shared_ptr<ftk::CmdLineValueOption<std::string> > ocioView;
             std::shared_ptr<ftk::CmdLineValueOption<std::string> > ocioLook;
             std::shared_ptr<ftk::CmdLineValueOption<std::string> > lutFileName;
-            std::shared_ptr<ftk::CmdLineValueOption<timeline::LUTOrder> > lutOrder;
+            std::shared_ptr<ftk::CmdLineValueOption<LUTOrder> > lutOrder;
             std::shared_ptr<ftk::CmdLineValueOption<double> > sequenceDefaultSpeed;
             std::shared_ptr<ftk::CmdLineValueOption<int> > sequenceThreadCount;
 #if defined(TLRENDER_EXR)
@@ -97,10 +97,10 @@ namespace tl
             void _printProgress();
 
             CmdLine _cmdLine;
-            timeline::OCIOOptions _ocioOptions;
-            timeline::LUTOptions _lutOptions;
+            OCIOOptions _ocioOptions;
+            LUTOptions _lutOptions;
 
-            std::shared_ptr<timeline::Timeline> _timeline;
+            std::shared_ptr<Timeline> _timeline;
             ftk::Size2I _renderSize;
             ftk::ImageInfo _outputInfo;
             OTIO_NS::TimeRange _timeRange = invalidTimeRange;
@@ -109,7 +109,7 @@ namespace tl
 
             std::shared_ptr<ftk::gl::Window> _window;
             std::shared_ptr<IIOPlugin> _usdPlugin;
-            std::shared_ptr<timeline::IRender> _render;
+            std::shared_ptr<IRender> _render;
             std::shared_ptr<ftk::gl::OffscreenBuffer> _buffer;
             std::shared_ptr<ftk::gl::OffscreenBuffer> _bufferFlip;
 

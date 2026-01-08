@@ -42,7 +42,7 @@ namespace tl
             const std::shared_ptr<ThumbnailGenerator> thumbnailGenerator,
             const std::shared_ptr<IWidget>& parent)
         {
-            const auto path = timeline::getPath(
+            const auto path = getPath(
                 clip->media_reference(),
                 itemData->dir,
                 itemData->options.pathOptions);
@@ -60,7 +60,7 @@ namespace tl
             FTK_P();
 
             p.path = path;
-            p.memRead = timeline::getMemRead(clip->media_reference());
+            p.memRead = getMemRead(clip->media_reference());
             p.thumbnailGenerator = thumbnailGenerator;
 
             const std::string infoCacheKey = ThumbnailCache::getInfoKey(
@@ -313,7 +313,7 @@ namespace tl
                                 p.ioInfo->audioTime.start_time() + trimmedRange.start_time(),
                                 trimmedRange.duration());
                         }
-                        const OTIO_NS::TimeRange mediaRange = timeline::toAudioMediaTime(
+                        const OTIO_NS::TimeRange mediaRange = toAudioMediaTime(
                             OTIO_NS::TimeRange::range_from_start_end_time(time, time2),
                             _timeRange,
                             trimmedRange,

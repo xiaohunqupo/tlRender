@@ -9,10 +9,7 @@
 
 namespace tl
 {
-    namespace timeline
-    {
-        //! Get a box with the given aspect ratio that fits within
-        //! the given box.
-        TL_API ftk::Box2I getBox(float aspect, const ftk::Box2I&);
-    }
+    //! Get a box with the given aspect ratio that fits within
+    //! the given box.
+    TL_API ftk::Box2I getBox(float aspect, const ftk::Box2I&);
 }

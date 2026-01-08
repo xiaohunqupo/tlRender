@@ -21,7 +21,7 @@ namespace tl
         struct TimelineWidget::Private
         {
             std::shared_ptr<ItemData> itemData;
-            std::shared_ptr<timeline::Player> player;
+            std::shared_ptr<Player> player;
             std::shared_ptr<ftk::Observable<bool> > editable;
             std::shared_ptr<ftk::Observable<bool> > frameView;
             std::function<void(bool)> frameViewCallback;
@@ -37,7 +37,7 @@ namespace tl
             std::shared_ptr<ftk::Observable<ItemOptions> > itemOptions;
             std::shared_ptr<ftk::Observable<DisplayOptions> > displayOptions;
             OTIO_NS::TimeRange timeRange = invalidTimeRange;
-            timeline::Playback playback = timeline::Playback::Stop;
+            Playback playback = Playback::Stop;
             OTIO_NS::RationalTime currentTime = invalidTime;
             double scale = 500.0;
             bool sizeInit = true;
@@ -62,7 +62,7 @@ namespace tl
             };
             MouseData mouse;
 
-            std::shared_ptr<ftk::Observer<timeline::Playback> > playbackObserver;
+            std::shared_ptr<ftk::Observer<Playback> > playbackObserver;
             std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > currentTimeObserver;
             std::shared_ptr<ftk::Observer<bool> > scrubObserver;
             std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > timeScrubObserver;
@@ -70,7 +70,7 @@ namespace tl
 
         void TimelineWidget::_init(
             const std::shared_ptr<ftk::Context>& context,
-            const std::shared_ptr<timeline::ITimeUnitsModel>& timeUnitsModel,
+            const std::shared_ptr<ITimeUnitsModel>& timeUnitsModel,
             const std::shared_ptr<IWidget>& parent)
         {
             IWidget::_init(context, "tl::ui::TimelineWidget", parent);
@@ -79,7 +79,7 @@ namespace tl
             p.itemData = std::make_shared<ItemData>();
             p.itemData->timeUnitsModel = timeUnitsModel ?
                 timeUnitsModel :
-                timeline::TimeUnitsModel::create(context);
+                TimeUnitsModel::create(context);
 
             p.editable = ftk::Observable<bool>::create(false);
             p.frameView = ftk::Observable<bool>::create(true);
@@ -124,7 +124,7 @@ namespace tl
 
         std::shared_ptr<TimelineWidget> TimelineWidget::create(
             const std::shared_ptr<ftk::Context>& context,
-            const std::shared_ptr<timeline::ITimeUnitsModel>& timeUnitsModel,
+            const std::shared_ptr<ITimeUnitsModel>& timeUnitsModel,
             const std::shared_ptr<IWidget>& parent)
         {
             auto out = std::shared_ptr<TimelineWidget>(new TimelineWidget);
@@ -132,17 +132,17 @@ namespace tl
             return out;
         }
 
-        const std::shared_ptr<timeline::ITimeUnitsModel>& TimelineWidget::getTimeUnitsModel() const
+        const std::shared_ptr<ITimeUnitsModel>& TimelineWidget::getTimeUnitsModel() const
         {
             return _p->itemData->timeUnitsModel;
         }
 
-        std::shared_ptr<timeline::Player>& TimelineWidget::getPlayer() const
+        std::shared_ptr<Player>& TimelineWidget::getPlayer() const
         {
             return _p->player;
         }
 
-        void TimelineWidget::setPlayer(const std::shared_ptr<timeline::Player>& player)
+        void TimelineWidget::setPlayer(const std::shared_ptr<Player>& player)
         {
             FTK_P();
             if (player == p.player)
@@ -152,7 +152,7 @@ namespace tl
             p.itemData->thumbnails.clear();
             p.itemData->waveforms.clear();
             p.timeRange = invalidTimeRange;
-            p.playback = timeline::Playback::Stop;
+            p.playback = Playback::Stop;
             p.playbackObserver.reset();
             p.currentTimeObserver.reset();
             p.scrollWidget->setWidget(nullptr);
@@ -167,9 +167,9 @@ namespace tl
             {
                 p.timeRange = p.player->getTimeRange();
 
-                p.playbackObserver = ftk::Observer<timeline::Playback>::create(
+                p.playbackObserver = ftk::Observer<Playback>::create(
                     p.player->observePlayback(),
-                    [this](timeline::Playback value)
+                    [this](Playback value)
                     {
                         _p->playback = value;
                     });

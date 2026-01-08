@@ -77,9 +77,9 @@ namespace tl
                     _actions["Frame"]->setChecked(value);
                 });
 
-            _playerObserver = ftk::Observer<std::shared_ptr<timeline::Player> >::create(
+            _playerObserver = ftk::Observer<std::shared_ptr<Player> >::create(
                 app->getFilesModel()->observePlayer(),
-                [this](const std::shared_ptr<timeline::Player>& value)
+                [this](const std::shared_ptr<Player>& value)
                 {
                     _actions["Frame"]->setEnabled(value.get());
                     _actions["ZoomReset"]->setEnabled(value.get());

@@ -47,7 +47,7 @@ namespace tl
 
             _settingsModel->set(
                 "/TimeUnits",
-                timeline::to_string(_timeUnitsModel->getTimeUnits()));
+                to_string(_timeUnitsModel->getTimeUnits()));
         }
 
         std::shared_ptr<App> App::create(
@@ -64,7 +64,7 @@ namespace tl
             return _settingsModel;
         }
 
-        const std::shared_ptr<timeline::TimeUnitsModel>& App::getTimeUnitsModel() const
+        const std::shared_ptr<TimeUnitsModel>& App::getTimeUnitsModel() const
         {
             return _timeUnitsModel;
         }
@@ -125,12 +125,12 @@ namespace tl
                 ftk::getSettingsPath("tlRender", "tlplay.json"));
 
             // Create the time units model.
-            _timeUnitsModel = timeline::TimeUnitsModel::create(_context);
+            _timeUnitsModel = TimeUnitsModel::create(_context);
             std::string settings;
             if (_settingsModel->get("/TimeUnits", settings))
             {
-                timeline::TimeUnits timeUnits = timeline::TimeUnits::Timecode;
-                timeline::from_string(settings, timeUnits);
+                TimeUnits timeUnits = TimeUnits::Timecode;
+                from_string(settings, timeUnits);
                 _timeUnitsModel->setTimeUnits(timeUnits);
             }
 
@@ -157,7 +157,7 @@ namespace tl
 
             // Initialize the file browser.
             auto fileBrowserSystem = _context->getSystem<ftk::FileBrowserSystem>();
-            fileBrowserSystem->getModel()->setExts(timeline::getExts(_context));
+            fileBrowserSystem->getModel()->setExts(getExts(_context));
             fileBrowserSystem->setRecentFilesModel(_recentFilesModel);
 
 #if defined(TLRENDER_BMD)
@@ -168,10 +168,10 @@ namespace tl
             bmdConfig.displayModeIndex = 3;
             bmdConfig.pixelType = bmd::PixelType::_8BitBGRA;
             _bmdOutputDevice->setConfig(bmdConfig);
-            /*timeline::ForegroundOptions fgOptions;
+            /*ForegroundOptions fgOptions;
             fgOptions.grid.enabled = true;
             //fgOptions.grid.size = 1;
-            fgOptions.grid.labels = timeline::GridLabels::Alphanumeric;
+            fgOptions.grid.labels = GridLabels::Alphanumeric;
             //fgOptions.grid.lineWidth = 10;
             fgOptions.outline.enabled = true;
             _bmdOutputDevice->setForegroundOptions(fgOptions);*/
@@ -185,9 +185,9 @@ namespace tl
 
             // Create an observer to update the BMD output device.
 #if defined(TLRENDER_BMD)
-            _playerObserver = ftk::Observer<std::shared_ptr<timeline::Player> >::create(
+            _playerObserver = ftk::Observer<std::shared_ptr<Player> >::create(
                 _filesModel->observePlayer(),
-                [this](const std::shared_ptr<timeline::Player>& value)
+                [this](const std::shared_ptr<Player>& value)
                 {
                     _bmdOutputDevice->setPlayer(value);
                 });

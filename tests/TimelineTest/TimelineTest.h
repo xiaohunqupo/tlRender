@@ -28,7 +28,7 @@ namespace tl
             void _transitions();
             void _videoData();
             void _timeline();
-            void _timeline(const std::shared_ptr<timeline::Timeline>&);
+            void _timeline(const std::shared_ptr<Timeline>&);
             void _separateAudio();
         };
     }

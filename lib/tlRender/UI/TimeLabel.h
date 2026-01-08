@@ -11,10 +11,7 @@
 
 namespace tl
 {
-    namespace timeline
-    {
-        class TimeUnitsModel;
-    }
+    class TimeUnitsModel;
 
     namespace ui
     {
@@ -26,7 +23,7 @@ namespace tl
         protected:
             void _init(
                 const std::shared_ptr<ftk::Context>&,
-                const std::shared_ptr<timeline::TimeUnitsModel>&,
+                const std::shared_ptr<TimeUnitsModel>&,
                 const std::shared_ptr<IWidget>& parent);
 
             TimeLabel();
@@ -37,11 +34,11 @@ namespace tl
             //! Create a new widget.
             TL_API static std::shared_ptr<TimeLabel> create(
                 const std::shared_ptr<ftk::Context>&,
-                const std::shared_ptr<timeline::TimeUnitsModel>&,
+                const std::shared_ptr<TimeUnitsModel>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
             //! Get the time units model.
-            TL_API const std::shared_ptr<timeline::TimeUnitsModel>& getTimeUnitsModel() const;
+            TL_API const std::shared_ptr<TimeUnitsModel>& getTimeUnitsModel() const;
 
             //! Get the time value.
             TL_API const OTIO_NS::RationalTime& getValue() const;

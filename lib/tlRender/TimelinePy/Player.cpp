@@ -20,8 +20,6 @@ namespace tl
     {
         void player(py::module_& m)
         {
-            using namespace timeline;
-
             py::class_<PlayerCacheInfo>(m, "PlayerCacheInfo")
                 .def(py::init())
                 .def_readwrite("videoPercentage", &PlayerCacheInfo::videoPercentage)

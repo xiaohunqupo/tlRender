@@ -17,29 +17,29 @@ namespace tl
     {
         void playerOptions(py::module_& m)
         {
-            py::class_<timeline::PlayerCacheOptions>(m, "PlayerCacheOptions")
+            py::class_<PlayerCacheOptions>(m, "PlayerCacheOptions")
                 .def(py::init())
-                .def_readwrite("videoGB", &timeline::PlayerCacheOptions::videoGB)
-                .def_readwrite("audioGB", &timeline::PlayerCacheOptions::audioGB)
-                .def_readwrite("readBehind", &timeline::PlayerCacheOptions::readBehind)
+                .def_readwrite("videoGB", &PlayerCacheOptions::videoGB)
+                .def_readwrite("audioGB", &PlayerCacheOptions::audioGB)
+                .def_readwrite("readBehind", &PlayerCacheOptions::readBehind)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
-            py::class_<timeline::PlayerOptions>(m, "PlayerOptions")
+            py::class_<PlayerOptions>(m, "PlayerOptions")
                 .def(py::init())
-                .def_readwrite("audioDevice", &timeline::PlayerOptions::audioDevice)
-                .def_readwrite("cache", &timeline::PlayerOptions::cache)
-                .def_readwrite("videoRequestMax", &timeline::PlayerOptions::videoRequestMax)
-                .def_readwrite("audioRequestMax", &timeline::PlayerOptions::audioRequestMax)
-                .def_readwrite("audioBufferFrameCount", &timeline::PlayerOptions::audioBufferFrameCount)
-                .def_readwrite("muteTimeout", &timeline::PlayerOptions::muteTimeout)
-                .def_readwrite("sleepTimeout", &timeline::PlayerOptions::sleepTimeout)
-                .def_readwrite("currentTime", &timeline::PlayerOptions::currentTime)
+                .def_readwrite("audioDevice", &PlayerOptions::audioDevice)
+                .def_readwrite("cache", &PlayerOptions::cache)
+                .def_readwrite("videoRequestMax", &PlayerOptions::videoRequestMax)
+                .def_readwrite("audioRequestMax", &PlayerOptions::audioRequestMax)
+                .def_readwrite("audioBufferFrameCount", &PlayerOptions::audioBufferFrameCount)
+                .def_readwrite("muteTimeout", &PlayerOptions::muteTimeout)
+                .def_readwrite("sleepTimeout", &PlayerOptions::sleepTimeout)
+                .def_readwrite("currentTime", &PlayerOptions::currentTime)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
             m.def("to_json",
-                [](const timeline::PlayerCacheOptions& value)
+                [](const PlayerCacheOptions& value)
                 {
                     nlohmann::json json;
                     to_json(json, value);
@@ -47,7 +47,7 @@ namespace tl
                 });
 
             m.def("from_json",
-                [](const std::string& value, timeline::PlayerCacheOptions& out)
+                [](const std::string& value, PlayerCacheOptions& out)
                 {
                     from_json(nlohmann::json().parse(value), out);
                 });

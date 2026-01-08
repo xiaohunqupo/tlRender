@@ -164,21 +164,21 @@ namespace tl
                 });
             _actions["ResetOutPoint"]->setTooltip("Reset the playback out point.");
 
-            _playerObserver = ftk::Observer<std::shared_ptr<timeline::Player> >::create(
+            _playerObserver = ftk::Observer<std::shared_ptr<Player> >::create(
                 app->getFilesModel()->observePlayer(),
-                [this](const std::shared_ptr<timeline::Player>& value)
+                [this](const std::shared_ptr<Player>& value)
                 {
                     _player = value;
 
                     if (value)
                     {
-                        _playbackObserver = ftk::Observer<timeline::Playback>::create(
+                        _playbackObserver = ftk::Observer<Playback>::create(
                             value->observePlayback(),
-                            [this](timeline::Playback value)
+                            [this](Playback value)
                             {
-                                _actions["Stop"]->setChecked(timeline::Playback::Stop == value);
-                                _actions["Forward"]->setChecked(timeline::Playback::Forward == value);
-                                _actions["Reverse"]->setChecked(timeline::Playback::Reverse == value);
+                                _actions["Stop"]->setChecked(Playback::Stop == value);
+                                _actions["Forward"]->setChecked(Playback::Forward == value);
+                                _actions["Reverse"]->setChecked(Playback::Reverse == value);
                             });
                     }
                     else

@@ -14,16 +14,16 @@ namespace tl
             const std::shared_ptr<SettingsModel>& settingsModel)
         {
             _context = context;
-            _players = ftk::ObservableList<std::shared_ptr<timeline::Player> >::create();
-            _player = ftk::Observable<std::shared_ptr<timeline::Player> >::create();
+            _players = ftk::ObservableList<std::shared_ptr<Player> >::create();
+            _player = ftk::Observable<std::shared_ptr<Player> >::create();
             _playerIndex = ftk::Observable<int>::create(-1);
-            _bPlayer = ftk::Observable<std::shared_ptr<timeline::Player> >::create();
+            _bPlayer = ftk::Observable<std::shared_ptr<Player> >::create();
             _bPlayerIndex = ftk::Observable<int>::create(-1);
-            _compare = ftk::Observable<timeline::Compare>::create(timeline::Compare::A);
+            _compare = ftk::Observable<Compare>::create(Compare::A);
 
-            _cacheObserver = ftk::Observer<timeline::PlayerCacheOptions>::create(
+            _cacheObserver = ftk::Observer<PlayerCacheOptions>::create(
                 settingsModel->observeCache(),
-                [this](const timeline::PlayerCacheOptions& value)
+                [this](const PlayerCacheOptions& value)
                 {
                     _cacheOptions = value;
                     for (const auto& player : _players->get())
@@ -49,8 +49,8 @@ namespace tl
         {
             if (auto context = _context.lock())
             {
-                auto timeline = timeline::Timeline::create(context, path);
-                auto player = timeline::Player::create(context, timeline);
+                auto timeline = Timeline::create(context, path);
+                auto player = Player::create(context, timeline);
                 player->setCacheOptions(_cacheOptions);
                 const int index = _players->getSize();
                 _players->pushBack(player);
@@ -123,8 +123,8 @@ namespace tl
             {
                 const std::size_t index = _players->indexOf(player);
                 const ftk::Path path = player->getPath();
-                auto timeline = timeline::Timeline::create(context, path);
-                player = timeline::Player::create(context, timeline);
+                auto timeline = Timeline::create(context, path);
+                player = Player::create(context, timeline);
                 _players->setItem(index, player);
                 _player->setIfChanged(player);
                 if (auto bPlayer = _bPlayer->get())
@@ -184,12 +184,12 @@ namespace tl
             }
         }
 
-        std::shared_ptr<ftk::IObservableList<std::shared_ptr<timeline::Player> > > FilesModel::observePlayers() const
+        std::shared_ptr<ftk::IObservableList<std::shared_ptr<Player> > > FilesModel::observePlayers() const
         {
             return _players;
         }
 
-        std::shared_ptr<ftk::IObservable<std::shared_ptr<timeline::Player> > > FilesModel::observePlayer() const
+        std::shared_ptr<ftk::IObservable<std::shared_ptr<Player> > > FilesModel::observePlayer() const
         {
             return _player;
         }
@@ -219,12 +219,12 @@ namespace tl
             }
         }
 
-        void FilesModel::setCompare(timeline::Compare value)
+        void FilesModel::setCompare(Compare value)
         {
             _compare->setIfChanged(value);
         }
 
-        std::shared_ptr<ftk::IObservable<std::shared_ptr<timeline::Player> > > FilesModel::observeBPlayer() const
+        std::shared_ptr<ftk::IObservable<std::shared_ptr<Player> > > FilesModel::observeBPlayer() const
         {
             return _bPlayer;
         }
@@ -234,7 +234,7 @@ namespace tl
             return _bPlayerIndex;
         }
 
-        std::shared_ptr<ftk::IObservable<timeline::Compare> > FilesModel::observeCompare() const
+        std::shared_ptr<ftk::IObservable<Compare> > FilesModel::observeCompare() const
         {
             return _compare;
         }

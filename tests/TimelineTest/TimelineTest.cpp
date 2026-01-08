@@ -15,8 +15,6 @@
 #include <opentimelineio/imageSequenceReference.h>
 #include <opentimelineio/timeline.h>
 
-using namespace tl::timeline;
-
 namespace tl
 {
     namespace timeline_tests
@@ -113,9 +111,9 @@ namespace tl
                 try
                 {
                     _print(ftk::Format("Memory timeline: {0}").arg(path.get()));
-                    auto otioTimeline = timeline::create(_context, path);
+                    auto otioTimeline = tl::create(_context, path);
                     toMemRefs(otioTimeline, path.getDir(), ToMemRef::Shared);
-                    auto timeline = timeline::Timeline::create(_context, otioTimeline);
+                    auto timeline = Timeline::create(_context, otioTimeline);
                     _timeline(timeline);
                 }
                 catch (const std::exception& e)
@@ -125,12 +123,12 @@ namespace tl
             }
         }
 
-        void TimelineTest::_timeline(const std::shared_ptr<timeline::Timeline>& timeline)
+        void TimelineTest::_timeline(const std::shared_ptr<Timeline>& timeline)
         {
             // Get video from the timeline.
             const OTIO_NS::TimeRange& timeRange = timeline->getTimeRange();
-            std::vector<timeline::VideoFrame> videoFrame;
-            std::vector<timeline::VideoRequest> videoRequests;
+            std::vector<VideoFrame> videoFrame;
+            std::vector<VideoRequest> videoRequests;
             for (size_t i = 0; i < static_cast<size_t>(timeRange.duration().value()); ++i)
             {
                 videoRequests.push_back(timeline->getVideo(OTIO_NS::RationalTime(i, 24.0)));
@@ -161,8 +159,8 @@ namespace tl
             FTK_ASSERT(videoRequests.empty());
 
             // Get audio from the timeline.
-            std::vector<timeline::AudioFrame> audioFrame;
-            std::vector<timeline::AudioRequest> audioRequests;
+            std::vector<AudioFrame> audioFrame;
+            std::vector<AudioRequest> audioRequests;
             for (size_t i = 0; i < static_cast<size_t>(timeRange.duration().rescaled_to(1.0).value()); ++i)
             {
                 audioRequests.push_back(timeline->getAudio(i));

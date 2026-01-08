@@ -19,7 +19,7 @@ namespace tl
         protected:
             void _init(
                 const std::shared_ptr<ftk::Context>&,
-                const std::shared_ptr<timeline::TimeUnitsModel>&,
+                const std::shared_ptr<TimeUnitsModel>&,
                 const std::shared_ptr<IWidget>& parent);
 
             TimeUnitsWidget();
@@ -30,7 +30,7 @@ namespace tl
             //! Create a new widget.
             TL_API static std::shared_ptr<TimeUnitsWidget> create(
                 const std::shared_ptr<ftk::Context>&,
-                const std::shared_ptr<timeline::TimeUnitsModel>&,
+                const std::shared_ptr<TimeUnitsModel>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
             TL_API ftk::Size2I getSizeHint() const override;

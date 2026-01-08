@@ -15,21 +15,18 @@
 
 namespace tl
 {
-    namespace timeline
-    {
-        TL_ENUM_IMPL(
-            Transition,
-            "None",
-            "Dissolve");
+    TL_ENUM_IMPL(
+        Transition,
+        "None",
+        "Dissolve");
 
-        Transition toTransition(const std::string& value)
+    Transition toTransition(const std::string& value)
+    {
+        Transition out = Transition::None;
+        if (OTIO_NS::Transition::Type::SMPTE_Dissolve == value)
         {
-            Transition out = Transition::None;
-            if (OTIO_NS::Transition::Type::SMPTE_Dissolve == value)
-            {
-                out = Transition::Dissolve;
-            }
-            return out;
+            out = Transition::Dissolve;
         }
+        return out;
     }
 }

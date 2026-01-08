@@ -10,33 +10,30 @@
 
 namespace tl
 {
-    namespace timeline
+    class Player;
+
+    //! Timeline system.
+    class TL_API_TYPE System : public ftk::ISystem
     {
-        class Player;
+        FTK_NON_COPYABLE(System);
 
-        //! Timeline system.
-        class TL_API_TYPE System : public ftk::ISystem
-        {
-            FTK_NON_COPYABLE(System);
+    protected:
+        System(const std::shared_ptr<ftk::Context>&);
 
-        protected:
-            System(const std::shared_ptr<ftk::Context>&);
+    public:
+        TL_API virtual ~System();
 
-        public:
-            TL_API virtual ~System();
+        //! Create a new system.
+        TL_API static std::shared_ptr<System> create(const std::shared_ptr<ftk::Context>&);
 
-            //! Create a new system.
-            TL_API static std::shared_ptr<System> create(const std::shared_ptr<ftk::Context>&);
+        TL_API void tick() override;
+        TL_API std::chrono::milliseconds getTickTime() const override;
 
-            TL_API void tick() override;
-            TL_API std::chrono::milliseconds getTickTime() const override;
+    private:
+        void _addPlayer(const std::shared_ptr<Player>&);
 
-        private:
-            void _addPlayer(const std::shared_ptr<Player>&);
+        friend class Player;
 
-            friend class Player;
-
-            FTK_PRIVATE();
-        };
-    }
+        FTK_PRIVATE();
+    };
 }

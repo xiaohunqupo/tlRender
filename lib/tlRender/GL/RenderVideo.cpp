@@ -18,17 +18,17 @@ namespace tl
         void Render::drawBackground(
             const std::vector<ftk::Box2I>& boxes,
             const ftk::M44F& m,
-            const timeline::BackgroundOptions& options)
+            const BackgroundOptions& options)
         {
             glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
             const ftk::Box2I rect(ftk::V2I(0, 0), getRenderSize());
             switch (options.type)
             {
-            case timeline::Background::Solid:
+            case Background::Solid:
                 IRender::drawRect(rect, options.solidColor);
                 break;
-            case timeline::Background::Checkers:
+            case Background::Checkers:
                 drawColorMesh(
                     ftk::checkers(
                         rect,
@@ -37,7 +37,7 @@ namespace tl
                         options.checkersSize),
                     ftk::Color4F(1.F, 1.F, 1.F));
                 break;
-            case timeline::Background::Gradient:
+            case Background::Gradient:
             {
                 ftk::TriMesh2F mesh;
                 mesh.v.push_back(ftk::V2F(rect.min.x, rect.min.y));
@@ -72,16 +72,16 @@ namespace tl
         }
 
         void Render::drawVideo(
-            const std::vector<timeline::VideoFrame>& videoFrame,
+            const std::vector<VideoFrame>& videoFrame,
             const std::vector<ftk::Box2I>& boxes,
             const std::vector<ftk::ImageOptions>& imageOptions,
-            const std::vector<timeline::DisplayOptions>& displayOptions,
-            const timeline::CompareOptions& compareOptions,
+            const std::vector<DisplayOptions>& displayOptions,
+            const CompareOptions& compareOptions,
             ftk::ImageType colorBuffer)
         {
             switch (compareOptions.compare)
             {
-            case timeline::Compare::A:
+            case Compare::A:
                 _drawVideoA(
                     videoFrame,
                     boxes,
@@ -90,7 +90,7 @@ namespace tl
                     compareOptions,
                     colorBuffer);
                 break;
-            case timeline::Compare::B:
+            case Compare::B:
                 _drawVideoB(
                     videoFrame,
                     boxes,
@@ -99,7 +99,7 @@ namespace tl
                     compareOptions,
                     colorBuffer);
                 break;
-            case timeline::Compare::Wipe:
+            case Compare::Wipe:
                 _drawVideoWipe(
                     videoFrame,
                     boxes,
@@ -108,7 +108,7 @@ namespace tl
                     compareOptions,
                     colorBuffer);
                 break;
-            case timeline::Compare::Overlay:
+            case Compare::Overlay:
                 _drawVideoOverlay(
                     videoFrame,
                     boxes,
@@ -117,7 +117,7 @@ namespace tl
                     compareOptions,
                     colorBuffer);
                 break;
-            case timeline::Compare::Difference:
+            case Compare::Difference:
                 if (videoFrame.size() > 1)
                 {
                     _drawVideoDifference(
@@ -139,9 +139,9 @@ namespace tl
                         colorBuffer);
                 }
                 break;
-            case timeline::Compare::Horizontal:
-            case timeline::Compare::Vertical:
-            case timeline::Compare::Tile:
+            case Compare::Horizontal:
+            case Compare::Vertical:
+            case Compare::Tile:
                 _drawVideoTile(
                     videoFrame,
                     boxes,
@@ -155,11 +155,11 @@ namespace tl
         }
 
         void Render::_drawVideoA(
-            const std::vector<timeline::VideoFrame>& videoFrame,
+            const std::vector<VideoFrame>& videoFrame,
             const std::vector<ftk::Box2I>& boxes,
             const std::vector<ftk::ImageOptions>& imageOptions,
-            const std::vector<timeline::DisplayOptions>& displayOptions,
-            const timeline::CompareOptions& compareOptions,
+            const std::vector<DisplayOptions>& displayOptions,
+            const CompareOptions& compareOptions,
             ftk::ImageType colorBuffer)
         {
             if (!videoFrame.empty() && !boxes.empty())
@@ -168,17 +168,17 @@ namespace tl
                     videoFrame[0],
                     boxes[0],
                     !imageOptions.empty() ? std::make_shared<ftk::ImageOptions>(imageOptions[0]) : nullptr,
-                    !displayOptions.empty() ? displayOptions[0] : timeline::DisplayOptions(),
+                    !displayOptions.empty() ? displayOptions[0] : DisplayOptions(),
                     colorBuffer);
             }
         }
 
         void Render::_drawVideoB(
-            const std::vector<timeline::VideoFrame>& videoFrame,
+            const std::vector<VideoFrame>& videoFrame,
             const std::vector<ftk::Box2I>& boxes,
             const std::vector<ftk::ImageOptions>& imageOptions,
-            const std::vector<timeline::DisplayOptions>& displayOptions,
-            const timeline::CompareOptions& compareOptions,
+            const std::vector<DisplayOptions>& displayOptions,
+            const CompareOptions& compareOptions,
             ftk::ImageType colorBuffer)
         {
             if (videoFrame.size() > 1 && boxes.size() > 1)
@@ -187,17 +187,17 @@ namespace tl
                     videoFrame[1],
                     boxes[1],
                     imageOptions.size() > 1 ? std::make_shared<ftk::ImageOptions>(imageOptions[1]) : nullptr,
-                    displayOptions.size() > 1 ? displayOptions[1] : timeline::DisplayOptions(),
+                    displayOptions.size() > 1 ? displayOptions[1] : DisplayOptions(),
                     colorBuffer);
             }
         }
 
         void Render::_drawVideoWipe(
-            const std::vector<timeline::VideoFrame>& videoFrame,
+            const std::vector<VideoFrame>& videoFrame,
             const std::vector<ftk::Box2I>& boxes,
             const std::vector<ftk::ImageOptions>& imageOptions,
-            const std::vector<timeline::DisplayOptions>& displayOptions,
-            const timeline::CompareOptions& compareOptions,
+            const std::vector<DisplayOptions>& displayOptions,
+            const CompareOptions& compareOptions,
             ftk::ImageType colorBuffer)
         {
             FTK_P();
@@ -263,7 +263,7 @@ namespace tl
                     videoFrame[0],
                     boxes[0],
                     !imageOptions.empty() ? std::make_shared<ftk::ImageOptions>(imageOptions[0]) : nullptr,
-                    !displayOptions.empty() ? displayOptions[0] : timeline::DisplayOptions(),
+                    !displayOptions.empty() ? displayOptions[0] : DisplayOptions(),
                     colorBuffer);
             }
 
@@ -305,17 +305,17 @@ namespace tl
                     videoFrame[1],
                     boxes[1],
                     imageOptions.size() > 1 ? std::make_shared<ftk::ImageOptions>(imageOptions[1]) : nullptr,
-                    displayOptions.size() > 1 ? displayOptions[1] : timeline::DisplayOptions(),
+                    displayOptions.size() > 1 ? displayOptions[1] : DisplayOptions(),
                     colorBuffer);
             }
         }
 
         void Render::_drawVideoOverlay(
-            const std::vector<timeline::VideoFrame>& videoFrame,
+            const std::vector<VideoFrame>& videoFrame,
             const std::vector<ftk::Box2I>& boxes,
             const std::vector<ftk::ImageOptions>& imageOptions,
-            const std::vector<timeline::DisplayOptions>& displayOptions,
-            const timeline::CompareOptions& compareOptions,
+            const std::vector<DisplayOptions>& displayOptions,
+            const CompareOptions& compareOptions,
             ftk::ImageType colorBuffer)
         {
             FTK_P();
@@ -326,7 +326,7 @@ namespace tl
                     videoFrame[1],
                     boxes[1],
                     imageOptions.size() > 1 ? std::make_shared<ftk::ImageOptions>(imageOptions[1]) : nullptr,
-                    displayOptions.size() > 1 ? displayOptions[1] : timeline::DisplayOptions(),
+                    displayOptions.size() > 1 ? displayOptions[1] : DisplayOptions(),
                     colorBuffer);
             }
             if (!videoFrame.empty() && !boxes.empty())
@@ -378,7 +378,7 @@ namespace tl
                         videoFrame[0],
                         ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h),
                         !imageOptions.empty() ? std::make_shared<ftk::ImageOptions>(imageOptions[0]) : nullptr,
-                        !displayOptions.empty() ? displayOptions[0] : timeline::DisplayOptions(),
+                        !displayOptions.empty() ? displayOptions[0] : DisplayOptions(),
                         colorBuffer);
 
                     p.shaders["display"]->bind();
@@ -420,11 +420,11 @@ namespace tl
         }
 
         void Render::_drawVideoDifference(
-            const std::vector<timeline::VideoFrame>& videoFrame,
+            const std::vector<VideoFrame>& videoFrame,
             const std::vector<ftk::Box2I>& boxes,
             const std::vector<ftk::ImageOptions>& imageOptions,
-            const std::vector<timeline::DisplayOptions>& displayOptions,
-            const timeline::CompareOptions& compareOptions,
+            const std::vector<DisplayOptions>& displayOptions,
+            const CompareOptions& compareOptions,
             ftk::ImageType colorBuffer)
         {
             FTK_P();
@@ -477,7 +477,7 @@ namespace tl
                         videoFrame[0],
                         ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h),
                         !imageOptions.empty() ? std::make_shared<ftk::ImageOptions>(imageOptions[0]) : nullptr,
-                        !displayOptions.empty() ? displayOptions[0] : timeline::DisplayOptions(),
+                        !displayOptions.empty() ? displayOptions[0] : DisplayOptions(),
                         colorBuffer);
 
                     p.shaders["display"]->bind();
@@ -530,7 +530,7 @@ namespace tl
                             videoFrame[1],
                             ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h),
                             imageOptions.size() > 1 ? std::make_shared<ftk::ImageOptions>(imageOptions[1]) : nullptr,
-                            displayOptions.size() > 1 ? displayOptions[1] : timeline::DisplayOptions(),
+                            displayOptions.size() > 1 ? displayOptions[1] : DisplayOptions(),
                             colorBuffer);
                     }
                 }
@@ -577,11 +577,11 @@ namespace tl
         }
 
         void Render::_drawVideoTile(
-            const std::vector<timeline::VideoFrame>& videoFrame,
+            const std::vector<VideoFrame>& videoFrame,
             const std::vector<ftk::Box2I>& boxes,
             const std::vector<ftk::ImageOptions>& imageOptions,
-            const std::vector<timeline::DisplayOptions>& displayOptions,
-            const timeline::CompareOptions& compareOptions,
+            const std::vector<DisplayOptions>& displayOptions,
+            const CompareOptions& compareOptions,
             ftk::ImageType colorBuffer)
         {
             for (size_t i = 0; i < videoFrame.size() && i < boxes.size(); ++i)
@@ -590,7 +590,7 @@ namespace tl
                     videoFrame[i],
                     boxes[i],
                     i < imageOptions.size() ? std::make_shared<ftk::ImageOptions>(imageOptions[i]) : nullptr,
-                    i < displayOptions.size() ? displayOptions[i] : timeline::DisplayOptions(),
+                    i < displayOptions.size() ? displayOptions[i] : DisplayOptions(),
                     colorBuffer);
             }
         }
@@ -628,10 +628,10 @@ namespace tl
         }
 
         void Render::_drawVideo(
-            const timeline::VideoFrame& videoFrame,
+            const VideoFrame& videoFrame,
             const ftk::Box2I& box,
             const std::shared_ptr<ftk::ImageOptions>& imageOptions,
-            const timeline::DisplayOptions& displayOptions,
+            const DisplayOptions& displayOptions,
             ftk::ImageType colorBuffer)
         {
             FTK_P();
@@ -677,7 +677,7 @@ namespace tl
                 {
                     switch (layer.transition)
                     {
-                        case timeline::Transition::Dissolve:
+                        case Transition::Dissolve:
                         {
                             if (layer.image && layer.imageB)
                             {
@@ -709,7 +709,7 @@ namespace tl
                                     dissolveImageOptions.alphaBlend = ftk::AlphaBlend::None;
                                     IRender::drawImage(
                                         layer.image,
-                                        timeline::getBox(
+                                        getBox(
                                             layer.image->getAspect(),
                                             ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
                                         ftk::Color4F(1.F, 1.F, 1.F),
@@ -725,7 +725,7 @@ namespace tl
                                     dissolveImageOptions.alphaBlend = ftk::AlphaBlend::None;
                                     IRender::drawImage(
                                         layer.imageB,
-                                        timeline::getBox(
+                                        getBox(
                                             layer.imageB->getAspect(),
                                             ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
                                         ftk::Color4F(1.F, 1.F, 1.F),
@@ -762,7 +762,7 @@ namespace tl
                             {
                                 IRender::drawImage(
                                     layer.image,
-                                    timeline::getBox(
+                                    getBox(
                                         layer.image->getAspect(),
                                         ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
                                     ftk::Color4F(1.F, 1.F, 1.F, 1.F - layer.transitionValue),
@@ -772,7 +772,7 @@ namespace tl
                             {
                                 IRender::drawImage(
                                     layer.imageB,
-                                    timeline::getBox(
+                                    getBox(
                                         layer.imageB->getAspect(),
                                         ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
                                     ftk::Color4F(1.F, 1.F, 1.F, layer.transitionValue),
@@ -785,7 +785,7 @@ namespace tl
                         {
                             IRender::drawImage(
                                 layer.image,
-                                timeline::getBox(
+                                getBox(
                                     layer.image->getAspect(),
                                     ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
                                 ftk::Color4F(1.F, 1.F, 1.F),
@@ -812,7 +812,7 @@ namespace tl
                 p.shaders["display"]->setUniform("mirrorX", displayOptions.mirror.x);
                 p.shaders["display"]->setUniform("mirrorY", displayOptions.mirror.y);
                 const bool colorMatrixEnabled =
-                    displayOptions.color != timeline::Color() &&
+                    displayOptions.color != Color() &&
                     displayOptions.color.enabled;
                 p.shaders["display"]->setUniform("colorEnabled", colorMatrixEnabled);
                 p.shaders["display"]->setUniform("colorAdd", displayOptions.color.add);
@@ -925,7 +925,7 @@ namespace tl
         void Render::drawForeground(
             const std::vector<ftk::Box2I>& boxes,
             const ftk::M44F& m,
-            const timeline::ForegroundOptions& options)
+            const ForegroundOptions& options)
         {
             if (options.grid.enabled && !boxes.empty())
             {
@@ -971,7 +971,7 @@ namespace tl
                     }
                     drawLines(lines, options.grid.color, lineOptions);
 
-                    if (options.grid.labels != timeline::GridLabels::None)
+                    if (options.grid.labels != GridLabels::None)
                     {
                         auto fontSystem = _fontSystem.lock();
                         const ftk::FontMetrics fontMetrics = fontSystem->getMetrics(options.grid.fontInfo);
@@ -982,10 +982,10 @@ namespace tl
                                 std::stringstream ss;
                                 switch (options.grid.labels)
                                 {
-                                case timeline::GridLabels::Pixels:
+                                case GridLabels::Pixels:
                                     ss << x << " " << y;
                                     break;
-                                case timeline::GridLabels::Alphanumeric:
+                                case GridLabels::Alphanumeric:
                                     ss << alpha(j) << " " << i;
                                     break;
                                 default: break;

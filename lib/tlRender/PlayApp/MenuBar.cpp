@@ -39,9 +39,9 @@ namespace tl
             addAction(actions["Exit"]);
 
             std::weak_ptr<App> appWeak(app);
-            _playersObserver = ftk::ListObserver<std::shared_ptr<timeline::Player> >::create(
+            _playersObserver = ftk::ListObserver<std::shared_ptr<Player> >::create(
                 app->getFilesModel()->observePlayers(),
-                [this, appWeak](const std::vector<std::shared_ptr<timeline::Player> >& players)
+                [this, appWeak](const std::vector<std::shared_ptr<Player> >& players)
                 {
                     _activeActions.clear();
                     _activeMenu->clear();
@@ -122,15 +122,15 @@ namespace tl
 
             _bFileMenu = addSubMenu("B File");
             auto actions = compareActions->getActions();
-            for (const auto& label : timeline::getCompareLabels())
+            for (const auto& label : getCompareLabels())
             {
                 addAction(actions[label]);
             }
 
             std::weak_ptr<App> appWeak(app);
-            _playersObserver = ftk::ListObserver<std::shared_ptr<timeline::Player> >::create(
+            _playersObserver = ftk::ListObserver<std::shared_ptr<Player> >::create(
                 app->getFilesModel()->observePlayers(),
-                [this, appWeak](const std::vector<std::shared_ptr<timeline::Player> >& players)
+                [this, appWeak](const std::vector<std::shared_ptr<Player> >& players)
                 {
                     _bFileActions.clear();
                     _bFileMenu->clear();

@@ -47,7 +47,7 @@ namespace tl
         {
             ToolBar::_init(context, ftk::Orientation::Horizontal, parent);
             auto actions = compareActions->getActions();
-            for (const auto& label : timeline::getCompareLabels())
+            for (const auto& label : getCompareLabels())
             {
                 addAction(actions[label]);
             }

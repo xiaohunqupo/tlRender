@@ -26,17 +26,17 @@ namespace tl
         public:
             TimelineWidget(
                 const std::shared_ptr<ftk::Context>&,
-                const std::shared_ptr<timeline::ITimeUnitsModel>&,
+                const std::shared_ptr<ITimeUnitsModel>&,
                 const std::shared_ptr<ftk::Style>&,
                 QWidget* parent = nullptr);
 
             virtual ~TimelineWidget();
 
             //! Get the timeline player.
-            std::shared_ptr<timeline::Player>& player() const;
+            std::shared_ptr<Player>& player() const;
 
             //! Set the timeline player.
-            void setPlayer(const std::shared_ptr<timeline::Player>&);
+            void setPlayer(const std::shared_ptr<Player>&);
 
             //! Get whether the view is framed automatically.
             bool hasFrameView() const;

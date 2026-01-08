@@ -16,46 +16,46 @@ namespace tl
     {
         void foregroundOptions(py::module_& m)
         {
-            py::class_<timeline::Grid>(m, "Grid")
+            py::class_<Grid>(m, "Grid")
                 .def(py::init())
-                .def_readwrite("enabled", &timeline::Grid::enabled)
-                .def_readwrite("size", &timeline::Grid::size)
-                .def_readwrite("lineWidth", &timeline::Grid::lineWidth)
-                .def_readwrite("color", &timeline::Grid::color)
+                .def_readwrite("enabled", &Grid::enabled)
+                .def_readwrite("size", &Grid::size)
+                .def_readwrite("lineWidth", &Grid::lineWidth)
+                .def_readwrite("color", &Grid::color)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
-            py::class_<timeline::Outline>(m, "Grid")
+            py::class_<Outline>(m, "Grid")
                 .def(py::init())
-                .def_readwrite("enabled", &timeline::Outline::enabled)
-                .def_readwrite("width", &timeline::Outline::width)
-                .def_readwrite("color", &timeline::Outline::color)
+                .def_readwrite("enabled", &Outline::enabled)
+                .def_readwrite("width", &Outline::width)
+                .def_readwrite("color", &Outline::color)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
-            py::class_<timeline::ForegroundOptions>(m, "ForegroundOptions")
+            py::class_<ForegroundOptions>(m, "ForegroundOptions")
                 .def(py::init())
-                .def_readwrite("grid", &timeline::ForegroundOptions::grid)
-                .def_readwrite("outline", &timeline::ForegroundOptions::outline)
+                .def_readwrite("grid", &ForegroundOptions::grid)
+                .def_readwrite("outline", &ForegroundOptions::outline)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
             m.def("to_json",
-                [](const timeline::Grid& value)
+                [](const Grid& value)
                 {
                     nlohmann::json json;
                     to_json(json, value);
                     return json.dump();
                 });
             m.def("to_json",
-                [](const timeline::Outline& value)
+                [](const Outline& value)
                 {
                     nlohmann::json json;
                     to_json(json, value);
                     return json.dump();
                 });
             m.def("to_json",
-                [](const timeline::ForegroundOptions& value)
+                [](const ForegroundOptions& value)
                 {
                     nlohmann::json json;
                     to_json(json, value);
@@ -63,17 +63,17 @@ namespace tl
                 });
 
             m.def("from_json",
-                [](const std::string& value, timeline::Grid& out)
+                [](const std::string& value, Grid& out)
                 {
                     from_json(nlohmann::json().parse(value), out);
                 });
             m.def("from_json",
-                [](const std::string& value, timeline::Outline& out)
+                [](const std::string& value, Outline& out)
                 {
                     from_json(nlohmann::json().parse(value), out);
                 });
             m.def("from_json",
-                [](const std::string& value, timeline::ForegroundOptions& out)
+                [](const std::string& value, ForegroundOptions& out)
                 {
                     from_json(nlohmann::json().parse(value), out);
                 });

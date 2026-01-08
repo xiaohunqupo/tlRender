@@ -18,8 +18,6 @@ namespace tl
     {
         void timelineOptions(py::module_& m)
         {
-            using namespace timeline;
-
             py::enum_<ImageSeqAudio>(m, "ImageSeqAudio")
                 .value("None", ImageSeqAudio::None)
                 .value("Ext", ImageSeqAudio::Ext)

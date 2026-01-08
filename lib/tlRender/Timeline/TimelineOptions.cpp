@@ -10,31 +10,28 @@
 
 namespace tl
 {
-    namespace timeline
+    TL_ENUM_IMPL(
+        ImageSeqAudio,
+        "None",
+        "Ext",
+        "FileName");
+
+    bool Options::operator == (const Options& other) const
     {
-        TL_ENUM_IMPL(
-            ImageSeqAudio,
-            "None",
-            "Ext",
-            "FileName");
+        return
+            imageSeqAudio == other.imageSeqAudio &&
+            imageSeqAudioExts == other.imageSeqAudioExts &&
+            imageSeqAudioFileName == other.imageSeqAudioFileName &&
+            compat == other.compat &&
+            videoRequestMax == other.videoRequestMax &&
+            audioRequestMax == other.audioRequestMax &&
+            requestTimeout == other.requestTimeout &&
+            ioOptions == other.ioOptions &&
+            pathOptions == other.pathOptions;
+    }
 
-        bool Options::operator == (const Options& other) const
-        {
-            return
-                imageSeqAudio == other.imageSeqAudio &&
-                imageSeqAudioExts == other.imageSeqAudioExts &&
-                imageSeqAudioFileName == other.imageSeqAudioFileName &&
-                compat == other.compat &&
-                videoRequestMax == other.videoRequestMax &&
-                audioRequestMax == other.audioRequestMax &&
-                requestTimeout == other.requestTimeout &&
-                ioOptions == other.ioOptions &&
-                pathOptions == other.pathOptions;
-        }
-
-        bool Options::operator != (const Options& other) const
-        {
-            return !(*this == other);
-        }
+    bool Options::operator != (const Options& other) const
+    {
+        return !(*this == other);
     }
 }

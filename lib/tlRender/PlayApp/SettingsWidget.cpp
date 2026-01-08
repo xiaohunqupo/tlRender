@@ -72,9 +72,9 @@ namespace tl
                     }
                 });
 
-            _cacheObserver = ftk::Observer<timeline::PlayerCacheOptions>::create(
+            _cacheObserver = ftk::Observer<PlayerCacheOptions>::create(
                 app->getSettingsModel()->observeCache(),
-                [this](const timeline::PlayerCacheOptions& value)
+                [this](const PlayerCacheOptions& value)
                 {
                     _videoEdit->setValue(value.videoGB);
                     _audioEdit->setValue(value.audioGB);

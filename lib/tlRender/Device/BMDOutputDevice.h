@@ -89,28 +89,28 @@ namespace tl
                 bool            frame);
 
             //! Set the OpenColorIO options.
-            TL_API void setOCIOOptions(const timeline::OCIOOptions&);
+            TL_API void setOCIOOptions(const OCIOOptions&);
 
             //! Set the LUT options.
-            TL_API void setLUTOptions(const timeline::LUTOptions&);
+            TL_API void setLUTOptions(const LUTOptions&);
 
             //! Set the image options.
             TL_API void setImageOptions(const std::vector<ftk::ImageOptions>&);
 
             //! Set the display options.
-            TL_API void setDisplayOptions(const std::vector<timeline::DisplayOptions>&);
+            TL_API void setDisplayOptions(const std::vector<DisplayOptions>&);
 
             //! Set the HDR mode and metadata.
             TL_API void setHDR(HDRMode, const HDRData&);
 
             //! Set the comparison options.
-            TL_API void setCompareOptions(const timeline::CompareOptions&);
+            TL_API void setCompareOptions(const CompareOptions&);
 
             //! Set the background options.
-            TL_API void setBackgroundOptions(const timeline::BackgroundOptions&);
+            TL_API void setBackgroundOptions(const BackgroundOptions&);
 
             //! Set the foreground options.
-            TL_API void setForegroundOptions(const timeline::ForegroundOptions&);
+            TL_API void setForegroundOptions(const ForegroundOptions&);
 
             //! Set the overlay.
             TL_API void setOverlay(const std::shared_ptr<ftk::Image>&);
@@ -128,7 +128,7 @@ namespace tl
             TL_API void setAudioOffset(double);
 
             //! Set the timeline player.
-            TL_API void setPlayer(const std::shared_ptr<timeline::Player>&);
+            TL_API void setPlayer(const std::shared_ptr<Player>&);
 
         private:
             void _tick();
@@ -141,13 +141,13 @@ namespace tl
                 int videoFrameDelay);
             void _render(
                 const DeviceConfig&,
-                const timeline::OCIOOptions&,
-                const timeline::LUTOptions&,
+                const OCIOOptions&,
+                const LUTOptions&,
                 const std::vector<ftk::ImageOptions>&,
-                const std::vector<timeline::DisplayOptions>&,
-                const timeline::CompareOptions&,
-                const timeline::BackgroundOptions&,
-                const timeline::ForegroundOptions&);
+                const std::vector<DisplayOptions>&,
+                const CompareOptions&,
+                const BackgroundOptions&,
+                const ForegroundOptions&);
             void _read();
 
             friend class System;

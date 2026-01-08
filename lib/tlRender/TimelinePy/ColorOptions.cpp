@@ -18,8 +18,6 @@ namespace tl
     {
         void colorOptions(py::module_& m)
         {
-            using namespace timeline;
-            
             py::enum_<OCIOConfig>(m, "OCIOConfig")
                 .value("BuiltIn", OCIOConfig::BuiltIn)
                 .value("EnvVar", OCIOConfig::EnvVar)
@@ -39,14 +37,14 @@ namespace tl
                 .def(pybind11::self != pybind11::self);
 
             m.def("to_json",
-                [](const timeline::OCIOOptions& value)
+                [](const OCIOOptions& value)
                 {
                     nlohmann::json json;
                     to_json(json, value);
                     return json.dump();
                 });
             m.def("to_json",
-                [](const timeline::LUTOptions& value)
+                [](const LUTOptions& value)
                 {
                     nlohmann::json json;
                     to_json(json, value);
@@ -54,12 +52,12 @@ namespace tl
                 });
 
             m.def("from_json",
-                [](const std::string& value, timeline::OCIOOptions& out)
+                [](const std::string& value, OCIOOptions& out)
                 {
                     from_json(nlohmann::json().parse(value), out);
                 });
             m.def("from_json",
-                [](const std::string& value, timeline::LUTOptions& out)
+                [](const std::string& value, LUTOptions& out)
                 {
                     from_json(nlohmann::json().parse(value), out);
                 });

@@ -31,7 +31,7 @@ namespace tl
             private:
                 void _currentTimeUpdate(const OTIO_NS::RationalTime&);
                 void _durationUpdate(const OTIO_NS::RationalTime&);
-                void _playbackUpdate(timeline::Playback);
+                void _playbackUpdate(Playback);
 
                 QSharedPointer<qt::PlayerObject> _player;
                 QMetaObject::Connection _currentTimeConnection;

@@ -29,7 +29,7 @@ namespace tl
                 .def(
                     py::init(py::overload_cast<
                         const std::shared_ptr<ftk::Context>&,
-                        const std::shared_ptr<timeline::ITimeUnitsModel>&,
+                        const std::shared_ptr<ITimeUnitsModel>&,
                         const std::shared_ptr<ftk::IWidget>&>(&TimelineWidget::create)),
                     py::arg("context"),
                     py::arg("timeUnitsModel"),

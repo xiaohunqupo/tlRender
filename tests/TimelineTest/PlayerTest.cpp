@@ -18,8 +18,6 @@
 
 #include <sstream>
 
-using namespace tl::timeline;
-
 namespace tl
 {
     namespace timeline_tests
@@ -78,7 +76,7 @@ namespace tl
                 try
                 {
                     _print(ftk::Format("Memory timeline: {0}").arg(path.get()));
-                    auto otioTimeline = timeline::create(_context, path);
+                    auto otioTimeline = tl::create(_context, path);
                     toMemRefs(otioTimeline, path.getDir(), ToMemRef::Shared);
                     auto timeline = Timeline::create(_context, otioTimeline);
                     auto player = Player::create(_context, timeline);
@@ -91,7 +89,7 @@ namespace tl
             }
         }
 
-        void PlayerTest::_player(const std::shared_ptr<timeline::Player>& player)
+        void PlayerTest::_player(const std::shared_ptr<Player>& player)
         {
             const ftk::Path& path = player->getPath();
             const ftk::Path& audioPath = player->getAudioPath();
@@ -322,9 +320,9 @@ namespace tl
                 player->setCacheOptions(cacheOptions);
                 FTK_ASSERT(cacheOptions == player->getCacheOptions());
 
-                auto currentVideoObserver = ftk::ListObserver<timeline::VideoFrame>::create(
+                auto currentVideoObserver = ftk::ListObserver<VideoFrame>::create(
                     player->observeCurrentVideo(),
-                    [this](const std::vector<timeline::VideoFrame>& value)
+                    [this](const std::vector<VideoFrame>& value)
                     {
                         std::stringstream ss;
                         ss << "Video time: ";
@@ -334,9 +332,9 @@ namespace tl
                         }
                         _print(ss.str());
                     });
-                auto currentAudioObserver = ftk::ListObserver<timeline::AudioFrame>::create(
+                auto currentAudioObserver = ftk::ListObserver<AudioFrame>::create(
                     player->observeCurrentAudio(),
-                    [this](const std::vector<timeline::AudioFrame>& value)
+                    [this](const std::vector<AudioFrame>& value)
                     {
                         for (const auto& i : value)
                         {

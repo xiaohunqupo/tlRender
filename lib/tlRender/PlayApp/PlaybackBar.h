@@ -48,7 +48,7 @@ namespace tl
             void setGeometry(const ftk::Box2I&) override;
 
         private:
-            std::shared_ptr<timeline::Player> _player;
+            std::shared_ptr<Player> _player;
             std::shared_ptr<ftk::HorizontalLayout> _layout;
             std::shared_ptr<ui::TimeEdit> _currentTimeEdit;
             std::shared_ptr<ui::TimeLabel> _durationLabel;
@@ -56,11 +56,11 @@ namespace tl
             std::shared_ptr<ftk::Label> _speedMultLabel;
             std::shared_ptr<ftk::ComboBox> _timeUnitsComboBox;
 
-            std::shared_ptr<ftk::Observer<std::shared_ptr<timeline::Player> > > _playerObserver;
+            std::shared_ptr<ftk::Observer<std::shared_ptr<Player> > > _playerObserver;
             std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > _currentTimeObserver;
             std::shared_ptr<ftk::Observer<double> > _speedObserver;
             std::shared_ptr<ftk::Observer<double> > _speedMultObserver;
-            std::shared_ptr<ftk::Observer<timeline::TimeUnits> > _timeUnitsObserver;
+            std::shared_ptr<ftk::Observer<TimeUnits> > _timeUnitsObserver;
         };
     }
 }

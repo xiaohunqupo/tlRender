@@ -17,7 +17,7 @@ namespace tl
             MainWindow::MainWindow(const std::shared_ptr<ftk::Context>& context)
             {
                 // Create the models.
-                auto timeUnitsModel = timeline::TimeUnitsModel::create(context);
+                auto timeUnitsModel = TimeUnitsModel::create(context);
                 auto timeObject = new qt::TimeObject(timeUnitsModel, this);
                 auto style = ftk::Style::create(context);
 
@@ -55,7 +55,7 @@ namespace tl
                 // Update the widget.
                 _currentTimeUpdate(invalidTime);
                 _durationUpdate(invalidTime);
-                _playbackUpdate(timeline::Playback::Stop);
+                _playbackUpdate(Playback::Stop);
 
                 // Setup connections.
                 connect(
@@ -65,9 +65,9 @@ namespace tl
                     {
                         if (_player)
                         {
-                            const timeline::Playback playback = value ?
-                                timeline::Playback::Forward :
-                                timeline::Playback::Stop;
+                            const Playback playback = value ?
+                                Playback::Forward :
+                                Playback::Stop;
                             _player->setPlayback(playback);
                             _playbackUpdate(playback);
                         }
@@ -100,7 +100,7 @@ namespace tl
 
                 _currentTimeUpdate(player ? player->currentTime() : invalidTime);
                 _durationUpdate(player ? player->timeRange().duration() : invalidTime);
-                _playbackUpdate(player ? player->playback() : timeline::Playback::Stop);
+                _playbackUpdate(player ? player->playback() : Playback::Stop);
 
                 if (player)
                 {
@@ -114,7 +114,7 @@ namespace tl
                     _playbackConnection = connect(
                         player.get(),
                         &qt::PlayerObject::playbackChanged,
-                        [this](timeline::Playback value)
+                        [this](Playback value)
                         {
                             _playbackUpdate(value);
                         });
@@ -132,10 +132,10 @@ namespace tl
                 _durationLabel->setValue(value);
             }
 
-            void MainWindow::_playbackUpdate(timeline::Playback playback)
+            void MainWindow::_playbackUpdate(Playback playback)
             {
                 QSignalBlocker blocker(_playbackAction);
-                _playbackAction->setChecked(timeline::Playback::Forward == playback);
+                _playbackAction->setChecked(Playback::Forward == playback);
             }
         }
     }

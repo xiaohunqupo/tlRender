@@ -11,16 +11,16 @@ namespace tl
     {
         struct TimeUnitsWidget::Private
         {
-            std::shared_ptr<timeline::TimeUnitsModel> model;
+            std::shared_ptr<TimeUnitsModel> model;
 
             std::shared_ptr<ftk::ComboBox> comboBox;
 
-            std::shared_ptr<ftk::Observer<timeline::TimeUnits> > timeUnitsObserver;
+            std::shared_ptr<ftk::Observer<TimeUnits> > timeUnitsObserver;
         };
 
         void TimeUnitsWidget::_init(
             const std::shared_ptr<ftk::Context>& context,
-            const std::shared_ptr<timeline::TimeUnitsModel>& model,
+            const std::shared_ptr<TimeUnitsModel>& model,
             const std::shared_ptr<IWidget>& parent)
         {
             IWidget::_init(context, "tl::ui::TimeUnitsWidget", parent);
@@ -28,17 +28,17 @@ namespace tl
 
             p.model = model;
 
-            p.comboBox = ftk::ComboBox::create(context, timeline::getTimeUnitsLabels(), shared_from_this());
+            p.comboBox = ftk::ComboBox::create(context, getTimeUnitsLabels(), shared_from_this());
 
             p.comboBox->setIndexCallback(
                 [this](int index)
                 {
-                    _p->model->setTimeUnits(static_cast<timeline::TimeUnits>(index));
+                    _p->model->setTimeUnits(static_cast<TimeUnits>(index));
                 });
 
-            p.timeUnitsObserver = ftk::Observer<timeline::TimeUnits>::create(
+            p.timeUnitsObserver = ftk::Observer<TimeUnits>::create(
                 p.model->observeTimeUnits(),
-                [this](timeline::TimeUnits value)
+                [this](TimeUnits value)
                 {
                     _p->comboBox->setCurrentIndex(static_cast<int>(value));
                 });
@@ -53,7 +53,7 @@ namespace tl
 
         std::shared_ptr<TimeUnitsWidget> TimeUnitsWidget::create(
             const std::shared_ptr<ftk::Context>& context,
-            const std::shared_ptr<timeline::TimeUnitsModel>& model,
+            const std::shared_ptr<TimeUnitsModel>& model,
             const std::shared_ptr<IWidget>& parent)
         {
             auto out = std::shared_ptr<TimeUnitsWidget>(new TimeUnitsWidget);

@@ -23,9 +23,9 @@ namespace tl
             _fileBrowserSystem = fileBrowserSystem;
 
             // Restore timeline player cache settings.
-            timeline::PlayerCacheOptions cache;
+            PlayerCacheOptions cache;
             getT("/Cache", cache);
-            _cache = ftk::Observable<timeline::PlayerCacheOptions>::create(cache);
+            _cache = ftk::Observable<PlayerCacheOptions>::create(cache);
         }
         
         SettingsModel::~SettingsModel()
@@ -48,17 +48,17 @@ namespace tl
             return std::shared_ptr<SettingsModel>(new SettingsModel(context, path));
         }
 
-        const timeline::PlayerCacheOptions& SettingsModel::getCache() const
+        const PlayerCacheOptions& SettingsModel::getCache() const
         {
             return _cache->get();
         }
 
-        std::shared_ptr<ftk::IObservable<timeline::PlayerCacheOptions> > SettingsModel::observeCache() const
+        std::shared_ptr<ftk::IObservable<PlayerCacheOptions> > SettingsModel::observeCache() const
         {
             return _cache;
         }
 
-        void SettingsModel::setCache(const timeline::PlayerCacheOptions& value)
+        void SettingsModel::setCache(const PlayerCacheOptions& value)
         {
             _cache->setIfChanged(value);
         }

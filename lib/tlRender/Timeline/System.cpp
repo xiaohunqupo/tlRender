@@ -9,72 +9,68 @@
 
 namespace tl
 {
-    namespace timeline
+    struct System::Private
     {
-        struct System::Private
-        {
-            std::vector<std::weak_ptr<Player> > players;
-        };
+        std::vector<std::weak_ptr<Player> > players;
+    };
 
-        System::System(const std::shared_ptr<ftk::Context>& context) :
-            ISystem(context, "tl::timeline::System"),
-            _p(new Private)
+    System::System(const std::shared_ptr<ftk::Context>& context) :
+        ISystem(context, "tl::System"),
+        _p(new Private)
+    {
+        FTK_P();
+    }
+
+    System::~System()
+    {}
+
+    std::shared_ptr<System> System::create(const std::shared_ptr<ftk::Context>& context)
+    {
+        auto out = context->getSystem<System>();
+        if (!out)
         {
-            FTK_P();
+            out = std::shared_ptr<System>(new System(context));
+            context->addSystem(out);
         }
+        return out;
+    }
 
-        System::~System()
-        {}
+    void System::tick()
+    {
+        FTK_P();
 
-        std::shared_ptr<System> System::create(const std::shared_ptr<ftk::Context>& context)
+        // Delete the expired players.
+        auto players = p.players;
+        auto i = players.begin();
+        while (i != players.end())
         {
-            auto out = context->getSystem<System>();
-            if (!out)
+            if (i->expired())
             {
-                out = std::shared_ptr<System>(new System(context));
-                context->addSystem(out);
+                i = players.erase(i);
             }
-            return out;
-        }
-
-        void System::tick()
-        {
-            FTK_P();
-
-            // Delete the expired players.
-            auto players = p.players;
-            auto i = players.begin();
-            while (i != players.end())
+            else
             {
-                if (i->expired())
-                {
-                    i = players.erase(i);
-                }
-                else
-                {
-                    ++i;
-                }
-            }
-
-            // Tick the active players.
-            for (i = players.begin(); i != players.end(); ++i)
-            {
-                if (auto player = i->lock())
-                {
-                    player->_tick();
-                }
+                ++i;
             }
         }
 
-        std::chrono::milliseconds System::getTickTime() const
+        // Tick the active players.
+        for (i = players.begin(); i != players.end(); ++i)
         {
-            return std::chrono::milliseconds(1);
-        }
-
-        void System::_addPlayer(const std::shared_ptr<Player>& player)
-        {
-            _p->players.push_back(player);
+            if (auto player = i->lock())
+            {
+                player->_tick();
+            }
         }
     }
-}
 
+    std::chrono::milliseconds System::getTickTime() const
+    {
+        return std::chrono::milliseconds(1);
+    }
+
+    void System::_addPlayer(const std::shared_ptr<Player>& player)
+    {
+        _p->players.push_back(player);
+    }
+}

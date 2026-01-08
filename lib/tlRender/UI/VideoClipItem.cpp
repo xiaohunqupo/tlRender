@@ -45,7 +45,7 @@ namespace tl
             const std::shared_ptr<ThumbnailGenerator> thumbnailGenerator,
             const std::shared_ptr<IWidget>& parent)
         {
-            const auto path = timeline::getPath(
+            const auto path = getPath(
                 clip->media_reference(),
                 itemData->dir,
                 itemData->options.pathOptions);
@@ -64,7 +64,7 @@ namespace tl
 
             p.clipName = clip->name();
             p.path = path;
-            p.memRead = timeline::getMemRead(clip->media_reference());
+            p.memRead = getMemRead(clip->media_reference());
             p.thumbnailGenerator = thumbnailGenerator;
 
             p.ioOptions = _data->options.ioOptions;
@@ -245,7 +245,7 @@ namespace tl
         {
             FTK_P();
 
-            auto render = std::dynamic_pointer_cast<timeline::IRender>(event.render);
+            auto render = std::dynamic_pointer_cast<IRender>(event.render);
             const ftk::Box2I g = _getInsideGeometry();
             const int m = _getMargin();
             const int lineHeight = _getLineHeight();
@@ -317,7 +317,7 @@ namespace tl
                                 trimmedRange.start_time() - _availableRange.start_time(),
                                 trimmedRange.duration());
                         }
-                        const OTIO_NS::RationalTime mediaTime = timeline::toVideoMediaTime(
+                        const OTIO_NS::RationalTime mediaTime = toVideoMediaTime(
                             time,
                             _timeRange,
                             trimmedRange,
@@ -334,7 +334,7 @@ namespace tl
                         {
                             if (i->second)
                             {
-                                timeline::DisplayOptions displayOptions;
+                                tl::DisplayOptions displayOptions;
                                 if (!enabled)
                                 {
                                     displayOptions.color.enabled = true;
@@ -342,7 +342,7 @@ namespace tl
                                     displayOptions.color.saturation.y = 0.F;
                                     displayOptions.color.saturation.z = 0.F;
                                 }
-                                timeline::VideoFrame videoFrame;
+                                VideoFrame videoFrame;
                                 videoFrame.size = i->second->getSize();
                                 videoFrame.layers.push_back({ i->second });
                                 render->drawVideo(

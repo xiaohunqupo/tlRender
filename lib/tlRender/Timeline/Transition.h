@@ -14,20 +14,17 @@
 
 namespace tl
 {
-    namespace timeline
+    //! Transitions.
+    enum class TL_API_TYPE Transition
     {
-        //! Transitions.
-        enum class TL_API_TYPE Transition
-        {
-            None,
-            Dissolve,
+        None,
+        Dissolve,
 
-            Count,
-            First = None
-        };
-        TL_ENUM(Transition);
+        Count,
+        First = None
+    };
+    TL_ENUM(Transition);
 
-        //! Convert to a transition.
-        TL_API Transition toTransition(const std::string&);
-    }
+    //! Convert to a transition.
+    TL_API Transition toTransition(const std::string&);
 }

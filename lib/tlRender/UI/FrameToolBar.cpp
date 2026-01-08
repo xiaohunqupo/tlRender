@@ -15,7 +15,7 @@ namespace tl
         struct FrameToolBar::Private
         {
             std::map<std::string, std::shared_ptr<ftk::Action> > actions;
-            std::shared_ptr<timeline::Player> player;
+            std::shared_ptr<Player> player;
         };
 
         void FrameToolBar::_init(
@@ -108,12 +108,12 @@ namespace tl
             return _p->actions;
         }
 
-        const std::shared_ptr<timeline::Player>& FrameToolBar::getPlayer() const
+        const std::shared_ptr<Player>& FrameToolBar::getPlayer() const
         {
             return _p->player;
         }
 
-        void FrameToolBar::setPlayer(const std::shared_ptr<timeline::Player>& player)
+        void FrameToolBar::setPlayer(const std::shared_ptr<Player>& player)
         {
             _p->player = player;
             _widgetUpdate();

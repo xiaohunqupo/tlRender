@@ -34,10 +34,10 @@ namespace tl
                     QWidget* parent = nullptr);
 
                 //! Set the OpenColorIO options.
-                void setOCIOOptions(const timeline::OCIOOptions&);
+                void setOCIOOptions(const OCIOOptions&);
 
                 //! Set the LUT options.
-                void setLUTOptions(const timeline::LUTOptions&);
+                void setLUTOptions(const LUTOptions&);
 
                 //! Set the image options.
                 void setImageOptions(const ftk::ImageOptions&);
@@ -46,7 +46,7 @@ namespace tl
                 void setPlayer(const QSharedPointer<qt::PlayerObject>&);
 
             private Q_SLOTS:
-                void _currentVideoCallback(const std::vector<tl::timeline::VideoFrame>&);
+                void _currentVideoCallback(const std::vector<tl::VideoFrame>&);
 
             protected:
                 void initializeGL() override;
@@ -57,12 +57,12 @@ namespace tl
 
             private:
                 std::weak_ptr<ftk::Context> _context;
-                timeline::OCIOOptions _ocioOptions;
-                timeline::LUTOptions _lutOptions;
+                OCIOOptions _ocioOptions;
+                LUTOptions _lutOptions;
                 ftk::ImageOptions _imageOptions;
                 QSharedPointer<qt::PlayerObject> _player;
                 ftk::Size2I _videoSize;
-                std::vector<timeline::VideoFrame> _video;
+                std::vector<VideoFrame> _video;
                 ftk::V2F _cameraRotation;
                 float _cameraFOV = 45.F;
                 ftk::TriMesh3F _sphereMesh;

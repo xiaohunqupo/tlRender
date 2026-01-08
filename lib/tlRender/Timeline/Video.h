@@ -12,36 +12,33 @@
 
 namespace tl
 {
-    namespace timeline
+    //! Video layer.
+    struct TL_API_TYPE VideoLayer
     {
-        //! Video layer.
-        struct TL_API_TYPE VideoLayer
-        {
-            std::shared_ptr<ftk::Image> image;
-            ftk::ImageOptions           imageOptions;
+        std::shared_ptr<ftk::Image> image;
+        ftk::ImageOptions           imageOptions;
 
-            std::shared_ptr<ftk::Image> imageB;
-            ftk::ImageOptions           imageOptionsB;
+        std::shared_ptr<ftk::Image> imageB;
+        ftk::ImageOptions           imageOptionsB;
 
-            Transition transition = Transition::None;
-            float      transitionValue = 0.F;
+        Transition transition = Transition::None;
+        float      transitionValue = 0.F;
 
-            TL_API bool operator == (const VideoLayer&) const;
-            TL_API bool operator != (const VideoLayer&) const;
-        };
+        TL_API bool operator == (const VideoLayer&) const;
+        TL_API bool operator != (const VideoLayer&) const;
+    };
 
-        //! Video frame.
-        struct TL_API_TYPE VideoFrame
-        {
-            ftk::Size2I             size;
-            OTIO_NS::RationalTime   time   = invalidTime;
-            std::vector<VideoLayer> layers;
+    //! Video frame.
+    struct TL_API_TYPE VideoFrame
+    {
+        ftk::Size2I             size;
+        OTIO_NS::RationalTime   time   = invalidTime;
+        std::vector<VideoLayer> layers;
 
-            TL_API bool operator == (const VideoFrame&) const;
-            TL_API bool operator != (const VideoFrame&) const;
-        };
+        TL_API bool operator == (const VideoFrame&) const;
+        TL_API bool operator != (const VideoFrame&) const;
+    };
 
-        //! Compare the time values of video frames.
-        TL_API bool isTimeEqual(const VideoFrame&, const VideoFrame&);
-    }
+    //! Compare the time values of video frames.
+    TL_API bool isTimeEqual(const VideoFrame&, const VideoFrame&);
 }

@@ -27,7 +27,7 @@ namespace tl
 
         TimelineWidget::TimelineWidget(
             const std::shared_ptr<ftk::Context>& context,
-            const std::shared_ptr<timeline::ITimeUnitsModel>& timeUnitsModel,
+            const std::shared_ptr<ITimeUnitsModel>& timeUnitsModel,
             const std::shared_ptr<ftk::Style>& style,
             QWidget* parent) :
             ContainerWidget(context, style, parent),
@@ -63,12 +63,12 @@ namespace tl
         TimelineWidget::~TimelineWidget()
         {}
 
-        std::shared_ptr<timeline::Player>& TimelineWidget::player() const
+        std::shared_ptr<Player>& TimelineWidget::player() const
         {
             return _p->timelineWidget->getPlayer();
         }
 
-        void TimelineWidget::setPlayer(const std::shared_ptr<timeline::Player>& player)
+        void TimelineWidget::setPlayer(const std::shared_ptr<Player>& player)
         {
             _p->timelineWidget->setPlayer(player);
         }

@@ -36,9 +36,9 @@ namespace tl
 
         private:
             std::map<std::string, std::shared_ptr<ftk::Action> > _actions;
-            std::shared_ptr<timeline::Player> _player;
-            std::shared_ptr<ftk::Observer<std::shared_ptr<timeline::Player> > > _playerObserver;
-            std::shared_ptr<ftk::Observer<timeline::Playback> > _playbackObserver;
+            std::shared_ptr<Player> _player;
+            std::shared_ptr<ftk::Observer<std::shared_ptr<Player> > > _playerObserver;
+            std::shared_ptr<ftk::Observer<Playback> > _playbackObserver;
         };
     }
 }

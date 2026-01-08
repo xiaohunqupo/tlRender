@@ -10,8 +10,6 @@
 
 #include <opentimelineio/clip.h>
 
-using namespace tl::timeline;
-
 namespace tl
 {
     namespace timeline_tests

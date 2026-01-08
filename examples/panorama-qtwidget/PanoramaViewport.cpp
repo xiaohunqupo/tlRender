@@ -29,7 +29,7 @@ namespace tl
                 setFormat(surfaceFormat);
             }
 
-            void PanoramaViewport::setOCIOOptions(const timeline::OCIOOptions& value)
+            void PanoramaViewport::setOCIOOptions(const OCIOOptions& value)
             {
                 if (value == _ocioOptions)
                     return;
@@ -37,7 +37,7 @@ namespace tl
                 update();
             }
 
-            void PanoramaViewport::setLUTOptions(const timeline::LUTOptions& value)
+            void PanoramaViewport::setLUTOptions(const LUTOptions& value)
             {
                 if (value == _lutOptions)
                     return;
@@ -59,9 +59,9 @@ namespace tl
                 {
                     disconnect(
                         _player.get(),
-                        SIGNAL(currentVideoChanged(const std::vector<tl::timeline::VideoFrame>&)),
+                        SIGNAL(currentVideoChanged(const std::vector<tl::VideoFrame>&)),
                         this,
-                        SLOT(_currentVideoCallback(const std::vector<tl::timeline::VideoFrame>&)));
+                        SLOT(_currentVideoCallback(const std::vector<tl::VideoFrame>&)));
                 }
                 _player = player;
                 _video.clear();
@@ -72,13 +72,13 @@ namespace tl
                     _video = _player->currentVideo();
                     connect(
                         _player.get(),
-                        SIGNAL(currentVideoChanged(const std::vector<tl::timeline::VideoFrame>&)),
-                        SLOT(_currentVideoCallback(const std::vector<tl::timeline::VideoFrame>&)));
+                        SIGNAL(currentVideoChanged(const std::vector<tl::VideoFrame>&)),
+                        SLOT(_currentVideoCallback(const std::vector<tl::VideoFrame>&)));
                 }
                 update();
             }
 
-            void PanoramaViewport::_currentVideoCallback(const std::vector<timeline::VideoFrame>& value)
+            void PanoramaViewport::_currentVideoCallback(const std::vector<VideoFrame>& value)
             {
                 _video = value;
                 update();

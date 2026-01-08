@@ -38,9 +38,9 @@ namespace tl
                     }
                 });
 
-            _playersObserver = ftk::ListObserver<std::shared_ptr<timeline::Player> >::create(
+            _playersObserver = ftk::ListObserver<std::shared_ptr<Player> >::create(
                 app->getFilesModel()->observePlayers(),
-                [this](const std::vector<std::shared_ptr<timeline::Player> >& value)
+                [this](const std::vector<std::shared_ptr<Player> >& value)
                 {
                     const int index = _tabBar->getCurrentTab();
                     _tabBar->clearTabs();

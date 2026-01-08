@@ -18,8 +18,6 @@ namespace tl
     {
         void compareOptions(py::module_& m)
         {
-            using namespace timeline;
-            
             py::enum_<Compare>(m, "Compare")
                 .value("A", Compare::A)
                 .value("B", Compare::B)
@@ -46,7 +44,7 @@ namespace tl
                 .def(pybind11::self != pybind11::self);
 
             m.def("to_json",
-                [](const timeline::CompareOptions& value)
+                [](const CompareOptions& value)
                 {
                     nlohmann::json json;
                     to_json(json, value);
@@ -54,7 +52,7 @@ namespace tl
                 });
 
             m.def("from_json",
-                [](const std::string& value, timeline::CompareOptions& out)
+                [](const std::string& value, CompareOptions& out)
                 {
                     from_json(nlohmann::json().parse(value), out);
                 });

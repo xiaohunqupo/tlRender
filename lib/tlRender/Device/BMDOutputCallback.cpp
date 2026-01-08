@@ -145,7 +145,7 @@ namespace tl
             }
         }
 
-        void DLOutputCallback::setAudio(const std::vector<timeline::AudioFrame>& value)
+        void DLOutputCallback::setAudio(const std::vector<AudioFrame>& value)
         {
             std::unique_lock<std::mutex> lock(_audioMutex.mutex);
             _audioMutex.audioFrame = value;
@@ -225,14 +225,14 @@ namespace tl
         HRESULT DLOutputCallback::RenderAudioSamples(BOOL preroll)
         {
             // Get values.
-            timeline::Playback playback = timeline::Playback::Stop;
+            Playback playback = Playback::Stop;
             double speed = 0.0;
             OTIO_NS::RationalTime currentTime = invalidTime;
             float volume = 1.F;
             bool mute = false;
             std::vector<bool> channelMute;
             double audioOffset = 0.0;
-            std::vector<timeline::AudioFrame> audioFrameList;
+            std::vector<AudioFrame> audioFrameList;
             bool reset = false;
             OTIO_NS::RationalTime start = invalidTime;
             {
@@ -271,7 +271,7 @@ namespace tl
             {
                 inputInfo = audioFrameList[0].layers[0].audio->getInfo();
             }
-            if (playback != timeline::Playback::Stop && inputInfo.sampleRate > 0)
+            if (playback != Playback::Stop && inputInfo.sampleRate > 0)
             {
                 // Create the audio resampler.
                 if (!_audioThread.resample ||
@@ -294,7 +294,7 @@ namespace tl
                     int64_t t =
                         start.rescaled_to(inputInfo.sampleRate).value() -
                         OTIO_NS::RationalTime(audioOffset, 1.0).rescaled_to(inputInfo.sampleRate).value();
-                    if (timeline::Playback::Forward == playback)
+                    if (Playback::Forward == playback)
                     {
                         t += _audioThread.frame;
                     }
@@ -322,7 +322,7 @@ namespace tl
                         auto audio = mixAudio(audioLayers, mute ? 0.F : volume, channelMute);
 
                         // Reverse the audio.
-                        if (timeline::Playback::Reverse == playback)
+                        if (Playback::Reverse == playback)
                         {
                             audio = reverseAudio(audio);
                         }

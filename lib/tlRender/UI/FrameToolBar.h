@@ -35,10 +35,10 @@ namespace tl
             const std::map<std::string, std::shared_ptr<ftk::Action> >& getActions() const;
 
             //! Get the player.
-            const std::shared_ptr<timeline::Player>& getPlayer() const;
+            const std::shared_ptr<Player>& getPlayer() const;
 
             //! Set the player.
-            void setPlayer(const std::shared_ptr<timeline::Player>&);
+            void setPlayer(const std::shared_ptr<Player>&);
 
         private:
             void _widgetUpdate();

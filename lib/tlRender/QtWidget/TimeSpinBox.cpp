@@ -17,7 +17,7 @@ namespace tl
         struct TimeSpinBox::Private
         {
             OTIO_NS::RationalTime value = invalidTime;
-            timeline::TimeUnits timeUnits = timeline::TimeUnits::Timecode;
+            TimeUnits timeUnits = TimeUnits::Timecode;
             QRegularExpressionValidator* validator = nullptr;
             qt::TimeObject* timeObject = nullptr;
         };
@@ -54,9 +54,9 @@ namespace tl
             {
                 disconnect(
                     p.timeObject,
-                    SIGNAL(timeUnitsChanged(tl::timeline::TimeUnits)),
+                    SIGNAL(timeUnitsChanged(tl::TimeUnits)),
                     this,
-                    SLOT(setTimeUnits(tl::timeline::TimeUnits)));
+                    SLOT(setTimeUnits(tl::TimeUnits)));
             }
             p.timeObject = timeObject;
             if (p.timeObject)
@@ -64,8 +64,8 @@ namespace tl
                 p.timeUnits = p.timeObject->timeUnits();
                 connect(
                     p.timeObject,
-                    SIGNAL(timeUnitsChanged(tl::timeline::TimeUnits)),
-                    SLOT(setTimeUnits(tl::timeline::TimeUnits)));
+                    SIGNAL(timeUnitsChanged(tl::TimeUnits)),
+                    SLOT(setTimeUnits(tl::TimeUnits)));
             }
             _vaidatorUpdate();
             _textUpdate();
@@ -77,7 +77,7 @@ namespace tl
             return _p->value;
         }
 
-        timeline::TimeUnits TimeSpinBox::timeUnits() const
+        TimeUnits TimeSpinBox::timeUnits() const
         {
             return _p->timeUnits;
         }
@@ -106,7 +106,7 @@ namespace tl
             _textUpdate();
         }
 
-        void TimeSpinBox::setTimeUnits(timeline::TimeUnits value)
+        void TimeSpinBox::setTimeUnits(TimeUnits value)
         {
             FTK_P();
             if (value == p.timeUnits)
@@ -129,7 +129,7 @@ namespace tl
             ensurePolished();
             int h = lineEdit()->minimumSizeHint().height();
             const QFontMetrics fm(fontMetrics());
-            const std::string s = " " + timeline::formatString(p.timeUnits);
+            const std::string s = " " + formatString(p.timeUnits);
             int w = fm.horizontalAdvance(QString::fromUtf8(s.c_str()));
             w += 2; // cursor blinking space
             QStyleOptionSpinBox opt;
@@ -142,7 +142,7 @@ namespace tl
         {
             FTK_P();
             opentime::ErrorStatus errorStatus;
-            const OTIO_NS::RationalTime time = timeline::textToTime(
+            const OTIO_NS::RationalTime time = textToTime(
                 lineEdit()->text().toUtf8().data(),
                 p.value.rate(),
                 p.timeUnits,
@@ -162,7 +162,7 @@ namespace tl
             {
                 p.validator->setParent(nullptr);
             }
-            const std::string s = timeline::validator(p.timeUnits);
+            const std::string s = validator(p.timeUnits);
             p.validator = new QRegularExpressionValidator(
                 QRegularExpression(QString::fromUtf8(s.c_str())),
                 this);
@@ -172,7 +172,7 @@ namespace tl
         void TimeSpinBox::_textUpdate()
         {
             FTK_P();
-            const std::string s = timeline::timeToText(p.value, p.timeUnits);
+            const std::string s = timeToText(p.value, p.timeUnits);
             lineEdit()->setText(QString::fromUtf8(s.c_str()));
         }
     }

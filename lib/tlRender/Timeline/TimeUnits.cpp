@@ -11,175 +11,172 @@
 
 namespace tl
 {
-    namespace timeline
+    TL_ENUM_IMPL(
+        TimeUnits,
+        "Frames",
+        "Seconds",
+        "Timecode");
+
+    std::string timeToText(const OTIO_NS::RationalTime& time, TimeUnits units)
     {
-        TL_ENUM_IMPL(
-            TimeUnits,
-            "Frames",
-            "Seconds",
-            "Timecode");
-
-        std::string timeToText(const OTIO_NS::RationalTime& time, timeline::TimeUnits units)
+        std::string out;
+        switch (units)
         {
-            std::string out;
-            switch (units)
+        case TimeUnits::Frames:
+            out = ftk::Format("{0}").
+                arg(isValid(time) ? time.to_frames() : 0);
+            break;
+        case TimeUnits::Seconds:
+            out = ftk::Format("{0}").
+                arg(isValid(time) ? time.to_seconds() : 0.0, 2);
+            break;
+        case TimeUnits::Timecode:
+        {
+            if (isValid(time))
             {
-            case timeline::TimeUnits::Frames:
-                out = ftk::Format("{0}").
-                    arg(isValid(time) ? time.to_frames() : 0);
-                break;
-            case timeline::TimeUnits::Seconds:
-                out = ftk::Format("{0}").
-                    arg(isValid(time) ? time.to_seconds() : 0.0, 2);
-                break;
-            case timeline::TimeUnits::Timecode:
+                out = time.to_timecode();
+            }
+            if (out.empty())
             {
-                if (isValid(time))
-                {
-                    out = time.to_timecode();
-                }
-                if (out.empty())
-                {
-                    out = "--:--:--:--";
-                }
-                break;
+                out = "--:--:--:--";
             }
-            default: break;
-            }
-            return out;
+            break;
         }
-
-        OTIO_NS::RationalTime textToTime(
-            const std::string& text,
-            double rate,
-            timeline::TimeUnits units,
-            opentime::ErrorStatus* errorStatus)
-        {
-            OTIO_NS::RationalTime out = invalidTime;
-            switch (units)
-            {
-            case timeline::TimeUnits::Frames:
-            {
-                const int value = std::atoi(text.c_str());
-                out = OTIO_NS::RationalTime::from_frames(value, rate);
-                break;
-            }
-            case timeline::TimeUnits::Seconds:
-            {
-                const double value = std::atof(text.c_str());
-                out = OTIO_NS::RationalTime::from_seconds(value).rescaled_to(rate);
-                break;
-            }
-            case timeline::TimeUnits::Timecode:
-                out = OTIO_NS::RationalTime::from_timecode(text, rate, errorStatus);
-                break;
-            default: break;
-            }
-            return out;
+        default: break;
         }
+        return out;
+    }
 
-        std::string formatString(timeline::TimeUnits units)
+    OTIO_NS::RationalTime textToTime(
+        const std::string& text,
+        double rate,
+        TimeUnits units,
+        opentime::ErrorStatus* errorStatus)
+    {
+        OTIO_NS::RationalTime out = invalidTime;
+        switch (units)
         {
-            std::string out;
-            switch (units)
-            {
-            case timeline::TimeUnits::Frames:
-                out = "000000";
-                break;
-            case timeline::TimeUnits::Seconds:
-                out = "000000.00";
-                break;
-            case timeline::TimeUnits::Timecode:
-                out = "00:00:00;00";
-                break;
-            default: break;
-            }
-            return out;
+        case TimeUnits::Frames:
+        {
+            const int value = std::atoi(text.c_str());
+            out = OTIO_NS::RationalTime::from_frames(value, rate);
+            break;
         }
-
-        std::string validator(timeline::TimeUnits units)
+        case TimeUnits::Seconds:
         {
-            std::string out;
-            switch (units)
-            {
-            case timeline::TimeUnits::Frames:
-                out = "[0-9]*";
-                break;
-            case timeline::TimeUnits::Seconds:
-                out = "[0-9]*\\.[0-9]+|[0-9]+";
-                break;
-            case timeline::TimeUnits::Timecode:
-                out = "[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]";
-                break;
-            default: break;
-            }
-            return out;
+            const double value = std::atof(text.c_str());
+            out = OTIO_NS::RationalTime::from_seconds(value).rescaled_to(rate);
+            break;
         }
-
-        void ITimeUnitsModel::_init(const std::shared_ptr<ftk::Context>& context)
-        {
-            _timeUnitsChanged = ftk::Observable<bool>::create();
+        case TimeUnits::Timecode:
+            out = OTIO_NS::RationalTime::from_timecode(text, rate, errorStatus);
+            break;
+        default: break;
         }
+        return out;
+    }
 
-        ITimeUnitsModel::ITimeUnitsModel()
-        {}
-
-        ITimeUnitsModel::~ITimeUnitsModel()
-        {}
-
-        std::shared_ptr<ftk::IObservable<bool> > ITimeUnitsModel::observeTimeUnitsChanged() const
+    std::string formatString(TimeUnits units)
+    {
+        std::string out;
+        switch (units)
         {
-            return _timeUnitsChanged;
+        case TimeUnits::Frames:
+            out = "000000";
+            break;
+        case TimeUnits::Seconds:
+            out = "000000.00";
+            break;
+        case TimeUnits::Timecode:
+            out = "00:00:00;00";
+            break;
+        default: break;
         }
+        return out;
+    }
 
-        struct TimeUnitsModel::Private
+    std::string validator(TimeUnits units)
+    {
+        std::string out;
+        switch (units)
         {
-            std::shared_ptr<ftk::Observable<TimeUnits> > timeUnits;
-        };
-
-        void TimeUnitsModel::_init(const std::shared_ptr<ftk::Context>& context)
-        {
-            FTK_P();
-            ITimeUnitsModel::_init(context);
-            p.timeUnits = ftk::Observable<TimeUnits>::create(TimeUnits::Timecode);
+        case TimeUnits::Frames:
+            out = "[0-9]*";
+            break;
+        case TimeUnits::Seconds:
+            out = "[0-9]*\\.[0-9]+|[0-9]+";
+            break;
+        case TimeUnits::Timecode:
+            out = "[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]";
+            break;
+        default: break;
         }
+        return out;
+    }
 
-        TimeUnitsModel::TimeUnitsModel() :
-            _p(new Private)
-        {}
+    void ITimeUnitsModel::_init(const std::shared_ptr<ftk::Context>& context)
+    {
+        _timeUnitsChanged = ftk::Observable<bool>::create();
+    }
 
-        TimeUnitsModel::~TimeUnitsModel()
-        {}
+    ITimeUnitsModel::ITimeUnitsModel()
+    {}
 
-        std::shared_ptr<TimeUnitsModel> TimeUnitsModel::create(
-            const std::shared_ptr<ftk::Context>& context)
+    ITimeUnitsModel::~ITimeUnitsModel()
+    {}
+
+    std::shared_ptr<ftk::IObservable<bool> > ITimeUnitsModel::observeTimeUnitsChanged() const
+    {
+        return _timeUnitsChanged;
+    }
+
+    struct TimeUnitsModel::Private
+    {
+        std::shared_ptr<ftk::Observable<TimeUnits> > timeUnits;
+    };
+
+    void TimeUnitsModel::_init(const std::shared_ptr<ftk::Context>& context)
+    {
+        FTK_P();
+        ITimeUnitsModel::_init(context);
+        p.timeUnits = ftk::Observable<TimeUnits>::create(TimeUnits::Timecode);
+    }
+
+    TimeUnitsModel::TimeUnitsModel() :
+        _p(new Private)
+    {}
+
+    TimeUnitsModel::~TimeUnitsModel()
+    {}
+
+    std::shared_ptr<TimeUnitsModel> TimeUnitsModel::create(
+        const std::shared_ptr<ftk::Context>& context)
+    {
+        auto out = std::shared_ptr<TimeUnitsModel>(new TimeUnitsModel);
+        out->_init(context);
+        return out;
+    }
+
+    TimeUnits TimeUnitsModel::getTimeUnits() const
+    {
+        return _p->timeUnits->get();
+    }
+
+    std::shared_ptr<ftk::IObservable<TimeUnits> > TimeUnitsModel::observeTimeUnits() const
+    {
+        return _p->timeUnits;
+    }
+
+    void TimeUnitsModel::setTimeUnits(TimeUnits value)
+    {
+        if (_p->timeUnits->setIfChanged(value))
         {
-            auto out = std::shared_ptr<TimeUnitsModel>(new TimeUnitsModel);
-            out->_init(context);
-            return out;
+            _timeUnitsChanged->setAlways(true);
         }
+    }
 
-        TimeUnits TimeUnitsModel::getTimeUnits() const
-        {
-            return _p->timeUnits->get();
-        }
-
-        std::shared_ptr<ftk::IObservable<TimeUnits> > TimeUnitsModel::observeTimeUnits() const
-        {
-            return _p->timeUnits;
-        }
-
-        void TimeUnitsModel::setTimeUnits(TimeUnits value)
-        {
-            if (_p->timeUnits->setIfChanged(value))
-            {
-                _timeUnitsChanged->setAlways(true);
-            }
-        }
-
-        std::string TimeUnitsModel::getLabel(const OTIO_NS::RationalTime& value) const
-        {
-            return timeToText(value, _p->timeUnits->get());
-        }
+    std::string TimeUnitsModel::getLabel(const OTIO_NS::RationalTime& value) const
+    {
+        return timeToText(value, _p->timeUnits->get());
     }
 }

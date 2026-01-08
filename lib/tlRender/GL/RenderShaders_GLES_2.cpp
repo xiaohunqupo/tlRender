@@ -76,14 +76,14 @@ namespace tl
             const std::string& colorConfig,
             const std::string& lutDef,
             const std::string& lut,
-            timeline::LUTOrder lutOrder)
+            LUTOrder lutOrder)
         {
              return ftk::Format(
                 "precision mediump float;\n"
                 "\n"
                 "varying vec2 fTexture;\n"
                 "\n"
-                "// enum tl::timeline::Channels\n"
+                "// enum tl::ftk::ChannelDisplay\n"
                 "const int Channels_Color = 0;\n"
                 "const int Channels_Red   = 1;\n"
                 "const int Channels_Green = 2;\n"

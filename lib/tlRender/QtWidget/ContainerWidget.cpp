@@ -111,7 +111,7 @@ namespace tl
             std::shared_ptr<ftk::Style> style;
             std::shared_ptr<ftk::IconSystem> iconSystem;
             std::shared_ptr<ftk::FontSystem> fontSystem;
-            std::shared_ptr<timeline::IRender> render;
+            std::shared_ptr<IRender> render;
             std::shared_ptr<ftk::IWidget> widget;
             std::shared_ptr<ContainerWindow> window;
             std::shared_ptr<ftk::gl::Shader> shader;

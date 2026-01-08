@@ -33,7 +33,7 @@ namespace tl
             const std::string& ocio,
             const std::string& lutDef,
             const std::string& lut,
-            timeline::LUTOrder);
+            LUTOrder);
         std::string dissolveFragmentSource();
         std::string differenceFragmentSource();
 
@@ -82,8 +82,8 @@ namespace tl
         {
             std::shared_ptr<ftk::gl::Render> baseRender;
 
-            timeline::OCIOOptions ocioOptions;
-            timeline::LUTOptions lutOptions;
+            OCIOOptions ocioOptions;
+            LUTOptions lutOptions;
 
 #if defined(TLRENDER_OCIO)
             //! \todo Add a cache for OpenColorIO data.

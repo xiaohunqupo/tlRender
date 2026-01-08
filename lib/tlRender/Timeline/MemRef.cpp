@@ -5,205 +5,202 @@
 
 namespace tl
 {
-    namespace timeline
+    RawMemRef::RawMemRef(
+        const std::string& target_url,
+        const uint8_t* mem,
+        size_t mem_size,
+        const std::optional<OTIO_NS::TimeRange>& available_range,
+        const OTIO_NS::AnyDictionary& metadata) :
+        OTIO_NS::MediaReference(std::string(), available_range, metadata),
+        _target_url(target_url),
+        _mem(mem),
+        _mem_size(mem_size)
+    {}
+
+    RawMemRef::~RawMemRef()
+    {}
+
+    const std::string& RawMemRef::target_url() const noexcept
     {
-        RawMemRef::RawMemRef(
-            const std::string& target_url,
-            const uint8_t* mem,
-            size_t mem_size,
-            const std::optional<OTIO_NS::TimeRange>& available_range,
-            const OTIO_NS::AnyDictionary& metadata) :
-            OTIO_NS::MediaReference(std::string(), available_range, metadata),
-            _target_url(target_url),
-            _mem(mem),
-            _mem_size(mem_size)
-        {}
+        return _target_url;
+    }
 
-        RawMemRef::~RawMemRef()
-        {}
+    void RawMemRef::set_target_url(const std::string& value)
+    {
+        _target_url = value;
+    }
 
-        const std::string& RawMemRef::target_url() const noexcept
-        {
-            return _target_url;
-        }
+    const uint8_t* RawMemRef::mem() const noexcept
+    {
+        return _mem;
+    }
 
-        void RawMemRef::set_target_url(const std::string& value)
-        {
-            _target_url = value;
-        }
+    size_t RawMemRef::mem_size() const noexcept
+    {
+        return _mem_size;
+    }
 
-        const uint8_t* RawMemRef::mem() const noexcept
-        {
-            return _mem;
-        }
+    void RawMemRef::set_mem(const uint8_t* mem, size_t mem_size)
+    {
+        _mem = mem;
+        _mem_size = mem_size;
+    }
 
-        size_t RawMemRef::mem_size() const noexcept
-        {
-            return _mem_size;
-        }
+    SharedMemRef::SharedMemRef(
+        const std::string& target_url,
+        const std::shared_ptr<MemRefData>& mem,
+        const std::optional<OTIO_NS::TimeRange>& available_range,
+        const OTIO_NS::AnyDictionary& metadata) :
+        OTIO_NS::MediaReference(std::string(), available_range, metadata),
+        _target_url(target_url),
+        _mem(mem)
+    {}
 
-        void RawMemRef::set_mem(const uint8_t* mem, size_t mem_size)
-        {
-            _mem = mem;
-            _mem_size = mem_size;
-        }
+    SharedMemRef::~SharedMemRef()
+    {}
 
-        SharedMemRef::SharedMemRef(
-            const std::string& target_url,
-            const std::shared_ptr<MemRefData>& mem,
-            const std::optional<OTIO_NS::TimeRange>& available_range,
-            const OTIO_NS::AnyDictionary& metadata) :
-            OTIO_NS::MediaReference(std::string(), available_range, metadata),
-            _target_url(target_url),
-            _mem(mem)
-        {}
+    const std::string& SharedMemRef::target_url() const noexcept
+    {
+        return _target_url;
+    }
 
-        SharedMemRef::~SharedMemRef()
-        {}
+    void SharedMemRef::set_target_url(const std::string& value)
+    {
+        _target_url = value;
+    }
 
-        const std::string& SharedMemRef::target_url() const noexcept
-        {
-            return _target_url;
-        }
+    const std::shared_ptr<MemRefData>& SharedMemRef::mem() const noexcept
+    {
+        return _mem;
+    }
 
-        void SharedMemRef::set_target_url(const std::string& value)
-        {
-            _target_url = value;
-        }
+    void SharedMemRef::set_mem(const std::shared_ptr<MemRefData>& mem)
+    {
+        _mem = mem;
+    }
 
-        const std::shared_ptr<MemRefData>& SharedMemRef::mem() const noexcept
-        {
-            return _mem;
-        }
+    SeqRawMemRef::SeqRawMemRef(
+        const std::string& target_url,
+        const std::vector<const uint8_t*>& mem,
+        const std::vector<size_t> mem_sizes,
+        const std::optional<OTIO_NS::TimeRange>& available_range,
+        const OTIO_NS::AnyDictionary& metadata) :
+        OTIO_NS::MediaReference(std::string(), available_range, metadata),
+        _target_url(target_url),
+        _mem(mem),
+        _mem_sizes(mem_sizes)
+    {}
 
-        void SharedMemRef::set_mem(const std::shared_ptr<MemRefData>& mem)
-        {
-            _mem = mem;
-        }
+    SeqRawMemRef::~SeqRawMemRef()
+    {}
 
-        SeqRawMemRef::SeqRawMemRef(
-            const std::string& target_url,
-            const std::vector<const uint8_t*>& mem,
-            const std::vector<size_t> mem_sizes,
-            const std::optional<OTIO_NS::TimeRange>& available_range,
-            const OTIO_NS::AnyDictionary& metadata) :
-            OTIO_NS::MediaReference(std::string(), available_range, metadata),
-            _target_url(target_url),
-            _mem(mem),
-            _mem_sizes(mem_sizes)
-        {}
+    const std::string& SeqRawMemRef::target_url() const noexcept
+    {
+        return _target_url;
+    }
 
-        SeqRawMemRef::~SeqRawMemRef()
-        {}
+    void SeqRawMemRef::set_target_url(const std::string& value)
+    {
+        _target_url = value;
+    }
 
-        const std::string& SeqRawMemRef::target_url() const noexcept
-        {
-            return _target_url;
-        }
+    const std::vector<const uint8_t*>& SeqRawMemRef::mem() const noexcept
+    {
+        return _mem;
+    }
 
-        void SeqRawMemRef::set_target_url(const std::string& value)
-        {
-            _target_url = value;
-        }
+    const std::vector<size_t>& SeqRawMemRef::mem_sizes() const noexcept
+    {
+        return _mem_sizes;
+    }
 
-        const std::vector<const uint8_t*>& SeqRawMemRef::mem() const noexcept
-        {
-            return _mem;
-        }
+    void SeqRawMemRef::set_mem(
+        const std::vector<const uint8_t*>& mem,
+        const std::vector<size_t>& mem_sizes)
+    {
+        _mem = mem;
+        _mem_sizes = mem_sizes;
+    }
 
-        const std::vector<size_t>& SeqRawMemRef::mem_sizes() const noexcept
-        {
-            return _mem_sizes;
-        }
+    SeqSharedMemRef::SeqSharedMemRef(
+        const std::string& target_url,
+        const std::vector<std::shared_ptr<MemRefData> >& mem,
+        const std::optional<OTIO_NS::TimeRange>& available_range,
+        const OTIO_NS::AnyDictionary& metadata) :
+        OTIO_NS::MediaReference(std::string(), available_range, metadata),
+        _target_url(target_url),
+        _mem(mem)
+    {}
 
-        void SeqRawMemRef::set_mem(
-            const std::vector<const uint8_t*>& mem,
-            const std::vector<size_t>& mem_sizes)
-        {
-            _mem = mem;
-            _mem_sizes = mem_sizes;
-        }
+    SeqSharedMemRef::~SeqSharedMemRef()
+    {}
 
-        SeqSharedMemRef::SeqSharedMemRef(
-            const std::string& target_url,
-            const std::vector<std::shared_ptr<MemRefData> >& mem,
-            const std::optional<OTIO_NS::TimeRange>& available_range,
-            const OTIO_NS::AnyDictionary& metadata) :
-            OTIO_NS::MediaReference(std::string(), available_range, metadata),
-            _target_url(target_url),
-            _mem(mem)
-        {}
+    const std::string& SeqSharedMemRef::target_url() const noexcept
+    {
+        return _target_url;
+    }
 
-        SeqSharedMemRef::~SeqSharedMemRef()
-        {}
+    void SeqSharedMemRef::set_target_url(const std::string& value)
+    {
+        _target_url = value;
+    }
 
-        const std::string& SeqSharedMemRef::target_url() const noexcept
-        {
-            return _target_url;
-        }
+    const std::vector<std::shared_ptr<MemRefData> >& SeqSharedMemRef::mem() const noexcept
+    {
+        return _mem;
+    }
 
-        void SeqSharedMemRef::set_target_url(const std::string& value)
-        {
-            _target_url = value;
-        }
+    void SeqSharedMemRef::set_mem(
+        const std::vector<std::shared_ptr<MemRefData> >& mem)
+    {
+        _mem = mem;
+    }
 
-        const std::vector<std::shared_ptr<MemRefData> >& SeqSharedMemRef::mem() const noexcept
-        {
-            return _mem;
-        }
+    ZipMemRef::ZipMemRef(
+        const std::shared_ptr<ftk::FileIO>& file_io,
+        const std::string& target_url,
+        const uint8_t* mem,
+        size_t mem_size,
+        const std::optional<OTIO_NS::TimeRange>& available_range,
+        const OTIO_NS::AnyDictionary& metadata) :
+        RawMemRef(target_url, mem, mem_size, available_range, metadata),
+        _file_io(file_io)
+    {}
 
-        void SeqSharedMemRef::set_mem(
-            const std::vector<std::shared_ptr<MemRefData> >& mem)
-        {
-            _mem = mem;
-        }
+    ZipMemRef::~ZipMemRef()
+    {}
 
-        ZipMemRef::ZipMemRef(
-            const std::shared_ptr<ftk::FileIO>& file_io,
-            const std::string& target_url,
-            const uint8_t* mem,
-            size_t mem_size,
-            const std::optional<OTIO_NS::TimeRange>& available_range,
-            const OTIO_NS::AnyDictionary& metadata) :
-            RawMemRef(target_url, mem, mem_size, available_range, metadata),
-            _file_io(file_io)
-        {}
+    const std::shared_ptr<ftk::FileIO>& ZipMemRef::file_io() const noexcept
+    {
+        return _file_io;
+    }
 
-        ZipMemRef::~ZipMemRef()
-        {}
+    void ZipMemRef::set_file_io(const std::shared_ptr<ftk::FileIO>& file_io)
+    {
+        _file_io = file_io;
+    }
 
-        const std::shared_ptr<ftk::FileIO>& ZipMemRef::file_io() const noexcept
-        {
-            return _file_io;
-        }
+    SeqZipMemRef::SeqZipMemRef(
+        const std::shared_ptr<ftk::FileIO>& file_io,
+        const std::string& target_url,
+        const std::vector<const uint8_t*>& mem,
+        const std::vector<size_t> mem_sizes,
+        const std::optional<OTIO_NS::TimeRange>& available_range,
+        const OTIO_NS::AnyDictionary& metadata) :
+        SeqRawMemRef(target_url, mem, mem_sizes, available_range, metadata),
+        _file_io(file_io)
+    {}
 
-        void ZipMemRef::set_file_io(const std::shared_ptr<ftk::FileIO>& file_io)
-        {
-            _file_io = file_io;
-        }
+    SeqZipMemRef::~SeqZipMemRef()
+    {}
 
-        SeqZipMemRef::SeqZipMemRef(
-            const std::shared_ptr<ftk::FileIO>& file_io,
-            const std::string& target_url,
-            const std::vector<const uint8_t*>& mem,
-            const std::vector<size_t> mem_sizes,
-            const std::optional<OTIO_NS::TimeRange>& available_range,
-            const OTIO_NS::AnyDictionary& metadata) :
-            SeqRawMemRef(target_url, mem, mem_sizes, available_range, metadata),
-            _file_io(file_io)
-        {}
+    const std::shared_ptr<ftk::FileIO>& SeqZipMemRef::file_io() const noexcept
+    {
+        return _file_io;
+    }
 
-        SeqZipMemRef::~SeqZipMemRef()
-        {}
-
-        const std::shared_ptr<ftk::FileIO>& SeqZipMemRef::file_io() const noexcept
-        {
-            return _file_io;
-        }
-
-        void SeqZipMemRef::set_file_io(const std::shared_ptr<ftk::FileIO>&file_io)
-        {
-            _file_io = file_io;
-        }
+    void SeqZipMemRef::set_file_io(const std::shared_ptr<ftk::FileIO>&file_io)
+    {
+        _file_io = file_io;
     }
 }

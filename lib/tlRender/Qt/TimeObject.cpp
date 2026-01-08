@@ -16,20 +16,20 @@ namespace tl
     namespace qt
     {
         TimeObject::TimeObject(
-            const std::shared_ptr<timeline::TimeUnitsModel>& model,
+            const std::shared_ptr<TimeUnitsModel>& model,
             QObject* parent) :
             QObject(parent),
             _model(model)
         {}
 
-        timeline::TimeUnits TimeObject::timeUnits() const
+        TimeUnits TimeObject::timeUnits() const
         {
             return _model->getTimeUnits();
         }
 
-        void TimeObject::setTimeUnits(timeline::TimeUnits value)
+        void TimeObject::setTimeUnits(TimeUnits value)
         {
-            const timeline::TimeUnits units = _model->getTimeUnits();
+            const TimeUnits units = _model->getTimeUnits();
             _model->setTimeUnits(value);
             if (units != _model->getTimeUnits())
             {
@@ -37,17 +37,17 @@ namespace tl
             }
         }
 
-        QDataStream& operator << (QDataStream& ds, const timeline::TimeUnits& value)
+        QDataStream& operator << (QDataStream& ds, const TimeUnits& value)
         {
             ds << static_cast<qint32>(value);
             return ds;
         }
 
-        QDataStream& operator >> (QDataStream& ds, timeline::TimeUnits& value)
+        QDataStream& operator >> (QDataStream& ds, TimeUnits& value)
         {
             qint32 tmp = 0;
             ds >> tmp;
-            value = static_cast<timeline::TimeUnits>(tmp);
+            value = static_cast<TimeUnits>(tmp);
             return ds;
         }
 

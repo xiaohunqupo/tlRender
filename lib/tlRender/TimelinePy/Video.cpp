@@ -18,8 +18,6 @@ namespace tl
     {
         void video(py::module_& m)
         {
-            using namespace timeline;
-
             py::class_<VideoLayer>(m, "VideoLayer")
                 .def(py::init())
                 .def_readwrite("image", &VideoLayer::image)

@@ -9,8 +9,6 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
 
-using namespace tl::timeline;
-
 namespace tl
 {
     namespace timeline_tests
@@ -40,7 +38,7 @@ namespace tl
                 color.tint = 2.F;
                 color.invert = true;
                 const ftk::V3F v(1.F, 1.F, 1.F);
-                const auto m = timeline::color(color);
+                const auto m = tl::color(color);
                 _print(ftk::Format("{0} color: {1}").arg(v).arg(m * v));
             }
             {

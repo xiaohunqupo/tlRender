@@ -23,7 +23,7 @@ namespace tl
                 WRITE setValue
                 NOTIFY valueChanged)
             Q_PROPERTY(
-                tl::timeline::TimeUnits timeUnits
+                tl::TimeUnits timeUnits
                 READ timeUnits
                 WRITE setTimeUnits
                 NOTIFY timeUnitsChanged)
@@ -40,7 +40,7 @@ namespace tl
             const OTIO_NS::RationalTime& value() const;
 
             //! Get the time units.
-            timeline::TimeUnits timeUnits() const;
+            TimeUnits timeUnits() const;
 
             void stepBy(int steps) override;
             QValidator::State validate(QString&, int& pos) const override;
@@ -51,14 +51,14 @@ namespace tl
             void setValue(const OTIO_NS::RationalTime&);
 
             //! Set the time units.
-            void setTimeUnits(tl::timeline::TimeUnits);
+            void setTimeUnits(tl::TimeUnits);
 
         Q_SIGNALS:
             //! This signal is emitted when the time is changed.
             void valueChanged(const OTIO_NS::RationalTime&);
 
             //! This signal is emitted when the time units are changed.
-            void timeUnitsChanged(tl::timeline::TimeUnits);
+            void timeUnitsChanged(tl::TimeUnits);
 
         protected:
             QAbstractSpinBox::StepEnabled stepEnabled() const override;

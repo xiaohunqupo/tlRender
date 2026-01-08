@@ -20,7 +20,7 @@ namespace tl
         {
             m.def(
                 "getExts",
-                &timeline::getExts,
+                &getExts,
                 py::arg("context"),
                 py::arg("types") =
                     static_cast<int>(FileType::Media) |

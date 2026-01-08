@@ -59,12 +59,12 @@ namespace tl
             return _p->viewport->getDroppedFrames();
         }
 
-        void Viewport::setOCIOOptions(const timeline::OCIOOptions& value)
+        void Viewport::setOCIOOptions(const OCIOOptions& value)
         {
             _p->viewport->setOCIOOptions(value);
         }
 
-        void Viewport::setLUTOptions(const timeline::LUTOptions& value)
+        void Viewport::setLUTOptions(const LUTOptions& value)
         {
             _p->viewport->setLUTOptions(value);
         }
@@ -74,22 +74,22 @@ namespace tl
             _p->viewport->setImageOptions(value);
         }
 
-        void Viewport::setDisplayOptions(const std::vector<timeline::DisplayOptions>& value)
+        void Viewport::setDisplayOptions(const std::vector<DisplayOptions>& value)
         {
             _p->viewport->setDisplayOptions(value);
         }
 
-        void Viewport::setCompareOptions(const timeline::CompareOptions& value)
+        void Viewport::setCompareOptions(const CompareOptions& value)
         {
             _p->viewport->setCompareOptions(value);
         }
 
-        void Viewport::setBackgroundOptions(const timeline::BackgroundOptions& value)
+        void Viewport::setBackgroundOptions(const BackgroundOptions& value)
         {
             _p->viewport->setBackgroundOptions(value);
         }
 
-        void Viewport::setForegroundOptions(const timeline::ForegroundOptions& value)
+        void Viewport::setForegroundOptions(const ForegroundOptions& value)
         {
             _p->viewport->setForegroundOptions(value);
         }

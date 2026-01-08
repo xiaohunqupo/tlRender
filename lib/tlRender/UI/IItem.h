@@ -22,8 +22,8 @@ namespace tl
         {
             double speed = 0.0;
             std::string dir;
-            timeline::Options options;
-            std::shared_ptr<timeline::ITimeUnitsModel> timeUnitsModel;
+            Options options;
+            std::shared_ptr<ITimeUnitsModel> timeUnitsModel;
             std::map<std::string, std::shared_ptr<IOInfo> > info;
             std::map<std::string, std::shared_ptr<ftk::Image> > thumbnails;
             std::map<std::string, std::shared_ptr<ftk::TriMesh2F> > waveforms;
@@ -91,8 +91,8 @@ namespace tl
             int fontSize = 12;
             float clipRectScale = 2.F;
 
-            timeline::OCIOOptions ocio;
-            timeline::LUTOptions lut;
+            OCIOOptions ocio;
+            LUTOptions lut;
 
             TL_API bool operator == (const DisplayOptions&) const;
             TL_API bool operator != (const DisplayOptions&) const;

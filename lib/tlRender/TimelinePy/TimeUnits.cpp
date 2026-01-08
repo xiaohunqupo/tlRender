@@ -19,8 +19,6 @@ namespace tl
     {
         void timeUnits(py::module_& m)
         {
-            using namespace timeline;
-            
             py::enum_<TimeUnits>(m, "TimeUnits")
                 .value("Frames", TimeUnits::Frames)
                 .value("Seconds", TimeUnits::Seconds)

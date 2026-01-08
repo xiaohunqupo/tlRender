@@ -18,8 +18,6 @@ namespace tl
     {
         void audio(py::module_& m)
         {
-            using namespace timeline;
-
             py::class_<AudioLayer>(m, "AudioLayer")
                 .def(py::init())
                 .def_readwrite("audio", &AudioLayer::audio)

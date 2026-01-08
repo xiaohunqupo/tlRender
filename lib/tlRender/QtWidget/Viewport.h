@@ -53,25 +53,25 @@ namespace tl
 
         public Q_SLOTS:
             //! Set the OpenColorIO options.
-            void setOCIOOptions(const timeline::OCIOOptions&);
+            void setOCIOOptions(const tl::OCIOOptions&);
 
             //! Set the LUT options.
-            void setLUTOptions(const timeline::LUTOptions&);
+            void setLUTOptions(const tl::LUTOptions&);
 
             //! Set the image options.
             void setImageOptions(const std::vector<ftk::ImageOptions>&);
 
             //! Set the display options.
-            void setDisplayOptions(const std::vector<timeline::DisplayOptions>&);
+            void setDisplayOptions(const std::vector<tl::DisplayOptions>&);
 
             //! Set the comparison options.
-            void setCompareOptions(const timeline::CompareOptions&);
+            void setCompareOptions(const tl::CompareOptions&);
 
             //! Set the background options.
-            void setBackgroundOptions(const timeline::BackgroundOptions&);
+            void setBackgroundOptions(const tl::BackgroundOptions&);
 
             //! Set the foreground options.
-            void setForegroundOptions(const timeline::ForegroundOptions&);
+            void setForegroundOptions(const tl::ForegroundOptions&);
 
             //! Set the color buffer type.
             void setColorBuffer(ftk::ImageType);
@@ -99,7 +99,7 @@ namespace tl
 
         Q_SIGNALS:
             //! This signal is emitted when the comparison options are changed.
-            void compareOptionsChanged(const tl::timeline::CompareOptions&);
+            void compareOptionsChanged(const tl::CompareOptions&);
 
             //! This signal is emitted when the position and zoom change.
             void viewPosAndZoomChanged(const ftk::V2I&, double);

@@ -22,7 +22,7 @@ namespace tl
                 READ value
                 WRITE setValue)
             Q_PROPERTY(
-                tl::timeline::TimeUnits timeUnits
+                tl::TimeUnits timeUnits
                 READ timeUnits
                 WRITE setTimeUnits)
 
@@ -38,14 +38,14 @@ namespace tl
             const OTIO_NS::RationalTime& value() const;
 
             //! Get the time units.
-            timeline::TimeUnits timeUnits() const;
+            TimeUnits timeUnits() const;
 
         public Q_SLOTS:
             //! Set the time value.
             void setValue(const OTIO_NS::RationalTime&);
 
             //! Set the time units.
-            void setTimeUnits(tl::timeline::TimeUnits);
+            void setTimeUnits(tl::TimeUnits);
 
         private:
             void _textUpdate();

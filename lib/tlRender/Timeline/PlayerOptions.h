@@ -10,62 +10,59 @@
 
 namespace tl
 {
-    namespace timeline
+    //! Timeline player cache options.
+    struct TL_API_TYPE PlayerCacheOptions
     {
-        //! Timeline player cache options.
-        struct TL_API_TYPE PlayerCacheOptions
-        {
-            //! Video cache size in gigabytes.
-            float videoGB = 4.F;
+        //! Video cache size in gigabytes.
+        float videoGB = 4.F;
 
-            //! Audio cache size in gigabytes.
-            float audioGB = .5F;
+        //! Audio cache size in gigabytes.
+        float audioGB = .5F;
 
-            //! Number of seconds to read behind the current frame.
-            float readBehind = .5F;
+        //! Number of seconds to read behind the current frame.
+        float readBehind = .5F;
 
-            TL_API bool operator == (const PlayerCacheOptions&) const;
-            TL_API bool operator != (const PlayerCacheOptions&) const;
-        };
+        TL_API bool operator == (const PlayerCacheOptions&) const;
+        TL_API bool operator != (const PlayerCacheOptions&) const;
+    };
 
-        //! Timeline player options.
-        struct TL_API_TYPE PlayerOptions
-        {
-            //! Audio device index.
-            AudioDeviceID audioDevice;
+    //! Timeline player options.
+    struct TL_API_TYPE PlayerOptions
+    {
+        //! Audio device index.
+        AudioDeviceID audioDevice;
 
-            //! Cache options.
-            PlayerCacheOptions cache;
+        //! Cache options.
+        PlayerCacheOptions cache;
 
-            //! Maximum number of video requests.
-            size_t videoRequestMax = 16;
+        //! Maximum number of video requests.
+        size_t videoRequestMax = 16;
 
-            //! Maximum number of audio requests.
-            size_t audioRequestMax = 16;
+        //! Maximum number of audio requests.
+        size_t audioRequestMax = 16;
 
-            //! Audio buffer frame count.
-            size_t audioBufferFrameCount = 500;
+        //! Audio buffer frame count.
+        size_t audioBufferFrameCount = 500;
 
-            //! Timeout for muting the audio when playback stutters.
-            std::chrono::milliseconds muteTimeout = std::chrono::milliseconds(500);
+        //! Timeout for muting the audio when playback stutters.
+        std::chrono::milliseconds muteTimeout = std::chrono::milliseconds(500);
 
-            //! Timeout to sleep each tick.
-            std::chrono::milliseconds sleepTimeout = std::chrono::milliseconds(5);
+        //! Timeout to sleep each tick.
+        std::chrono::milliseconds sleepTimeout = std::chrono::milliseconds(5);
 
-            //! Current time to start at.
-            OTIO_NS::RationalTime currentTime = invalidTime;
+        //! Current time to start at.
+        OTIO_NS::RationalTime currentTime = invalidTime;
 
-            TL_API bool operator == (const PlayerOptions&) const;
-            TL_API bool operator != (const PlayerOptions&) const;
-        };
+        TL_API bool operator == (const PlayerOptions&) const;
+        TL_API bool operator != (const PlayerOptions&) const;
+    };
 
-        //! \name Serialize
-        ///@{
+    //! \name Serialize
+    ///@{
 
-        TL_API void to_json(nlohmann::json&, const PlayerCacheOptions&);
+    TL_API void to_json(nlohmann::json&, const PlayerCacheOptions&);
 
-        TL_API void from_json(const nlohmann::json&, PlayerCacheOptions&);
+    TL_API void from_json(const nlohmann::json&, PlayerCacheOptions&);
 
-        ///@}
-    }
+    ///@}
 }

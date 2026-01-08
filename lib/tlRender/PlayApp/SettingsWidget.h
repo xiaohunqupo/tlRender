@@ -45,7 +45,7 @@ namespace tl
             std::shared_ptr<ftk::DoubleEdit> _audioEdit;
             std::shared_ptr<ftk::DoubleEdit> _readBehindEdit;
             std::shared_ptr<ftk::FormLayout> _layout;
-            std::shared_ptr<ftk::Observer<timeline::PlayerCacheOptions> > _cacheObserver;
+            std::shared_ptr<ftk::Observer<PlayerCacheOptions> > _cacheObserver;
         };
 
         //! This widget provides the file browser settings.
@@ -75,7 +75,7 @@ namespace tl
         private:
             std::shared_ptr<ftk::CheckBox> _nativeCheckBox;
             std::shared_ptr<ftk::FormLayout> _layout;
-            std::shared_ptr<ftk::Observer<timeline::PlayerCacheOptions> > _cacheObserver;
+            std::shared_ptr<ftk::Observer<PlayerCacheOptions> > _cacheObserver;
         };
 
         //! This widget provides the settings.

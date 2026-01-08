@@ -58,7 +58,7 @@ namespace tl
 
             _timeUnitsComboBox = ftk::ComboBox::create(
                 context,
-                timeline::getTimeUnitsLabels(),
+                getTimeUnitsLabels(),
                 _layout);
 
             _currentTimeEdit->setCallback(
@@ -87,13 +87,13 @@ namespace tl
                     if (auto app = appWeak.lock())
                     {
                         app->getTimeUnitsModel()->setTimeUnits(
-                            static_cast<timeline::TimeUnits>(value));
+                            static_cast<TimeUnits>(value));
                     }
                 });
 
-            _playerObserver = ftk::Observer<std::shared_ptr<timeline::Player> >::create(
+            _playerObserver = ftk::Observer<std::shared_ptr<Player> >::create(
                 app->getFilesModel()->observePlayer(),
-                [this](const std::shared_ptr<timeline::Player>& value)
+                [this](const std::shared_ptr<Player>& value)
                 {
                     _player = value;
 
@@ -143,9 +143,9 @@ namespace tl
                     _speedMultLabel->setEnabled(value.get());
                 });
 
-            _timeUnitsObserver = ftk::Observer<timeline::TimeUnits>::create(
+            _timeUnitsObserver = ftk::Observer<TimeUnits>::create(
                 app->getTimeUnitsModel()->observeTimeUnits(),
-                [this](timeline::TimeUnits value)
+                [this](TimeUnits value)
                 {
                     _timeUnitsComboBox->setCurrentIndex(static_cast<int>(value));
                 });

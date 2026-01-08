@@ -27,12 +27,12 @@ namespace tl
                 WRITE setSpeed
                 NOTIFY speedChanged)
             Q_PROPERTY(
-                tl::timeline::Playback playback
+                tl::Playback playback
                 READ playback
                 WRITE setPlayback
                 NOTIFY playbackChanged)
             Q_PROPERTY(
-                tl::timeline::Loop loop
+                tl::Loop loop
                 READ loop
                 WRITE setLoop
                 NOTIFY loopChanged)
@@ -46,13 +46,13 @@ namespace tl
                 WRITE setInOutRange
                 NOTIFY inOutRangeChanged)
             Q_PROPERTY(
-                std::vector<std::shared_ptr<tl::timeline::Timeline> >
+                std::vector<std::shared_ptr<tl::Timeline> >
                 compare
                 READ compare
                 WRITE setCompare
                 NOTIFY compareChanged)
             Q_PROPERTY(
-                tl::timeline::CompareTime compareTime
+                tl::CompareTime compareTime
                 READ compareTime
                 WRITE setCompareTime
                 NOTIFY compareTimeChanged)
@@ -72,7 +72,7 @@ namespace tl
                 WRITE setCompareVideoLayers
                 NOTIFY compareVideoLayersChanged)
             Q_PROPERTY(
-                std::vector<tl::timeline::VideoFrame>
+                std::vector<tl::VideoFrame>
                 currentVideo
                 READ currentVideo
                 NOTIFY currentVideoChanged)
@@ -102,28 +102,28 @@ namespace tl
                 WRITE setAudioOffset
                 NOTIFY audioOffsetChanged)
             Q_PROPERTY(
-                std::vector<tl::timeline::AudioFrame>
+                std::vector<tl::AudioFrame>
                 currentAudio
                 READ currentAudio
                 NOTIFY currentAudioChanged)
             Q_PROPERTY(
-                tl::timeline::PlayerCacheOptions cacheOptions
+                tl::PlayerCacheOptions cacheOptions
                 READ cacheOptions
                 WRITE setCacheOptions
                 NOTIFY cacheOptionsChanged)
             Q_PROPERTY(
-                tl::timeline::PlayerCacheInfo cacheInfo
+                tl::PlayerCacheInfo cacheInfo
                 READ cacheInfo
                 NOTIFY cacheInfoChanged)
 
             void _init(
                 const std::shared_ptr<ftk::Context>&,
-                const std::shared_ptr<timeline::Player>&);
+                const std::shared_ptr<Player>&);
 
         public:
             PlayerObject(
                 const std::shared_ptr<ftk::Context>&,
-                const std::shared_ptr<timeline::Player>&,
+                const std::shared_ptr<Player>&,
                 QObject* parent = nullptr);
 
             virtual ~PlayerObject();
@@ -132,10 +132,10 @@ namespace tl
             std::shared_ptr<ftk::Context> context() const;
 
             //! Get the timeline player.
-            const std::shared_ptr<timeline::Player>& player() const;
+            const std::shared_ptr<Player>& player() const;
 
             //! Get the timeline.
-            const std::shared_ptr<timeline::Timeline>& timeline() const;
+            const std::shared_ptr<Timeline>& timeline() const;
 
             //! Get the path.
             const ftk::Path& path() const;
@@ -144,10 +144,10 @@ namespace tl
             const ftk::Path& audioPath() const;
 
             //! Get the timeline player options.
-            const timeline::PlayerOptions& getPlayerOptions() const;
+            const PlayerOptions& getPlayerOptions() const;
 
             //! Get the timeline options.
-            const timeline::Options& getOptions() const;
+            const Options& getOptions() const;
 
             //! \name Information
             ///@{
@@ -171,13 +171,13 @@ namespace tl
             double speed() const;
 
             //! Get the playback mode.
-            timeline::Playback playback() const;
+            Playback playback() const;
 
             //! Get whether playback is stopped.
             bool isStopped() const;
 
             //! Get the playback loop mode.
-            timeline::Loop loop() const;
+            Loop loop() const;
 
             ///@}
 
@@ -209,10 +209,10 @@ namespace tl
             ///@{
 
             //! Get the timelines for comparison.
-            const std::vector<std::shared_ptr<timeline::Timeline> >& compare() const;
+            const std::vector<std::shared_ptr<Timeline> >& compare() const;
 
             //! Get the comparison time mode.
-            timeline::CompareTime compareTime() const;
+            CompareTime compareTime() const;
 
             ///@}
 
@@ -226,7 +226,7 @@ namespace tl
             const std::vector<int>& compareVideoLayers() const;
 
             //! Get the current video.
-            const std::vector<timeline::VideoFrame>& currentVideo() const;
+            const std::vector<VideoFrame>& currentVideo() const;
 
             ///@}
 
@@ -249,7 +249,7 @@ namespace tl
             double audioOffset() const;
 
             //! Get the current audio.
-            const std::vector<timeline::AudioFrame>& currentAudio() const;
+            const std::vector<AudioFrame>& currentAudio() const;
 
             ///@}
 
@@ -257,10 +257,10 @@ namespace tl
             ///@{
 
             //! Get the cache options.
-            const timeline::PlayerCacheOptions& cacheOptions() const;
+            const PlayerCacheOptions& cacheOptions() const;
 
             //! Get the cache information.
-            const timeline::PlayerCacheInfo& cacheInfo() const;
+            const PlayerCacheInfo& cacheInfo() const;
 
             ///@}
 
@@ -272,7 +272,7 @@ namespace tl
             void setSpeed(double);
 
             //! Set the playback mode.
-            void setPlayback(tl::timeline::Playback);
+            void setPlayback(tl::Playback);
 
             //! Stop playback.
             void stop();
@@ -287,7 +287,7 @@ namespace tl
             void togglePlayback();
 
             //! Set the playback loop mode.
-            void setLoop(tl::timeline::Loop);
+            void setLoop(tl::Loop);
 
             ///@}
 
@@ -298,7 +298,7 @@ namespace tl
             void seek(const OTIO_NS::RationalTime&);
 
             //! Time action.
-            void timeAction(tl::timeline::TimeAction);
+            void timeAction(tl::TimeAction);
 
             //! Go to the start time.
             void gotoStart();
@@ -346,10 +346,10 @@ namespace tl
             ///@{
 
             //! Set the timelines for comparison.
-            void setCompare(const std::vector<std::shared_ptr<timeline::Timeline> >&);
+            void setCompare(const std::vector<std::shared_ptr<Timeline> >&);
 
             //! Set the comparison time mode.
-            void setCompareTime(timeline::CompareTime);
+            void setCompareTime(CompareTime);
 
             ///@}
 
@@ -388,7 +388,7 @@ namespace tl
             ///@{
 
             //! Set the cache options.
-            void setCacheOptions(const tl::timeline::PlayerCacheOptions&);
+            void setCacheOptions(const tl::PlayerCacheOptions&);
 
             ///@}
 
@@ -400,10 +400,10 @@ namespace tl
             void speedChanged(double);
 
             //! This signal is emitted when the playback mode is changed.
-            void playbackChanged(tl::timeline::Playback);
+            void playbackChanged(tl::Playback);
 
             //! This signal is emitted when the playback loop mode is changed.
-            void loopChanged(tl::timeline::Loop);
+            void loopChanged(tl::Loop);
 
             //! This signal is emitted when the current time is changed.
             void currentTimeChanged(const OTIO_NS::RationalTime&);
@@ -417,10 +417,10 @@ namespace tl
             ///@{
 
             //! This signal is emitted when the timelines for comparison are changed.
-            void compareChanged(const std::vector<std::shared_ptr<timeline::Timeline> >&);
+            void compareChanged(const std::vector<std::shared_ptr<Timeline> >&);
 
             //! This signal is emitted when the comparison time mode is changed.
-            void compareTimeChanged(tl::timeline::CompareTime);
+            void compareTimeChanged(tl::CompareTime);
 
             ///@}
 
@@ -442,7 +442,7 @@ namespace tl
             void compareVideoLayersChanged(const std::vector<int>&);
 
             //! This signal is emitted when the current video is changed.
-            void currentVideoChanged(const std::vector<tl::timeline::VideoFrame>&);
+            void currentVideoChanged(const std::vector<tl::VideoFrame>&);
 
             ///@}
 
@@ -465,7 +465,7 @@ namespace tl
             void audioOffsetChanged(double);
 
             //! This signal is emitted when the current audio is changed.
-            void currentAudioChanged(const std::vector<tl::timeline::AudioFrame>&);
+            void currentAudioChanged(const std::vector<tl::AudioFrame>&);
 
             ///@}
 
@@ -473,10 +473,10 @@ namespace tl
             ///@{
 
             //! This signal is emitted when the cache options have changed.
-            void cacheOptionsChanged(const tl::timeline::PlayerCacheOptions&);
+            void cacheOptionsChanged(const tl::PlayerCacheOptions&);
 
             //! This signal is emitted when the cache information has changed.
-            void cacheInfoChanged(const tl::timeline::PlayerCacheInfo&);
+            void cacheInfoChanged(const tl::PlayerCacheInfo&);
 
             ///@}
 

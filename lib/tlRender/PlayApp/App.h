@@ -42,7 +42,7 @@ namespace tl
                 std::vector<std::string>&);
 
             const std::shared_ptr<SettingsModel>& getSettingsModel() const;
-            const std::shared_ptr<timeline::TimeUnitsModel>& getTimeUnitsModel() const;
+            const std::shared_ptr<TimeUnitsModel>& getTimeUnitsModel() const;
             const std::shared_ptr<ftk::RecentFilesModel>& getRecentFilesModel() const;
             const std::shared_ptr<FilesModel>& getFilesModel() const;
 
@@ -60,7 +60,7 @@ namespace tl
             CmdLine _cmdLine;
 
             std::shared_ptr<SettingsModel> _settingsModel;
-            std::shared_ptr<timeline::TimeUnitsModel> _timeUnitsModel;
+            std::shared_ptr<TimeUnitsModel> _timeUnitsModel;
             std::shared_ptr<ftk::RecentFilesModel> _recentFilesModel;
             std::shared_ptr<FilesModel> _filesModel;
 
@@ -70,7 +70,7 @@ namespace tl
             std::shared_ptr<bmd::OutputDevice> _bmdOutputDevice;
 #endif // TLRENDER_BMD
 
-            std::shared_ptr<ftk::Observer<std::shared_ptr<timeline::Player> > > _playerObserver;
+            std::shared_ptr<ftk::Observer<std::shared_ptr<Player> > > _playerObserver;
         };
     }
 }

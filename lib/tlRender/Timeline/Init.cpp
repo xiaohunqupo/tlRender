@@ -8,6 +8,8 @@
 
 #include <tlRender/IO/Init.h>
 
+#include <tlRender/Core/AudioSystem.h>
+
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Format.h>
 
@@ -15,50 +17,53 @@
 
 namespace tl
 {
-    namespace timeline
+    void init(const std::shared_ptr<ftk::Context>& context)
     {
-        void init(const std::shared_ptr<ftk::Context>& context)
+        auto logSystem = context->getLogSystem();
+        logSystem->print(
+            "tl::init",
+            ftk::Format("tlRender version: {0}").arg(TLRENDER_VERSION_FULL));
+
+        AudioSystem::create(context);
+
+        io::init(context);
+
+        const std::vector<std::pair<std::string, bool> > registerTypes
         {
-            io::init(context);
-
-            const std::vector<std::pair<std::string, bool> > registerTypes
             {
-                {
-                    "RawMemRef",
-                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::RawMemRef>()
-                },
-                {
-                    "SharedMemRef",
-                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::SharedMemRef>()
-                },
-                {
-                    "SeqRawMemRef",
-                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::SeqRawMemRef>()
-                },
-                {
-                    "SeqSharedMemRef",
-                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::SeqSharedMemRef>()
-                },
-                {
-                    "ZipMemRef",
-                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::ZipMemRef>()
-                },
-                {
-                    "SeqZipMemRef",
-                    OTIO_NS::TypeRegistry::instance().register_type<tl::timeline::SeqZipMemRef>()
-                }
-            };
-            auto logSystem = context->getLogSystem();
-            for (const auto& t : registerTypes)
+                "RawMemRef",
+                OTIO_NS::TypeRegistry::instance().register_type<tl::RawMemRef>()
+            },
             {
-                logSystem->print(
-                    "tl::timeline::init",
-                    ftk::Format("Register type {0}: {1}").
-                    arg(t.first).
-                    arg(t.second));
+                "SharedMemRef",
+                OTIO_NS::TypeRegistry::instance().register_type<tl::SharedMemRef>()
+            },
+            {
+                "SeqRawMemRef",
+                OTIO_NS::TypeRegistry::instance().register_type<tl::SeqRawMemRef>()
+            },
+            {
+                "SeqSharedMemRef",
+                OTIO_NS::TypeRegistry::instance().register_type<tl::SeqSharedMemRef>()
+            },
+            {
+                "ZipMemRef",
+                OTIO_NS::TypeRegistry::instance().register_type<tl::ZipMemRef>()
+            },
+            {
+                "SeqZipMemRef",
+                OTIO_NS::TypeRegistry::instance().register_type<tl::SeqZipMemRef>()
             }
-
-            System::create(context);
+        };
+        for (const auto& t : registerTypes)
+        {
+            logSystem->print(
+                "tl::init",
+                ftk::Format("Register type {0}: {1}").
+                arg(t.first).
+                arg(t.second));
         }
+
+        System::create(context);
     }
 }

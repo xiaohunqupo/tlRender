@@ -70,18 +70,18 @@ namespace tl
             const std::string& ocio,
             const std::string& lutDef,
             const std::string& lut,
-            timeline::LUTOrder lutOrder)
+            LUTOrder lutOrder)
         {
             std::vector<std::string> args;
             args.push_back(ocioDef);
             args.push_back(lutDef);
             switch (lutOrder)
             {
-            case timeline::LUTOrder::PreConfig:
+            case LUTOrder::PreConfig:
                 args.push_back(lut);
                 args.push_back(ocio);
                 break;
-            case timeline::LUTOrder::PostConfig:
+            case LUTOrder::PostConfig:
                 args.push_back(ocio);
                 args.push_back(lut);
                 break;

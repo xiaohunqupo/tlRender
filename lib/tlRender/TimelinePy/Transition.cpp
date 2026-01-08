@@ -19,8 +19,6 @@ namespace tl
     {
         void transition(py::module_& m)
         {
-            using namespace timeline;
-
             py::enum_<Transition>(m, "Transition")
                 .value("_None", Transition::None)
                 .value("Dissolve", Transition::Dissolve);

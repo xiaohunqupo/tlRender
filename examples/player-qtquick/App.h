@@ -35,7 +35,7 @@ namespace tl
 
             private:
                 QScopedPointer<qt::ContextObject> _contextObject;
-                std::shared_ptr<timeline::TimeUnitsModel> _timeUnitsModel;
+                std::shared_ptr<TimeUnitsModel> _timeUnitsModel;
                 QScopedPointer<qt::TimeObject> _timeObject;
                 QScopedPointer<qt::PlayerObject> _player;
 

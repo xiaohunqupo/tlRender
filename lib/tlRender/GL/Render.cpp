@@ -153,7 +153,7 @@ namespace tl
 #endif // TLRENDER_OCIO
         }
 
-        void Render::setOCIOOptions(const timeline::OCIOOptions& value)
+        void Render::setOCIOOptions(const OCIOOptions& value)
         {
             FTK_P();
             if (value == p.ocioOptions)
@@ -175,13 +175,13 @@ namespace tl
 
                 switch (p.ocioOptions.config)
                 {
-                case timeline::OCIOConfig::BuiltIn:
+                case OCIOConfig::BuiltIn:
                     p.ocioData->config = OCIO::Config::CreateFromFile("ocio://default");
                     break;
-                case timeline::OCIOConfig::EnvVar:
+                case OCIOConfig::EnvVar:
                     p.ocioData->config = OCIO::Config::CreateFromEnv();
                     break;
-                case timeline::OCIOConfig::File:
+                case OCIOConfig::File:
                     if (!p.ocioOptions.fileName.empty())
                     {
                         p.ocioData->config = OCIO::Config::CreateFromFile(p.ocioOptions.fileName.c_str());
@@ -350,7 +350,7 @@ namespace tl
             _displayShader();
         }
 
-        void Render::setLUTOptions(const timeline::LUTOptions& value)
+        void Render::setLUTOptions(const LUTOptions& value)
         {
             FTK_P();
             if (value == p.lutOptions)

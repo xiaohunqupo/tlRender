@@ -796,9 +796,9 @@ namespace tl
                                     request->path.getExt(),
                                     ftk::CaseCompare::Insensitive))
                             {
-                                timeline::Options timelineOptions;
+                                Options timelineOptions;
                                 timelineOptions.ioOptions = request->options;
-                                auto timeline = timeline::Timeline::create(
+                                auto timeline = Timeline::create(
                                     context,
                                     request->path,
                                     timelineOptions);

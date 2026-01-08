@@ -60,13 +60,13 @@ namespace tl
             std::shared_ptr<ftk::Observable<FrameRate> > frameRate;
             std::shared_ptr<ftk::Observable<int> > videoFrameDelay;
 
-            std::shared_ptr<timeline::Player> player;
-            std::shared_ptr<ftk::Observer<timeline::Playback> > playbackObserver;
+            std::shared_ptr<Player> player;
+            std::shared_ptr<ftk::Observer<Playback> > playbackObserver;
             std::shared_ptr<ftk::Observer<double> > speedObserver;
             std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > currentTimeObserver;
             std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > seekObserver;
-            std::shared_ptr<ftk::ListObserver<timeline::VideoFrame> > videoObserver;
-            std::shared_ptr<ftk::ListObserver<timeline::AudioFrame> > audioObserver;
+            std::shared_ptr<ftk::ListObserver<VideoFrame> > videoObserver;
+            std::shared_ptr<ftk::ListObserver<AudioFrame> > audioObserver;
 
             std::shared_ptr<ftk::gl::Window> window;
 
@@ -78,30 +78,30 @@ namespace tl
                 ftk::Size2I size;
                 FrameRate frameRate;
                 int videoFrameDelay = bmd::videoFrameDelay;
-                timeline::OCIOOptions ocioOptions;
-                timeline::LUTOptions lutOptions;
+                OCIOOptions ocioOptions;
+                LUTOptions lutOptions;
                 std::vector<ftk::ImageOptions> imageOptions;
-                std::vector<timeline::DisplayOptions> displayOptions;
+                std::vector<DisplayOptions> displayOptions;
                 HDRMode hdrMode = HDRMode::FromFile;
                 HDRData hdrData;
-                timeline::CompareOptions compareOptions;
-                timeline::BackgroundOptions bgOptions;
-                timeline::ForegroundOptions fgOptions;
+                CompareOptions compareOptions;
+                BackgroundOptions bgOptions;
+                ForegroundOptions fgOptions;
                 ftk::V2I viewPos;
                 double viewZoom = 1.0;
                 bool frameView = true;
                 OTIO_NS::TimeRange timeRange = invalidTimeRange;
-                timeline::Playback playback = timeline::Playback::Stop;
+                Playback playback = Playback::Stop;
                 double speed = 0.0;
                 OTIO_NS::RationalTime currentTime = invalidTime;
                 bool seek = false;
-                std::vector<timeline::VideoFrame> videoFrames;
+                std::vector<VideoFrame> videoFrames;
                 std::shared_ptr<ftk::Image> overlay;
                 float volume = 1.F;
                 bool mute = false;
                 std::vector<bool> channelMute;
                 double audioOffset = 0.0;
-                std::vector<timeline::AudioFrame> audioFrames;
+                std::vector<AudioFrame> audioFrames;
                 std::mutex mutex;
             };
             Mutex mutex;
@@ -118,10 +118,10 @@ namespace tl
                 double viewZoom = 1.0;
                 bool frameView = true;
                 OTIO_NS::TimeRange timeRange = invalidTimeRange;
-                std::vector<timeline::VideoFrame> videoFrames;
+                std::vector<VideoFrame> videoFrames;
                 std::shared_ptr<ftk::Image> overlay;
 
-                std::shared_ptr<timeline::IRender> render;
+                std::shared_ptr<IRender> render;
                 std::shared_ptr<ftk::gl::OffscreenBuffer> offscreenBuffer;
                 GLuint pbo = 0;
 
@@ -295,7 +295,7 @@ namespace tl
             p.thread.cv.notify_one();
         }
 
-        void OutputDevice::setOCIOOptions(const timeline::OCIOOptions& value)
+        void OutputDevice::setOCIOOptions(const OCIOOptions& value)
         {
             FTK_P();
             {
@@ -305,7 +305,7 @@ namespace tl
             p.thread.cv.notify_one();
         }
 
-        void OutputDevice::setLUTOptions(const timeline::LUTOptions& value)
+        void OutputDevice::setLUTOptions(const LUTOptions& value)
         {
             FTK_P();
             {
@@ -325,7 +325,7 @@ namespace tl
             p.thread.cv.notify_one();
         }
 
-        void OutputDevice::setDisplayOptions(const std::vector<timeline::DisplayOptions>& value)
+        void OutputDevice::setDisplayOptions(const std::vector<DisplayOptions>& value)
         {
             FTK_P();
             {
@@ -346,7 +346,7 @@ namespace tl
             p.thread.cv.notify_one();
         }
 
-        void OutputDevice::setCompareOptions(const timeline::CompareOptions& value)
+        void OutputDevice::setCompareOptions(const CompareOptions& value)
         {
             FTK_P();
             {
@@ -356,7 +356,7 @@ namespace tl
             p.thread.cv.notify_one();
         }
 
-        void OutputDevice::setBackgroundOptions(const timeline::BackgroundOptions& value)
+        void OutputDevice::setBackgroundOptions(const BackgroundOptions& value)
         {
             FTK_P();
             {
@@ -366,7 +366,7 @@ namespace tl
             p.thread.cv.notify_one();
         }
 
-        void OutputDevice::setForegroundOptions(const timeline::ForegroundOptions& value)
+        void OutputDevice::setForegroundOptions(const ForegroundOptions& value)
         {
             FTK_P();
             {
@@ -426,7 +426,7 @@ namespace tl
             p.thread.cv.notify_one();
         }
 
-        void OutputDevice::setPlayer(const std::shared_ptr<timeline::Player>& value)
+        void OutputDevice::setPlayer(const std::shared_ptr<Player>& value)
         {
             FTK_P();
             if (value == p.player)
@@ -444,9 +444,9 @@ namespace tl
             if (p.player)
             {
                 auto weak = std::weak_ptr<OutputDevice>(shared_from_this());
-                p.playbackObserver = ftk::Observer<timeline::Playback>::create(
+                p.playbackObserver = ftk::Observer<Playback>::create(
                     p.player->observePlayback(),
-                    [weak](timeline::Playback value)
+                    [weak](Playback value)
                     {
                         if (auto device = weak.lock())
                         {
@@ -500,9 +500,9 @@ namespace tl
                         }
                     },
                     ftk::ObserverAction::Suppress);
-                p.videoObserver = ftk::ListObserver<timeline::VideoFrame>::create(
+                p.videoObserver = ftk::ListObserver<VideoFrame>::create(
                     p.player->observeCurrentVideo(),
-                    [weak](const std::vector<timeline::VideoFrame>& value)
+                    [weak](const std::vector<VideoFrame>& value)
                     {
                         if (auto device = weak.lock())
                         {
@@ -514,9 +514,9 @@ namespace tl
                         }
                     },
                     ftk::ObserverAction::Suppress);
-                p.audioObserver = ftk::ListObserver<timeline::AudioFrame>::create(
+                p.audioObserver = ftk::ListObserver<AudioFrame>::create(
                     p.player->observeCurrentAudio(),
-                    [weak](const std::vector<timeline::AudioFrame>& value)
+                    [weak](const std::vector<AudioFrame>& value)
                     {
                         if (auto device = weak.lock())
                         {
@@ -542,7 +542,7 @@ namespace tl
                 else
                 {
                     p.mutex.timeRange = invalidTimeRange;
-                    p.mutex.playback = timeline::Playback::Stop;
+                    p.mutex.playback = Playback::Stop;
                     p.mutex.speed = 0.0;
                     p.mutex.currentTime = invalidTime;
                 }
@@ -580,14 +580,14 @@ namespace tl
             DeviceConfig config;
             bool enabled = false;
             int videoFrameDelay = bmd::videoFrameDelay;
-            timeline::OCIOOptions ocioOptions;
-            timeline::LUTOptions lutOptions;
+            OCIOOptions ocioOptions;
+            LUTOptions lutOptions;
             std::vector<ftk::ImageOptions> imageOptions;
-            std::vector<timeline::DisplayOptions> displayOptions;
-            timeline::CompareOptions compareOptions;
-            timeline::BackgroundOptions bgOptions;
-            timeline::ForegroundOptions fgOptions;
-            timeline::Playback playback = timeline::Playback::Stop;
+            std::vector<DisplayOptions> displayOptions;
+            CompareOptions compareOptions;
+            BackgroundOptions bgOptions;
+            ForegroundOptions fgOptions;
+            Playback playback = Playback::Stop;
             double speed = 0.0;
             OTIO_NS::RationalTime currentTime = invalidTime;
             bool seek = false;
@@ -595,7 +595,7 @@ namespace tl
             bool mute = false;
             std::vector<bool> channelMute;
             double audioOffset = 0.0;
-            std::vector<timeline::AudioFrame> audioFrames;
+            std::vector<AudioFrame> audioFrames;
             std::shared_ptr<ftk::Image> overlay;
 
             p.thread.render = timeline_gl::Render::create(
@@ -1004,18 +1004,18 @@ namespace tl
 
         void OutputDevice::_render(
             const DeviceConfig& config,
-            const timeline::OCIOOptions& ocioOptions,
-            const timeline::LUTOptions& lutOptions,
+            const OCIOOptions& ocioOptions,
+            const LUTOptions& lutOptions,
             const std::vector<ftk::ImageOptions>& imageOptions,
-            const std::vector<timeline::DisplayOptions>& displayOptions,
-            const timeline::CompareOptions& compareOptions,
-            const timeline::BackgroundOptions& bgOptions,
-            const timeline::ForegroundOptions& fgOptions)
+            const std::vector<DisplayOptions>& displayOptions,
+            const CompareOptions& compareOptions,
+            const BackgroundOptions& bgOptions,
+            const ForegroundOptions& fgOptions)
         {
             FTK_P();
 
             // Create the offscreen buffer.
-            const ftk::Size2I renderSize = timeline::getRenderSize(
+            const ftk::Size2I renderSize = getRenderSize(
                 compareOptions.compare,
                 p.thread.videoFrames);
             ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
@@ -1049,7 +1049,7 @@ namespace tl
                     1.F);
                 p.thread.render->setTransform(pm);
 
-                const auto boxes = timeline::getBoxes(compareOptions.compare, p.thread.videoFrames);
+                const auto boxes = getBoxes(compareOptions.compare, p.thread.videoFrames);
                 ftk::V2I viewPosTmp = p.thread.viewPos;
                 double viewZoomTmp = p.thread.viewZoom;
                 if (p.thread.frameView)

@@ -76,12 +76,12 @@ namespace tl
                 { "-lut" },
                 "LUT file name.",
                 "Color");
-            _cmdLine.lutOrder = ftk::CmdLineValueOption<timeline::LUTOrder>::create(
+            _cmdLine.lutOrder = ftk::CmdLineValueOption<LUTOrder>::create(
                 { "-lutOrder" },
                 "LUT operation order.",
                 "Color",
-                std::optional<timeline::LUTOrder>(),
-                ftk::quotes(timeline::getLUTOrderLabels()));
+                std::optional<LUTOrder>(),
+                ftk::quotes(getLUTOrderLabels()));
             _cmdLine.sequenceDefaultSpeed = ftk::CmdLineValueOption<double>::create(
                 { "-sequenceDefaultSpeed" },
                 "Default speed for image sequences.",
@@ -226,9 +226,9 @@ namespace tl
                 static_cast<int>(ftk::gl::WindowOptions::MakeCurrent));
 
             // Read the timeline.
-            timeline::Options options;
+            Options options;
             options.ioOptions = _getIOOptions();
-            _timeline = timeline::Timeline::create(
+            _timeline = Timeline::create(
                 _context,
                 _cmdLine.input->getValue(),
                 options);
@@ -470,8 +470,8 @@ namespace tl
             // Flip the image.
             ftk::gl::OffscreenBufferBinding binding(_bufferFlip);
             _render->begin(_renderSize);
-            _render->setOCIOOptions(timeline::OCIOOptions());
-            _render->setLUTOptions(timeline::LUTOptions());
+            _render->setOCIOOptions(OCIOOptions());
+            _render->setLUTOptions(LUTOptions());
             _render->drawTexture(
                 _buffer->getColorID(),
                 ftk::Box2I(0, 0, _renderSize.w, _renderSize.h));

@@ -5,9 +5,6 @@
 
 namespace tl
 {
-    namespace timeline
-    {
-        IRender::~IRender()
-        {}
-    }
+    IRender::~IRender()
+    {}
 }

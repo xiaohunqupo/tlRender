@@ -38,27 +38,27 @@ namespace tl
             //! \name Comparison Options
             ///@{
 
-            TL_API const timeline::CompareOptions& getCompareOptions() const;
-            TL_API std::shared_ptr<ftk::IObservable<timeline::CompareOptions> > observeCompareOptions() const;
-            TL_API void setCompareOptions(const timeline::CompareOptions&);
+            TL_API const CompareOptions& getCompareOptions() const;
+            TL_API std::shared_ptr<ftk::IObservable<CompareOptions> > observeCompareOptions() const;
+            TL_API void setCompareOptions(const CompareOptions&);
 
             ///@}
 
             //! \name OpenColorIO Options
             ///@{
 
-            TL_API const timeline::OCIOOptions& getOCIOOptions() const;
-            TL_API std::shared_ptr<ftk::IObservable<timeline::OCIOOptions> > observeOCIOOptions() const;
-            TL_API void setOCIOOptions(const timeline::OCIOOptions&);
+            TL_API const OCIOOptions& getOCIOOptions() const;
+            TL_API std::shared_ptr<ftk::IObservable<OCIOOptions> > observeOCIOOptions() const;
+            TL_API void setOCIOOptions(const OCIOOptions&);
 
             ///@}
 
             //! \name LUT Options
             ///@{
 
-            TL_API const timeline::LUTOptions& getLUTOptions() const;
-            TL_API std::shared_ptr<ftk::IObservable<timeline::LUTOptions> > observeLUTOptions() const;
-            TL_API void setLUTOptions(const timeline::LUTOptions&);
+            TL_API const LUTOptions& getLUTOptions() const;
+            TL_API std::shared_ptr<ftk::IObservable<LUTOptions> > observeLUTOptions() const;
+            TL_API void setLUTOptions(const LUTOptions&);
 
             ///@}
 
@@ -74,25 +74,25 @@ namespace tl
             //! \name Display Options
             ///@{
 
-            TL_API const std::vector<timeline::DisplayOptions>& getDisplayOptions() const;
-            TL_API std::shared_ptr<ftk::IObservableList<timeline::DisplayOptions> > observeDisplayOptions() const;
-            TL_API void setDisplayOptions(const std::vector<timeline::DisplayOptions>&);
+            TL_API const std::vector<tl::DisplayOptions>& getDisplayOptions() const;
+            TL_API std::shared_ptr<ftk::IObservableList<tl::DisplayOptions> > observeDisplayOptions() const;
+            TL_API void setDisplayOptions(const std::vector<tl::DisplayOptions>&);
 
             ///@}
 
             //! \name Background Options
             ///@{
 
-            TL_API const timeline::BackgroundOptions& getBackgroundOptions() const;
-            TL_API std::shared_ptr<ftk::IObservable<timeline::BackgroundOptions> > observeBackgroundOptions() const;
-            TL_API void setBackgroundOptions(const timeline::BackgroundOptions&);
+            TL_API const BackgroundOptions& getBackgroundOptions() const;
+            TL_API std::shared_ptr<ftk::IObservable<BackgroundOptions> > observeBackgroundOptions() const;
+            TL_API void setBackgroundOptions(const BackgroundOptions&);
 
             //! \name Foreground Options
             ///@{
 
-            TL_API const timeline::ForegroundOptions& getForegroundOptions() const;
-            TL_API std::shared_ptr<ftk::IObservable<timeline::ForegroundOptions> > observeForegroundOptions() const;
-            TL_API void setForegroundOptions(const timeline::ForegroundOptions&);
+            TL_API const ForegroundOptions& getForegroundOptions() const;
+            TL_API std::shared_ptr<ftk::IObservable<ForegroundOptions> > observeForegroundOptions() const;
+            TL_API void setForegroundOptions(const ForegroundOptions&);
 
             ///@}
 
@@ -108,8 +108,8 @@ namespace tl
             //! \name Timeline Player
             ///@{
 
-            TL_API const std::shared_ptr<timeline::Player>& getPlayer() const;
-            TL_API virtual void setPlayer(const std::shared_ptr<timeline::Player>&);
+            TL_API const std::shared_ptr<Player>& getPlayer() const;
+            TL_API virtual void setPlayer(const std::shared_ptr<Player>&);
 
             ///@}
 

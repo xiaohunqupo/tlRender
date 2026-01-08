@@ -121,7 +121,7 @@ namespace tl
 
         struct DLOutputCallbackData
         {
-            timeline::Playback playback = timeline::Playback::Stop;
+            Playback playback = Playback::Stop;
             double speed = 0.0;
             OTIO_NS::RationalTime currentTime = invalidTime;
             bool seek = false;
@@ -146,7 +146,7 @@ namespace tl
 
             void setData(const DLOutputCallbackData&);
             void setVideo(const std::shared_ptr<DLVideoFrameWrapper>&);
-            void setAudio(const std::vector<timeline::AudioFrame>&);
+            void setAudio(const std::vector<AudioFrame>&);
 
             HRESULT STDMETHODCALLTYPE ScheduledFrameCompleted(IDeckLinkVideoFrame*, BMDOutputFrameCompletionResult) override;
             HRESULT STDMETHODCALLTYPE ScheduledPlaybackHasStopped() override;
@@ -189,14 +189,14 @@ namespace tl
 
             struct AudioMutex
             {
-                timeline::Playback playback = timeline::Playback::Stop;
+                Playback playback = Playback::Stop;
                 double speed = 0.0;
                 OTIO_NS::RationalTime currentTime = invalidTime;
                 float volume = 1.F;
                 bool mute = false;
                 std::vector<bool> channelMute;
                 double audioOffset = 0.0;
-                std::vector<timeline::AudioFrame> audioFrame;
+                std::vector<AudioFrame> audioFrame;
                 bool reset = false;
                 OTIO_NS::RationalTime start = invalidTime;
                 std::mutex mutex;

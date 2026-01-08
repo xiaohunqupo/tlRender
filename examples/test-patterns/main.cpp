@@ -15,7 +15,7 @@ FTK_MAIN()
     try
     {
         auto context = ftk::Context::create();
-        tl::timeline::init(context);
+        tl::init(context);
         auto args = ftk::convert(argc, argv);
         auto app = tl::examples::test_patterns::App::create(context, args);
         r = app->getExit();

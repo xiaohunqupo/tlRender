@@ -51,13 +51,13 @@ namespace tl
 
             // Create the viewport.
             _viewport = ui::Viewport::create(context);
-            //timeline::BackgroundOptions bgOptions;
-            //bgOptions.type = timeline::Background::Gradient;
+            //BackgroundOptions bgOptions;
+            //bgOptions.type = Background::Gradient;
             //_viewport->setBackgroundOptions(bgOptions);
-            //timeline::ForegroundOptions fgOptions;
+            //ForegroundOptions fgOptions;
             //fgOptions.grid.enabled = true;
             //fgOptions.grid.size = 1;
-            //fgOptions.grid.labels = timeline::GridLabels::Alphanumeric;
+            //fgOptions.grid.labels = GridLabels::Alphanumeric;
             //fgOptions.grid.lineWidth = 10;
             //fgOptions.outline.enabled = true;
             //_viewport->setForegroundOptions(fgOptions);
@@ -65,7 +65,7 @@ namespace tl
             imageOptions.imageFilters.minify = ftk::ImageFilter::Nearest;
             imageOptions.imageFilters.magnify = ftk::ImageFilter::Nearest;
             _viewport->setImageOptions({ imageOptions });
-            timeline::DisplayOptions displayOptions;
+            DisplayOptions displayOptions;
             displayOptions.imageFilters.minify = ftk::ImageFilter::Nearest;
             displayOptions.imageFilters.magnify = ftk::ImageFilter::Nearest;
             _viewport->setDisplayOptions({ displayOptions });
@@ -145,19 +145,19 @@ namespace tl
             _statusBar->setParent(vLayout);
 
             // Create observers.
-            _playerObserver = ftk::Observer<std::shared_ptr<timeline::Player> >::create(
+            _playerObserver = ftk::Observer<std::shared_ptr<Player> >::create(
                 app->getFilesModel()->observePlayer(),
-                [this](const std::shared_ptr<timeline::Player>& value)
+                [this](const std::shared_ptr<Player>& value)
                 {
                     _viewport->setPlayer(value);
                     _timelineWidget->setPlayer(value);
                 });
 
-            _compareObserver = ftk::Observer<timeline::Compare>::create(
+            _compareObserver = ftk::Observer<Compare>::create(
                 app->getFilesModel()->observeCompare(),
-                [this](timeline::Compare value)
+                [this](Compare value)
                 {
-                    timeline::CompareOptions options;
+                    CompareOptions options;
                     options.compare = value;
                     _viewport->setCompareOptions(options);
                 });

@@ -14,10 +14,10 @@ namespace tl
     {
         struct TimelineItem::Private
         {
-            std::shared_ptr<timeline::Player> player;
+            std::shared_ptr<Player> player;
             OTIO_NS::RationalTime currentTime = invalidTime;
             OTIO_NS::TimeRange inOutRange = invalidTimeRange;
-            timeline::PlayerCacheInfo cacheInfo;
+            PlayerCacheInfo cacheInfo;
             bool stopOnScrub = true;
             std::shared_ptr<ftk::Observable<bool> > scrub;
             std::shared_ptr<ftk::Observable<OTIO_NS::RationalTime> > timeScrub;
@@ -62,7 +62,7 @@ namespace tl
 
             std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > currentTimeObserver;
             std::shared_ptr<ftk::Observer<OTIO_NS::TimeRange> > inOutRangeObserver;
-            std::shared_ptr<ftk::Observer<timeline::PlayerCacheInfo> > cacheInfoObserver;
+            std::shared_ptr<ftk::Observer<PlayerCacheInfo> > cacheInfoObserver;
         };
     }
 }

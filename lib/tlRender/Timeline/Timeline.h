@@ -21,156 +21,152 @@ namespace ftk
 
 namespace tl
 {
-    //! Timelines.
-    namespace timeline
+    //! Create an OTIO timeline from a path. The path can point to an .otio
+    //! file, .otioz file, movie file, or image sequence.
+    TL_API OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
+        const std::shared_ptr<ftk::Context>&,
+        const ftk::Path&,
+        const Options& = Options());
+
+    //! Create an OTIO timeline from a path and audio path. The file name
+    //! can point to an .otio file, .otioz file, movie file, or image
+    //! sequence.
+    TL_API OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
+        const std::shared_ptr<ftk::Context>&,
+        const ftk::Path& path,
+        const ftk::Path& audioPath,
+        const Options& = Options());
+
+    //! Video size request.
+    struct TL_API_TYPE VideoSizeRequest
     {
-        //! Create an OTIO timeline from a path. The path can point to an .otio
-        //! file, .otioz file, movie file, or image sequence.
-        TL_API OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
+        uint64_t id = 0;
+        std::future<size_t> future;
+    };
+
+    //! Video request.
+    struct TL_API_TYPE VideoRequest
+    {
+        uint64_t id = 0;
+        std::future<VideoFrame> future;
+    };
+
+    //! Audio size request.
+    struct TL_API_TYPE AudioSizeRequest
+    {
+        uint64_t id = 0;
+        std::future<size_t> future;
+    };
+
+    //! Audio request.
+    struct TL_API_TYPE AudioRequest
+    {
+        uint64_t id = 0;
+        std::future<AudioFrame> future;
+    };
+
+    //! Timeline.
+    class TL_API_TYPE Timeline : public std::enable_shared_from_this<Timeline>
+    {
+        FTK_NON_COPYABLE(Timeline);
+
+    protected:
+        void _init(
+            const std::shared_ptr<ftk::Context>&,
+            const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline>&,
+            const Options&);
+
+        Timeline();
+
+    public:
+        TL_API ~Timeline();
+
+        //! Create a new timeline.
+        TL_API static std::shared_ptr<Timeline> create(
+            const std::shared_ptr<ftk::Context>&,
+            const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline>&,
+            const Options& = Options());
+
+        //! Create a new timeline from a path. The path can point to an
+        //! .otio file, movie file, or image sequence.
+        TL_API static std::shared_ptr<Timeline> create(
             const std::shared_ptr<ftk::Context>&,
             const ftk::Path&,
             const Options& = Options());
 
-        //! Create an OTIO timeline from a path and audio path. The file name
-        //! can point to an .otio file, .otioz file, movie file, or image
-        //! sequence.
-        TL_API OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
+        //! Create a new timeline from a path and audio path. The path can
+        //! point to an .otio file, movie file, or image sequence.
+        TL_API static std::shared_ptr<Timeline> create(
             const std::shared_ptr<ftk::Context>&,
             const ftk::Path& path,
             const ftk::Path& audioPath,
             const Options& = Options());
 
-        //! Video size request.
-        struct TL_API_TYPE VideoSizeRequest
-        {
-            uint64_t id = 0;
-            std::future<size_t> future;
-        };
+        //! Create a new timeline from a file name. The file name can point
+        //! to an .otio file, movie file, or image sequence.
+        TL_API static std::shared_ptr<Timeline> create(
+            const std::shared_ptr<ftk::Context>&,
+            const std::string&,
+            const Options& = Options());
 
-        //! Video request.
-        struct TL_API_TYPE VideoRequest
-        {
-            uint64_t id = 0;
-            std::future<VideoFrame> future;
-        };
+        //! Create a new timeline from a file name and audio file name.
+        //! The file name can point to an .otio file, movie file, or
+        //! image sequence.
+        TL_API static std::shared_ptr<Timeline> create(
+            const std::shared_ptr<ftk::Context>&,
+            const std::string& fileName,
+            const std::string& audioFilename,
+            const Options& = Options());
 
-        //! Audio size request.
-        struct TL_API_TYPE AudioSizeRequest
-        {
-            uint64_t id = 0;
-            std::future<size_t> future;
-        };
+        //! Get the context.
+        TL_API std::shared_ptr<ftk::Context> getContext() const;
 
-        //! Audio request.
-        struct TL_API_TYPE AudioRequest
-        {
-            uint64_t id = 0;
-            std::future<AudioFrame> future;
-        };
+        //! Get the timeline.
+        TL_API const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline>& getTimeline() const;
 
-        //! Timeline.
-        class TL_API_TYPE Timeline : public std::enable_shared_from_this<Timeline>
-        {
-            FTK_NON_COPYABLE(Timeline);
+        //! Get the file path.
+        TL_API const ftk::Path& getPath() const;
 
-        protected:
-            void _init(
-                const std::shared_ptr<ftk::Context>&,
-                const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline>&,
-                const Options&);
+        //! Get the audio file path.
+        TL_API const ftk::Path& getAudioPath() const;
 
-            Timeline();
+        //! Get the timeline options.
+        TL_API const Options& getOptions() const;
 
-        public:
-            TL_API ~Timeline();
+        //! \name Information
+        ///@{
 
-            //! Create a new timeline.
-            TL_API static std::shared_ptr<Timeline> create(
-                const std::shared_ptr<ftk::Context>&,
-                const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline>&,
-                const Options& = Options());
+        //! Get the time range.
+        TL_API const OTIO_NS::TimeRange& getTimeRange() const;
 
-            //! Create a new timeline from a path. The path can point to an
-            //! .otio file, movie file, or image sequence.
-            TL_API static std::shared_ptr<Timeline> create(
-                const std::shared_ptr<ftk::Context>&,
-                const ftk::Path&,
-                const Options& = Options());
+        //! Get the duration.
+        TL_API OTIO_NS::RationalTime getDuration() const;
 
-            //! Create a new timeline from a path and audio path. The path can
-            //! point to an .otio file, movie file, or image sequence.
-            TL_API static std::shared_ptr<Timeline> create(
-                const std::shared_ptr<ftk::Context>&,
-                const ftk::Path& path,
-                const ftk::Path& audioPath,
-                const Options& = Options());
+        //! Get the I/O information. This information is retrieved from
+        //! the first clip in the timeline.
+        TL_API const IOInfo& getIOInfo() const;
 
-            //! Create a new timeline from a file name. The file name can point
-            //! to an .otio file, movie file, or image sequence.
-            TL_API static std::shared_ptr<Timeline> create(
-                const std::shared_ptr<ftk::Context>&,
-                const std::string&,
-                const Options& = Options());
+        ///@}
 
-            //! Create a new timeline from a file name and audio file name.
-            //! The file name can point to an .otio file, movie file, or
-            //! image sequence.
-            TL_API static std::shared_ptr<Timeline> create(
-                const std::shared_ptr<ftk::Context>&,
-                const std::string& fileName,
-                const std::string& audioFilename,
-                const Options& = Options());
+        //! \name Video and Audio
+        ///@{
 
-            //! Get the context.
-            TL_API std::shared_ptr<ftk::Context> getContext() const;
+        //! Get video.
+        TL_API VideoRequest getVideo(
+            const OTIO_NS::RationalTime&,
+            const IOOptions& = IOOptions());
 
-            //! Get the timeline.
-            TL_API const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline>& getTimeline() const;
+        //! Get audio.
+        TL_API AudioRequest getAudio(
+            double seconds,
+            const IOOptions& = IOOptions());
 
-            //! Get the file path.
-            TL_API const ftk::Path& getPath() const;
+        //! Cancel requests.
+        TL_API void cancelRequests(const std::vector<uint64_t>&);
 
-            //! Get the audio file path.
-            TL_API const ftk::Path& getAudioPath() const;
+        ///@}
 
-            //! Get the timeline options.
-            TL_API const Options& getOptions() const;
-
-            //! \name Information
-            ///@{
-
-            //! Get the time range.
-            TL_API const OTIO_NS::TimeRange& getTimeRange() const;
-
-            //! Get the duration.
-            TL_API OTIO_NS::RationalTime getDuration() const;
-
-            //! Get the I/O information. This information is retrieved from
-            //! the first clip in the timeline.
-            TL_API const IOInfo& getIOInfo() const;
-
-            ///@}
-
-            //! \name Video and Audio
-            ///@{
-
-            //! Get video.
-            TL_API VideoRequest getVideo(
-                const OTIO_NS::RationalTime&,
-                const IOOptions& = IOOptions());
-
-            //! Get audio.
-            TL_API AudioRequest getAudio(
-                double seconds,
-                const IOOptions& = IOOptions());
-
-            //! Cancel requests.
-            TL_API void cancelRequests(const std::vector<uint64_t>&);
-
-            ///@}
-
-        private:
-            FTK_PRIVATE();
-        };
-    }
+    private:
+        FTK_PRIVATE();
+    };
 }

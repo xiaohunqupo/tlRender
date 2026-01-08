@@ -24,11 +24,11 @@ Q_DECLARE_METATYPE(tl::AudioType);
 
 Q_DECLARE_METATYPE(tl::FileType);
 
-Q_DECLARE_METATYPE(tl::timeline::Compare);
-Q_DECLARE_METATYPE(tl::timeline::CompareTime);
-Q_DECLARE_METATYPE(tl::timeline::ImageSeqAudio);
-Q_DECLARE_METATYPE(tl::timeline::Loop);
-Q_DECLARE_METATYPE(tl::timeline::Playback);
-Q_DECLARE_METATYPE(tl::timeline::TimeAction);
-Q_DECLARE_METATYPE(tl::timeline::TimeUnits);
-Q_DECLARE_METATYPE(tl::timeline::Transition);
+Q_DECLARE_METATYPE(tl::Compare);
+Q_DECLARE_METATYPE(tl::CompareTime);
+Q_DECLARE_METATYPE(tl::ImageSeqAudio);
+Q_DECLARE_METATYPE(tl::Loop);
+Q_DECLARE_METATYPE(tl::Playback);
+Q_DECLARE_METATYPE(tl::TimeAction);
+Q_DECLARE_METATYPE(tl::TimeUnits);
+Q_DECLARE_METATYPE(tl::Transition);

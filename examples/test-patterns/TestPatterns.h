@@ -29,7 +29,7 @@ namespace tl
                 const std::string& getName() const;
 
                 virtual void render(
-                    const std::shared_ptr<timeline::IRender>&,
+                    const std::shared_ptr<IRender>&,
                     const OTIO_NS::RationalTime&) = 0;
 
             protected:
@@ -55,7 +55,7 @@ namespace tl
                     const ftk::Size2I&);
 
                 void render(
-                    const std::shared_ptr<timeline::IRender>&,
+                    const std::shared_ptr<IRender>&,
                     const OTIO_NS::RationalTime&) override;
 
             private:
@@ -82,7 +82,7 @@ namespace tl
                     const ftk::Size2I&);
 
                 void render(
-                    const std::shared_ptr<timeline::IRender>&,
+                    const std::shared_ptr<IRender>&,
                     const OTIO_NS::RationalTime&) override;
 
             private:
@@ -101,7 +101,7 @@ namespace tl
                     const ftk::Size2I&);
 
                 void render(
-                    const std::shared_ptr<timeline::IRender>&,
+                    const std::shared_ptr<IRender>&,
                     const OTIO_NS::RationalTime&) override;
             };
 

@@ -5,8 +5,6 @@
 
 #include <tlRender/IO/System.h>
 
-#include <tlRender/Core/Init.h>
-
 #include <ftk/GL/Init.h>
 #include <ftk/Core/Context.h>
 
@@ -16,7 +14,6 @@ namespace tl
     {
         void init(const std::shared_ptr<ftk::Context>& context)
         {
-            tl::init(context);
             ftk::gl::init(context);
             ReadSystem::create(context);
             WriteSystem::create(context);
