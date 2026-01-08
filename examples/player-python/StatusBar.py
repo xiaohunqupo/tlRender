@@ -32,7 +32,7 @@ class Widget(ftk.IWidget):
             context.getSystemByName("ftk::LogSystem").observeLogItems,
             lambda logItems: selfWeak()._logUpdate(logItems))
 
-        self._playerObserver = tl.timeline.PlayerObserver(
+        self._playerObserver = tl.PlayerObserver(
             app.getDocumentModel().observePlayer(),
             lambda player: selfWeak()._infoUpdate(player))
 
@@ -83,7 +83,7 @@ class Widget(ftk.IWidget):
             if ioInfo.audio.isValid:
                 s = "audio: {} {} {}".format(
                     ioInfo.audio.channelCount,
-                    tl.audio.to_string(ioInfo.audio.dataType),
+                    tl.to_string(ioInfo.audio.type),
                     ioInfo.audio.sampleRate)
                 text.append(s)
                 tooltip.append(s)

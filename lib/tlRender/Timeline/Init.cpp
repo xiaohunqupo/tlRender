@@ -6,10 +6,11 @@
 #include <tlRender/Timeline/MemRef.h>
 #include <tlRender/Timeline/System.h>
 
-#include <tlRender/IO/Init.h>
+#include <tlRender/IO/System.h>
 
 #include <tlRender/Core/AudioSystem.h>
 
+#include <ftk/GL/Init.h>
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Format.h>
 
@@ -24,9 +25,11 @@ namespace tl
             "tl::init",
             ftk::Format("tlRender version: {0}").arg(TLRENDER_VERSION_FULL));
 
-        AudioSystem::create(context);
+        ftk::gl::init(context);
 
-        io::init(context);
+        AudioSystem::create(context);
+        ReadSystem::create(context);
+        WriteSystem::create(context);
 
         const std::vector<std::pair<std::string, bool> > registerTypes
         {

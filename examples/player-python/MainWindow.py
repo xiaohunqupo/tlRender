@@ -99,7 +99,7 @@ class MainWindow(ftk.MainWindow):
 
         # Create observers.
         selfWeak = weakref.ref(self)
-        self.playerObserver = tl.timeline.PlayerObserver(
+        self.playerObserver = tl.PlayerObserver(
             app.getDocumentModel().observePlayer(),
             lambda player: selfWeak()._widgetUpdate(player))
 

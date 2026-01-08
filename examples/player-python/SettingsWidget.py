@@ -40,7 +40,7 @@ class CacheWidget(ftk.IWidget):
         self._readBehindEdit.setCallback(self._readBehindCallback)
 
         selfWeak = weakref.ref(self)
-        self._cacheObserver = tl.timeline.PlayerCacheOptionsObserver(
+        self._cacheObserver = tl.PlayerCacheOptionsObserver(
             app.getSettingsModel().observeCache(),
             lambda value: selfWeak()._cacheUpdate(value))
 

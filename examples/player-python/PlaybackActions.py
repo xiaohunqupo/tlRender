@@ -94,7 +94,7 @@ class Actions:
         self.actions["ResetOutPoint"].tooltip = "Reset the out point to the end frame."
 
         selfWeak = weakref.ref(self)
-        self._playerObserver = tl.timeline.PlayerObserver(
+        self._playerObserver = tl.PlayerObserver(
             app.getDocumentModel().observePlayer(),
             lambda player: selfWeak()._playerUpdate(player))
 
@@ -116,19 +116,19 @@ class Actions:
 
     def _startCallback(self):
         if self._player:
-            self._player.timeAction(tl.timeline.TimeAction.Start)
+            self._player.timeAction(tl.TimeAction.Start)
 
     def _prevCallback(self):
         if self._player:
-            self._player.timeAction(tl.timeline.TimeAction.FramePrev)
+            self._player.timeAction(tl.TimeAction.FramePrev)
 
     def _nextCallback(self):
         if self._player:
-            self._player.timeAction(tl.timeline.TimeAction.FrameNext)
+            self._player.timeAction(tl.TimeAction.FrameNext)
 
     def _endCallback(self):
         if self._player:
-            self._player.timeAction(tl.timeline.TimeAction.End)
+            self._player.timeAction(tl.TimeAction.End)
 
     def _setInPointCallback(self):
         if self._player:
@@ -152,7 +152,7 @@ class Actions:
         
         if player:
             selfWeak = weakref.ref(self)
-            self._playbackObserver = tl.timeline.PlaybackObserver(
+            self._playbackObserver = tl.PlaybackObserver(
                 player.observePlayback,
                 lambda value: selfWeak()._playbackUpdate(value))
         else:
@@ -173,6 +173,6 @@ class Actions:
 
     def _playbackUpdate(self, playback):
 
-        self.actions["Stop"].checked = tl.timeline.Playback.Stop == playback
-        self.actions["Forward"].checked = tl.timeline.Playback.Forward == playback
-        self.actions["Reverse"].checked = tl.timeline.Playback.Reverse == playback
+        self.actions["Stop"].checked = tl.Playback.Stop == playback
+        self.actions["Forward"].checked = tl.Playback.Forward == playback
+        self.actions["Reverse"].checked = tl.Playback.Reverse == playback

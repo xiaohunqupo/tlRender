@@ -15,15 +15,7 @@ namespace tl
     {
         void ioBind(py::module_& m)
         {
-            auto mIO = m.def_submodule("io", "I/O");
-            
-            mIO.def(
-                "init",
-                &io::init,
-                py::arg("context"),
-                "Initialize the library.");
-
-            io(mIO);
+            io(m);
         }
     }
 }

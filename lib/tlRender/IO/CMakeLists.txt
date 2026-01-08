@@ -1,7 +1,6 @@
 set(HEADERS
     IO.h
     IOInline.h
-    Init.h
     Plugin.h
     Read.h
     SeqIO.h
@@ -13,7 +12,6 @@ set(HEADERS_PRIVATE
 
 set(SOURCE
     IO.cpp
-    Init.cpp
     Plugin.cpp
     Read.cpp
     SeqIO.cpp

@@ -15,10 +15,10 @@ class Model:
     
         self._app = weakref.ref(app)
 
-        self._player = tl.timeline.ObservablePlayer(None)
+        self._player = tl.ObservablePlayer(None)
         
         selfWeak = weakref.ref(self)
-        self._cacheObserver = tl.timeline.PlayerCacheOptionsObserver(
+        self._cacheObserver = tl.PlayerCacheOptionsObserver(
             app.getSettingsModel().observeCache(),
             lambda value: selfWeak()._cacheUpdate(value))
 
@@ -28,10 +28,10 @@ class Model:
 
         \todo Add exception handling.
         """
-        timeline = tl.timeline.Timeline(self._app().context, path)
-        options = tl.timeline.PlayerOptions()
+        timeline = tl.Timeline(self._app().context, path)
+        options = tl.PlayerOptions()
         options.cache = self._app().getSettingsModel().observeCache().get()
-        self._player.setAlways(tl.timeline.Player(self._app().context, timeline, options))
+        self._player.setAlways(tl.Player(self._app().context, timeline, options))
 
     def close(self):
         """
@@ -48,10 +48,10 @@ class Model:
         """
         if self._player.get():
             path = self._player.get().path
-            timeline = tl.timeline.Timeline(self._app().context, path)
-            options = tl.timeline.PlayerOptions()
+            timeline = tl.Timeline(self._app().context, path)
+            options = tl.PlayerOptions()
             options.cache = self._settingsModel.observeCache().get()
-            self._player.setAlways(tl.timeline.Player(self.context, timeline, options))
+            self._player.setAlways(tl.Player(self.context, timeline, options))
 
     def observePlayer(self):
         """

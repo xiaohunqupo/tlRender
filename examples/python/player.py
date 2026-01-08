@@ -31,8 +31,8 @@ if app.exitValue != 0:
 # Create the timeline and timeline player.
 #
 # \todo Add exception handling.
-timeline = tl.timeline.Timeline(context, ftk.Path(cmdLineInput.value))
-player = tl.timeline.Player(context, timeline)
+timeline = tl.Timeline(context, ftk.Path(cmdLineInput.value))
+player = tl.Player(context, timeline)
 
 # Create the viewport.
 viewport = tl.ui.Viewport(context)

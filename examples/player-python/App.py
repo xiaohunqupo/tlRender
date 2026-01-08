@@ -33,7 +33,7 @@ class App(ftk.App):
         
         # Save time units settings.
         self._settingsModel.setString("/TimeUnits",
-            tl.timeline.to_string(self._timeUnitsModel.timeUnits))
+            tl.to_string(self._timeUnitsModel.timeUnits))
 
         # Save recent files settings.
         self._settingsModel.setStringList("/Files/Recent", self._recentFilesModel.recent)
@@ -68,10 +68,10 @@ class App(ftk.App):
         self._settingsModel = SettingsModel.Model(self.context)
 
         # Create the time units model.
-        self._timeUnitsModel = tl.timeline.TimeUnitsModel(self.context)
+        self._timeUnitsModel = tl.TimeUnitsModel(self.context)
         settings = self._settingsModel.getString("/TimeUnits")
         if settings[0]:
-            tl.timeline.from_string(settings[1], self._timeUnitsModel.timeUnits)
+            tl.from_string(settings[1], self._timeUnitsModel.timeUnits)
 
         # Create the recent files model.
         self._recentFilesModel = ftk.RecentFilesModel(self.context)
@@ -82,7 +82,7 @@ class App(ftk.App):
         
         # Initialize the file browser.
         fileBrowserSystem = self.context.getSystemByName("ftk::FileBrowserSystem")
-        fileBrowserSystem.model.exts = tl.timeline.getExts(self.context)
+        fileBrowserSystem.model.exts = tl.getExts(self.context)
         fileBrowserSystem.recentFilesModel = self._recentFilesModel
 
         # Create the main window.
@@ -90,7 +90,7 @@ class App(ftk.App):
         
         # Create an observer to update the recent files.
         selfWeak = weakref.ref(self)
-        self._playerObserver = tl.timeline.PlayerObserver(
+        self._playerObserver = tl.PlayerObserver(
             self._documentModel.observePlayer(),
             lambda player: selfWeak()._playerUpdate(player))
 

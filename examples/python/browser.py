@@ -19,7 +19,7 @@ class MainWindow(ftk.MainWindow):
         self._player = None
         
         # Get the valid file extensions.
-        self._exts = tl.timeline.getExts(context)
+        self._exts = tl.getExts(context)
         
         # Create the file browser path widget.
         self._fileBrowserPathWidget = ftk.FileBrowserPath(context)
@@ -29,7 +29,7 @@ class MainWindow(ftk.MainWindow):
         # Create the file browser view.
         self._fileBrowserModel = ftk.FileBrowserModel(context)
         fileBrowserOptions = ftk.FileBrowserOptions()
-        fileBrowserOptions.dirList.seqExts = tl.timeline.getExts(context, tl.io.FileType.Seq)
+        fileBrowserOptions.dirList.seqExts = tl.getExts(context, tl.FileType.Seq)
         self._fileBrowserModel.options = fileBrowserOptions
         self._fileBrowserModel.path = path
         self._fileBrowserView = ftk.FileBrowserView(
@@ -110,8 +110,8 @@ class MainWindow(ftk.MainWindow):
             # Create the timeline and player.
             #
             # \todo Add exception handling.
-            timeline = tl.timeline.Timeline(self.context, path)
-            self._player = tl.timeline.Player(self.context, timeline)
+            timeline = tl.Timeline(self.context, path)
+            self._player = tl.Player(self.context, timeline)
             self._playbackToolBar.player = self._player
             self._frameToolBar.player = self._player
             self._viewport.player = self._player

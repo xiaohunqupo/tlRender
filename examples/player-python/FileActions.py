@@ -45,7 +45,7 @@ class Actions:
             lambda: appWeak().exit())
 
         selfWeak = weakref.ref(self)
-        self._playerObserver = tl.timeline.PlayerObserver(
+        self._playerObserver = tl.PlayerObserver(
             app.getDocumentModel().observePlayer(),
             lambda player: selfWeak()._playerUpdate(player))
 

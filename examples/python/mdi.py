@@ -40,8 +40,8 @@ class MainWindow(ftk.MainWindow):
             for text in event.data.text:
 
                 # \todo Add exception handling.
-                timeline = tl.timeline.Timeline(self.context, text)
-                player = tl.timeline.Player(self.context, timeline)
+                timeline = tl.Timeline(self.context, text)
+                player = tl.Player(self.context, timeline)
 
                 viewport = tl.ui.Viewport(self.context)
                 viewport.player = player
