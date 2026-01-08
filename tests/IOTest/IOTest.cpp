@@ -33,7 +33,7 @@ namespace tl
         {
             {
                 const VideoData v;
-                FTK_ASSERT(!time::isValid(v.time));
+                FTK_ASSERT(!isValid(v.time));
                 FTK_ASSERT(!v.image);
             }
             {
