@@ -11,7 +11,7 @@
 namespace tl
 {
     //! Timeline OpenGL support
-    namespace timeline_gl
+    namespace gl
     {
         //! Timeline OpenGL renderer.
         class TL_API_TYPE Render : public IRender

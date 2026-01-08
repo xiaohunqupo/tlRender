@@ -13,7 +13,7 @@
 
 namespace tl
 {
-    namespace timeline_gl
+    namespace gl
     {
         void Render::drawBackground(
             const std::vector<ftk::Box2I>& boxes,

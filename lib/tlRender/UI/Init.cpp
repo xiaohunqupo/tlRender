@@ -64,7 +64,7 @@ namespace tl
         {
             tl::init(context);
             ftk::uiInit(context);
-            context->getSystem<ftk::gl::System>()->setRenderFactory(std::make_shared<timeline_gl::RenderFactory>());
+            context->getSystem<ftk::gl::System>()->setRenderFactory(std::make_shared<gl::RenderFactory>());
             ThumbnailSystem::create(context);
 
             auto iconSystem = context->getSystem<ftk::IconSystem>();

@@ -16,7 +16,7 @@
 
 namespace tl
 {
-    namespace timeline_gl
+    namespace gl
     {
         namespace
         {

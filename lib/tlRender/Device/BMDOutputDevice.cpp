@@ -598,7 +598,7 @@ namespace tl
             std::vector<AudioFrame> audioFrames;
             std::shared_ptr<ftk::Image> overlay;
 
-            p.thread.render = timeline_gl::Render::create(
+            p.thread.render = gl::Render::create(
                 p.context.lock()->getLogSystem(),
                 p.context.lock()->getSystem<ftk::FontSystem>());
 

@@ -131,7 +131,7 @@ namespace tl
                         auto image = ftk::Image::create(info);
 
                         // Render the test pattern.
-                        auto render = timeline_gl::Render::create(
+                        auto render = gl::Render::create(
                             _context->getLogSystem(),
                             _context->getSystem<ftk::FontSystem>());
                         auto pattern = TestPatternFactory::create(_context, name, size);

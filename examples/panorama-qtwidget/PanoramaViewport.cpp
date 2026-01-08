@@ -100,7 +100,7 @@ namespace tl
                 _sphereVAO = ftk::gl::VAO::create(ftk::gl::VBOType::Pos3_F32_UV_U16, _sphereVBO->getID());
 
                 // Create the renderer.
-                _render = timeline_gl::Render::create(
+                _render = gl::Render::create(
                     _context.lock()->getLogSystem(),
                     _context.lock()->getSystem<ftk::FontSystem>());
 

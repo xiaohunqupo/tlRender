@@ -70,7 +70,7 @@ namespace tl
                 std::shared_ptr<ftk::gl::VAO> _sphereVAO;
                 std::shared_ptr<ftk::gl::Shader> _shader;
                 std::shared_ptr<ftk::gl::OffscreenBuffer> _buffer;
-                std::shared_ptr<timeline_gl::Render> _render;
+                std::shared_ptr<gl::Render> _render;
                 ftk::V2I _mousePosPrev;
             };
         }

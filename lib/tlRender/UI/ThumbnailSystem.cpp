@@ -299,7 +299,7 @@ namespace tl
 
             struct ThumbnailThread
             {
-                std::shared_ptr<timeline_gl::Render> render;
+                std::shared_ptr<gl::Render> render;
                 std::shared_ptr<ftk::gl::OffscreenBuffer> buffer;
                 ftk::LRUCache<std::string, std::shared_ptr<IRead> > ioCache;
                 std::condition_variable cv;
@@ -364,7 +364,7 @@ namespace tl
                     p.window->makeCurrent();
                     if (auto context = p.context.lock())
                     {
-                        p.thumbnailThread.render = timeline_gl::Render::create(
+                        p.thumbnailThread.render = gl::Render::create(
                             context->getLogSystem(),
                             context->getSystem<ftk::FontSystem>());
                     }

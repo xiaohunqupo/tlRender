@@ -224,7 +224,7 @@ namespace tl
             ftk::gl::initGLAD();
             try
             {
-                p.render = timeline_gl::Render::create(
+                p.render = gl::Render::create(
                     p.context.lock()->getLogSystem(),
                     p.context.lock()->getSystem<ftk::FontSystem>());
 

@@ -7,7 +7,7 @@
 
 namespace tl
 {
-    namespace timeline_gl
+    namespace gl
     {
         void Render::drawRect(
             const ftk::Box2F& rect,

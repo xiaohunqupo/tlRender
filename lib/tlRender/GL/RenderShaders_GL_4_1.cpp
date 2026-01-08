@@ -7,7 +7,7 @@
 
 namespace tl
 {
-    namespace timeline_gl
+    namespace gl
     {
         std::string vertexSource()
         {

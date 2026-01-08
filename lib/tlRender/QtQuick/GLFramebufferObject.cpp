@@ -42,7 +42,7 @@ namespace tl
                     {
                         _init = true;
                         ftk::gl::initGLAD();
-                        _render = timeline_gl::Render::create(
+                        _render = gl::Render::create(
                             qtquick::getContext()->getLogSystem(),
                             qtquick::getContext()->getSystem<ftk::FontSystem>());
                     }
