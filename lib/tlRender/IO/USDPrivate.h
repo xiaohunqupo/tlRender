@@ -32,17 +32,17 @@ namespace tl
                 const std::shared_ptr<ftk::LogSystem>&);
             
             //! Get information.
-            std::future<io::Info> getInfo(
+            std::future<IOInfo> getInfo(
                 int64_t id,
                 const ftk::Path& path,
-                const io::Options&);
+                const IOOptions&);
             
             //! Render an image.
-            std::future<io::VideoData> render(
+            std::future<VideoData> render(
                 int64_t id,
                 const ftk::Path& path,
                 const OTIO_NS::RationalTime& time,
-                const io::Options&);
+                const IOOptions&);
 
             //! Cancel requests.
             void cancelRequests(int64_t id);

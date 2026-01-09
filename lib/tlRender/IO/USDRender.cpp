@@ -45,7 +45,7 @@ namespace tl
             std::string getCacheKey(
                 const ftk::Path& path,
                 const OTIO_NS::RationalTime& time,
-                const io::Options& options)
+                const IOOptions& options)
             {
                 std::stringstream ss;
                 ss << path.get() << ";" << path.getNum() << ";" << time << ";";
@@ -68,17 +68,17 @@ namespace tl
             {
                 int64_t id = -1;
                 ftk::Path path;
-                io::Options options;
-                std::promise<io::Info> promise;
+                IOOptions options;
+                std::promise<IOInfo> promise;
             };
 
             struct Request
             {
                 int64_t id = -1;
                 ftk::Path path;
-                OTIO_NS::RationalTime time = time::invalidTime;
-                io::Options options;
-                std::promise<io::VideoData> promise;
+                OTIO_NS::RationalTime time = invalidTime;
+                IOOptions options;
+                std::promise<VideoData> promise;
             };
             
             struct Mutex
@@ -264,10 +264,10 @@ namespace tl
             return out;
         }
         
-        std::future<io::Info> Render::getInfo(
+        std::future<IOInfo> Render::getInfo(
             int64_t id,
             const ftk::Path& path,
-            const io::Options& options)
+            const IOOptions& options)
         {
             FTK_P();
             auto request = std::make_shared<Private::InfoRequest>();
@@ -290,16 +290,16 @@ namespace tl
             }
             else
             {
-                request->promise.set_value(io::Info());
+                request->promise.set_value(IOInfo());
             }
             return future;
         }
 
-        std::future<io::VideoData> Render::render(
+        std::future<VideoData> Render::render(
             int64_t id,
             const ftk::Path& path,
             const OTIO_NS::RationalTime& time,
-            const io::Options& options)
+            const IOOptions& options)
         {
             FTK_P();
             auto request = std::make_shared<Private::Request>();
@@ -323,7 +323,7 @@ namespace tl
             }
             else
             {
-                request->promise.set_value(io::VideoData());
+                request->promise.set_value(VideoData());
             }
             return future;
         }
@@ -364,11 +364,11 @@ namespace tl
             }
             for (auto& request : infoRequests)
             {
-                request->promise.set_value(io::Info());
+                request->promise.set_value(IOInfo());
             }
             for (auto& request : requests)
             {
-                request->promise.set_value(io::VideoData());
+                request->promise.set_value(VideoData());
             }
         }
                         
@@ -551,7 +551,7 @@ namespace tl
                 }
 
                 // Set options.
-                io::Options ioOptions;
+                IOOptions ioOptions;
                 if (infoRequest)
                 {
                     ioOptions = infoRequest->options;
@@ -615,7 +615,7 @@ namespace tl
                         _open(fileName, stageCacheItem.stage, stageCacheItem.engine);
                         p.thread.stageCache.add(fileName, stageCacheItem);
                     }
-                    io::Info info;
+                    IOInfo info;
                     if (stageCacheItem.stage)
                     {
                         const double startTimeCode = stageCacheItem.stage->GetStartTimeCode();
@@ -687,7 +687,7 @@ namespace tl
                             }
                         }
 
-                        io::VideoData videoData;
+                        VideoData videoData;
                         videoData.time = request->time;
                         videoData.image = image;
                         request->promise.set_value(videoData);
@@ -906,7 +906,7 @@ namespace tl
                         }
                     }
 
-                    io::VideoData videoData;
+                    VideoData videoData;
                     videoData.time = request->time;
                     videoData.image = image;
                     request->promise.set_value(videoData);
@@ -957,11 +957,11 @@ namespace tl
             }
             for (auto& request : infoRequests)
             {
-                request->promise.set_value(io::Info());
+                request->promise.set_value(IOInfo());
             }
             for (auto& request : requests)
             {
-                request->promise.set_value(io::VideoData());
+                request->promise.set_value(VideoData());
             }
         }
     }

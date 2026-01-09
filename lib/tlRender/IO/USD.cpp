@@ -38,9 +38,9 @@ namespace tl
             return !(*this == other);
         }
 
-        io::Options getOptions(const Options& value)
+        IOOptions getOptions(const Options& value)
         {
-            io::Options out;
+            IOOptions out;
             out["USD/RenderWidth"] = ftk::Format("{0}").arg(value.renderWidth);
             out["USD/Complexity"] = ftk::Format("{0}").arg(value.complexity);
             out["USD/DrawMode"] = ftk::Format("{0}").arg(value.drawMode);
@@ -63,10 +63,10 @@ namespace tl
             IReadPlugin::_init(
                 "USD",
                 {
-                    { ".usd", io::FileType::Seq },
-                    { ".usda", io::FileType::Seq },
-                    { ".usdc", io::FileType::Seq },
-                    { ".usdz", io::FileType::Seq }
+                    { ".usd", FileType::Seq },
+                    { ".usda", FileType::Seq },
+                    { ".usdc", FileType::Seq },
+                    { ".usdz", FileType::Seq }
                 },
                 logSystem);
             FTK_P();
@@ -88,9 +88,9 @@ namespace tl
             return out;
         }
 
-        std::shared_ptr<io::IRead> ReadPlugin::read(
+        std::shared_ptr<IRead> ReadPlugin::read(
             const ftk::Path& path,
-            const io::Options& options)
+            const IOOptions& options)
         {
             FTK_P();
             int64_t id = -1;
@@ -102,10 +102,10 @@ namespace tl
             return Read::create(id, p.render, path, options, _logSystem.lock());
         }
         
-        std::shared_ptr<io::IRead> ReadPlugin::read(
+        std::shared_ptr<IRead> ReadPlugin::read(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& memory,
-            const io::Options& options)
+            const IOOptions& options)
         {
             FTK_P();
             int64_t id = -1;

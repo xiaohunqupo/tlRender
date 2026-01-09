@@ -18,7 +18,7 @@ namespace tl
             const std::shared_ptr<Render>& render,
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& memory,
-            const io::Options& options,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             IRead::_init(path, memory, options, logSystem);
@@ -38,7 +38,7 @@ namespace tl
             int64_t id,
             const std::shared_ptr<Render>& render,
             const ftk::Path& path,
-            const io::Options& options,
+            const IOOptions& options,
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             auto out = std::shared_ptr<Read>(new Read);
@@ -46,18 +46,18 @@ namespace tl
             return out;
         }
 
-        std::future<io::Info> Read::getInfo()
+        std::future<IOInfo> Read::getInfo()
         {
             FTK_P();
             return p.render->getInfo(p.id, _path, _options);
         }
         
-        std::future<io::VideoData> Read::readVideo(
+        std::future<VideoData> Read::readVideo(
             const OTIO_NS::RationalTime& time,
-            const io::Options& options)
+            const IOOptions& options)
         {
             FTK_P();
-            return p.render->render(p.id, _path, time, io::merge(options, _options));
+            return p.render->render(p.id, _path, time, merge(options, _options));
         }
         
         void Read::cancelRequests()
