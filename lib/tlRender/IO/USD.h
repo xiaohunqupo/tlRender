@@ -37,8 +37,8 @@ namespace tl
             usd::DrawMode drawMode = usd::DrawMode::ShadedSmooth;
             bool enableLighting = true;
             bool sRGB = true;
-            size_t stageCache = 10;
-            size_t diskCache = 0;
+            size_t stageCacheCount = 10;
+            size_t diskCacheGB = 0;
 
             TL_API bool operator == (const Options&) const;
             TL_API bool operator != (const Options&) const;

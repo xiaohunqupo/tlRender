@@ -560,15 +560,15 @@ namespace tl
                 {
                     ioOptions = request->options;
                 }
-                auto i = ioOptions.find("USD/StageCache");
+                auto i = ioOptions.find("USD/StageCacheCount");
                 if (i != ioOptions.end())
                 {
                     stageCacheCount = std::atoll(i->second.c_str());
                 }
-                i = ioOptions.find("USD/DiskCache");
+                i = ioOptions.find("USD/DiskCacheGB");
                 if (i != ioOptions.end())
                 {
-                    diskCacheByteCount = std::atoll(i->second.c_str());
+                    diskCacheByteCount = std::atoi(i->second.c_str()) * ftk::gigabyte;
                 }
                 p.thread.stageCache.setMax(stageCacheCount);
                 p.thread.diskCache.setMax(diskCacheByteCount);

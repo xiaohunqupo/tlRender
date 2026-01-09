@@ -29,8 +29,8 @@ namespace tl
                 drawMode == other.drawMode &&
                 enableLighting == other.enableLighting &&
                 sRGB == other.sRGB &&
-                stageCache == other.stageCache &&
-                diskCache == other.diskCache;
+                stageCacheCount == other.stageCacheCount &&
+                diskCacheGB == other.diskCacheGB;
         }
 
         bool Options::operator != (const Options& other) const
@@ -46,8 +46,8 @@ namespace tl
             out["USD/DrawMode"] = ftk::Format("{0}").arg(value.drawMode);
             out["USD/EnableLighting"] = ftk::Format("{0}").arg(value.enableLighting);
             out["USD/sRGB"] = ftk::Format("{0}").arg(value.sRGB);
-            out["USD/StageCache"] = ftk::Format("{0}").arg(value.stageCache);
-            out["USD/DiskCache"] = ftk::Format("{0}").arg(value.diskCache);
+            out["USD/StageCacheCount"] = ftk::Format("{0}").arg(value.stageCacheCount);
+            out["USD/DiskCacheGB"] = ftk::Format("{0}").arg(value.diskCacheGB);
             return out;
         }
 
@@ -124,8 +124,8 @@ namespace tl
             json["DrawMode"] = to_string(value.drawMode);
             json["EnableLighting"] = value.enableLighting;
             json["sRGB"] = value.sRGB;
-            json["StageCache"] = value.stageCache;
-            json["DiskCache"] = value.diskCache;
+            json["StageCacheCount"] = value.stageCacheCount;
+            json["DiskCacheGB"] = value.diskCacheGB;
         }
 
         void from_json(const nlohmann::json& json, Options& value)
@@ -135,8 +135,8 @@ namespace tl
             from_string(json.at("DrawMode").get<std::string>(), value.drawMode);
             json.at("EnableLighting").get_to(value.enableLighting);
             json.at("sRGB").get_to(value.sRGB);
-            json.at("StageCache").get_to(value.stageCache);
-            json.at("DiskCache").get_to(value.diskCache);
+            json.at("StageCacheCount").get_to(value.stageCacheCount);
+            json.at("DiskCacheGB").get_to(value.diskCacheGB);
         }
     }
 }
