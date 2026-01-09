@@ -110,7 +110,7 @@ namespace tl
             {
                 ftk::LRUCache<std::string, StageCacheItem> stageCache;
                 ftk::LRUCache<std::string, std::shared_ptr<DiskCacheItem> > diskCache;
-                std::string tempDir;
+                std::unique_ptr<ftk::TmpDir> tmpDir;
                 std::chrono::steady_clock::time_point logTimer;
                 std::condition_variable cv;
                 std::thread thread;
@@ -572,10 +572,9 @@ namespace tl
                 }
                 p.thread.stageCache.setMax(stageCacheCount);
                 p.thread.diskCache.setMax(diskCacheByteCount);
-                if (diskCacheByteCount > 0 && p.thread.tempDir.empty())
+                if (diskCacheByteCount > 0 && !p.thread.tmpDir)
                 {
-                    p.thread.tempDir = std::tmpnam(nullptr);
-                    std::filesystem::create_directory(std::filesystem::u8path(p.thread.tempDir));
+                    p.thread.tmpDir.reset(new ftk::TmpDir);
                     if (auto logSystem = p.logSystem.lock())
                     {
                         logSystem->print(
@@ -584,14 +583,13 @@ namespace tl
                                 "\n"
                                 "    Temp directory: {0}\n"
                                 "    Disk cache: {1}GB").
-                            arg(p.thread.tempDir).
+                            arg(p.thread.tmpDir->getPath()).
                             arg(diskCacheByteCount / ftk::gigabyte));
                     }
                 }
-                else if (0 == diskCacheByteCount &&
-                    !p.thread.tempDir.empty())
+                else if (0 == diskCacheByteCount && p.thread.tmpDir)
                 {
-                    p.thread.tempDir = std::string();
+                    p.thread.tmpDir.reset();
                 }
 
                 // Handle information requests.
@@ -877,11 +875,11 @@ namespace tl
                             }
 
                             // Add the rendered frame to the disk cache.
-                            if (diskCacheByteCount > 0 && image)
+                            if (diskCacheByteCount > 0 && p.thread.tmpDir && image)
                             {
                                 auto diskCacheItem = std::make_shared<Private::DiskCacheItem>();
                                 diskCacheItem->fileName = ftk::Format("{0}/{1}.img").
-                                    arg(p.thread.tempDir).
+                                    arg(p.thread.tmpDir->getPath()).
                                     arg(diskCacheItem);
                                 //std::cout << "write temp file: " << diskCacheItem->fileName << std::endl;
                                 auto tempFile = ftk::FileIO::create(diskCacheItem->fileName, ftk::FileMode::Write);
