@@ -3,8 +3,6 @@
 
 #include <tlRender/IOPy/Bindings.h>
 
-#include <tlRender/IO/Init.h>
-
 #include <ftk/Core/Context.h>
 
 namespace py = pybind11;
