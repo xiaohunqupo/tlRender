@@ -879,7 +879,7 @@ namespace tl
                             {
                                 auto diskCacheItem = std::make_shared<Private::DiskCacheItem>();
                                 diskCacheItem->fileName = ftk::Format("{0}/{1}.img").
-                                    arg(p.thread.tmpDir->getPath()).
+                                    arg(p.thread.tmpDir->getPath().u8string()).
                                     arg(diskCacheItem);
                                 //std::cout << "write temp file: " << diskCacheItem->fileName << std::endl;
                                 auto tempFile = ftk::FileIO::create(diskCacheItem->fileName, ftk::FileMode::Write);
