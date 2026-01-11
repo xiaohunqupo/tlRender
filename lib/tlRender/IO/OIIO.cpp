@@ -58,7 +58,7 @@ namespace tl
             {
                 for (const auto& ext : i.second)
                 {
-                    exts[ext] = FileType::Seq;
+                    exts["." + ext] = FileType::Seq;
                 }
             }
             IWritePlugin::_init("OIIO", exts, logSystem);
