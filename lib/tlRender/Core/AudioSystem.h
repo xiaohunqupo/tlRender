@@ -48,6 +48,9 @@ namespace tl
         //! Get the list of audio drivers.
         TL_API const std::vector<std::string>& getDrivers() const;
 
+        //! Get the current audio driver.
+        TL_API const std::string& getCurrentDriver() const;
+
         //! Get the list of audio devices.
         TL_API const std::vector<AudioDeviceInfo>& getDevices() const;
 

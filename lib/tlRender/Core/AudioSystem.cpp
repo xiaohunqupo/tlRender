@@ -56,6 +56,7 @@ namespace tl
     {
         bool init = false;
         std::vector<std::string> drivers;
+        std::string currentDriver;
         std::shared_ptr<ftk::ObservableList<AudioDeviceInfo> > devices;
         std::shared_ptr<ftk::Observable<AudioDeviceInfo> > defaultDevice;
 
@@ -106,9 +107,10 @@ namespace tl
                 ss << "Audio drivers: " << ftk::join(p.drivers, ", ");
                 _log(ss.str());
             }
+            p.currentDriver = SDL_GetCurrentAudioDriver();
             {
                 std::stringstream ss;
-                ss << "Current audio driver: " << SDL_GetCurrentAudioDriver();
+                ss << "Current audio driver: " << p.currentDriver;
                 _log(ss.str());
             }
         }
@@ -166,6 +168,11 @@ namespace tl
     const std::vector<std::string>& AudioSystem::getDrivers() const
     {
         return _p->drivers;
+    }
+
+    const std::string& AudioSystem::getCurrentDriver() const
+    {
+        return _p->currentDriver;
     }
 
     const std::vector<AudioDeviceInfo>& AudioSystem::getDevices() const
