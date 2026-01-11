@@ -5,6 +5,7 @@ set(HEADERS
     IBasicItem.h
     IItem.h
     Init.h
+    PlaybackLoopWidget.h
     PlaybackToolBar.h
     ThumbnailSystem.h
     TimeEdit.h
@@ -25,6 +26,7 @@ set(SOURCE
     IBasicItem.cpp
     IItem.cpp
     Init.cpp
+    PlaybackLoopWidget.cpp
     PlaybackToolBar.cpp
     ThumbnailSystem.cpp
     TimeEdit.cpp

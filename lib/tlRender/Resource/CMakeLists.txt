@@ -28,6 +28,9 @@ set(RESOURCES
     etc/Icons/Info.svg
     etc/Icons/Magnify.svg
     etc/Icons/Messages.svg
+    etc/Icons/PlaybackLoop.svg
+    etc/Icons/PlaybackOnce.svg
+    etc/Icons/PlaybackPingPong.svg
     etc/Icons/PlaybackShuttle0.svg
     etc/Icons/PlaybackShuttle1.svg
     etc/Icons/PlaybackShuttle2.svg

@@ -3,6 +3,8 @@
 
 #include <tlRender/UI/PlaybackToolBar.h>
 
+#include <tlRender/UI/PlaybackLoopWidget.h>
+
 #include <tlRender/Timeline/Player.h>
 
 #include <ftk/UI/Action.h>
@@ -14,7 +16,9 @@ namespace tl
         struct PlaybackToolBar::Private
         {
             std::map<std::string, std::shared_ptr<ftk::Action> > actions;
+            std::shared_ptr<PlaybackLoopWidget> loopWidget;
             std::shared_ptr<Player> player;
+            std::shared_ptr<ftk::Observer<Loop> > loopObserver;
             std::shared_ptr<ftk::Observer<Playback> > playbackObserver;
         };
 
@@ -64,11 +68,24 @@ namespace tl
                 });
             p.actions["Reverse"]->setTooltip("Start reverse playback.");
 
+            p.loopWidget = PlaybackLoopWidget::create(context);
+            p.loopWidget->setTooltip("Playback loop mode.");
+
             addAction(p.actions["Reverse"]);
             addAction(p.actions["Stop"]);
             addAction(p.actions["Forward"]);
+            addWidget(p.loopWidget);
 
             _widgetUpdate();
+
+            p.loopWidget->setCallback(
+                [this](Loop value)
+                {
+                    if (_p->player)
+                    {
+                        _p->player->setLoop(value);
+                    }
+                });
         }
 
         PlaybackToolBar::PlaybackToolBar() :
@@ -103,6 +120,13 @@ namespace tl
             p.player = player;
             if (player)
             {
+                p.loopObserver = ftk::Observer<Loop>::create(
+                    player->observeLoop(),
+                    [this](Loop value)
+                    {
+                        _p->loopWidget->setLoop(value);
+                    });
+
                 p.playbackObserver = ftk::Observer<Playback>::create(
                     player->observePlayback(),
                     [this](Playback value)
@@ -114,6 +138,7 @@ namespace tl
             }
             else
             {
+                p.loopObserver.reset();
                 p.playbackObserver.reset();
             }
             _widgetUpdate();
@@ -126,11 +151,13 @@ namespace tl
             {
                 p.actions["Stop"]->setChecked(true);
                 p.actions["Forward"]->setChecked(false);
-                p.actions["Reverse"]->setChecked(false);            
+                p.actions["Reverse"]->setChecked(false);
+                p.loopWidget->setLoop(Loop::Loop);
             }
             p.actions["Stop"]->setEnabled(p.player.get());
             p.actions["Forward"]->setEnabled(p.player.get());
             p.actions["Reverse"]->setEnabled(p.player.get());
+            p.loopWidget->setEnabled(p.player.get());
         }
     }
 }

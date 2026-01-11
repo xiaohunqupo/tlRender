@@ -25,14 +25,16 @@ namespace tl
             _layout->setMarginRole(ftk::SizeRole::MarginInside);
 
             auto hLayout = ftk::HorizontalLayout::create(context, _layout);
-            hLayout->setSpacingRole(ftk::SizeRole::SpacingTool);
+            hLayout->setSpacingRole(ftk::SizeRole::None);
             auto tmp = actions;
             auto reverseButton = ftk::ToolButton::create(context, tmp["Reverse"], hLayout);
             auto stopButton = ftk::ToolButton::create(context, tmp["Stop"], hLayout);
             auto forwardButton = ftk::ToolButton::create(context, tmp["Forward"], hLayout);
+            _loopWidget = ui::PlaybackLoopWidget::create(context, hLayout);
+            _loopWidget->setTooltip("Playback loop mode.");
 
             hLayout = ftk::HorizontalLayout::create(context, _layout);
-            hLayout->setSpacingRole(ftk::SizeRole::SpacingTool);
+            hLayout->setSpacingRole(ftk::SizeRole::None);
             auto startButton = ftk::ToolButton::create(context, tmp["Start"], hLayout);
             auto prevButton = ftk::ToolButton::create(context, tmp["Prev"], hLayout);
             prevButton->setRepeatClick(true);
@@ -60,6 +62,15 @@ namespace tl
                 context,
                 getTimeUnitsLabels(),
                 _layout);
+
+            _loopWidget->setCallback(
+                [this](Loop value)
+                {
+                    if (_player)
+                    {
+                        _player->setLoop(value);
+                    }
+                });
 
             _currentTimeEdit->setCallback(
                 [this](const OTIO_NS::RationalTime& value)
@@ -101,6 +112,13 @@ namespace tl
                     {
                         _durationLabel->setValue(value->getTimeRange().duration());
 
+                        _loopObserver = ftk::Observer<Loop>::create(
+                            value->observeLoop(),
+                            [this](Loop value)
+                            {
+                                _loopWidget->setLoop(value);
+                            });
+
                         _currentTimeObserver = ftk::Observer<OTIO_NS::RationalTime>::create(
                             value->observeCurrentTime(),
                             [this](const OTIO_NS::RationalTime& value)
@@ -127,16 +145,19 @@ namespace tl
                     }
                     else
                     {
+                        _loopWidget->setLoop(Loop::Loop);
                         _currentTimeEdit->setValue(invalidTime);
                         _durationLabel->setValue(invalidTime);
                         _speedMultLabel->setText("1X");
                         _speedMultLabel->setBackgroundRole(ftk::ColorRole::None);
 
+                        _loopObserver.reset();
                         _currentTimeObserver.reset();
                         _speedObserver.reset();
                         _speedMultObserver.reset();
                     }
 
+                    _loopWidget->setEnabled(value.get());
                     _currentTimeEdit->setEnabled(value.get());
                     _durationLabel->setEnabled(value.get());
                     _speedEdit->setEnabled(value.get());

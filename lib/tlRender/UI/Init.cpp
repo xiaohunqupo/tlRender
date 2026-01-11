@@ -42,6 +42,9 @@ namespace tl_resource
     extern std::vector<uint8_t> Info;
     extern std::vector<uint8_t> Magnify;
     extern std::vector<uint8_t> Messages;
+    extern std::vector<uint8_t> PlaybackLoop;
+    extern std::vector<uint8_t> PlaybackOnce;
+    extern std::vector<uint8_t> PlaybackPingPong;
     extern std::vector<uint8_t> PlaybackShuttle0;
     extern std::vector<uint8_t> PlaybackShuttle1;
     extern std::vector<uint8_t> PlaybackShuttle2;
@@ -95,6 +98,9 @@ namespace tl
             iconSystem->add("Info", tl_resource::Info);
             iconSystem->add("Magnify", tl_resource::Magnify);
             iconSystem->add("Messages", tl_resource::Messages);
+            iconSystem->add("PlaybackLoop", tl_resource::PlaybackLoop);
+            iconSystem->add("PlaybackOnce", tl_resource::PlaybackOnce);
+            iconSystem->add("PlaybackPingPong", tl_resource::PlaybackPingPong);
             iconSystem->add("PlaybackShuttle0", tl_resource::PlaybackShuttle0);
             iconSystem->add("PlaybackShuttle1", tl_resource::PlaybackShuttle1);
             iconSystem->add("PlaybackShuttle2", tl_resource::PlaybackShuttle2);
