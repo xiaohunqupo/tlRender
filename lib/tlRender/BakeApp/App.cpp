@@ -269,7 +269,6 @@ namespace tl
             ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
             offscreenBufferOptions.color = ftk::gl::offscreenColorDefault;
             _buffer = ftk::gl::OffscreenBuffer::create(_renderSize, offscreenBufferOptions);
-            _bufferFlip = ftk::gl::OffscreenBuffer::create(_renderSize, offscreenBufferOptions);
 
             // Create the writer.
             const std::string output = _cmdLine.output->getValue();
@@ -455,26 +454,14 @@ namespace tl
             _printProgress();
 
             // Render the video.
-            {
-                ftk::gl::OffscreenBufferBinding binding(_buffer);
-                _render->begin(_renderSize);
-                _render->setOCIOOptions(_ocioOptions);
-                _render->setLUTOptions(_lutOptions);
-                const auto videoData = _timeline->getVideo(_inputTime).future.get();
-                _render->drawVideo(
-                    { videoData },
-                    { ftk::Box2I(0, 0, _renderSize.w, _renderSize.h) });
-                _render->end();
-            }
-
-            // Flip the image.
-            ftk::gl::OffscreenBufferBinding binding(_bufferFlip);
+            ftk::gl::OffscreenBufferBinding binding(_buffer);
             _render->begin(_renderSize);
-            _render->setOCIOOptions(OCIOOptions());
-            _render->setLUTOptions(LUTOptions());
-            _render->drawTexture(
-                _buffer->getColorID(),
-                ftk::Box2I(0, 0, _renderSize.w, _renderSize.h));
+            _render->setOCIOOptions(_ocioOptions);
+            _render->setLUTOptions(_lutOptions);
+            const auto videoData = _timeline->getVideo(_inputTime).future.get();
+            _render->drawVideo(
+                { videoData },
+                { ftk::Box2I(0, 0, _renderSize.w, _renderSize.h) });
             _render->end();
 
             // Write the frame.

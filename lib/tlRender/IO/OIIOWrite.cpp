@@ -100,8 +100,8 @@ namespace tl
 
             const auto& info = image->getInfo();
             OIIO::ImageSpec oiioSpec(
-                image->getWidth(),
-                image->getHeight(),
+                info.size.w,
+                info.size.h,
                 ftk::getChannelCount(info.type),
                 toOIIO(info.type));
             for (const auto& tag : image->getTags())
@@ -131,11 +131,12 @@ namespace tl
             }
 
             // Write the image.
+            const size_t scanlineByteCount = oiioSpec.scanline_bytes();
             if (!oiioOutput->write_image(
                 oiioSpec.format,
-                image->getData(),
+                image->getData() + (info.size.h - 1) * scanlineByteCount,
                 OIIO::AutoStride,
-                -oiioSpec.scanline_bytes(),
+                -scanlineByteCount,
                 OIIO::AutoStride))
             {
                 throw std::runtime_error(OIIO::geterror());

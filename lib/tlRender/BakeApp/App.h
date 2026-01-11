@@ -111,7 +111,6 @@ namespace tl
             std::shared_ptr<IIOPlugin> _usdPlugin;
             std::shared_ptr<IRender> _render;
             std::shared_ptr<ftk::gl::OffscreenBuffer> _buffer;
-            std::shared_ptr<ftk::gl::OffscreenBuffer> _bufferFlip;
 
             std::shared_ptr<IWritePlugin> _writerPlugin;
             std::shared_ptr<IWrite> _writer;
