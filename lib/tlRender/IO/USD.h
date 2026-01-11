@@ -32,13 +32,13 @@ namespace tl
         //! USD options.
         struct TL_API_TYPE Options
         {
-            int renderWidth = 1920;
-            float complexity = 1.F;
-            usd::DrawMode drawMode = usd::DrawMode::ShadedSmooth;
-            bool enableLighting = true;
-            bool sRGB = true;
-            size_t stageCacheCount = 10;
-            size_t diskCacheGB = 0;
+            int           renderWidth     = 1920;
+            float         complexity      = 1.F;
+            usd::DrawMode drawMode        = usd::DrawMode::ShadedSmooth;
+            bool          enableLighting  = true;
+            bool          sRGB            = true;
+            size_t        stageCacheCount = 10;
+            size_t        diskCacheGB     = 0;
 
             TL_API bool operator == (const Options&) const;
             TL_API bool operator != (const Options&) const;
