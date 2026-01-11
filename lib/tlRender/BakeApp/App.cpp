@@ -285,10 +285,6 @@ namespace tl
                 _outputInfo.type = _cmdLine.outputPixelType->getValue();
             }
             _outputInfo = _writerPlugin->getInfo(_outputInfo);
-            if (ftk::ImageType::None == _outputInfo.type)
-            {
-                _outputInfo.type = ftk::ImageType::RGB_U8;
-            }
             _print(ftk::Format("Output info: {0} {1}").
                 arg(_outputInfo.size).
                 arg(_outputInfo.type));
@@ -473,7 +469,7 @@ namespace tl
             const GLenum type = ftk::gl::getReadPixelsType(_outputInfo.type);
             if (GL_NONE == format || GL_NONE == type)
             {
-                throw std::runtime_error(ftk::Format("Cannot open: \"{0}\"").arg(_cmdLine.output->getValue()));
+                throw std::runtime_error(ftk::Format("Cannot write: \"{0}\"").arg(_cmdLine.output->getValue()));
             }
             glReadPixels(
                 0,

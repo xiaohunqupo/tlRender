@@ -39,12 +39,10 @@ namespace tl
 
     ISeqWrite::ISeqWrite() :
         _p(new Private)
-    {
-    }
+    {}
 
     ISeqWrite::~ISeqWrite()
-    {
-    }
+    {}
 
     void ISeqWrite::writeVideo(
         const OTIO_NS::RationalTime& time,

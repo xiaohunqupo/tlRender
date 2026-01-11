@@ -642,14 +642,7 @@ namespace tl
         {
             ftk::ImageInfo out;
             out.size = info.size;
-            switch (info.type)
-            {
-            case ftk::ImageType::RGBA_F16:
-                out.type = info.type;
-                break;
-            default: break;
-            }
-            out.layout.mirror.y = true;
+            out.type = ftk::ImageType::RGBA_F16;
             return out;
         }
 

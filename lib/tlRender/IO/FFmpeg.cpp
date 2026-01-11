@@ -379,7 +379,9 @@ namespace tl
             case ftk::ImageType::RGBA_U16:
                 out.type = info.type;
                 break;
-            default: break;
+            default:
+                out.type = ftk::ImageType::RGBA_U8;
+                break;
             }
             return out;
         }
