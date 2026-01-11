@@ -62,8 +62,8 @@ namespace tl
                 const std::vector<std::string> tooltips =
                 {
                     "Loop playback continuously.",
-                    "Playback onece and stop.",
-                    "Playback forwards and reverse."
+                    "Playback once and stop.",
+                    "Playback forward and reverse."
                 };
                 for (size_t i = 0; i < icons.size(); ++i)
                 {

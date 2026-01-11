@@ -22,7 +22,6 @@ namespace tl_resource
     extern std::vector<uint8_t> CompareDifference;
     extern std::vector<uint8_t> CompareHorizontal;
     extern std::vector<uint8_t> CompareOverlay;
-    extern std::vector<uint8_t> Compare;
     extern std::vector<uint8_t> CompareTile;
     extern std::vector<uint8_t> CompareVertical;
     extern std::vector<uint8_t> CompareWipe;
@@ -78,7 +77,6 @@ namespace tl
             iconSystem->add("CompareDifference", tl_resource::CompareDifference);
             iconSystem->add("CompareHorizontal", tl_resource::CompareHorizontal);
             iconSystem->add("CompareOverlay", tl_resource::CompareOverlay);
-            iconSystem->add("Compare", tl_resource::Compare);
             iconSystem->add("CompareTile", tl_resource::CompareTile);
             iconSystem->add("CompareVertical", tl_resource::CompareVertical);
             iconSystem->add("CompareWipe", tl_resource::CompareWipe);

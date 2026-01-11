@@ -8,7 +8,6 @@ set(RESOURCES
     etc/Icons/CompareDifference.svg
     etc/Icons/CompareHorizontal.svg
     etc/Icons/CompareOverlay.svg
-    etc/Icons/Compare.svg
     etc/Icons/CompareTile.svg
     etc/Icons/CompareVertical.svg
     etc/Icons/CompareWipe.svg
