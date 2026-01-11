@@ -131,7 +131,12 @@ namespace tl
             }
 
             // Write the image.
-            if (!oiioOutput->write_image(oiioSpec.format, image->getData()))
+            if (!oiioOutput->write_image(
+                oiioSpec.format,
+                image->getData(),
+                OIIO::AutoStride,
+                -oiioSpec.scanline_bytes(),
+                OIIO::AutoStride))
             {
                 throw std::runtime_error(OIIO::geterror());
             }
