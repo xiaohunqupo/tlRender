@@ -84,7 +84,7 @@ namespace tl
             arg(info.channelCount).
             arg(1 == info.channelCount ? "channel" : "channels").
             arg(info.type).
-            arg(info.sampleRate);
+            arg(info.sampleRate / 1000);
     }
 
     Audio::Audio(const AudioInfo& info, size_t sampleCount) :
