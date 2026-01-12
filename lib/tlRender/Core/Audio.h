@@ -70,6 +70,9 @@ namespace tl
         bool operator != (const AudioInfo&) const;
     };
 
+    //! Get an audio information label.
+    std::string getLabel(const AudioInfo&);
+
     //! Audio data.
     class TL_API_TYPE Audio : public std::enable_shared_from_this<Audio>
     {

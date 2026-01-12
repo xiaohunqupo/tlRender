@@ -4,6 +4,7 @@
 #include <tlRender/Core/Audio.h>
 
 #include <ftk/Core/Error.h>
+#include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
 
 #include <array>
@@ -76,6 +77,15 @@ namespace tl
         type(type),
         sampleRate(sampleRate)
     {}
+
+    std::string getLabel(const AudioInfo& info)
+    {
+        return ftk::Format("{0} {1} {2} {3}kHz").
+            arg(info.channelCount).
+            arg(1 == info.channelCount ? "channel" : "channels").
+            arg(info.type).
+            arg(info.sampleRate);
+    }
 
     Audio::Audio(const AudioInfo& info, size_t sampleCount) :
         _info(info),
