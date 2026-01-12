@@ -226,7 +226,7 @@ namespace tl
                     std::stringstream ss;
                     ss.precision(1);
                     ss << std::fixed;
-                    ss << fileSampleRate / 1000.F << " kHz";
+                    ss << fileSampleRate / 1000.F << "kHz";
                     _tags["Audio Sample Rate"] = ss.str();
                 }
                 {
