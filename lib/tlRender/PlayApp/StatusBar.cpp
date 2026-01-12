@@ -111,11 +111,8 @@ namespace tl
                 if (!ioInfo.video.empty())
                 {
                     const auto& videoInfo = ioInfo.video.front();
-                    const std::string s = ftk::Format("video: {0}x{1}:{2} {3}").
-                        arg(videoInfo.size.w).
-                        arg(videoInfo.size.h).
-                        arg(videoInfo.getAspect(), 2).
-                        arg(videoInfo.type);
+                    const std::string s = ftk::Format("video: {0}").
+                        arg(ftk::getLabel(videoInfo));
                     text.push_back(s);
                     tooltip.push_back(s);
                 }
@@ -123,7 +120,7 @@ namespace tl
                 if (ioInfo.audio.isValid())
                 {
                     const std::string s = ftk::Format("audio: {0}").
-                        arg(getLabel(ioInfo.audio));
+                        arg(getLabel(ioInfo.audio, true));
                     text.push_back(s);
                     tooltip.push_back(s);
                 }

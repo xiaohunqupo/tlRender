@@ -71,7 +71,7 @@ namespace tl
     };
 
     //! Get an audio information label.
-    std::string getLabel(const AudioInfo&);
+    std::string getLabel(const AudioInfo&, bool minimal = false);
 
     //! Audio data.
     class TL_API_TYPE Audio : public std::enable_shared_from_this<Audio>

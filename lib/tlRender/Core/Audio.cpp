@@ -78,13 +78,18 @@ namespace tl
         sampleRate(sampleRate)
     {}
 
-    std::string getLabel(const AudioInfo& info)
+    std::string getLabel(const AudioInfo& info, bool minimal)
     {
-        return ftk::Format("{0} {1} {2} {3}kHz").
-            arg(info.channelCount).
-            arg(1 == info.channelCount ? "channel" : "channels").
-            arg(info.type).
-            arg(info.sampleRate / 1000);
+        return minimal ?
+            ftk::Format("{0}ch {1} {2}kHz").
+                arg(info.channelCount).
+                arg(info.type).
+                arg(info.sampleRate / 1000) :
+            ftk::Format("{0} {1} {2} {3}kHz").
+                arg(info.channelCount).
+                arg(1 == info.channelCount ? "channel" : "channels").
+                arg(info.type).
+                arg(info.sampleRate / 1000);
     }
 
     Audio::Audio(const AudioInfo& info, size_t sampleCount) :
