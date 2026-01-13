@@ -387,7 +387,7 @@ namespace tl
 
                 if (p.buffers["overlay"])
                 {
-                    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
                     const ftk::Size2I renderSize = getRenderSize();
                     const ftk::Box2I viewport = getViewport();
