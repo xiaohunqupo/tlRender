@@ -51,9 +51,9 @@ namespace tl
 
             // Create the viewport.
             _viewport = ui::Viewport::create(context);
-            //BackgroundOptions bgOptions;
-            //bgOptions.type = Background::Gradient;
-            //_viewport->setBackgroundOptions(bgOptions);
+            BackgroundOptions bgOptions;
+            bgOptions.type = Background::Gradient;
+            _viewport->setBackgroundOptions(bgOptions);
             //ForegroundOptions fgOptions;
             //fgOptions.grid.enabled = true;
             //fgOptions.grid.size = 1;
@@ -61,14 +61,16 @@ namespace tl
             //fgOptions.grid.lineWidth = 10;
             //fgOptions.outline.enabled = true;
             //_viewport->setForegroundOptions(fgOptions);
-            ftk::ImageOptions imageOptions;
-            imageOptions.imageFilters.minify = ftk::ImageFilter::Nearest;
-            imageOptions.imageFilters.magnify = ftk::ImageFilter::Nearest;
-            _viewport->setImageOptions({ imageOptions });
-            DisplayOptions displayOptions;
-            displayOptions.imageFilters.minify = ftk::ImageFilter::Nearest;
-            displayOptions.imageFilters.magnify = ftk::ImageFilter::Nearest;
-            _viewport->setDisplayOptions({ displayOptions });
+            //ftk::ImageOptions imageOptions;
+            //imageOptions.imageFilters.minify = ftk::ImageFilter::Nearest;
+            //imageOptions.imageFilters.magnify = ftk::ImageFilter::Nearest;
+            //imageOptions.alphaBlend = ftk::AlphaBlend::None;
+            //_viewport->setImageOptions({ imageOptions, imageOptions });
+            //DisplayOptions displayOptions;
+            //displayOptions.imageFilters.minify = ftk::ImageFilter::Nearest;
+            //displayOptions.imageFilters.magnify = ftk::ImageFilter::Nearest;
+            //_viewport->setDisplayOptions({ displayOptions, displayOptions });
+            _viewport->setColorBuffer(ftk::ImageType::RGBA_F32);
 
             // Create the timeline.
             _timelineWidget = ui::TimelineWidget::create(
@@ -159,6 +161,7 @@ namespace tl
                 {
                     CompareOptions options;
                     options.compare = value;
+                    options.overlay = .5F;
                     _viewport->setCompareOptions(options);
                 });
         }

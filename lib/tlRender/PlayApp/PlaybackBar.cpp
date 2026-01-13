@@ -42,10 +42,11 @@ namespace tl
             nextButton->setRepeatClick(true);
             auto endButton = ftk::ToolButton::create(context, tmp["End"], hLayout);
 
-            _currentTimeEdit = ui::TimeEdit::create(context, app->getTimeUnitsModel(), _layout);
+            auto timeUnitsModel = app->getTimeUnitsModel();
+            _currentTimeEdit = ui::TimeEdit::create(context, timeUnitsModel, _layout);
             _currentTimeEdit->setTooltip("The current time.");
 
-            _durationLabel = ui::TimeLabel::create(context, app->getTimeUnitsModel(), _layout);
+            _durationLabel = ui::TimeLabel::create(context, timeUnitsModel, _layout);
             _durationLabel->setTooltip("The timeline duration.");
 
             _speedEdit = ftk::DoubleEdit::create(context, _layout);
@@ -58,10 +59,8 @@ namespace tl
             _speedMultLabel->setHMarginRole(ftk::SizeRole::MarginInside);
             _speedMultLabel->setTooltip("Playback speed multiplier.");
 
-            _timeUnitsComboBox = ftk::ComboBox::create(
-                context,
-                getTimeUnitsLabels(),
-                _layout);
+            _timeUnitsWidget = ui::TimeUnitsWidget::create(context, timeUnitsModel, _layout);
+            _timeUnitsWidget->setTooltip("Set the time units.");
 
             _loopWidget->setCallback(
                 [this](Loop value)
@@ -88,17 +87,6 @@ namespace tl
                     if (_player)
                     {
                         _player->setSpeed(value);
-                    }
-                });
-
-            std::weak_ptr<App> appWeak(app);
-            _timeUnitsComboBox->setIndexCallback(
-                [appWeak](int value)
-                {
-                    if (auto app = appWeak.lock())
-                    {
-                        app->getTimeUnitsModel()->setTimeUnits(
-                            static_cast<TimeUnits>(value));
                     }
                 });
 
@@ -162,13 +150,6 @@ namespace tl
                     _durationLabel->setEnabled(value.get());
                     _speedEdit->setEnabled(value.get());
                     _speedMultLabel->setEnabled(value.get());
-                });
-
-            _timeUnitsObserver = ftk::Observer<TimeUnits>::create(
-                app->getTimeUnitsModel()->observeTimeUnits(),
-                [this](TimeUnits value)
-                {
-                    _timeUnitsComboBox->setCurrentIndex(static_cast<int>(value));
                 });
         }
 

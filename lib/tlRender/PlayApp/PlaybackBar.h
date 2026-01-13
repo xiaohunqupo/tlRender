@@ -6,6 +6,7 @@
 #include <tlRender/UI/PlaybackLoopWidget.h>
 #include <tlRender/UI/TimeEdit.h>
 #include <tlRender/UI/TimeLabel.h>
+#include <tlRender/UI/TimeUnitsWidget.h>
 
 #include <tlRender/Timeline/Player.h>
 #include <tlRender/Timeline/TimeUnits.h>
@@ -56,14 +57,13 @@ namespace tl
             std::shared_ptr<ui::TimeLabel> _durationLabel;
             std::shared_ptr<ftk::DoubleEdit> _speedEdit;
             std::shared_ptr<ftk::Label> _speedMultLabel;
-            std::shared_ptr<ftk::ComboBox> _timeUnitsComboBox;
+            std::shared_ptr<ui::TimeUnitsWidget> _timeUnitsWidget;
 
             std::shared_ptr<ftk::Observer<std::shared_ptr<Player> > > _playerObserver;
             std::shared_ptr<ftk::Observer<Loop> > _loopObserver;
             std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > _currentTimeObserver;
             std::shared_ptr<ftk::Observer<double> > _speedObserver;
             std::shared_ptr<ftk::Observer<double> > _speedMultObserver;
-            std::shared_ptr<ftk::Observer<TimeUnits> > _timeUnitsObserver;
         };
     }
 }
