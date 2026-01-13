@@ -711,7 +711,8 @@ namespace tl
             if (p.buffer)
             {
                 ftk::AlphaBlend alphaBlend = ftk::AlphaBlend::Straight;
-                if (!p.imageOptions->isEmpty())
+                if (!p.imageOptions->isEmpty() &&
+                    p.imageOptions->getItem(0).alphaBlend != ftk::AlphaBlend::None)
                 {
                     alphaBlend = p.imageOptions->getItem(0).alphaBlend;
                 }
