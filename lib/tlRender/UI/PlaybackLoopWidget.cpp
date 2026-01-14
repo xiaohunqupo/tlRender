@@ -124,6 +124,7 @@ namespace tl
             FTK_P();
 
             p.button = ftk::ToolButton::create(context, shared_from_this());
+            p.button->setPopupIcon(true);
 
             _widgetUpdate();
 
