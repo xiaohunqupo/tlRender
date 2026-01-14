@@ -73,7 +73,7 @@ namespace tl
         return out;
     }
 
-    std::vector<std::string> getLUTFormatExtensions()
+    std::vector<std::string> getLUTFormatExts()
     {
         std::vector<std::string> out;
 #if defined(TLRENDER_OCIO)

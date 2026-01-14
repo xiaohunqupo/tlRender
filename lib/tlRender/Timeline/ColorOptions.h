@@ -68,7 +68,7 @@ namespace tl
     TL_API std::vector<std::string> getLUTFormatNames();
 
     //! Get the list of LUT format file extensions.
-    TL_API std::vector<std::string> getLUTFormatExtensions();
+    TL_API std::vector<std::string> getLUTFormatExts();
 
     //! \name Serialize
     ///@{

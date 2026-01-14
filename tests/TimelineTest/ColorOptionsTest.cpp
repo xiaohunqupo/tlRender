@@ -25,15 +25,11 @@ namespace tl
         {
             {
                 _enum<OCIOConfig>("OCIOConfig", getOCIOConfigEnums);
-            }
-            {
                 _enum<LUTOrder>("LUTOrder", getLUTOrderEnums);
             }
             {
-                _print("LUT format names: " + ftk::join(getLUTFormatNames(), ", "));
-            }
-            {
-                _print("LUT format extensions: " + ftk::join(getLUTFormatExtensions(), ", "));
+                _print("LUT formats: " + ftk::join(getLUTFormatNames(), ", "));
+                _print("LUT format extensions: " + ftk::join(getLUTFormatExts(), ", "));
             }
             {
                 OCIOOptions a;

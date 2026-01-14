@@ -27,7 +27,6 @@
 #endif // TLRENDER_OIIO
 
 #include <CoreTest/AudioTest.h>
-#include <CoreTest/ColorTest.h>
 #include <CoreTest/HDRTest.h>
 #include <CoreTest/TimeTest.h>
 #include <CoreTest/URLTest.h>
@@ -47,7 +46,6 @@ void coreTests(
     const std::shared_ptr<ftk::Context>& context)
 {
     tests.push_back(core_tests::AudioTest::create(context));
-    tests.push_back(core_tests::ColorTest::create(context));
     tests.push_back(core_tests::HDRTest::create(context));
     tests.push_back(core_tests::TimeTest::create(context));
     tests.push_back(core_tests::URLTest::create(context));
@@ -117,7 +115,6 @@ int main(int argc, char* argv[])
     context->tick();
 
     std::vector<std::shared_ptr<tests::ITest> > tests;
-    //tests.push_back(core_tests::ColorTest::create(context));
     coreTests(tests, context);
     ioTests(tests, context);
     timelineTests(tests, context);
