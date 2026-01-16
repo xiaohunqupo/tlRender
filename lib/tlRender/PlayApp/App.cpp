@@ -175,7 +175,7 @@ namespace tl
             //fgOptions.grid.lineWidth = 10;
             fgOptions.outline.enabled = true;
             _bmdOutputDevice->setForegroundOptions(fgOptions);*/
-            _bmdOutputDevice->setEnabled(true);
+            //_bmdOutputDevice->setEnabled(true);
 #endif // TLRENDER_BMD
 
             // Create the main window.

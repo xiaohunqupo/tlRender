@@ -92,16 +92,28 @@ namespace tl
                 arg(info.sampleRate / 1000);
     }
 
+    namespace
+    {
+        std::atomic<size_t> objectCount = 0;
+        std::atomic<size_t> totalByteCount = 0;
+    }
+
     Audio::Audio(const AudioInfo& info, size_t sampleCount) :
         _info(info),
         _sampleCount(sampleCount),
         _byteCount(info.getByteCount()* _sampleCount),
         _data(new uint8_t[_byteCount])
-    {}
+    {
+        ++objectCount;
+        totalByteCount += _byteCount;
+    }
 
     Audio::~Audio()
     {
         delete[] _data;
+
+        --objectCount;
+        totalByteCount -= _byteCount;
     }
 
     std::shared_ptr<Audio> Audio::create(
@@ -114,6 +126,16 @@ namespace tl
     void Audio::zero()
     {
         std::memset(_data, 0, _byteCount);
+    }
+
+    size_t Audio::getObjectCount()
+    {
+        return objectCount;
+    }
+
+    size_t Audio::getTotalByteCount()
+    {
+        return totalByteCount;
     }
 
     std::shared_ptr<Audio> combineAudio(const std::list<std::shared_ptr<Audio> >& chunks)

@@ -325,10 +325,10 @@ namespace tl
                 const auto& device = devices[i];
                 {
                     std::stringstream ss;
-                    ss << "    Device: " << device.id.number << " " << device.id.name << "\n" <<
-                        "        Channels: " << device.info.channelCount << "\n" <<
-                        "        Type: " << device.info.type << "\n" <<
-                        "        Sample rate: " << device.info.sampleRate;
+                    ss << "    Device " << device.id.number << ": " << device.id.name << "\n" <<
+                        "    * Channels: " << device.info.channelCount << "\n" <<
+                        "    * Type: " << device.info.type << "\n" <<
+                        "    * Sample rate: " << device.info.sampleRate;
                     log.push_back(ss.str());
                 }
             }
@@ -339,10 +339,10 @@ namespace tl
             p.thread.defaultDevice = defaultDevice;
 
             std::stringstream ss;
-            ss << "Default device: " << defaultDevice.id.number << " " << defaultDevice.id.name << "\n" <<
-                "    Channels: " << defaultDevice.info.channelCount << "\n" <<
-                "    Type: " << defaultDevice.info.type << "\n" <<
-                "    Sample rate: " << defaultDevice.info.sampleRate;
+            ss << "\n    Default device " << defaultDevice.id.number << ": " << defaultDevice.id.name << "\n" <<
+                "    * Channels: " << defaultDevice.info.channelCount << "\n" <<
+                "    * Type: " << defaultDevice.info.type << "\n" <<
+                "    * Sample rate: " << defaultDevice.info.sampleRate;
             _log(ss.str());
         }
 

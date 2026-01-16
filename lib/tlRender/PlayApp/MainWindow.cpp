@@ -51,9 +51,9 @@ namespace tl
 
             // Create the viewport.
             _viewport = ui::Viewport::create(context);
-            BackgroundOptions bgOptions;
-            bgOptions.type = Background::Gradient;
-            _viewport->setBackgroundOptions(bgOptions);
+            //BackgroundOptions bgOptions;
+            //bgOptions.type = Background::Gradient;
+            //_viewport->setBackgroundOptions(bgOptions);
             //ForegroundOptions fgOptions;
             //fgOptions.grid.enabled = true;
             //fgOptions.grid.size = 1;

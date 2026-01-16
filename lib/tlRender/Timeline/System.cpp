@@ -29,7 +29,7 @@ namespace tl
         {
             s.push_back(ftk::Format("    * {0}: {1}").arg(lutNames[i]).arg(lutExts[i]));
         }
-        _log(ftk::Format("Supported LUT formats:\n{0}").arg(ftk::join(s, '\n')));
+        _log(ftk::Format("\n    Supported LUT formats:\n{0}").arg(ftk::join(s, '\n')));
     }
 
     System::~System()

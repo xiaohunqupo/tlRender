@@ -213,7 +213,7 @@ namespace tl
                         }
                         extensions[extension] = FileType::Media;
                     }
-                    formatLog.push_back(ftk::Format("    {0}: {1}").arg(avInputFormat->name).arg(avInputFormat->extensions));
+                    formatLog.push_back(ftk::Format("{0} ({1})").arg(avInputFormat->name).arg(avInputFormat->extensions));
                 }
             }
             //! \bug Why aren't these in the list of input formats?
@@ -229,10 +229,12 @@ namespace tl
 
             logSystem->print(
                 "tl::ffmpeg::ReadPlugin",
-                "Codecs: " + ftk::join(p.codecNames, ", "));
-            logSystem->print(
-                "tl::ffmpeg::ReadPlugin",
-                "Formats:\n" + ftk::join(formatLog, '\n'));
+                ftk::Format(
+                    "\n"
+                    "    * Codecs: {0}\n"
+                    "    * Formats: {1}").
+                arg(ftk::join(p.codecNames, ", ")).
+                arg(ftk::join(formatLog, ", ")));
         }
 
         ReadPlugin::ReadPlugin() :
@@ -327,7 +329,7 @@ namespace tl
                         }                            
                         extensions[extension] = FileType::Media;
                     }
-                    formatLog.push_back(ftk::Format("    {0}: {1}").arg(avOutputFormat->name).arg(avOutputFormat->extensions));
+                    formatLog.push_back(ftk::Format("{0} ({1})").arg(avOutputFormat->name).arg(avOutputFormat->extensions));
                 }
             }
 
@@ -340,10 +342,12 @@ namespace tl
 
             logSystem->print(
                 "tl::ffmpeg::WritePlugin",
-                "Codecs: " + ftk::join(p.codecNames, ", "));
-            logSystem->print(
-                "tl::ffmpeg::WritePlugin",
-                "Formats:\n" + ftk::join(formatLog, '\n'));
+                ftk::Format(
+                    "\n"
+                    "    * Codecs: {0}\n"
+                    "    * Formats: {1}").
+                arg(ftk::join(p.codecNames, ", ")).
+                arg(ftk::join(formatLog, ", ")));
         }
 
         WritePlugin::WritePlugin() :

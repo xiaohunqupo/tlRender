@@ -92,7 +92,7 @@ namespace tl
         p.timeRange = timeline->getTimeRange();
         p.ioInfo = timeline->getIOInfo();
 
-        // Create observers.
+        // Create obesrvables.
         p.speed = ftk::Observable<double>::create(p.timeRange.duration().rate());
         p.speedMult = ftk::Observable<double>::create(1.0);
         p.playback = ftk::Observable<Playback>::create(Playback::Stop);
@@ -119,6 +119,8 @@ namespace tl
         p.cacheInfo = ftk::Observable<PlayerCacheInfo>::create();
         auto audioSystem = context->getSystem<AudioSystem>();
         auto weak = std::weak_ptr<Player>(shared_from_this());
+
+        // Create observers.
         p.audioDevicesObserver = ftk::ListObserver<AudioDeviceInfo>::create(
             audioSystem->observeDevices(),
             [weak](const std::vector<AudioDeviceInfo>&)

@@ -229,7 +229,7 @@ namespace tl
                     "tl::usd::Render",
                     ftk::Format(
                         "\n"
-                        "    Renderers: {0}").
+                        "    * Renderers: {0}").
                     arg(ftk::join(renderers, ", ")));
             }
         }
@@ -493,11 +493,11 @@ namespace tl
                         "tl::usd::Render",
                         ftk::Format(
                             "\n"
-                            "    File name: {0}\n"
-                            "    Time code: {1}-{2}:{3}\n"
-                            "    GPU enabled: {4}\n"
-                            "    Renderer ID: {5}\n"
-                            "    Renderer AOVs available: {6}").
+                            "    * File name: {0}\n"
+                            "    * Time code: {1}-{2}:{3}\n"
+                            "    * GPU enabled: {4}\n"
+                            "    * Renderer ID: {5}\n"
+                            "    * Renderer AOVs available: {6}").
                         arg(fileName).
                         arg(stage->GetStartTimeCode()).
                         arg(stage->GetEndTimeCode()).
@@ -581,8 +581,8 @@ namespace tl
                             "tl::usd::Render",
                             ftk::Format(
                                 "\n"
-                                "    Temp directory: {0}\n"
-                                "    Disk cache: {1}GB").
+                                "    * Temp directory: {0}\n"
+                                "    * Disk cache: {1}GB").
                             arg(p.thread.tmpDir->getPath()).
                             arg(diskCacheByteCount / ftk::gigabyte));
                     }
@@ -928,9 +928,9 @@ namespace tl
                                 "tl::usd::Render",
                                 ftk::Format(
                                     "\n"
-                                    "    Requests: {0}\n"
-                                    "    Stage cache: {1}/{2}\n"
-                                    "    Disk cache: {3}/{4}GB").
+                                    "    * Requests: {0}\n"
+                                    "    * Stage cache: {1}/{2}\n"
+                                    "    * Disk cache: {3}/{4}GB").
                                 arg(requestsSize).
                                 arg(p.thread.stageCache.getSize()).
                                 arg(p.thread.stageCache.getMax()).

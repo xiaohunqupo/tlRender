@@ -188,11 +188,11 @@ namespace tl
                                         "tl::bmd::System",
                                         ftk::Format(
                                             "\n"
-                                            "    {0}\n"
-                                            "        Display modes: {1}\n"
-                                            "        Min video preroll: {2}\n"
-                                            "        HDR metadata: {3}\n"
-                                            "        Max audio channels: {4}").
+                                            "    Device: {0}\n"
+                                            "    * Display modes: {1}\n"
+                                            "    * Min video preroll: {2}\n"
+                                            "    * HDR metadata: {3}\n"
+                                            "    * Max audio channels: {4}").
                                         arg(i.name).
                                         arg(ftk::join(displayModes, ", ")).
                                         arg(i.minVideoPreroll).
