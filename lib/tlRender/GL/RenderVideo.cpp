@@ -705,15 +705,16 @@ namespace tl
                                     glViewport(0, 0, offscreenBufferSize.w, offscreenBufferSize.h);
                                     glClearColor(0.F, 0.F, 0.F, 0.F);
                                     glClear(GL_COLOR_BUFFER_BIT);
-                                    auto dissolveImageOptions = imageOptions.get() ? *imageOptions : layer.imageOptions;
-                                    dissolveImageOptions.alphaBlend = ftk::AlphaBlend::None;
+                                    auto imageOptionsTmp = imageOptions.get() ? *imageOptions : layer.imageOptions;
+                                    imageOptionsTmp.alphaBlend = ftk::AlphaBlend::None;
+                                    imageOptionsTmp.cache = false;
                                     IRender::drawImage(
                                         layer.image,
                                         getBox(
                                             layer.image->getAspect(),
                                             ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
                                         ftk::Color4F(1.F, 1.F, 1.F),
-                                        dissolveImageOptions);
+                                        imageOptionsTmp);
                                 }
                                 if (p.buffers["dissolve2"])
                                 {
@@ -721,15 +722,16 @@ namespace tl
                                     glViewport(0, 0, offscreenBufferSize.w, offscreenBufferSize.h);
                                     glClearColor(0.F, 0.F, 0.F, 0.F);
                                     glClear(GL_COLOR_BUFFER_BIT);
-                                    auto dissolveImageOptions = imageOptions.get() ? *imageOptions : layer.imageOptionsB;
-                                    dissolveImageOptions.alphaBlend = ftk::AlphaBlend::None;
+                                    auto imageOptionsTmp = imageOptions.get() ? *imageOptions : layer.imageOptionsB;
+                                    imageOptionsTmp.alphaBlend = ftk::AlphaBlend::None;
+                                    imageOptionsTmp.cache = false;
                                     IRender::drawImage(
                                         layer.imageB,
                                         getBox(
                                             layer.imageB->getAspect(),
                                             ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
                                         ftk::Color4F(1.F, 1.F, 1.F),
-                                        dissolveImageOptions);
+                                        imageOptionsTmp);
                                 }
                                 if (p.buffers["dissolve"] && p.buffers["dissolve2"])
                                 {
@@ -760,36 +762,42 @@ namespace tl
                             }
                             else if (layer.image)
                             {
+                                auto imageOptionsTmp = imageOptions.get() ? *imageOptions : layer.imageOptions;
+                                imageOptionsTmp.cache = false;
                                 IRender::drawImage(
                                     layer.image,
                                     getBox(
                                         layer.image->getAspect(),
                                         ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
                                     ftk::Color4F(1.F, 1.F, 1.F, 1.F - layer.transitionValue),
-                                    imageOptions.get() ? *imageOptions : layer.imageOptions);
+                                    imageOptionsTmp);
                             }
                             else if (layer.imageB)
                             {
+                                auto imageOptionsTmp = imageOptions.get() ? *imageOptions : layer.imageOptionsB;
+                                imageOptionsTmp.cache = false;
                                 IRender::drawImage(
                                     layer.imageB,
                                     getBox(
                                         layer.imageB->getAspect(),
                                         ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
                                     ftk::Color4F(1.F, 1.F, 1.F, layer.transitionValue),
-                                    imageOptions.get() ? *imageOptions : layer.imageOptionsB);
+                                    imageOptionsTmp);
                             }
                             break;
                         }
                     default:
                         if (layer.image)
                         {
+                            auto imageOptionsTmp = imageOptions.get() ? *imageOptions : layer.imageOptions;
+                            imageOptionsTmp.cache = false;
                             IRender::drawImage(
                                 layer.image,
                                 getBox(
                                     layer.image->getAspect(),
                                     ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
                                 ftk::Color4F(1.F, 1.F, 1.F),
-                                imageOptions.get() ? *imageOptions : layer.imageOptions);
+                                imageOptionsTmp);
                         }
                         break;
                     }
