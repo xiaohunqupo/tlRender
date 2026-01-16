@@ -237,11 +237,11 @@ namespace tl
         {
             {
                 std::stringstream ss;
-                ss << "Opening audio device: " << id.number << " " << id.name << "\n" <<
-                    "    buffer frames: " << playerOptions.audioBufferFrameCount << "\n" <<
-                    "    channels: " << audioInfo.channelCount << "\n" <<
-                    "    type: " << audioInfo.type << "\n" <<
-                    "    sample rate: " << audioInfo.sampleRate;
+                ss << "Opening audio device " << id.number << ": " << id.name << "\n" <<
+                    "    * Buffer frames: " << playerOptions.audioBufferFrameCount << "\n" <<
+                    "    * Channels: " << audioInfo.channelCount << "\n" <<
+                    "    * Type: " << audioInfo.type << "\n" <<
+                    "    * Sample rate: " << audioInfo.sampleRate;
                 context->log("tl::Player", ss.str());
             }
 
@@ -284,10 +284,10 @@ namespace tl
 #endif // TLRENDER_SDL2
                 {
                     std::stringstream ss;
-                    ss << "Audio device: " << id.number << " " << id.name << "\n" <<
-                    "    channels: " << audioInfo.channelCount << "\n" <<
-                    "    type: " << audioInfo.type << "\n" <<
-                    "    sample rate: " << audioInfo.sampleRate;
+                    ss << "Audio device " << id.number << ": " << id.name << "\n" <<
+                    "    * Channels: " << audioInfo.channelCount << "\n" <<
+                    "    * Type: " << audioInfo.type << "\n" <<
+                    "    * Sample rate: " << audioInfo.sampleRate;
                     context->log("tl::Player", ss.str());
                 }
 

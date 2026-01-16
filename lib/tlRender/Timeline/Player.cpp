@@ -70,17 +70,17 @@ namespace tl
         {
             std::vector<std::string> lines;
             lines.push_back(std::string());
-            lines.push_back(ftk::Format("    Video cache: {0}GB").
+            lines.push_back(ftk::Format("    * Video cache: {0}GB").
                 arg(playerOptions.cache.videoGB));
-            lines.push_back(ftk::Format("    Audio cache: {0}GB").
+            lines.push_back(ftk::Format("    * Audio cache: {0}GB").
                 arg(playerOptions.cache.audioGB));
-            lines.push_back(ftk::Format("    Cache read behind: {0}").
+            lines.push_back(ftk::Format("    * Cache read behind: {0}").
                 arg(playerOptions.cache.readBehind));
-            lines.push_back(ftk::Format("    Audio buffer frame count: {0}").
+            lines.push_back(ftk::Format("    * Audio buffer frame count: {0}").
                 arg(playerOptions.audioBufferFrameCount));
-            lines.push_back(ftk::Format("    Mute timeout: {0}ms").
+            lines.push_back(ftk::Format("    * Mute timeout: {0}ms").
                 arg(playerOptions.muteTimeout.count()));
-            lines.push_back(ftk::Format("    Sleep timeout: {0}ms").
+            lines.push_back(ftk::Format("    * Sleep timeout: {0}ms").
                 arg(playerOptions.sleepTimeout.count()));
             logSystem->print(
                 ftk::Format("tl::Player {0}").arg(this),

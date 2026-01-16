@@ -211,7 +211,7 @@ namespace tl
 
     std::chrono::milliseconds AudioSystem::getTickTime() const
     {
-        return std::chrono::milliseconds(500);
+        return std::chrono::milliseconds(2000);
     }
 
     namespace
@@ -313,7 +313,6 @@ namespace tl
 
         const std::vector<AudioDeviceInfo> devices = _getDevices();
         const AudioDeviceInfo defaultDevice = _getDefaultDevice();
-
         if (devices != p.thread.devices)
         {
             p.thread.devices = devices;
@@ -339,7 +338,8 @@ namespace tl
             p.thread.defaultDevice = defaultDevice;
 
             std::stringstream ss;
-            ss << "\n    Default device " << defaultDevice.id.number << ": " << defaultDevice.id.name << "\n" <<
+            ss << "\n" <<
+                "    Default device " << defaultDevice.id.number << ": " << defaultDevice.id.name << "\n" <<
                 "    * Channels: " << defaultDevice.info.channelCount << "\n" <<
                 "    * Type: " << defaultDevice.info.type << "\n" <<
                 "    * Sample rate: " << defaultDevice.info.sampleRate;

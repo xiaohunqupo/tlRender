@@ -113,9 +113,9 @@ namespace tl
                     ftk::Format("tl::Timeline {0}").arg(this),
                     ftk::Format(
                     "\n"
-                    "    Path: {0}\n"
-                    "    Video requests: {1}, {2} in-progress, {3} max\n"
-                    "    Audio requests: {4}, {5} in-progress, {6} max").
+                    "    * Path: {0}\n"
+                    "    * Video requests: {1}, {2} in-progress, {3} max\n"
+                    "    * Audio requests: {4}, {5} in-progress, {6} max").
                     arg(path.get()).
                     arg(videoRequestsSize).
                     arg(thread.videoRequestsInProgress.size()).

@@ -30,27 +30,27 @@ namespace tl
         {
             std::vector<std::string> lines;
             lines.push_back(std::string());
-            lines.push_back(ftk::Format("    Image sequence audio: {0}").
+            lines.push_back(ftk::Format("    * Image sequence audio: {0}").
                 arg(options.imageSeqAudio));
-            lines.push_back(ftk::Format("    Image sequence audio extensions: {0}").
+            lines.push_back(ftk::Format("    * Image sequence audio extensions: {0}").
                 arg(ftk::join(options.imageSeqAudioExts, ", ")));
-            lines.push_back(ftk::Format("    Image sequence audio file name: {0}").
+            lines.push_back(ftk::Format("    * Image sequence audio file name: {0}").
                 arg(options.imageSeqAudioFileName));
-            lines.push_back(ftk::Format("    Compatability: {0}").
+            lines.push_back(ftk::Format("    * Compatability: {0}").
                 arg(options.compat));
-            lines.push_back(ftk::Format("    Video request max: {0}").
+            lines.push_back(ftk::Format("    * Video request max: {0}").
                 arg(options.videoRequestMax));
-            lines.push_back(ftk::Format("    Audio request max: {0}").
+            lines.push_back(ftk::Format("    * Audio request max: {0}").
                 arg(options.audioRequestMax));
-            lines.push_back(ftk::Format("    Request timeout: {0}ms").
+            lines.push_back(ftk::Format("    * Request timeout: {0}ms").
                 arg(options.requestTimeout.count()));
             for (const auto& i : options.ioOptions)
             {
-                lines.push_back(ftk::Format("    AV I/O {0}: {1}").
+                lines.push_back(ftk::Format("    * AV I/O {0}: {1}").
                     arg(i.first).
                     arg(i.second));
             }
-            lines.push_back(ftk::Format("    Path max number digits: {0}").
+            lines.push_back(ftk::Format("    * Path max number digits: {0}").
                 arg(options.pathOptions.seqMaxDigits));
             logSystem->print(
                 ftk::Format("tl::Timeline {0}").arg(this),
@@ -133,9 +133,9 @@ namespace tl
             ftk::Format("tl::Timeline {0}").arg(this),
             ftk::Format(
                 "\n"
-                "    Time range: {0}\n"
-                "    Video: {1} {2}\n"
-                "    Audio: {3} {4} {5}").
+                "    * Time range: {0}\n"
+                "    * Video: {1} {2}\n"
+                "    * Audio: {3} {4} {5}").
             arg(p.timeRange).
             arg(!p.ioInfo.video.empty() ? p.ioInfo.video[0].size : ftk::Size2I()).
             arg(!p.ioInfo.video.empty() ? p.ioInfo.video[0].type : ftk::ImageType::None).

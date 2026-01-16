@@ -9,12 +9,14 @@
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
+#include <ftk/Core/Timer.h>
 
 namespace tl
 {
     struct System::Private
     {
         std::vector<std::weak_ptr<Player> > players;
+        std::shared_ptr<ftk::Timer> logTimer;
     };
 
     System::System(const std::shared_ptr<ftk::Context>& context) :
@@ -22,6 +24,7 @@ namespace tl
         _p(new Private)
     {
         FTK_P();
+
         const auto lutNames = getLUTFormatNames();
         const auto lutExts = getLUTFormatExts();
         std::vector<std::string> s;
@@ -30,6 +33,18 @@ namespace tl
             s.push_back(ftk::Format("    * {0}: {1}").arg(lutNames[i]).arg(lutExts[i]));
         }
         _log(ftk::Format("\n    Supported LUT formats:\n{0}").arg(ftk::join(s, '\n')));
+
+        p.logTimer = ftk::Timer::create(context);
+        p.logTimer->setRepeating(true);
+        p.logTimer->start(
+            std::chrono::milliseconds(10000),
+            [this]
+            {
+                std::vector<std::string> s;
+                s.push_back(ftk::Format("    * Audio count: {0}").arg(Audio::getObjectCount()));
+                s.push_back(ftk::Format("    * Audio byte count: {0}").arg(Audio::getTotalByteCount()));
+                _log("\n" + ftk::join(s, "\n"));
+            });
     }
 
     System::~System()

@@ -177,6 +177,7 @@ namespace tl
                     {
                         if (auto logSystem = _logSystem.lock())
                         {
+                            //! \todo How should this be handled?
                             logSystem->print(
                                 "tl::ffmpeg::Read",
                                 e.what(),
@@ -411,8 +412,8 @@ namespace tl
                             }
                             logSystem->print(id, ftk::Format(
                                 "\n"
-                                "    Path: {0}\n"
-                                "    Video requests: {1}").
+                                "    * Path: {0}\n"
+                                "    * Video requests: {1}").
                                 arg(_path.get()).
                                 arg(requestsSize));
                         }
@@ -521,8 +522,8 @@ namespace tl
                             }
                             logSystem->print(id, ftk::Format(
                                 "\n"
-                                "    Path: {0}\n"
-                                "    Audio requests: {1}").
+                                "    * Path: {0}\n"
+                                "    * Audio requests: {1}").
                                 arg(_path.get()).
                                 arg(requestsSize));
                         }
