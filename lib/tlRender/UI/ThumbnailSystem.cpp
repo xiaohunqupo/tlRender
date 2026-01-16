@@ -27,12 +27,12 @@ namespace tl
     {
         namespace
         {
-            const size_t ioCacheMax = 16;
+            const size_t ioCacheMax = 2;
         }
 
         struct ThumbnailCache::Private
         {
-            size_t max = 100;
+            size_t max = 16;
             ftk::LRUCache<std::string, IOInfo> info;
             ftk::LRUCache<std::string, std::shared_ptr<ftk::Image> > thumbnails;
             ftk::LRUCache<std::string, std::shared_ptr<ftk::TriMesh2F> > waveforms;
