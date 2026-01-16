@@ -21,8 +21,8 @@ namespace tl
         std::shared_ptr<ftk::Image> imageB;
         ftk::ImageOptions           imageOptionsB;
 
-        Transition transition = Transition::None;
-        float      transitionValue = 0.F;
+        Transition                  transition      = Transition::None;
+        float                       transitionValue = 0.F;
 
         TL_API bool operator == (const VideoLayer&) const;
         TL_API bool operator != (const VideoLayer&) const;
