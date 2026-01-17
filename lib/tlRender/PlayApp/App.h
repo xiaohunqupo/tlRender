@@ -13,6 +13,7 @@
 #include <ftk/UI/App.h>
 #include <ftk/UI/RecentFilesModel.h>
 #include <ftk/Core/CmdLine.h>
+#include <ftk/Core/Timer.h>
 
 namespace tl
 {
@@ -56,6 +57,7 @@ namespace tl
             struct CmdLine
             {
                 std::shared_ptr<ftk::CmdLineListArg<std::string> > inputs;
+                std::shared_ptr<ftk::CmdLineValueOption<int> > debugLoop;
             };
             CmdLine _cmdLine;
 
@@ -71,6 +73,9 @@ namespace tl
 #endif // TLRENDER_BMD
 
             std::shared_ptr<ftk::Observer<std::shared_ptr<Player> > > _playerObserver;
+
+            std::shared_ptr<ftk::Timer> _debugTimer;
+            int _debugInput = 0;
         };
     }
 }

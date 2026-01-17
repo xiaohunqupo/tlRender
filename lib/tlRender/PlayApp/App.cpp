@@ -27,27 +27,41 @@ namespace tl
                 "One or more timelines, movies, or image sequences.",
                 true);
 
+            // Command line options.
+            _cmdLine.debugLoop = ftk::CmdLineValueOption<int>::create(
+                { "-debugLoop" },
+                "Load the command line inputs in a loop. This value is the number of seconds for each cycle.",
+                "Testing",
+                10);
+
             ftk::App::_init(
                 context,
                 argv,
                 "tlplay",
                 "Example player application.",
-                { _cmdLine.inputs });
+                { _cmdLine.inputs },
+                { _cmdLine.debugLoop });
         }
 
         App::~App()
         {
-            std::vector<std::string> recentFiles;
-            for (const auto& i : _recentFilesModel->getRecent())
+            if (_settingsModel)
             {
-                recentFiles.push_back(i.u8string());
-            }
-            _settingsModel->set("/Files/Recent", recentFiles);
-            _settingsModel->set("/Files/RecentMax", _recentFilesModel->getRecentMax());
+                if (_recentFilesModel)
+                {
+                    std::vector<std::string> recentFiles;
+                    for (const auto& i : _recentFilesModel->getRecent())
+                    {
+                        recentFiles.push_back(i.u8string());
+                    }
+                    _settingsModel->set("/Files/Recent", recentFiles);
+                    _settingsModel->set("/Files/RecentMax", _recentFilesModel->getRecentMax());
+                }
 
-            _settingsModel->set(
-                "/TimeUnits",
-                to_string(_timeUnitsModel->getTimeUnits()));
+                _settingsModel->set(
+                    "/TimeUnits",
+                    to_string(_timeUnitsModel->getTimeUnits()));
+            }
         }
 
         std::shared_ptr<App> App::create(
@@ -201,6 +215,36 @@ namespace tl
                     path = ftk::expandSeq(path);
                 }
                 open(path);
+            }
+
+            if (_cmdLine.debugLoop->found() &&
+                !_cmdLine.inputs->getList().empty())
+            {
+                _debugTimer = ftk::Timer::create(_context);
+                _debugTimer->setRepeating(true);
+                _debugTimer->start(
+                    std::chrono::seconds(_cmdLine.debugLoop->getValue()),
+                    [this]
+                    {
+                        if (!_filesModel->observePlayers()->isEmpty())
+                        {
+                            _filesModel->closeAll();
+                        }
+                        else
+                        {
+                            ftk::Path path(_cmdLine.inputs->getList()[_debugInput]);
+                            if (path.hasSeqWildcard())
+                            {
+                                path = ftk::expandSeq(path);
+                            }
+                            open(path);
+                            ++_debugInput;
+                            if (_debugInput >= _cmdLine.inputs->getList().size())
+                            {
+                                _debugInput = 0;
+                            }
+                        }
+                    });
             }
 
             ftk::App::run();
