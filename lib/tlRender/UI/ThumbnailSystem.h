@@ -71,8 +71,14 @@ namespace tl
             //! Set the maximum cache size.
             TL_API void setMax(size_t);
 
-            //! Get the current cache size.
-            TL_API size_t getSize() const;
+            //! Get the current information size.
+            TL_API size_t getInfoSize() const;
+
+            //! Get the current thumbnail size.
+            TL_API size_t getThumbnailsSize() const;
+
+            //! Get the current waveform size.
+            TL_API size_t getWaveformsSize() const;
 
             //! Get the current cache size as a percentage.
             TL_API float getPercentage() const;

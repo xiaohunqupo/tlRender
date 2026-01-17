@@ -18,6 +18,7 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LRUCache.h>
 #include <ftk/Core/String.h>
+#include <ftk/Core/Timer.h>
 
 #include <sstream>
 
@@ -73,20 +74,33 @@ namespace tl
             _maxUpdate();
         }
 
-        size_t ThumbnailCache::getSize() const
+        size_t ThumbnailCache::getInfoSize() const
         {
             FTK_P();
             std::unique_lock<std::mutex> lock(p.mutex);
-            return p.info.getSize() + p.thumbnails.getSize() + p.waveforms.getSize();
+            return p.info.getSize();
+        }
+
+        size_t ThumbnailCache::getThumbnailsSize() const
+        {
+            FTK_P();
+            std::unique_lock<std::mutex> lock(p.mutex);
+            return p.thumbnails.getSize();
+        }
+
+        size_t ThumbnailCache::getWaveformsSize() const
+        {
+            FTK_P();
+            std::unique_lock<std::mutex> lock(p.mutex);
+            return p.waveforms.getSize();
         }
 
         float ThumbnailCache::getPercentage() const
         {
             FTK_P();
             std::unique_lock<std::mutex> lock(p.mutex);
-            return
-                (p.info.getSize() + p.thumbnails.getSize() + p.waveforms.getSize()) /
-                static_cast<float>(p.info.getMax() + p.thumbnails.getMax() + p.waveforms.getMax()) * 100.F;
+            const size_t averageSize = (p.info.getSize() + p.thumbnails.getSize() + p.waveforms.getSize()) / 3;
+            return averageSize / static_cast<float>(p.max) * 100.F;
         }
 
         std::string ThumbnailCache::getInfoKey(
@@ -316,6 +330,8 @@ namespace tl
                 std::atomic<bool> running;
             };
             WaveformThread waveformThread;
+
+            std::shared_ptr<ftk::Timer> logTimer;
         };
 
         void ThumbnailGenerator::_init(
@@ -400,6 +416,35 @@ namespace tl
                         p.waveformMutex.stopped = true;
                     }
                     _waveformCancel();
+                });
+
+            p.logTimer = ftk::Timer::create(context);
+            p.logTimer->setRepeating(true);
+            p.logTimer->start(
+                std::chrono::seconds(10),
+                [this]
+                {
+                    FTK_P();
+                    if (auto context = p.context.lock())
+                    {
+                        auto logSystem = context->getLogSystem();
+                        logSystem->print(
+                            "tl::ui::ThumbnailGenerator",
+                            ftk::Format(
+                                "\n"
+                                "    * Information: {0}/{1}\n"
+                                "    * Thumbnails: {2}/{3}\n"
+                                "    * Waveforms: {4}/{5}\n"
+                                "    * Percentage: {6}"
+                            ).
+                            arg(p.cache->getInfoSize()).
+                            arg(p.cache->getMax()).
+                            arg(p.cache->getThumbnailsSize()).
+                            arg(p.cache->getMax()).
+                            arg(p.cache->getWaveformsSize()).
+                            arg(p.cache->getMax()).
+                            arg(p.cache->getPercentage()));
+                    }
                 });
         }
 
