@@ -25,7 +25,7 @@ namespace tl
 {
     namespace
     {
-        const std::chrono::milliseconds timeout(1000);
+        const std::chrono::seconds timeout(3);
     }
 
     bool AudioDeviceID::operator == (const AudioDeviceID& other) const
@@ -211,7 +211,7 @@ namespace tl
 
     std::chrono::milliseconds AudioSystem::getTickTime() const
     {
-        return std::chrono::milliseconds(2000);
+        return timeout;
     }
 
     namespace

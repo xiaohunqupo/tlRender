@@ -27,6 +27,11 @@ namespace tl
 {
     namespace bmd
     {
+        namespace
+        {
+            const std::chrono::seconds timeout(3);
+        }
+
         struct System::Private
         {
             std::shared_ptr<ftk::ObservableList<DeviceInfo> > deviceInfo;
@@ -203,7 +208,7 @@ namespace tl
                         }
 
                         const auto t1 = std::chrono::steady_clock::now();
-                        ftk::sleep(std::chrono::milliseconds(1000), t0, t1);
+                        ftk::sleep(timeout, t0, t1);
                     }
 
 #if defined(_WINDOWS)
@@ -277,7 +282,7 @@ namespace tl
 
         std::chrono::milliseconds System::getTickTime() const
         {
-            return std::chrono::milliseconds(1);
+            return timeout;
         }
 
         void System::_addDevice(const std::shared_ptr<OutputDevice>& device)
