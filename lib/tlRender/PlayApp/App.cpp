@@ -238,6 +238,10 @@ namespace tl
                                 path = ftk::expandSeq(path);
                             }
                             open(path);
+                            if (auto player = _filesModel->observePlayer()->get())
+                            {
+                                player->forward();
+                            }
                             ++_debugInput;
                             if (_debugInput >= _cmdLine.inputs->getList().size())
                             {
