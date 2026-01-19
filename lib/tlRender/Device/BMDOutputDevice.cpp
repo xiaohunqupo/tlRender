@@ -1085,6 +1085,7 @@ namespace tl
                 {
                     ftk::ImageOptions imageOptions;
                     imageOptions.alphaBlend = ftk::AlphaBlend::Premultiplied;
+                    imageOptions.cache = false;
                     p.thread.render->drawImage(
                         p.thread.overlay,
                         ftk::Box2I(

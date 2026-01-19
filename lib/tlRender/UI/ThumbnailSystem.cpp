@@ -812,14 +812,16 @@ namespace tl
                                 {
                                     ftk::gl::OffscreenBufferBinding binding(p.thumbnailThread.buffer);
                                     p.thumbnailThread.render->begin(size);
+                                    ftk::ImageOptions imageOptions;
+                                    imageOptions.cache = false;
                                     p.thumbnailThread.render->IRender::drawImage(
                                         videoData.image,
-                                        ftk::Box2I(0, 0, size.w, size.h));
+                                        ftk::Box2I(0, 0, size.w, size.h),
+                                        ftk::Color4F(1.F, 1.F, 1.F),
+                                        imageOptions);
                                     p.thumbnailThread.render->end();
-                                    ftk::ImageInfo info(size.w,
-                                        size.h,
-                                        ftk::ImageType::RGBA_U8);
-                                    image = ftk::Image::create(info);
+                                    image = ftk::Image::create(
+                                        ftk::ImageInfo(size.w, size.h, ftk::ImageType::RGBA_U8));
                                     glPixelStorei(GL_PACK_ALIGNMENT, 1);
                                     glReadPixels(
                                         0,
