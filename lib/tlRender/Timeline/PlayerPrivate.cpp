@@ -505,111 +505,113 @@ namespace tl
         noAudio.start = time;
     }
 
-    void Player::Private::log(const std::shared_ptr<ftk::Context>& context)
+    void Player::Private::log()
     {
-        const std::string id = ftk::Format("tl::Player {0}").arg(this);
+        if (auto logSystem = this->logSystem.lock())
+        {
+            const std::string id = ftk::Format("tl::Player {0}").arg(this);
 
-        // Get values.
-        OTIO_NS::RationalTime currentTime = invalidTime;
-        OTIO_NS::TimeRange inOutRange = invalidTimeRange;
-        IOOptions ioOptions;
-        PlayerCacheInfo cacheInfo;
-        {
-            std::unique_lock<std::mutex> lock(mutex.mutex);
-            currentTime = mutex.state.currentTime;
-            inOutRange = mutex.state.inOutRange;
-            ioOptions = mutex.state.ioOptions;
-            cacheInfo = mutex.cacheInfo;
-        }
-        const size_t videoCacheMax = getVideoCacheMax();
-        const size_t videoCacheSize = thread.videoCache.size();
-        size_t audioCacheMax = getAudioCacheMax();
-        size_t audioCacheSize = 0;
-        {
-            std::unique_lock<std::mutex> lock(audioMutex.mutex);
-            audioCacheSize = audioMutex.cache.size();
-        }
-
-        // Create an array of characters to draw the timeline.
-        const size_t lineLength = 80;
-        std::string currentTimeDisplay(lineLength, '.');
-        double n = (currentTime - timeRange.start_time()).value() / timeRange.duration().value();
-        size_t index = ftk::clamp(n, 0.0, 1.0) * (lineLength - 1);
-        if (index < currentTimeDisplay.size())
-        {
-            currentTimeDisplay[index] = 'T';
-        }
-
-        // Create an array of characters to draw the cached video frames.
-        std::string cachedVideoFramesDisplay(lineLength, '.');
-        for (const auto& i : cacheInfo.video)
-        {
-            n = (i.start_time() - timeRange.start_time()).value() / timeRange.duration().value();
-            const size_t t0 = ftk::clamp(n, 0.0, 1.0) * (lineLength - 1);
-            n = (i.end_time_inclusive() - timeRange.start_time()).value() / timeRange.duration().value();
-            const size_t t1 = ftk::clamp(n, 0.0, 1.0) * (lineLength - 1);
-            for (size_t j = t0; j <= t1; ++j)
+            // Get values.
+            OTIO_NS::RationalTime currentTime = invalidTime;
+            OTIO_NS::TimeRange inOutRange = invalidTimeRange;
+            IOOptions ioOptions;
+            PlayerCacheInfo cacheInfo;
             {
-                if (j < cachedVideoFramesDisplay.size())
+                std::unique_lock<std::mutex> lock(mutex.mutex);
+                currentTime = mutex.state.currentTime;
+                inOutRange = mutex.state.inOutRange;
+                ioOptions = mutex.state.ioOptions;
+                cacheInfo = mutex.cacheInfo;
+            }
+            const size_t videoCacheMax = getVideoCacheMax();
+            const size_t videoCacheSize = thread.videoCache.size();
+            size_t audioCacheMax = getAudioCacheMax();
+            size_t audioCacheSize = 0;
+            {
+                std::unique_lock<std::mutex> lock(audioMutex.mutex);
+                audioCacheSize = audioMutex.cache.size();
+            }
+
+            // Create an array of characters to draw the timeline.
+            const size_t lineLength = 80;
+            std::string currentTimeDisplay(lineLength, '.');
+            double n = (currentTime - timeRange.start_time()).value() / timeRange.duration().value();
+            size_t index = ftk::clamp(n, 0.0, 1.0) * (lineLength - 1);
+            if (index < currentTimeDisplay.size())
+            {
+                currentTimeDisplay[index] = 'T';
+            }
+
+            // Create an array of characters to draw the cached video frames.
+            std::string cachedVideoFramesDisplay(lineLength, '.');
+            for (const auto& i : cacheInfo.video)
+            {
+                n = (i.start_time() - timeRange.start_time()).value() / timeRange.duration().value();
+                const size_t t0 = ftk::clamp(n, 0.0, 1.0) * (lineLength - 1);
+                n = (i.end_time_inclusive() - timeRange.start_time()).value() / timeRange.duration().value();
+                const size_t t1 = ftk::clamp(n, 0.0, 1.0) * (lineLength - 1);
+                for (size_t j = t0; j <= t1; ++j)
                 {
-                    cachedVideoFramesDisplay[j] = 'V';
+                    if (j < cachedVideoFramesDisplay.size())
+                    {
+                        cachedVideoFramesDisplay[j] = 'V';
+                    }
                 }
             }
-        }
 
-        // Create an array of characters to draw the cached audio frames.
-        std::string cachedAudioFramesDisplay(lineLength, '.');
-        for (const auto& i : cacheInfo.audio)
-        {
-            double n = (i.start_time() - timeRange.start_time()).value() / timeRange.duration().value();
-            const size_t t0 = ftk::clamp(n, 0.0, 1.0) * (lineLength - 1);
-            n = (i.end_time_inclusive() - timeRange.start_time()).value() / timeRange.duration().value();
-            const size_t t1 = ftk::clamp(n, 0.0, 1.0) * (lineLength - 1);
-            for (size_t j = t0; j <= t1; ++j)
+            // Create an array of characters to draw the cached audio frames.
+            std::string cachedAudioFramesDisplay(lineLength, '.');
+            for (const auto& i : cacheInfo.audio)
             {
-                if (j < cachedAudioFramesDisplay.size())
+                double n = (i.start_time() - timeRange.start_time()).value() / timeRange.duration().value();
+                const size_t t0 = ftk::clamp(n, 0.0, 1.0) * (lineLength - 1);
+                n = (i.end_time_inclusive() - timeRange.start_time()).value() / timeRange.duration().value();
+                const size_t t1 = ftk::clamp(n, 0.0, 1.0) * (lineLength - 1);
+                for (size_t j = t0; j <= t1; ++j)
                 {
-                    cachedAudioFramesDisplay[j] = 'A';
+                    if (j < cachedAudioFramesDisplay.size())
+                    {
+                        cachedAudioFramesDisplay[j] = 'A';
+                    }
                 }
             }
-        }
 
-        std::vector<std::string> ioOptionStrings;
-        for (const auto& i : ioOptions)
-        {
-            ioOptionStrings.push_back(ftk::Format("{0}:{1}").arg(i.first).arg(i.second));
-        }
+            std::vector<std::string> ioOptionStrings;
+            for (const auto& i : ioOptions)
+            {
+                ioOptionStrings.push_back(ftk::Format("{0}:{1}").arg(i.first).arg(i.second));
+            }
 
-        auto logSystem = context->getLogSystem();
-        logSystem->print(id, ftk::Format(
-            "\n"
-            "    * Path: {0}\n"
-            "    * Current time: {1}\n"
-            "    * In/out range: {2}\n"
-            "    * I/O options: {3}\n"
-            "    * Video cache: {4}% {5}GB\n"
-            "    * Audio cache: {6}% {7}GB\n"
-            "    * Read behind: {8}GB\n"
-            "    * Video requests: {9}\n"
-            "    * Audio requests: {10}\n"
-            "    {11}\n"
-            "    {12}\n"
-            "    {13}\n"
-            "    (T=current time, V=cached video, A=cached audio)").
-            arg(timeline->getPath().get()).
-            arg(currentTime).
-            arg(inOutRange).
-            arg(ftk::join(ioOptionStrings, ", ")).
-            arg(videoCacheMax > 0 ? (videoCacheSize / static_cast<double>(videoCacheMax) * 100.0) : 0.0).
-            arg(cacheOptions->get().videoGB).
-            arg(audioCacheMax > 0 ? (audioCacheSize / static_cast<double>(audioCacheMax) * 100.0) : 0.0).
-            arg(cacheOptions->get().audioGB).
-            arg(cacheOptions->get().readBehind).
-            arg(thread.videoRequests.size()).
-            arg(thread.audioRequests.size()).
-            arg(currentTimeDisplay).
-            arg(cachedVideoFramesDisplay).
-            arg(cachedAudioFramesDisplay));
+            logSystem->print(id, ftk::Format(
+                "\n"
+                "    * Path: {0}\n"
+                "    * Current time: {1}\n"
+                "    * In/out range: {2}\n"
+                "    * I/O options: {3}\n"
+                "    * Video cache: {4}% {5}GB\n"
+                "    * Audio cache: {6}% {7}GB\n"
+                "    * Read behind: {8}GB\n"
+                "    * Video requests: {9}\n"
+                "    * Audio requests: {10}\n"
+                "    {11}\n"
+                "    {12}\n"
+                "    {13}\n"
+                "    (T=current time, V=cached video, A=cached audio)").
+                arg(timeline->getPath().get()).
+                arg(currentTime).
+                arg(inOutRange).
+                arg(ftk::join(ioOptionStrings, ", ")).
+                arg(videoCacheMax > 0 ? (videoCacheSize / static_cast<double>(videoCacheMax) * 100.0) : 0.0).
+                arg(cacheOptions->get().videoGB).
+                arg(audioCacheMax > 0 ? (audioCacheSize / static_cast<double>(audioCacheMax) * 100.0) : 0.0).
+                arg(cacheOptions->get().audioGB).
+                arg(cacheOptions->get().readBehind).
+                arg(thread.videoRequests.size()).
+                arg(thread.audioRequests.size()).
+                arg(currentTimeDisplay).
+                arg(cachedVideoFramesDisplay).
+                arg(cachedAudioFramesDisplay));
+        }
     }
 
     bool Player::Private::PlaybackState::operator == (const PlaybackState& other) const

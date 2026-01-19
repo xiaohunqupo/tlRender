@@ -26,7 +26,9 @@ namespace tl
     {
         FTK_P();
 
+        p.context = context;
         auto logSystem = context->getLogSystem();
+        p.logSystem = logSystem;
         {
             std::vector<std::string> lines;
             lines.push_back(std::string());
@@ -57,7 +59,6 @@ namespace tl
                 ftk::join(lines, "\n"));
         }
 
-        p.context = context;
         p.otioTimeline = otioTimeline;
         const auto i = otioTimeline->metadata().find("tlRender");
         if (i != otioTimeline->metadata().end())
@@ -165,6 +166,12 @@ namespace tl
     Timeline::~Timeline()
     {
         FTK_P();
+        if (auto logSystem = p.logSystem.lock())
+        {
+            logSystem->print(
+                ftk::Format("tl::~Timeline {0}").arg(this),
+                p.path.get());
+        }
         p.thread.running = false;
         if (p.thread.thread.joinable())
         {

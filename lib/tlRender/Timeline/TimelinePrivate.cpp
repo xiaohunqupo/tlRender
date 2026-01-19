@@ -99,7 +99,7 @@ namespace tl
         if (diff.count() > 10.F)
         {
             thread.logTimer = t1;
-            if (auto context = this->context.lock())
+            if (auto logSystem = this->logSystem.lock())
             {
                 size_t videoRequestsSize = 0;
                 size_t audioRequestsSize = 0;
@@ -108,7 +108,6 @@ namespace tl
                     videoRequestsSize = mutex.videoRequests.size();
                     audioRequestsSize = mutex.audioRequests.size();
                 }
-                auto logSystem = context->getLogSystem();
                 logSystem->print(
                     ftk::Format("tl::Timeline {0}").arg(this),
                     ftk::Format(

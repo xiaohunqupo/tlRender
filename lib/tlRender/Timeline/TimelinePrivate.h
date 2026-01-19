@@ -47,6 +47,7 @@ namespace tl
             const OTIO_NS::TimeRange&);
 
         std::weak_ptr<ftk::Context> context;
+        std::weak_ptr<ftk::LogSystem> logSystem;
         OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> otioTimeline;
         ftk::Path path;
         ftk::Path audioPath;

@@ -67,6 +67,7 @@ namespace tl
         }
 
         auto logSystem = context->getLogSystem();
+        p.logSystem = logSystem;
         {
             std::vector<std::string> lines;
             lines.push_back(std::string());
@@ -158,7 +159,7 @@ namespace tl
         p.mutex.state.audioOffset = p.audioOffset->get();
         p.mutex.state.cacheOptions = p.cacheOptions->get();
         p.audioMutex.state.speed = p.speed->get() * p.speedMult->get();
-        p.log(context);
+        p.log();
         p.running = true;
         p.thread.thread = std::thread(
             [this]
@@ -174,6 +175,12 @@ namespace tl
     Player::~Player()
     {
         FTK_P();
+        if (auto logSystem = p.logSystem.lock())
+        {
+            logSystem->print(
+                ftk::Format("tl::~Player {0}").arg(this),
+                p.timeline->getPath().get());
+        }
         p.running = false;
         if (p.thread.thread.joinable())
         {
@@ -981,7 +988,7 @@ namespace tl
                 p.thread.logTimer = t1;
                 if (auto context = getContext())
                 {
-                    p.log(context);
+                    p.log();
                 }
                 t1 = std::chrono::steady_clock::now();
             }

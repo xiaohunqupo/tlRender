@@ -47,8 +47,9 @@ namespace tl
 #endif // TLRENDER_SDL2
 #endif // TLRENDER_SDL2
 
-        void log(const std::shared_ptr<ftk::Context>&);
+        void log();
 
+        std::weak_ptr<ftk::LogSystem> logSystem;
         PlayerOptions playerOptions;
         std::shared_ptr<Timeline> timeline;
         OTIO_NS::TimeRange timeRange = invalidTimeRange;
