@@ -159,9 +159,16 @@ namespace tl
             });
     }
 
+    namespace
+    {
+        std::atomic<size_t> objectCount = 0;
+    }
+
     Timeline::Timeline() :
         _p(new Private)
-    {}
+    {
+        ++objectCount;
+    }
 
     Timeline::~Timeline()
     {
@@ -172,11 +179,14 @@ namespace tl
                 ftk::Format("tl::~Timeline {0}").arg(this),
                 p.path.get());
         }
+
         p.thread.running = false;
         if (p.thread.thread.joinable())
         {
             p.thread.thread.join();
         }
+
+        --objectCount;
     }
 
     std::shared_ptr<ftk::Context> Timeline::getContext() const
@@ -319,5 +329,10 @@ namespace tl
                 }
             }
         }
+    }
+
+    size_t Timeline::getObjectCount()
+    {
+        return objectCount;
     }
 }

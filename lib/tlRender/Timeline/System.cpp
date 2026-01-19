@@ -43,6 +43,9 @@ namespace tl
                 std::vector<std::string> s;
                 s.push_back(ftk::Format("    * Audio count: {0}").arg(Audio::getObjectCount()));
                 s.push_back(ftk::Format("    * Audio byte count: {0}").arg(Audio::getTotalByteCount()));
+                s.push_back(ftk::Format("    * I/O count: {0}").arg(IIO::getObjectCount()));
+                s.push_back(ftk::Format("    * Timeline count: {0}").arg(Timeline::getObjectCount()));
+                s.push_back(ftk::Format("    * Player count: {0}").arg(Player::getObjectCount()));
                 _log("\n" + ftk::join(s, "\n"));
             });
     }

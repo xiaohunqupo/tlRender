@@ -17,15 +17,29 @@ namespace tl
         _logSystem = logSystem;
     }
 
+    namespace
+    {
+        std::atomic<size_t> objectCount = 0;
+    }
+
     IIO::IIO()
-    {}
+    {
+        ++objectCount;
+    }
 
     IIO::~IIO()
-    {}
+    {
+        --objectCount;
+    }
 
     const ftk::Path& IIO::getPath() const
     {
         return _path;
+    }
+
+    size_t IIO::getObjectCount()
+    {
+        return objectCount;
     }
 
     struct IIOPlugin::Private

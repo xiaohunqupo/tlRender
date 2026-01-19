@@ -37,6 +37,9 @@ namespace tl
         //! Get the path.
         TL_API const ftk::Path& getPath() const;
 
+        //! Get the number of objects currenty instantiated.
+        TL_API static size_t getObjectCount();
+
     protected:
         ftk::Path _path;
         IOOptions _options;

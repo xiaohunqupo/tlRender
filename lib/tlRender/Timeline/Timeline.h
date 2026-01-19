@@ -166,6 +166,9 @@ namespace tl
 
         ///@}
 
+        //! Get the number of objects currenty instantiated.
+        TL_API static size_t getObjectCount();
+
     private:
         FTK_PRIVATE();
     };

@@ -168,9 +168,16 @@ namespace tl
             });
     }
 
+    namespace
+    {
+        std::atomic<size_t> objectCount = 0;
+    }
+
     Player::Player() :
         _p(new Private)
-    {}
+    {
+        ++objectCount;
+    }
 
     Player::~Player()
     {
@@ -181,11 +188,13 @@ namespace tl
                 ftk::Format("tl::~Player {0}").arg(this),
                 p.timeline->getPath().get());
         }
+
         p.running = false;
         if (p.thread.thread.joinable())
         {
             p.thread.thread.join();
         }
+
 #if defined(TLRENDER_SDL2)
         if (p.sdlID > 0)
         {
@@ -199,6 +208,8 @@ namespace tl
             p.sdlStream = nullptr;
         }
 #endif // TLRENDER_SDL2
+
+        --objectCount;
     }
 
     std::shared_ptr<Player> Player::create(
@@ -999,5 +1010,10 @@ namespace tl
 
         // Finished.
         p.clearRequests();
+    }
+
+    size_t Player::getObjectCount()
+    {
+        return objectCount;
     }
 }
