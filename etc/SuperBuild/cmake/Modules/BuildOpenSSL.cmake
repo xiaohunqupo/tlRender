@@ -1,7 +1,7 @@
 include(ExternalProject)
 
 set(OpenSSL_DEPENDS)
-if(TLRENDER_EXTERNAL_DEPS_NASM)
+if(TLRENDER_NASM)
     list(APPEND OpenSSL_DEPENDS NASM)
 endif()
 list(APPEND OpenSSL_DEPENDS ZLIB)
