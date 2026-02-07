@@ -38,7 +38,7 @@ namespace tl
         opentime::ErrorStatus* error = nullptr);
 
     //! Get a time units format string.
-    TL_API TL_API std::string formatString(TimeUnits);
+    TL_API std::string formatString(TimeUnits);
 
     //! Get a time units validator regular expression.
     TL_API std::string validator(TimeUnits);
@@ -56,7 +56,7 @@ namespace tl
     public:
         TL_API virtual ~ITimeUnitsModel() = 0;
 
-        //! Observer when the time units are changed.
+        //! Observe when the time units are changed.
         TL_API std::shared_ptr<ftk::IObservable<bool> > observeTimeUnitsChanged() const;
 
         //! Get a time label in the current time units.
@@ -86,7 +86,7 @@ namespace tl
         //! Get the time units.
         TL_API TimeUnits getTimeUnits() const;
 
-        //! Observer the time units.
+        //! Observe the time units.
         TL_API std::shared_ptr<ftk::IObservable<TimeUnits> > observeTimeUnits() const;
             
         //! Set the time units.

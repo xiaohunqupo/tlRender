@@ -9,7 +9,6 @@
 #include <tlRender/Timeline/Player.h>
 
 #include <ftk/UI/MainWindow.h>
-#include <ftk/UI/MenuBar.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/Splitter.h>
 
@@ -59,7 +58,6 @@ namespace tl
             void dropEvent(ftk::DragDropEvent&) override;
 
         private:
-            std::weak_ptr<App> _app;
             std::weak_ptr<SettingsModel> _settingsModel;
 
             std::shared_ptr<ui::Viewport> _viewport;

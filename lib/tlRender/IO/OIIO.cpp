@@ -16,7 +16,7 @@ namespace tl
             std::map<std::string, FileType> exts;
             for (const auto& i : OIIO::get_extension_map())
             {
-                //! Filter out FFmpeg extensions.
+                // Filter out FFmpeg extensions.
                 if (i.first != "ffmpeg")
                 {
                     for (const auto& ext : i.second)

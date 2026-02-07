@@ -35,8 +35,6 @@ namespace tl
 
             auto iconSystem = context->getSystem<ftk::IconSystem>();
             setIcon(iconSystem->get("tlRender", 1.0));
-
-            _app = app;
             
             // Restore settings.
             bool settingsVisible = false;
@@ -221,7 +219,7 @@ namespace tl
             event.accept = true;
             if (auto textData = std::dynamic_pointer_cast<ftk::DragDropTextData>(event.data))
             {
-                if (auto app = _app.lock())
+                if (auto app = std::dynamic_pointer_cast<App>(getApp()))
                 {
                     for (const auto& fileName : textData->getText())
                     {

@@ -728,6 +728,7 @@ namespace tl
                 render->drawTexture(p.fgBuffer->getColorID(), g, true);
             }
         }
+
         void Viewport::mouseEnterEvent(ftk::MouseEnterEvent& event)
         {
             FTK_P();
@@ -955,7 +956,7 @@ namespace tl
             const ftk::Box2I& g = getGeometry();
             const ftk::Size2I viewportSize = g.size();
             const ftk::Size2I renderSize = _getRenderSize();
-            if (renderSize.h > 0 && renderSize.h > 0)
+            if (renderSize.w > 0 && renderSize.h > 0)
             {
                 viewZoom = viewportSize.w / static_cast<double>(renderSize.w);
                 if (viewZoom * renderSize.h > viewportSize.h)
