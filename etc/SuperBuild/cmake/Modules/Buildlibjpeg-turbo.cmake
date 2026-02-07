@@ -4,7 +4,7 @@ set(libjpeg-turbo_GIT_REPOSITORY "https://github.com/libjpeg-turbo/libjpeg-turbo
 set(libjpeg-turbo_GIT_TAG "3.1.1")
 
 set(libjpeg-turbo_DEPS ZLIB)
-if(TLRENDER_EXTERNAL_DEPS_NASM)
+if(TLRENDER_NASM)
     set(libjpeg-turbo_DEPS ${libjpeg-turbo_DEPS} NASM)
 endif()
 
@@ -22,7 +22,7 @@ set(libjpeg-turbo_ARGS
     -DENABLE_STATIC=${libjpeg-turbo_ENABLE_STATIC}
     -DWITH_TOOLS=OFF
     -DWITH_TESTS=OFF)
-if(TLRENDER_EXTERNAL_DEPS_NASM)
+if(TLRENDER_NASM)
     list(APPEND libjpeg-turbo_ARGS -DCMAKE_ASM_NASM_COMPILER=${CMAKE_INSTALL_PREFIX}/bin/nasm)
 endif()
 

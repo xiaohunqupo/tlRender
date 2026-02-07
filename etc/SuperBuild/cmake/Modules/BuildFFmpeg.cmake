@@ -14,7 +14,7 @@ endif()
 if(TLRENDER_AV1)
     list(APPEND FFmpeg_DEPS svt-av1)
 endif()
-if(TLRENDER_EXTERNAL_DEPS_NASM)
+if(TLRENDER_NASM)
     list(APPEND FFmpeg_DEPS NASM)
 endif()
 
@@ -293,7 +293,7 @@ if(TLRENDER_AV1)
         --enable-libsvtav1
         --enable-encoder=libsvtav1)
 endif()
-if(TLRENDER_EXTERNAL_DEPS_NASM)
+if(TLRENDER_NASM)
     list(APPEND FFmpeg_CONFIGURE_ARGS
         --x86asmexe=${CMAKE_INSTALL_PREFIX}/bin/nasm)
 endif()
