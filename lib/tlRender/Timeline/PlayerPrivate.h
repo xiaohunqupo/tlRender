@@ -57,6 +57,7 @@ namespace tl
 
         std::shared_ptr<ftk::Observable<double> > speed;
         std::shared_ptr<ftk::Observable<double> > speedMult;
+        std::shared_ptr<ftk::Observable<double> > actualSpeed;
         std::shared_ptr<ftk::Observable<Playback> > playback;
         std::shared_ptr<ftk::Observable<Loop> > loop;
         std::shared_ptr<ftk::Observable<OTIO_NS::RationalTime> > currentTime;

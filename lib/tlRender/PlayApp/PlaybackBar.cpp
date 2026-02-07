@@ -53,11 +53,11 @@ namespace tl
             _speedEdit->setRange(ftk::RangeD(1.0, 99999.0));
             _speedEdit->setStep(1.0);
             _speedEdit->setLargeStep(10.0);
-            _speedEdit->setTooltip("The timeline speed.");
+            _speedEdit->setTooltip("Set the timeline speed.");
 
-            _speedMultLabel = ftk::Label::create(context, _layout);
-            _speedMultLabel->setHMarginRole(ftk::SizeRole::MarginInside);
-            _speedMultLabel->setTooltip("Playback speed multiplier.");
+            _actualSpeedLabel = ftk::Label::create(context, _layout);
+            _actualSpeedLabel->setHMarginRole(ftk::SizeRole::MarginInside);
+            _actualSpeedLabel->setTooltip("Actual playback speed.");
 
             _timeUnitsWidget = ui::TimeUnitsWidget::create(context, timeUnitsModel, _layout);
             _timeUnitsWidget->setTooltip("Set the time units.");
@@ -121,14 +121,11 @@ namespace tl
                                 _speedEdit->setValue(value);
                             });
 
-                        _speedMultObserver = ftk::Observer<double>::create(
-                            value->observeSpeedMult(),
+                        _actualSpeedObserver = ftk::Observer<double>::create(
+                            value->observeActualSpeed(),
                             [this](double value)
                             {
-                                _speedMultLabel->setText(ftk::Format("{0}X").arg(value, 1));
-                                _speedMultLabel->setBackgroundRole(value > 1.0 ?
-                                    ftk::ColorRole::Checked :
-                                    ftk::ColorRole::None);
+                                _actualSpeedLabel->setText(ftk::Format("{0}").arg(value));
                             });
                     }
                     else
@@ -136,20 +133,19 @@ namespace tl
                         _loopWidget->setLoop(Loop::Loop);
                         _currentTimeEdit->setValue(invalidTime);
                         _durationLabel->setValue(invalidTime);
-                        _speedMultLabel->setText("1X");
-                        _speedMultLabel->setBackgroundRole(ftk::ColorRole::None);
+                        _actualSpeedLabel->setText("0");
 
                         _loopObserver.reset();
                         _currentTimeObserver.reset();
                         _speedObserver.reset();
-                        _speedMultObserver.reset();
+                        _actualSpeedObserver.reset();
                     }
 
                     _loopWidget->setEnabled(value.get());
                     _currentTimeEdit->setEnabled(value.get());
                     _durationLabel->setEnabled(value.get());
                     _speedEdit->setEnabled(value.get());
-                    _speedMultLabel->setEnabled(value.get());
+                    _actualSpeedLabel->setEnabled(value.get());
                 });
         }
 

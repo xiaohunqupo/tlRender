@@ -93,9 +93,10 @@ namespace tl
         p.timeRange = timeline->getTimeRange();
         p.ioInfo = timeline->getIOInfo();
 
-        // Create obesrvables.
+        // Create observables.
         p.speed = ftk::Observable<double>::create(p.timeRange.duration().rate());
         p.speedMult = ftk::Observable<double>::create(1.0);
+        p.actualSpeed = ftk::Observable<double>::create(p.timeRange.duration().rate());
         p.playback = ftk::Observable<Playback>::create(Playback::Stop);
         p.loop = ftk::Observable<Loop>::create(Loop::Loop);
         p.currentTime = ftk::Observable<OTIO_NS::RationalTime>::create(
@@ -287,9 +288,11 @@ namespace tl
         FTK_P();
         if (p.speed->setIfChanged(value))
         {
+            const double actualSpeed = value * p.speedMult->get();
+            p.actualSpeed->setIfChanged(actualSpeed);
             {
                 std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
-                p.audioMutex.state.speed = value * p.speedMult->get();
+                p.audioMutex.state.speed = actualSpeed;
                 p.audioReset(p.currentTime->get());
             }
             if (!p.hasAudio())
@@ -314,6 +317,16 @@ namespace tl
         FTK_P();
         p.accelerate = 0;
         _setSpeedMult(value);
+    }
+
+    double Player::getActualSpeed() const
+    {
+        return _p->actualSpeed->get();
+    }
+
+    std::shared_ptr<ftk::IObservable<double> > Player::observeActualSpeed() const
+    {
+        return _p->actualSpeed;
     }
 
     Playback Player::getPlayback() const
@@ -807,9 +820,11 @@ namespace tl
         FTK_P();
         if (p.speedMult->setIfChanged(value))
         {
+            const double actualSpeed = p.speed->get() * value;
+            p.actualSpeed->setIfChanged(actualSpeed);
             {
                 std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
-                p.audioMutex.state.speed = p.speed->get() * value;
+                p.audioMutex.state.speed = actualSpeed;
                 p.audioReset(p.currentTime->get());
             }
             if (!p.hasAudio())

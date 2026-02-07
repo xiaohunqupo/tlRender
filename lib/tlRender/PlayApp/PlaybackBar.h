@@ -56,14 +56,14 @@ namespace tl
             std::shared_ptr<ui::TimeEdit> _currentTimeEdit;
             std::shared_ptr<ui::TimeLabel> _durationLabel;
             std::shared_ptr<ftk::DoubleEdit> _speedEdit;
-            std::shared_ptr<ftk::Label> _speedMultLabel;
+            std::shared_ptr<ftk::Label> _actualSpeedLabel;
             std::shared_ptr<ui::TimeUnitsWidget> _timeUnitsWidget;
 
             std::shared_ptr<ftk::Observer<std::shared_ptr<Player> > > _playerObserver;
             std::shared_ptr<ftk::Observer<Loop> > _loopObserver;
             std::shared_ptr<ftk::Observer<OTIO_NS::RationalTime> > _currentTimeObserver;
             std::shared_ptr<ftk::Observer<double> > _speedObserver;
-            std::shared_ptr<ftk::Observer<double> > _speedMultObserver;
+            std::shared_ptr<ftk::Observer<double> > _actualSpeedObserver;
         };
     }
 }
