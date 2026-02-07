@@ -10,6 +10,7 @@
 #include <tlRender/Timeline/Player.h>
 
 #include <ftk/UI/IWidget.h>
+#include <ftk/GL/Texture.h>
 
 namespace tl
 {
@@ -99,9 +100,9 @@ namespace tl
             //! \name Color Buffer Type
             ///@{
 
-            TL_API ftk::ImageType getColorBuffer() const;
-            TL_API std::shared_ptr<ftk::IObservable<ftk::ImageType> > observeColorBuffer() const;
-            TL_API void setColorBuffer(ftk::ImageType);
+            TL_API ftk::gl::TextureType getColorBuffer() const;
+            TL_API std::shared_ptr<ftk::IObservable<ftk::gl::TextureType> > observeColorBuffer() const;
+            TL_API void setColorBuffer(ftk::gl::TextureType);
 
             ///@}
 

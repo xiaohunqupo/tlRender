@@ -287,11 +287,14 @@ namespace tl
                 {
                     if (renderSize.isValid())
                     {
-                        ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
-                        offscreenBufferOptions.color = ftk::ImageType::RGBA_U8;
-                        if (ftk::gl::doCreate(p.buffer, renderSize, offscreenBufferOptions))
+                        if (ftk::gl::doCreate(
+                            p.buffer,
+                            renderSize,
+                            ftk::gl::TextureType::RGBA_F32))
                         {
-                            p.buffer = ftk::gl::OffscreenBuffer::create(renderSize, offscreenBufferOptions);
+                            p.buffer = ftk::gl::OffscreenBuffer::create(
+                                renderSize,
+                                ftk::gl::TextureType::RGBA_F32);
                         }
                     }
                     else

@@ -68,7 +68,7 @@ namespace tl
             //displayOptions.imageFilters.minify = ftk::ImageFilter::Nearest;
             //displayOptions.imageFilters.magnify = ftk::ImageFilter::Nearest;
             //_viewport->setDisplayOptions({ displayOptions, displayOptions });
-            _viewport->setColorBuffer(ftk::ImageType::RGBA_F32);
+            _viewport->setColorBuffer(ftk::gl::TextureType::RGBA_F32);
 
             // Create the timeline.
             _timelineWidget = ui::TimelineWidget::create(

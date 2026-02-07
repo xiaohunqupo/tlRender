@@ -32,125 +32,125 @@ namespace tl
             auto ffmpegPlugin = ioSystem->getPlugin<ffmpeg::WritePlugin>();
             ffmpegCodecs = ffmpegPlugin->getCodecs();
 #endif // TLRENDER_FFMPEG
-            _cmdLine.input = ftk::CmdLineValueArg<std::string>::create(
+            _cmdLine.input = ftk::CmdLineArg<std::string>::create(
                 "input",
                 "The input timeline.");
-            _cmdLine.output = ftk::CmdLineValueArg<std::string>::create(
+            _cmdLine.output = ftk::CmdLineArg<std::string>::create(
                 "output",
                 "The output file.");
-            _cmdLine.inOutRange = ftk::CmdLineValueOption<OTIO_NS::TimeRange>::create(
+            _cmdLine.inOutRange = ftk::CmdLineOption<OTIO_NS::TimeRange>::create(
                 { "-inOutRange" },
                 "Set the in/out points range.",
                 "Render");
-            _cmdLine.renderSize = ftk::CmdLineValueOption<ftk::Size2I>::create(
+            _cmdLine.renderSize = ftk::CmdLineOption<ftk::Size2I>::create(
                 { "-renderSize", "-rs" },
                 "Render size.",
                 "Render");
-            _cmdLine.outputPixelType = ftk::CmdLineValueOption<ftk::ImageType>::create(
+            _cmdLine.outputPixelType = ftk::CmdLineOption<ftk::ImageType>::create(
                 { "-outputPixelType", "-op" },
                 "Output pixel type.",
                 "Render",
                 std::optional<ftk::ImageType>(),
                 ftk::quotes(ftk::getImageTypeLabels()));
-            _cmdLine.ocioFileName = ftk::CmdLineValueOption<std::string>::create(
+            _cmdLine.ocioFileName = ftk::CmdLineOption<std::string>::create(
                 { "-ocio" },
                 "OCIO configuration file name (e.g., config.ocio).",
                 "Color");
-            _cmdLine.ocioInput = ftk::CmdLineValueOption<std::string>::create(
+            _cmdLine.ocioInput = ftk::CmdLineOption<std::string>::create(
                 { "-ocioInput" },
                 "OCIO input name.",
                 "Color");
-            _cmdLine.ocioDisplay = ftk::CmdLineValueOption<std::string>::create(
+            _cmdLine.ocioDisplay = ftk::CmdLineOption<std::string>::create(
                 { "-ocioDisplay" },
                 "OCIO display namee.",
                 "Color");
-            _cmdLine.ocioView = ftk::CmdLineValueOption<std::string>::create(
+            _cmdLine.ocioView = ftk::CmdLineOption<std::string>::create(
                 { "-ocioView" },
                 "OCIO view namee.",
                 "Color");
-            _cmdLine.ocioLook = ftk::CmdLineValueOption<std::string>::create(
+            _cmdLine.ocioLook = ftk::CmdLineOption<std::string>::create(
                 { "-ocioLook" },
                 "OCIO look namee.",
                 "Color");
-            _cmdLine.lutFileName = ftk::CmdLineValueOption<std::string>::create(
+            _cmdLine.lutFileName = ftk::CmdLineOption<std::string>::create(
                 { "-lut" },
                 "LUT file name.",
                 "Color");
-            _cmdLine.lutOrder = ftk::CmdLineValueOption<LUTOrder>::create(
+            _cmdLine.lutOrder = ftk::CmdLineOption<LUTOrder>::create(
                 { "-lutOrder" },
                 "LUT operation order.",
                 "Color",
                 std::optional<LUTOrder>(),
                 ftk::quotes(getLUTOrderLabels()));
-            _cmdLine.sequenceDefaultSpeed = ftk::CmdLineValueOption<double>::create(
+            _cmdLine.sequenceDefaultSpeed = ftk::CmdLineOption<double>::create(
                 { "-sequenceDefaultSpeed" },
                 "Default speed for image sequences.",
                 "Image Sequences",
                 SeqOptions().defaultSpeed);
-            _cmdLine.sequenceThreadCount = ftk::CmdLineValueOption<int>::create(
+            _cmdLine.sequenceThreadCount = ftk::CmdLineOption<int>::create(
                 { "-sequenceThreadCount" },
                 "Number of threads for image sequence I/O.",
                 "Image Sequences",
                 static_cast<int>(SeqOptions().threadCount));
 #if defined(TLRENDER_EXR)
-            _cmdLine.exrCompression = ftk::CmdLineValueOption<exr::Compression>::create(
+            _cmdLine.exrCompression = ftk::CmdLineOption<exr::Compression>::create(
                 { "-exrCompression" },
                 "Output compression.",
                 "OpenEXR",
                 exr::Compression::ZIP,
                 ftk::quotes(exr::getCompressionLabels()));
-            _cmdLine.exrDWACompressionLevel = ftk::CmdLineValueOption<float>::create(
+            _cmdLine.exrDWACompressionLevel = ftk::CmdLineOption<float>::create(
                 { "-exrDWACompressionLevel" },
                 "DWA compression level.",
                 "OpenEXR",
                 45.F);
 #endif // TLRENDER_EXR
 #if defined(TLRENDER_FFMPEG)
-            _cmdLine.ffmpegCodec = ftk::CmdLineValueOption<std::string>::create(
+            _cmdLine.ffmpegCodec = ftk::CmdLineOption<std::string>::create(
                 { "-ffmpegCodec", "-ffc" },
                 "Output codec.",
                 "FFmpeg",
                 "mjpeg",
                 ftk::quotes(ffmpegCodecs));
-            _cmdLine.ffmpegThreadCount = ftk::CmdLineValueOption<int>::create(
+            _cmdLine.ffmpegThreadCount = ftk::CmdLineOption<int>::create(
                 { "-ffmpegThreadCount" },
                 "Number of threads for I/O.",
                 "FFmpeg",
                 static_cast<int>(ffmpeg::Options().threadCount));
 #endif // TLRENDER_FFMPEG
 #if defined(TLRENDER_USD)
-            _cmdLine.usdRenderWidth = ftk::CmdLineValueOption<int>::create(
+            _cmdLine.usdRenderWidth = ftk::CmdLineOption<int>::create(
                 { "-usdRenderWidth" },
                 "Render width.",
                 "USD",
                 1920);
-            _cmdLine.usdComplexity = ftk::CmdLineValueOption<float>::create(
+            _cmdLine.usdComplexity = ftk::CmdLineOption<float>::create(
                 { "-usdComplexity" },
                 "Render complexity setting.",
                 "USD",
                 1.F);
-            _cmdLine.usdDrawMode = ftk::CmdLineValueOption<usd::DrawMode>::create(
+            _cmdLine.usdDrawMode = ftk::CmdLineOption<usd::DrawMode>::create(
                 { "-usdDrawMode" },
                 "Draw mode.",
                 "USD",
                 usd::DrawMode::ShadedSmooth,
                 ftk::quotes(usd::getDrawModeLabels()));
-            _cmdLine.usdEnableLighting = ftk::CmdLineValueOption<bool>::create(
+            _cmdLine.usdEnableLighting = ftk::CmdLineOption<bool>::create(
                 { "-usdEnableLighting" },
                 "Enable lighting.",
                 "USD",
                 true);
-            _cmdLine.usdSRGB = ftk::CmdLineValueOption<bool>::create(
+            _cmdLine.usdSRGB = ftk::CmdLineOption<bool>::create(
                 { "-usdSRGB" },
                 "Enable sRGB color space.",
                 "USD",
                 true);
-            _cmdLine.usdStageCache = ftk::CmdLineValueOption<int>::create(
+            _cmdLine.usdStageCache = ftk::CmdLineOption<int>::create(
                 { "-usdStageCache" },
                 "Stage cache size.",
                 "USD",
                 10);
-            _cmdLine.usdDiskCache = ftk::CmdLineValueOption<int>::create(
+            _cmdLine.usdDiskCache = ftk::CmdLineOption<int>::create(
                 { "-usdDiskCache" },
                 "Disk cache size in gigabytes. A size of zero disables the cache.",
                 "USD",
@@ -266,9 +266,9 @@ namespace tl
             _render = gl::Render::create(
                 _context->getLogSystem(),
                 _context->getSystem<ftk::FontSystem>());
-            ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
-            offscreenBufferOptions.color = ftk::gl::offscreenColorDefault;
-            _buffer = ftk::gl::OffscreenBuffer::create(_renderSize, offscreenBufferOptions);
+            _buffer = ftk::gl::OffscreenBuffer::create(
+                _renderSize,
+                ftk::gl::offscreenColorDefault);
 
             // Create the writer.
             const std::string output = _cmdLine.output->getValue();

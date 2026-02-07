@@ -141,11 +141,14 @@ namespace tl
             {
                 // Create the offscreen buffer.
                 ftk::Size2I offscreenBufferSize(_videoSize.w, _videoSize.h);
-                ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
-                offscreenBufferOptions.color = ftk::ImageType::RGBA_F32;
-                if (ftk::gl::doCreate(_buffer, offscreenBufferSize, offscreenBufferOptions))
+                if (ftk::gl::doCreate(
+                    _buffer,
+                    offscreenBufferSize,
+                    ftk::gl::TextureType::RGBA_F32))
                 {
-                    _buffer = ftk::gl::OffscreenBuffer::create(offscreenBufferSize, offscreenBufferOptions);
+                    _buffer = ftk::gl::OffscreenBuffer::create(
+                        offscreenBufferSize,
+                        ftk::gl::TextureType::RGBA_F32);
                 }
 
                 // Render the video into the offscreen buffer.

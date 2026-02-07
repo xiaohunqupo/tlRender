@@ -272,19 +272,19 @@ namespace tl
             return out;
         }
 
-        ftk::ImageType getColorBuffer(PixelType value)
+        ftk::gl::TextureType getColorBuffer(PixelType value)
         {
-            const std::array<ftk::ImageType, static_cast<size_t>(PixelType::Count)> data =
+            const std::array<ftk::gl::TextureType, static_cast<size_t>(PixelType::Count)> data =
             {
-                ftk::ImageType::None,
-                ftk::ImageType::RGBA_U8,
-                ftk::ImageType::RGBA_U8,
-                ftk::ImageType::RGB_U16,
-                ftk::ImageType::RGB_U16,
-                ftk::ImageType::RGB_U16,
-                //ftk::ImageType::RGB_U10,
-                ftk::ImageType::RGB_U16,
-                ftk::ImageType::RGB_U16
+                ftk::gl::TextureType::None,
+                ftk::gl::TextureType::RGBA_U8,
+                ftk::gl::TextureType::RGBA_U8,
+                ftk::gl::TextureType::RGB_U16,
+                ftk::gl::TextureType::RGB_U16,
+                ftk::gl::TextureType::RGB_U16,
+                //ftk::gl::TextureType::RGB_U10,
+                ftk::gl::TextureType::RGB_U16,
+                ftk::gl::TextureType::RGB_U16
             };
             return data[static_cast<size_t>(value)];
         }

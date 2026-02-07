@@ -56,7 +56,7 @@ namespace tl
                 const std::vector<ftk::ImageOptions>& = {},
                 const std::vector<DisplayOptions>& = {},
                 const CompareOptions& = CompareOptions(),
-                ftk::ImageType colorBuffer = ftk::ImageType::RGBA_U8) override;
+                ftk::gl::TextureType colorBuffer = ftk::gl::TextureType::RGBA_F32) override;
             TL_API void drawForeground(
                 const std::vector<ftk::Box2I>&,
                 const ftk::M44F&,
@@ -126,48 +126,48 @@ namespace tl
                 const std::vector<ftk::ImageOptions>&,
                 const std::vector<DisplayOptions>&,
                 const CompareOptions&,
-                ftk::ImageType colorBuffer);
+                ftk::gl::TextureType colorBuffer);
             void _drawVideoB(
                 const std::vector<VideoFrame>&,
                 const std::vector<ftk::Box2I>&,
                 const std::vector<ftk::ImageOptions>&,
                 const std::vector<DisplayOptions>&,
                 const CompareOptions&,
-                ftk::ImageType colorBuffer);
+                ftk::gl::TextureType colorBuffer);
             void _drawVideoWipe(
                 const std::vector<VideoFrame>&,
                 const std::vector<ftk::Box2I>&,
                 const std::vector<ftk::ImageOptions>&,
                 const std::vector<DisplayOptions>&,
                 const CompareOptions&,
-                ftk::ImageType colorBuffer);
+                ftk::gl::TextureType colorBuffer);
             void _drawVideoOverlay(
                 const std::vector<VideoFrame>&,
                 const std::vector<ftk::Box2I>&,
                 const std::vector<ftk::ImageOptions>&,
                 const std::vector<DisplayOptions>&,
                 const CompareOptions&,
-                ftk::ImageType colorBuffer);
+                ftk::gl::TextureType colorBuffer);
             void _drawVideoDifference(
                 const std::vector<VideoFrame>&,
                 const std::vector<ftk::Box2I>&,
                 const std::vector<ftk::ImageOptions>&,
                 const std::vector<DisplayOptions>&,
                 const CompareOptions&,
-                ftk::ImageType colorBuffer);
+                ftk::gl::TextureType colorBuffer);
             void _drawVideoTile(
                 const std::vector<VideoFrame>&,
                 const std::vector<ftk::Box2I>&,
                 const std::vector<ftk::ImageOptions>&,
                 const std::vector<DisplayOptions>&,
                 const CompareOptions&,
-                ftk::ImageType colorBuffer);
+                ftk::gl::TextureType colorBuffer);
             void _drawVideo(
                 const VideoFrame&,
                 const ftk::Box2I&,
                 const std::shared_ptr<ftk::ImageOptions>&,
                 const DisplayOptions&,
-                ftk::ImageType colorBuffer);
+                ftk::gl::TextureType colorBuffer);
 
             FTK_PRIVATE();
         };

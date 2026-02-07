@@ -27,7 +27,7 @@ namespace tl
                 QGuiApplication(argc, argv)
             {
                 auto args = ftk::convert(argc, argv);
-                auto input = ftk::CmdLineValueArg<std::string>::create(
+                auto input = ftk::CmdLineArg<std::string>::create(
                     "input",
                     "The input timeline.");
                 IApp::_init(

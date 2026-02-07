@@ -21,7 +21,7 @@ namespace tl
             _tabBar->setTabsClosable(true);
 
             std::weak_ptr<App> appWeak(app);
-            _tabBar->setCallback(
+            _tabBar->setCurrentTabCallback(
                 [appWeak](int value)
                 {
                     if (auto app = appWeak.lock())
@@ -43,7 +43,7 @@ namespace tl
                 [this](const std::vector<std::shared_ptr<Player> >& value)
                 {
                     const int index = _tabBar->getCurrentTab();
-                    _tabBar->clearTabs();
+                    _tabBar->clear();
                     for (const auto& player : value)
                     {
                         _tabBar->addTab(

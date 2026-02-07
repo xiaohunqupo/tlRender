@@ -1019,16 +1019,22 @@ namespace tl
                 compareOptions.compare,
                 p.thread.videoFrames);
             ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
-            offscreenBufferOptions.color = getColorBuffer(p.thread.outputPixelType);
             if (!displayOptions.empty())
             {
                 offscreenBufferOptions.colorFilters = displayOptions[0].imageFilters;
             }
             offscreenBufferOptions.depth = ftk::gl::OffscreenDepth::_24;
             offscreenBufferOptions.stencil = ftk::gl::OffscreenStencil::_8;
-            if (ftk::gl::doCreate(p.thread.offscreenBuffer, p.thread.size, offscreenBufferOptions))
+            if (ftk::gl::doCreate(
+                p.thread.offscreenBuffer,
+                p.thread.size,
+                getColorBuffer(p.thread.outputPixelType),
+                offscreenBufferOptions))
             {
-                p.thread.offscreenBuffer = ftk::gl::OffscreenBuffer::create(p.thread.size, offscreenBufferOptions);
+                p.thread.offscreenBuffer = ftk::gl::OffscreenBuffer::create(
+                    p.thread.size,
+                    getColorBuffer(p.thread.outputPixelType),
+                    offscreenBufferOptions);
             }
 
             // Render the video.

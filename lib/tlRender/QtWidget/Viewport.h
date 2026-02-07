@@ -13,6 +13,8 @@
 #include <tlRender/Timeline/DisplayOptions.h>
 #include <tlRender/Timeline/ForegroundOptions.h>
 
+#include <ftk/GL/Texture.h>
+
 #include <QSharedPointer>
 #include <QVector>
 
@@ -34,7 +36,7 @@ namespace tl
             virtual ~Viewport();
 
             //! Get the color buffer type.
-            ftk::ImageType colorBuffer() const;
+            ftk::gl::TextureType colorBuffer() const;
 
             //! Get the view position.
             const ftk::V2I& viewPos() const;
@@ -74,7 +76,7 @@ namespace tl
             void setForegroundOptions(const tl::ForegroundOptions&);
 
             //! Set the color buffer type.
-            void setColorBuffer(ftk::ImageType);
+            void setColorBuffer(ftk::gl::TextureType);
 
             //! Set the timeline player.
             void setPlayer(const QSharedPointer<qt::PlayerObject>&);

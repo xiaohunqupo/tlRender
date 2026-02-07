@@ -57,7 +57,7 @@ namespace tl
             struct CmdLine
             {
                 std::shared_ptr<ftk::CmdLineListArg<std::string> > inputs;
-                std::shared_ptr<ftk::CmdLineValueOption<int> > debugLoop;
+                std::shared_ptr<ftk::CmdLineOption<int> > debugLoop;
             };
             CmdLine _cmdLine;
 

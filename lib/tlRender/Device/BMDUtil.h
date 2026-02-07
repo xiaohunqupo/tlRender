@@ -6,6 +6,7 @@
 #include <tlRender/Device/BMDData.h>
 
 #include <ftk/GL/GL.h>
+#include <ftk/GL/Texture.h>
 #include <ftk/Core/Image.h>
 
 #ifndef NOMINMAX
@@ -44,7 +45,7 @@ namespace tl
         TL_API PixelType getOutputType(PixelType);
 
         //! Get the color buffer type.
-        TL_API ftk::ImageType getColorBuffer(PixelType);
+        TL_API ftk::gl::TextureType getColorBuffer(PixelType);
 
         //! Get the pack pixels buffer size.
         TL_API size_t getPackPixelsSize(const ftk::Size2I&, PixelType);

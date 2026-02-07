@@ -28,7 +28,7 @@ namespace tl
             std::shared_ptr<ftk::ObservableList<DisplayOptions> > displayOptions;
             std::shared_ptr<ftk::Observable<BackgroundOptions> > bgOptions;
             std::shared_ptr<ftk::Observable<ForegroundOptions> > fgOptions;
-            std::shared_ptr<ftk::Observable<ftk::ImageType> > colorBuffer;
+            std::shared_ptr<ftk::Observable<ftk::gl::TextureType> > colorBuffer;
             std::shared_ptr<Player> player;
             std::vector<VideoFrame> videoFrame;
             std::shared_ptr<ftk::Observable<ftk::V2I> > viewPos;
@@ -106,8 +106,8 @@ namespace tl
             p.bgOptions = ftk::Observable<BackgroundOptions>::create();
             p.fgOptions = ftk::Observable<ForegroundOptions>::create();
             p.compareOptions = ftk::Observable<CompareOptions>::create();
-            p.colorBuffer = ftk::Observable<ftk::ImageType>::create(
-                ftk::ImageType::RGBA_U8);
+            p.colorBuffer = ftk::Observable<ftk::gl::TextureType>::create(
+                ftk::gl::TextureType::RGBA_F32);
             p.viewPos = ftk::Observable<ftk::V2I>::create();
             p.viewZoom = ftk::Observable<double>::create(1.0);
             p.viewPosZoom = ftk::Observable<std::pair<ftk::V2I, double> >::create(
@@ -274,17 +274,17 @@ namespace tl
             }
         }
 
-        ftk::ImageType Viewport::getColorBuffer() const
+        ftk::gl::TextureType Viewport::getColorBuffer() const
         {
             return _p->colorBuffer->get();
         }
 
-        std::shared_ptr<ftk::IObservable<ftk::ImageType> > Viewport::observeColorBuffer() const
+        std::shared_ptr<ftk::IObservable<ftk::gl::TextureType> > Viewport::observeColorBuffer() const
         {
             return _p->colorBuffer;
         }
 
-        void Viewport::setColorBuffer(ftk::ImageType value)
+        void Viewport::setColorBuffer(ftk::gl::TextureType value)
         {
             FTK_P();
             if (p.colorBuffer->setIfChanged(value))
@@ -595,22 +595,34 @@ namespace tl
                     // Create the background and foreground buffers.
                     const ftk::Size2I size = g.size();
                     ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
-                    offscreenBufferOptions.color = ftk::ImageType::RGBA_U8;
                     offscreenBufferOptions.colorFilters.minify = ftk::ImageFilter::Nearest;
                     offscreenBufferOptions.colorFilters.magnify = ftk::ImageFilter::Nearest;
-                    if (ftk::gl::doCreate(p.bgBuffer, size, offscreenBufferOptions))
+                    if (ftk::gl::doCreate(
+                        p.bgBuffer,
+                        size,
+                        ftk::gl::TextureType::RGBA_U8,
+                        offscreenBufferOptions))
                     {
-                        p.bgBuffer = ftk::gl::OffscreenBuffer::create(size, offscreenBufferOptions);
+                        p.bgBuffer = ftk::gl::OffscreenBuffer::create(
+                            size,
+                            ftk::gl::TextureType::RGBA_U8,
+                            offscreenBufferOptions);
                     }
-                    if (ftk::gl::doCreate(p.fgBuffer, size, offscreenBufferOptions))
+                    if (ftk::gl::doCreate(
+                        p.fgBuffer,
+                        size,
+                        ftk::gl::TextureType::RGBA_U8,
+                        offscreenBufferOptions))
                     {
-                        p.fgBuffer = ftk::gl::OffscreenBuffer::create(size, offscreenBufferOptions);
+                        p.fgBuffer = ftk::gl::OffscreenBuffer::create(
+                            size,
+                            ftk::gl::TextureType::RGBA_U8,
+                            offscreenBufferOptions);
                     }
 
                     // Create the main buffer.
                     offscreenBufferOptions.colorFilters.minify = ftk::ImageFilter::Linear;
                     offscreenBufferOptions.colorFilters.magnify = ftk::ImageFilter::Linear;
-                    offscreenBufferOptions.color = p.colorBuffer->get();
                     if (!p.displayOptions->isEmpty())
                     {
                         offscreenBufferOptions.colorFilters = p.displayOptions->getItem(0).imageFilters;
@@ -621,9 +633,16 @@ namespace tl
 #elif defined(FTK_API_GLES_2)
                     offscreenBufferOptions.stencil = ftk::gl::OffscreenStencil::_8;
 #endif // FTK_API_GL_4_1
-                    if (ftk::gl::doCreate(p.buffer, size, offscreenBufferOptions))
+                    if (ftk::gl::doCreate(
+                        p.buffer,
+                        size,
+                        p.colorBuffer->get(),
+                        offscreenBufferOptions))
                     {
-                        p.buffer = ftk::gl::OffscreenBuffer::create(size, offscreenBufferOptions);
+                        p.buffer = ftk::gl::OffscreenBuffer::create(
+                            size,
+                            p.colorBuffer->get(),
+                            offscreenBufferOptions);
                     }
 
                     // Setup the transforms.

@@ -29,7 +29,7 @@ namespace tl
         Viewport::~Viewport()
         {}
 
-        ftk::ImageType Viewport::colorBuffer() const
+        ftk::gl::TextureType Viewport::colorBuffer() const
         {
             return _p->viewport->getColorBuffer();
         }
@@ -94,7 +94,7 @@ namespace tl
             _p->viewport->setForegroundOptions(value);
         }
 
-        void Viewport::setColorBuffer(ftk::ImageType value)
+        void Viewport::setColorBuffer(ftk::gl::TextureType value)
         {
             _p->viewport->setColorBuffer(value);
         }

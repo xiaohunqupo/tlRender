@@ -795,10 +795,14 @@ namespace tl
                                     size.h = request->height;
                                 }
                                 ftk::gl::OffscreenBufferOptions options;
-                                options.color = ftk::ImageType::RGBA_U8;
-                                if (ftk::gl::doCreate(p.thumbnailThread.buffer, size, options))
+                                if (ftk::gl::doCreate(
+                                    p.thumbnailThread.buffer,
+                                    size,
+                                    ftk::gl::TextureType::RGBA_U8))
                                 {
-                                    p.thumbnailThread.buffer = ftk::gl::OffscreenBuffer::create(size, options);
+                                    p.thumbnailThread.buffer = ftk::gl::OffscreenBuffer::create(
+                                        size,
+                                        ftk::gl::TextureType::RGBA_U8);
                                 }
                                 const OTIO_NS::RationalTime time =
                                     request->time != invalidTime ?
@@ -860,11 +864,14 @@ namespace tl
                                 }
                                 if (size.isValid())
                                 {
-                                    ftk::gl::OffscreenBufferOptions options;
-                                    options.color = ftk::ImageType::RGBA_U8;
-                                    if (ftk::gl::doCreate(p.thumbnailThread.buffer, size, options))
+                                    if (ftk::gl::doCreate(
+                                        p.thumbnailThread.buffer,
+                                        size,
+                                        ftk::gl::TextureType::RGBA_U8))
                                     {
-                                        p.thumbnailThread.buffer = ftk::gl::OffscreenBuffer::create(size, options);
+                                        p.thumbnailThread.buffer = ftk::gl::OffscreenBuffer::create(
+                                            size,
+                                            ftk::gl::TextureType::RGBA_U8);
                                     }
                                     if (p.thumbnailThread.render && p.thumbnailThread.buffer)
                                     {

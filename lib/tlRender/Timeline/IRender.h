@@ -10,6 +10,7 @@
 #include <tlRender/Timeline/ForegroundOptions.h>
 #include <tlRender/Timeline/Video.h>
 
+#include <ftk/GL/Texture.h>
 #include <ftk/Core/IRender.h>
 
 namespace tl
@@ -39,7 +40,7 @@ namespace tl
             const std::vector<ftk::ImageOptions>& = {},
             const std::vector<DisplayOptions>& = {},
             const CompareOptions& = CompareOptions(),
-            ftk::ImageType colorBuffer = ftk::ImageType::RGBA_U8) = 0;
+            ftk::gl::TextureType colorBuffer = ftk::gl::TextureType::RGBA_F32) = 0;
 
         //! Draw the foreground.
         TL_API virtual void drawForeground(

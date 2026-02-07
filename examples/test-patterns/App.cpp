@@ -124,9 +124,7 @@ namespace tl
                         }
 
                         // Create the offscreen buffer.
-                        ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
-                        offscreenBufferOptions.color = ftk::ImageType::RGBA_F32;
-                        auto buffer = ftk::gl::OffscreenBuffer::create(size, offscreenBufferOptions);
+                        auto buffer = ftk::gl::OffscreenBuffer::create(size, ftk::gl::TextureType::RGBA_F32);
                         ftk::gl::OffscreenBufferBinding binding(buffer);
                         auto image = ftk::Image::create(info);
 

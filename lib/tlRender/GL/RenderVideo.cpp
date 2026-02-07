@@ -77,7 +77,7 @@ namespace tl
             const std::vector<ftk::ImageOptions>& imageOptions,
             const std::vector<DisplayOptions>& displayOptions,
             const CompareOptions& compareOptions,
-            ftk::ImageType colorBuffer)
+            ftk::gl::TextureType colorBuffer)
         {
             switch (compareOptions.compare)
             {
@@ -160,7 +160,7 @@ namespace tl
             const std::vector<ftk::ImageOptions>& imageOptions,
             const std::vector<DisplayOptions>& displayOptions,
             const CompareOptions& compareOptions,
-            ftk::ImageType colorBuffer)
+            ftk::gl::TextureType colorBuffer)
         {
             if (!videoFrame.empty() && !boxes.empty())
             {
@@ -179,7 +179,7 @@ namespace tl
             const std::vector<ftk::ImageOptions>& imageOptions,
             const std::vector<DisplayOptions>& displayOptions,
             const CompareOptions& compareOptions,
-            ftk::ImageType colorBuffer)
+            ftk::gl::TextureType colorBuffer)
         {
             if (videoFrame.size() > 1 && boxes.size() > 1)
             {
@@ -198,7 +198,7 @@ namespace tl
             const std::vector<ftk::ImageOptions>& imageOptions,
             const std::vector<DisplayOptions>& displayOptions,
             const CompareOptions& compareOptions,
-            ftk::ImageType colorBuffer)
+            ftk::gl::TextureType colorBuffer)
         {
             FTK_P();
 
@@ -316,7 +316,7 @@ namespace tl
             const std::vector<ftk::ImageOptions>& imageOptions,
             const std::vector<DisplayOptions>& displayOptions,
             const CompareOptions& compareOptions,
-            ftk::ImageType colorBuffer)
+            ftk::gl::TextureType colorBuffer)
         {
             FTK_P();
 
@@ -335,7 +335,6 @@ namespace tl
                     boxes[0].w(),
                     boxes[0].h());
                 ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
-                offscreenBufferOptions.color = colorBuffer;
                 if (!displayOptions.empty())
                 {
                     offscreenBufferOptions.colorFilters = displayOptions[0].imageFilters;
@@ -343,10 +342,12 @@ namespace tl
                 if (doCreate(
                     p.buffers["overlay"],
                     offscreenBufferSize,
+                    colorBuffer,
                     offscreenBufferOptions))
                 {
                     p.buffers["overlay"] = ftk::gl::OffscreenBuffer::create(
                         offscreenBufferSize,
+                        colorBuffer,
                         offscreenBufferOptions);
                 }
 
@@ -425,7 +426,7 @@ namespace tl
             const std::vector<ftk::ImageOptions>& imageOptions,
             const std::vector<DisplayOptions>& displayOptions,
             const CompareOptions& compareOptions,
-            ftk::ImageType colorBuffer)
+            ftk::gl::TextureType colorBuffer)
         {
             FTK_P();
             if (!videoFrame.empty() && !boxes.empty())
@@ -434,7 +435,6 @@ namespace tl
                     boxes[0].w(),
                     boxes[0].h());
                 ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
-                offscreenBufferOptions.color = colorBuffer;
                 if (!displayOptions.empty())
                 {
                     offscreenBufferOptions.colorFilters = displayOptions[0].imageFilters;
@@ -442,10 +442,12 @@ namespace tl
                 if (doCreate(
                     p.buffers["difference0"],
                     offscreenBufferSize,
+                    colorBuffer,
                     offscreenBufferOptions))
                 {
                     p.buffers["difference0"] = ftk::gl::OffscreenBuffer::create(
                         offscreenBufferSize,
+                        colorBuffer,
                         offscreenBufferOptions);
                 }
 
@@ -487,7 +489,6 @@ namespace tl
                 if (videoFrame.size() > 1)
                 {
                     offscreenBufferOptions = ftk::gl::OffscreenBufferOptions();
-                    offscreenBufferOptions.color = colorBuffer;
                     if (displayOptions.size() > 1)
                     {
                         offscreenBufferOptions.colorFilters = displayOptions[1].imageFilters;
@@ -495,10 +496,12 @@ namespace tl
                     if (doCreate(
                         p.buffers["difference1"],
                         offscreenBufferSize,
+                        colorBuffer,
                         offscreenBufferOptions))
                     {
                         p.buffers["difference1"] = ftk::gl::OffscreenBuffer::create(
                             offscreenBufferSize,
+                            colorBuffer,
                             offscreenBufferOptions);
                     }
 
@@ -582,7 +585,7 @@ namespace tl
             const std::vector<ftk::ImageOptions>& imageOptions,
             const std::vector<DisplayOptions>& displayOptions,
             const CompareOptions& compareOptions,
-            ftk::ImageType colorBuffer)
+            ftk::gl::TextureType colorBuffer)
         {
             for (size_t i = 0; i < videoFrame.size() && i < boxes.size(); ++i)
             {
@@ -632,7 +635,7 @@ namespace tl
             const ftk::Box2I& box,
             const std::shared_ptr<ftk::ImageOptions>& imageOptions,
             const DisplayOptions& displayOptions,
-            ftk::ImageType colorBuffer)
+            ftk::gl::TextureType colorBuffer)
         {
             FTK_P();
             
@@ -652,15 +655,16 @@ namespace tl
 
             const ftk::Size2I& offscreenBufferSize = box.size();
             ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
-            offscreenBufferOptions.color = colorBuffer;
             offscreenBufferOptions.colorFilters = displayOptions.imageFilters;
             if (doCreate(
                 p.buffers["video"],
                 offscreenBufferSize,
+                colorBuffer,
                 offscreenBufferOptions))
             {
                 p.buffers["video"] = ftk::gl::OffscreenBuffer::create(
                     offscreenBufferSize,
+                    colorBuffer,
                     offscreenBufferOptions);
             }
 
@@ -684,19 +688,23 @@ namespace tl
                                 if (doCreate(
                                     p.buffers["dissolve"],
                                     offscreenBufferSize,
+                                    colorBuffer,
                                     offscreenBufferOptions))
                                 {
                                     p.buffers["dissolve"] = ftk::gl::OffscreenBuffer::create(
                                         offscreenBufferSize,
+                                        colorBuffer,
                                         offscreenBufferOptions);
                                 }
                                 if (doCreate(
                                     p.buffers["dissolve2"],
                                     offscreenBufferSize,
+                                    colorBuffer,
                                     offscreenBufferOptions))
                                 {
                                     p.buffers["dissolve2"] = ftk::gl::OffscreenBuffer::create(
                                         offscreenBufferSize,
+                                        colorBuffer,
                                         offscreenBufferOptions);
                                 }
                                 if (p.buffers["dissolve"])
@@ -705,8 +713,8 @@ namespace tl
                                     glViewport(0, 0, offscreenBufferSize.w, offscreenBufferSize.h);
                                     glClearColor(0.F, 0.F, 0.F, 0.F);
                                     glClear(GL_COLOR_BUFFER_BIT);
+                                    glDisable(GL_BLEND);
                                     auto imageOptionsTmp = imageOptions.get() ? *imageOptions : layer.imageOptions;
-                                    imageOptionsTmp.alphaBlend = ftk::AlphaBlend::None;
                                     imageOptionsTmp.cache = false;
                                     IRender::drawImage(
                                         layer.image,
@@ -715,6 +723,7 @@ namespace tl
                                             ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
                                         ftk::Color4F(1.F, 1.F, 1.F),
                                         imageOptionsTmp);
+                                    glEnable(GL_BLEND);
                                 }
                                 if (p.buffers["dissolve2"])
                                 {
@@ -722,8 +731,8 @@ namespace tl
                                     glViewport(0, 0, offscreenBufferSize.w, offscreenBufferSize.h);
                                     glClearColor(0.F, 0.F, 0.F, 0.F);
                                     glClear(GL_COLOR_BUFFER_BIT);
+                                    glDisable(GL_BLEND);
                                     auto imageOptionsTmp = imageOptions.get() ? *imageOptions : layer.imageOptionsB;
-                                    imageOptionsTmp.alphaBlend = ftk::AlphaBlend::None;
                                     imageOptionsTmp.cache = false;
                                     IRender::drawImage(
                                         layer.imageB,
@@ -732,6 +741,7 @@ namespace tl
                                             ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
                                         ftk::Color4F(1.F, 1.F, 1.F),
                                         imageOptionsTmp);
+                                    glEnable(GL_BLEND);
                                 }
                                 if (p.buffers["dissolve"] && p.buffers["dissolve2"])
                                 {

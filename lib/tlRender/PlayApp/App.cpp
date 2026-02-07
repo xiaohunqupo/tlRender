@@ -28,7 +28,7 @@ namespace tl
                 true);
 
             // Command line options.
-            _cmdLine.debugLoop = ftk::CmdLineValueOption<int>::create(
+            _cmdLine.debugLoop = ftk::CmdLineOption<int>::create(
                 { "-debugLoop" },
                 "Load the command line inputs in a loop. This value is the number of seconds for each cycle.",
                 "Testing",

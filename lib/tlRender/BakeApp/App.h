@@ -35,36 +35,36 @@ namespace tl
         //! Application command line.
         struct CmdLine
         {
-            std::shared_ptr<ftk::CmdLineValueArg<std::string> > input;
-            std::shared_ptr<ftk::CmdLineValueArg<std::string> > output;
-            std::shared_ptr<ftk::CmdLineValueOption<OTIO_NS::TimeRange> > inOutRange;
-            std::shared_ptr<ftk::CmdLineValueOption<ftk::Size2I> > renderSize;
-            std::shared_ptr<ftk::CmdLineValueOption<ftk::ImageType> > outputPixelType;
-            std::shared_ptr<ftk::CmdLineValueOption<std::string> > ocioFileName;
-            std::shared_ptr<ftk::CmdLineValueOption<std::string> > ocioInput;
-            std::shared_ptr<ftk::CmdLineValueOption<std::string> > ocioDisplay;
-            std::shared_ptr<ftk::CmdLineValueOption<std::string> > ocioView;
-            std::shared_ptr<ftk::CmdLineValueOption<std::string> > ocioLook;
-            std::shared_ptr<ftk::CmdLineValueOption<std::string> > lutFileName;
-            std::shared_ptr<ftk::CmdLineValueOption<LUTOrder> > lutOrder;
-            std::shared_ptr<ftk::CmdLineValueOption<double> > sequenceDefaultSpeed;
-            std::shared_ptr<ftk::CmdLineValueOption<int> > sequenceThreadCount;
+            std::shared_ptr<ftk::CmdLineArg<std::string> > input;
+            std::shared_ptr<ftk::CmdLineArg<std::string> > output;
+            std::shared_ptr<ftk::CmdLineOption<OTIO_NS::TimeRange> > inOutRange;
+            std::shared_ptr<ftk::CmdLineOption<ftk::Size2I> > renderSize;
+            std::shared_ptr<ftk::CmdLineOption<ftk::ImageType> > outputPixelType;
+            std::shared_ptr<ftk::CmdLineOption<std::string> > ocioFileName;
+            std::shared_ptr<ftk::CmdLineOption<std::string> > ocioInput;
+            std::shared_ptr<ftk::CmdLineOption<std::string> > ocioDisplay;
+            std::shared_ptr<ftk::CmdLineOption<std::string> > ocioView;
+            std::shared_ptr<ftk::CmdLineOption<std::string> > ocioLook;
+            std::shared_ptr<ftk::CmdLineOption<std::string> > lutFileName;
+            std::shared_ptr<ftk::CmdLineOption<LUTOrder> > lutOrder;
+            std::shared_ptr<ftk::CmdLineOption<double> > sequenceDefaultSpeed;
+            std::shared_ptr<ftk::CmdLineOption<int> > sequenceThreadCount;
 #if defined(TLRENDER_EXR)
-            std::shared_ptr<ftk::CmdLineValueOption<exr::Compression> > exrCompression;
-            std::shared_ptr<ftk::CmdLineValueOption<float> > exrDWACompressionLevel;
+            std::shared_ptr<ftk::CmdLineOption<exr::Compression> > exrCompression;
+            std::shared_ptr<ftk::CmdLineOption<float> > exrDWACompressionLevel;
 #endif // TLRENDER_EXR
 #if defined(TLRENDER_FFMPEG)
-            std::shared_ptr<ftk::CmdLineValueOption<std::string> > ffmpegCodec;
-            std::shared_ptr<ftk::CmdLineValueOption<int> > ffmpegThreadCount;
+            std::shared_ptr<ftk::CmdLineOption<std::string> > ffmpegCodec;
+            std::shared_ptr<ftk::CmdLineOption<int> > ffmpegThreadCount;
 #endif // TLRENDER_FFMPEG
 #if defined(TLRENDER_USD)
-            std::shared_ptr<ftk::CmdLineValueOption<int> > usdRenderWidth;
-            std::shared_ptr<ftk::CmdLineValueOption<float> > usdComplexity;
-            std::shared_ptr<ftk::CmdLineValueOption<usd::DrawMode> > usdDrawMode;
-            std::shared_ptr<ftk::CmdLineValueOption<bool> > usdEnableLighting;
-            std::shared_ptr<ftk::CmdLineValueOption<bool> > usdSRGB;
-            std::shared_ptr<ftk::CmdLineValueOption<int> > usdStageCache;
-            std::shared_ptr<ftk::CmdLineValueOption<int> > usdDiskCache;
+            std::shared_ptr<ftk::CmdLineOption<int> > usdRenderWidth;
+            std::shared_ptr<ftk::CmdLineOption<float> > usdComplexity;
+            std::shared_ptr<ftk::CmdLineOption<usd::DrawMode> > usdDrawMode;
+            std::shared_ptr<ftk::CmdLineOption<bool> > usdEnableLighting;
+            std::shared_ptr<ftk::CmdLineOption<bool> > usdSRGB;
+            std::shared_ptr<ftk::CmdLineOption<int> > usdStageCache;
+            std::shared_ptr<ftk::CmdLineOption<int> > usdDiskCache;
 #endif // TLRENDER_USD
         };
 
