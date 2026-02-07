@@ -106,7 +106,7 @@ namespace tl
             p.model = model;
 
             p.button = ftk::ToolButton::create(context, shared_from_this());
-            p.button->setText("TU");
+            p.button->setIcon("Time");
             p.button->setPopupIcon(true);
 
             p.button->setPressedCallback(
