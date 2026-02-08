@@ -18,10 +18,10 @@ namespace tl
             IWidget::_init(context, "TabBar", parent);
 
             _tabBar = ftk::TabBar::create(context, shared_from_this());
-            _tabBar->setTabsClosable(true);
+            _tabBar->setClosable(true);
 
             std::weak_ptr<App> appWeak(app);
-            _tabBar->setCurrentTabCallback(
+            _tabBar->setCallback(
                 [appWeak](int value)
                 {
                     if (auto app = appWeak.lock())
@@ -29,7 +29,7 @@ namespace tl
                         app->getFilesModel()->setCurrent(value);
                     }
                 });
-            _tabBar->setTabCloseCallback(
+            _tabBar->setCloseCallback(
                 [appWeak](int index)
                 {
                     if (auto app = appWeak.lock())
@@ -42,7 +42,7 @@ namespace tl
                 app->getFilesModel()->observePlayers(),
                 [this](const std::vector<std::shared_ptr<Player> >& value)
                 {
-                    const int index = _tabBar->getCurrentTab();
+                    const int index = _tabBar->getCurrent();
                     _tabBar->clear();
                     for (const auto& player : value)
                     {
@@ -50,14 +50,14 @@ namespace tl
                             player->getPath().getFileName(),
                             player->getPath().get());
                     }
-                    _tabBar->setCurrentTab(index);
+                    _tabBar->setCurrent(index);
                 });
 
             _playerIndexObserver = ftk::Observer<int>::create(
                 app->getFilesModel()->observePlayerIndex(),
                 [this](int value)
                 {
-                    _tabBar->setCurrentTab(value);
+                    _tabBar->setCurrent(value);
                 });
         }
 
