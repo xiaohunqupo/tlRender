@@ -49,7 +49,7 @@ namespace tl
             IBasicItem::_init(
                 context,
                 !clip->name().empty() ? clip->name() : path.getFileName(),
-                ftk::ColorRole::AudioClip,
+                ftk::Color4F(.3F, .25F, .4F),
                 "tl::ui::AudioClipItem",
                 clip.value,
                 scale,

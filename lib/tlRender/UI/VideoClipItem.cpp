@@ -52,7 +52,7 @@ namespace tl
             IBasicItem::_init(
                 context,
                 !clip->name().empty() ? clip->name() : path.getFileName(),
-                ftk::ColorRole::VideoClip,
+                ftk::Color4F(.2F, .4F, .4F),
                 "tl::ui::VideoClipItem",
                 clip.value,
                 scale,

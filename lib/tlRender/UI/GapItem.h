@@ -17,7 +17,7 @@ namespace tl
         protected:
             void _init(
                 const std::shared_ptr<ftk::Context>&,
-                ftk::ColorRole,
+                const ftk::Color4F&,
                 const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Gap>&,
                 double scale,
                 const ItemOptions&,
@@ -33,7 +33,7 @@ namespace tl
             //! Create a new item.
             TL_API static std::shared_ptr<GapItem> create(
                 const std::shared_ptr<ftk::Context>&,
-                ftk::ColorRole,
+                const ftk::Color4F&,
                 const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Gap>&,
                 double scale,
                 const ItemOptions&,

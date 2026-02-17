@@ -18,7 +18,7 @@ namespace tl
             void _init(
                 const std::shared_ptr<ftk::Context>&,
                 const std::string& label,
-                ftk::ColorRole,
+                const ftk::Color4F&,
                 const std::string& objectName,
                 const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Item>&,
                 double scale,

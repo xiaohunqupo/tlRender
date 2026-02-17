@@ -9,7 +9,7 @@ namespace tl
     {
         void GapItem::_init(
             const std::shared_ptr<ftk::Context>& context,
-            ftk::ColorRole colorRole,
+            const ftk::Color4F& color,
             const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Gap>& gap,
             double scale,
             const ItemOptions& options,
@@ -20,7 +20,7 @@ namespace tl
             IBasicItem::_init(
                 context,
                 !gap->name().empty() ? gap->name() : "Gap",
-                colorRole,
+                color,
                 "tl::ui::GapItem",
                 gap.value,
                 scale,
@@ -38,7 +38,7 @@ namespace tl
 
         std::shared_ptr<GapItem> GapItem::create(
             const std::shared_ptr<ftk::Context>& context,
-            ftk::ColorRole colorRole,
+            const ftk::Color4F& color,
             const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Gap>& gap,
             double scale,
             const ItemOptions& options,
@@ -49,7 +49,7 @@ namespace tl
             auto out = std::shared_ptr<GapItem>(new GapItem);
             out->_init(
                 context,
-                colorRole,
+                color,
                 gap,
                 scale,
                 options,

@@ -14,7 +14,7 @@ namespace tl
         {
             std::string label;
             std::string durationLabel;
-            ftk::ColorRole colorRole = ftk::ColorRole::None;
+            ftk::Color4F color;
             std::vector<Marker> markers;
 
             struct SizeData
@@ -45,7 +45,7 @@ namespace tl
         void IBasicItem::_init(
             const std::shared_ptr<ftk::Context>& context,
             const std::string& label,
-            ftk::ColorRole colorRole,
+            const ftk::Color4F& color,
             const std::string& objectName,
             const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Item>& item,
             double scale,
@@ -76,7 +76,7 @@ namespace tl
             FTK_P();
 
             p.label = label;
-            p.colorRole = colorRole;
+            p.color = color;
             p.markers = getMarkers(item.value);
 
             _textUpdate();
@@ -210,9 +210,7 @@ namespace tl
             // Draw the background.
             event.render->drawRect(
                 p.draw->g2,
-                isEnabled() ?
-                    event.style->getColorRole(p.colorRole) :
-                    ftk::greyscale(event.style->getColorRole(p.colorRole)));
+                isEnabled() ? p.color : ftk::greyscale(p.color));
 
             // Draw the labels.
             if (!_displayOptions.minimize)

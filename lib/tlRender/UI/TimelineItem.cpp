@@ -142,8 +142,8 @@ namespace tl
                             item = GapItem::create(
                                 context,
                                 TrackType::Video == track.type ?
-                                    ftk::ColorRole::VideoGap :
-                                    ftk::ColorRole::AudioGap,
+                                    ftk::Color4F(.25F, .31F, .31F) :
+                                    ftk::Color4F(.25F, .24F, .3F),
                                 gap,
                                 scale,
                                 options,
@@ -686,9 +686,7 @@ namespace tl
                 }
                 if (!mesh.v.empty())
                 {
-                    event.render->drawMesh(
-                        mesh,
-                        event.style->getColorRole(ftk::ColorRole::VideoClip));
+                    event.render->drawMesh(mesh, ftk::Color4F(.2F, .4F, .4F));
                 }
             }
 
@@ -724,9 +722,7 @@ namespace tl
                 }
                 if (!mesh.v.empty())
                 {
-                    event.render->drawMesh(
-                        mesh,
-                        event.style->getColorRole(ftk::ColorRole::AudioClip));
+                    event.render->drawMesh(mesh, ftk::Color4F(.3F, .25F, .4F));
                 }
             }
         }
