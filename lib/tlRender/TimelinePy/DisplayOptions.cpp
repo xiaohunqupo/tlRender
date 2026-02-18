@@ -28,10 +28,6 @@ namespace tl
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
             
-            m.def("brightness", &brightness);
-            m.def("contrast", &contrast);
-            m.def("saturation", &saturation);
-            m.def("tint", &tint);
             m.def("color", &color);
 
             py::class_<Levels>(m, "Levels")
