@@ -28,69 +28,13 @@ namespace tl
         return !(*this == other);
     }
 
-    ftk::M44F brightness(const ftk::V3F& value)
-    {
-        return ftk::M44F(
-            value.x, 0.F, 0.F, 0.F,
-            0.F, value.y, 0.F, 0.F,
-            0.F, 0.F, value.z, 0.F,
-            0.F, 0.F, 0.F, 1.F);
-    }
-
-    ftk::M44F contrast(const ftk::V3F& value)
-    {
-        return
-            ftk::M44F(
-                1.F, 0.F, 0.F, -.5F,
-                0.F, 1.F, 0.F, -.5F,
-                0.F, 0.F, 1.F, -.5F,
-                0.F, 0.F, 0.F, 1.F) *
-            ftk::M44F(
-                value.x, 0.F, 0.F, 0.F,
-                0.F, value.y, 0.F, 0.F,
-                0.F, 0.F, value.z, 0.F,
-                0.F, 0.F, 0.F, 1.F) *
-            ftk::M44F(
-                1.F, 0.F, 0.F, .5F,
-                0.F, 1.F, 0.F, .5F,
-                0.F, 0.F, 1.F, .5F,
-                0.F, 0.F, 0.F, 1.F);
-    }
-
-    ftk::M44F saturation(const ftk::V3F& value)
-    {
-        const ftk::V3F s(
-            (1.F - value.x) * .3086F,
-            (1.F - value.y) * .6094F,
-            (1.F - value.z) * .0820F);
-        return ftk::M44F(
-            s.x + value.x, s.y, s.z, 0.F,
-            s.x, s.y + value.y, s.z, 0.F,
-            s.x, s.y, s.z + value.z, 0.F,
-            0.F, 0.F, 0.F, 1.F);
-    }
-
-    ftk::M44F tint(float v)
-    {
-        const float c = cos(v * ftk::pi * 2.F);
-        const float c2 = 1.F - c;
-        const float c3 = 1.F / 3.F * c2;
-        const float s = sin(v * ftk::pi * 2.F);
-        const float sq = sqrtf(1.F / 3.F);
-        return ftk::M44F(
-            c + c2 / 3.F, c3 - sq * s, c3 + sq * s, 0.F,
-            c3 + sq * s, c + c3, c3 - sq * s, 0.F,
-            c3 - sq * s, c3 + sq * s, c + c3, 0.F,
-            0.F, 0.F, 0.F, 1.F);
-    }
-
     ftk::M44F color(const Color& in)
     {
         return
             ftk::brightness(in.brightness) *
             ftk::contrast(in.contrast) *
             ftk::saturation(in.saturation) *
-            tint(in.tint);
+            ftk::tint(in.tint);
     }
 
     bool Levels::operator == (const Levels& other) const

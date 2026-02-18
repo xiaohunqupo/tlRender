@@ -65,6 +65,10 @@ namespace tl
             //imageOptions.alphaBlend = ftk::AlphaBlend::None;
             //_viewport->setImageOptions({ imageOptions, imageOptions });
             //DisplayOptions displayOptions;
+            //displayOptions.color.enabled = true;
+            //displayOptions.color.contrast.x = .1F;
+            //displayOptions.color.contrast.y = .1F;
+            //displayOptions.color.contrast.z = .1F;
             //displayOptions.imageFilters.minify = ftk::ImageFilter::Nearest;
             //displayOptions.imageFilters.magnify = ftk::ImageFilter::Nearest;
             //_viewport->setDisplayOptions({ displayOptions, displayOptions });

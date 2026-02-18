@@ -26,18 +26,6 @@ namespace tl
         TL_API bool operator != (const Color&) const;
     };
 
-    //! Get a brightness color matrix.
-    TL_API ftk::M44F brightness(const ftk::V3F&);
-
-    //! Get a contrast color matrix.
-    TL_API ftk::M44F contrast(const ftk::V3F&);
-
-    //! Get a saturation color matrix.
-    TL_API ftk::M44F saturation(const ftk::V3F&);
-
-    //! Get a tint color matrix.
-    TL_API ftk::M44F tint(float);
-
     //! Get a color matrix.
     TL_API ftk::M44F color(const Color&);
 
