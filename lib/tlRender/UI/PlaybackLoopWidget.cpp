@@ -14,6 +14,20 @@ namespace tl
     {
         namespace
         {
+            const std::vector<std::string> icons =
+            {
+                "PlaybackLoop",
+                "PlaybackOnce",
+                "PlaybackPingPong"
+            };
+
+            const std::vector<std::string> tooltips =
+            {
+                "Loop playback continuously.",
+                "Playback once and stop.",
+                "Playback forward and reverse continuously."
+            };
+
             class PlaybackLoopPopup : public ftk::IWidgetPopup
             {
                 FTK_NON_COPYABLE(PlaybackLoopPopup);
@@ -53,18 +67,6 @@ namespace tl
                 layout->setSpacingRole(ftk::SizeRole::None);
                 setWidget(layout);
 
-                const std::vector<std::string> icons =
-                {
-                    "PlaybackLoop",
-                    "PlaybackOnce",
-                    "PlaybackPingPong"
-                };
-                const std::vector<std::string> tooltips =
-                {
-                    "Loop playback continuously.",
-                    "Playback once and stop.",
-                    "Playback forward and reverse."
-                };
                 for (size_t i = 0; i < icons.size(); ++i)
                 {
                     auto button = ftk::ToolButton::create(context, layout);
@@ -184,15 +186,9 @@ namespace tl
         void PlaybackLoopWidget::_widgetUpdate()
         {
             FTK_P();
-            std::string icon;
-            switch (p.loop)
-            {
-            case Loop::Loop: icon = "PlaybackLoop"; break;
-            case Loop::Once: icon = "PlaybackOnce"; break;
-            case Loop::PingPong: icon = "PlaybackPingPong"; break;
-            default: break;
-            }
-            p.button->setIcon(icon);
+            const size_t i = static_cast<size_t>(p.loop);
+            p.button->setIcon(icons[i]);
+            setTooltip(tooltips[i]);
         }
 
         void PlaybackLoopWidget::_showPopup()

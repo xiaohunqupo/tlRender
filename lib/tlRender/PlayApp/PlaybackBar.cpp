@@ -31,7 +31,6 @@ namespace tl
             auto stopButton = ftk::ToolButton::create(context, tmp["Stop"], hLayout);
             auto forwardButton = ftk::ToolButton::create(context, tmp["Forward"], hLayout);
             _loopWidget = ui::PlaybackLoopWidget::create(context, hLayout);
-            _loopWidget->setTooltip("Playback loop mode.");
 
             hLayout = ftk::HorizontalLayout::create(context, _layout);
             hLayout->setSpacingRole(ftk::SizeRole::None);
