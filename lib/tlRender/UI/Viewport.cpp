@@ -78,6 +78,7 @@ namespace tl
             struct MouseData
             {
                 bool inside = false;
+                ftk::V2I pos;
                 ftk::V2I press;
                 MouseMode mode = MouseMode::None;
                 ftk::V2I viewPos;
@@ -466,7 +467,9 @@ namespace tl
         void Viewport::viewZoomIn()
         {
             FTK_P();
-            setViewZoom(p.viewZoom->get() * 2.0, _getViewportCenter());
+            setViewZoom(
+                p.viewZoom->get() * 2.0,
+                p.mouse.inside ? p.mouse.pos : _getViewportCenter());
         }
 
         void Viewport::viewZoomOut()
@@ -755,6 +758,7 @@ namespace tl
             {
                 event.accept = true;
                 p.mouse.inside = true;
+                p.mouse.pos = event.pos - getGeometry().min;
             }
         }
 
@@ -772,17 +776,13 @@ namespace tl
                 event.accept = true;
 
                 const ftk::Box2I& g = getGeometry();
-                const ftk::V2I pos(
-                    event.pos.x - g.min.x,
-                    event.pos.y - g.min.y);
+                p.mouse.pos = event.pos - g.min;
 
                 switch (p.mouse.mode)
                 {
                 case Private::MouseMode::View:
                 {
-                    const ftk::V2I viewPos(
-                        p.mouse.viewPos.x + (pos.x - p.mouse.press.x),
-                        p.mouse.viewPos.y + (pos.y - p.mouse.press.y));
+                    const ftk::V2I viewPos = p.mouse.viewPos + (p.mouse.pos - p.mouse.press);
                     const double viewZoom = p.viewZoom->get();
                     const std::pair<ftk::V2I, double> pair(viewPos, viewZoom);
                     if (pair != p.viewPosZoom->get())
@@ -809,9 +809,9 @@ namespace tl
                             const double viewZoom = p.viewZoom->get();
                             const auto& imageInfo = ioInfo.video[0];
                             CompareOptions compareOptions = p.compareOptions->get();
-                            compareOptions.wipeCenter.x = (pos.x - viewPos.x) / viewZoom /
+                            compareOptions.wipeCenter.x = (p.mouse.pos.x - viewPos.x) / viewZoom /
                                 static_cast<float>(imageInfo.size.w * imageInfo.pixelAspectRatio);
-                            compareOptions.wipeCenter.y = (pos.y - viewPos.y) / viewZoom /
+                            compareOptions.wipeCenter.y = (p.mouse.pos.y - viewPos.y) / viewZoom /
                                 static_cast<float>(imageInfo.size.h);
                             if (p.compareOptions->setIfChanged(compareOptions))
                             {
@@ -833,13 +833,10 @@ namespace tl
             if (p.inputEnabled)
             {
                 event.accept = true;
-                takeKeyFocus();
 
                 const ftk::Box2I& g = getGeometry();
-                const ftk::V2I pos(
-                    event.pos.x - g.min.x,
-                    event.pos.y - g.min.y);
-                p.mouse.press = pos;
+                p.mouse.pos = event.pos - g.min;
+                p.mouse.press = p.mouse.pos;
 
                 if (p.panBinding.first == event.button &&
                     ftk::checkKeyModifier(p.panBinding.second, event.modifiers))
@@ -876,16 +873,14 @@ namespace tl
                     event.accept = true;
 
                     const ftk::Box2I& g = getGeometry();
-                    const ftk::V2I pos(
-                        event.pos.x - g.min.x,
-                        event.pos.y - g.min.y);
+                    p.mouse.pos = event.pos - g.min;
 
                     const double viewZoom = p.viewZoom->get();
                     const double newZoom =
                         event.value.y > 0 ?
                         viewZoom * p.mouseWheelScale :
                         viewZoom / p.mouseWheelScale;
-                    setViewZoom(newZoom, pos);
+                    setViewZoom(newZoom, p.mouse.pos);
                 }
                 else if (event.modifiers & static_cast<int>(ftk::KeyModifier::Control))
                 {
@@ -906,9 +901,7 @@ namespace tl
             if (p.inputEnabled)
             {
                 const ftk::Box2I& g = getGeometry();
-                const ftk::V2I pos(
-                    event.pos.x - g.min.x,
-                    event.pos.y - g.min.y);
+                p.mouse.pos = event.pos - g.min;
 
                 if (0 == event.modifiers)
                 {
@@ -916,17 +909,17 @@ namespace tl
                     {
                     case ftk::Key::_0:
                         event.accept = true;
-                        setViewZoom(1.0, pos);
+                        setViewZoom(1.0, p.mouse.pos);
                         break;
 
                     case ftk::Key::Equals:
                         event.accept = true;
-                        setViewZoom(p.viewZoom->get() * 2.0, pos);
+                        setViewZoom(p.viewZoom->get() * 2.0, p.mouse.pos);
                         break;
 
                     case ftk::Key::Minus:
                         event.accept = true;
-                        setViewZoom(p.viewZoom->get() / 2.0, pos);
+                        setViewZoom(p.viewZoom->get() / 2.0, p.mouse.pos);
                         break;
 
                     case ftk::Key::Backspace:

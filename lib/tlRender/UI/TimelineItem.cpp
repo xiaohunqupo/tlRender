@@ -462,8 +462,6 @@ namespace tl
                 ftk::MouseButton::Left == event.button &&
                 0 == event.modifiers)
             {
-                takeKeyFocus();
-
                 p.mouseMode = Private::MouseMode::CurrentTime;
                 if (p.stopOnScrub)
                 {
@@ -483,25 +481,6 @@ namespace tl
             p.scrub->setIfChanged(false);
             p.mouseMode = Private::MouseMode::None;
         }
-
-        /*void TimelineItem::keyPressEvent(ftk::KeyEvent& event)
-        {
-            FTK_P();
-            if (isEnabled() &&
-                _options.inputEnabled &&
-                0 == event.modifiers)
-            {
-                switch (event.key)
-                {
-                default: break;
-                }
-            }
-        }
-
-        void TimelineItem::keyReleaseEvent(ftk::KeyEvent& event)
-        {
-            event.accept = true;
-        }*/
 
         void TimelineItem::_timeUnitsUpdate()
         {

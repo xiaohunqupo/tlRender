@@ -89,8 +89,6 @@ namespace tl
             TL_API void mouseMoveEvent(ftk::MouseMoveEvent&) override;
             TL_API void mousePressEvent(ftk::MouseClickEvent&) override;
             TL_API void mouseReleaseEvent(ftk::MouseClickEvent&) override;
-            //TL_API void keyPressEvent(ftk::KeyEvent&) override;
-            //TL_API void keyReleaseEvent(ftk::KeyEvent&) override;
 
         protected:
             void _timeUnitsUpdate() override;

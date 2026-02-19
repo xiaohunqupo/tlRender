@@ -475,7 +475,6 @@ namespace tl
                 p.scrollBinding.first == event.button &&
                 checkKeyModifier(p.scrollBinding.second, event.modifiers))
             {
-                takeKeyFocus();
                 p.mouse.mode = Private::MouseMode::Scroll;
                 p.mouse.scrollPos = p.scrollWidget->getScrollPos();
             }
@@ -498,7 +497,6 @@ namespace tl
             if (p.itemOptions->get().inputEnabled)
             {
                 event.accept = true;
-                takeKeyFocus();
                 const double newZoom =
                     event.value.y > 0 ?
                     p.scale * p.mouseWheelScale :

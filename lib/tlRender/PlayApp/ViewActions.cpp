@@ -21,7 +21,6 @@ namespace tl
             _actions["Frame"] = ftk::Action::create(
                 "Frame",
                 "ViewFrame",
-                ftk::Key::Backspace,
                 [viewportWeak](bool value)
                 {
                     if (auto viewport = viewportWeak.lock())
@@ -34,7 +33,6 @@ namespace tl
             _actions["ZoomReset"] = ftk::Action::create(
                 "Zoom Reset",
                 "ViewZoomReset",
-                ftk::Key::_0,
                 [viewportWeak]
                 {
                     if (auto viewport = viewportWeak.lock())
@@ -47,7 +45,6 @@ namespace tl
             _actions["ZoomIn"] = ftk::Action::create(
                 "Zoom In",
                 "ViewZoomIn",
-                ftk::Key::Equals,
                 [viewportWeak]
                 {
                     if (auto viewport = viewportWeak.lock())
@@ -60,7 +57,6 @@ namespace tl
             _actions["ZoomOut"] = ftk::Action::create(
                 "Zoom Out",
                 "ViewZoomOut",
-                ftk::Key::Minus,
                 [viewportWeak]
                 {
                     if (auto viewport = viewportWeak.lock())
