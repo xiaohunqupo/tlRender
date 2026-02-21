@@ -30,14 +30,23 @@ namespace tl
             ftk::Divider::create(context, ftk::Orientation::Horizontal, _layout);
             _labels["Info"] = ftk::Label::create(context, _layout);
             _labels["Info"]->setMarginRole(ftk::SizeRole::MarginInside);
-            
-            _logTimer = ftk::Timer::create(context);
 
-            _logObserver = ftk::ListObserver<ftk::LogItem>::create(
-                context->getLogSystem()->observeLogItems(),
-                [this](const std::vector<ftk::LogItem>& value)
+            _messagesObserver = ftk::ListObserver<std::string>::create(
+                app->getSysLogModel()->observeMessages(),
+                [this](const std::vector<std::string>& value)
                 {
-                    _logUpdate(value);
+                    _labels["Log"]->setText(!value.empty() ? value.back() : std::string());
+                    _labels["Log"]->setTooltip(!value.empty() ? value.back() : std::string());
+                    if (!value.empty())
+                    {
+                        _messagesTimer->start(
+                            std::chrono::seconds(5),
+                            [this]
+                            {
+                                _labels["Log"]->setText(std::string());
+                                _labels["Log"]->setTooltip(std::string());
+                            });
+                    }
                 });
 
             _playerObserver = ftk::Observer<std::shared_ptr<Player> >::create(
@@ -46,6 +55,8 @@ namespace tl
                 {
                     _infoUpdate(value);
                 });
+
+            _messagesTimer = ftk::Timer::create(context);
         }
 
         StatusBar::~StatusBar()
@@ -70,31 +81,6 @@ namespace tl
         {
             IWidget::setGeometry(value);
             _layout->setGeometry(value);
-        }
-
-        void StatusBar::_logUpdate(const std::vector<ftk::LogItem>& value)
-        {
-            for (const auto& i : value)
-            {
-                switch (i.type)
-                {
-                case ftk::LogType::Error:
-                {
-                    const std::string text = ftk::getLabel(i, true);
-                    _labels["Log"]->setText(text);
-                    _labels["Log"]->setTooltip(text);
-                    _logTimer->start(
-                        std::chrono::seconds(5),
-                        [this]
-                        {
-                            _labels["Log"]->setText(std::string());
-                            _labels["Log"]->setTooltip(std::string());
-                        });
-                    break;
-                }
-                default: break;
-                }
-            }
         }
 
         void StatusBar::_infoUpdate(const std::shared_ptr<Player>& player)

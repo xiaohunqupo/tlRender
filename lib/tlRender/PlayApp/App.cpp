@@ -78,6 +78,11 @@ namespace tl
             return _settingsModel;
         }
 
+        const std::shared_ptr<ftk::SysLogModel>& App::getSysLogModel() const
+        {
+            return _sysLogModel;
+        }
+
         const std::shared_ptr<TimeUnitsModel>& App::getTimeUnitsModel() const
         {
             return _timeUnitsModel;
@@ -138,6 +143,9 @@ namespace tl
                 _context,
                 ftk::getSettingsPath("tlRender", "tlplay.json"));
 
+            // Create the system log model.
+            _sysLogModel = ftk::SysLogModel::create(_context);
+
             // Create the time units model.
             _timeUnitsModel = TimeUnitsModel::create(_context);
             std::string settings;
@@ -172,6 +180,9 @@ namespace tl
             // Initialize the file browser.
             auto fileBrowserSystem = _context->getSystem<ftk::FileBrowserSystem>();
             fileBrowserSystem->getModel()->setExts(getExts(_context));
+            ftk::FileBrowserOptions fileBrowserOptions;
+            fileBrowserOptions.dirList.seqExts = tl::getExts(_context, static_cast<int>(tl::FileType::Seq));
+            fileBrowserSystem->getModel()->setOptions(fileBrowserOptions);
             fileBrowserSystem->setRecentFilesModel(_recentFilesModel);
 
 #if defined(TLRENDER_BMD)
