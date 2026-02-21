@@ -125,7 +125,9 @@ namespace tl
                 oiioMemReader.get());
             if (!oiioInput)
             {
-                throw std::runtime_error(OIIO::geterror());
+                std::stringstream ss;
+                ss << "Cannot open file: " << fileName;
+                throw std::runtime_error(ss.str());
             }
 
             // Get file information.
@@ -185,7 +187,9 @@ namespace tl
                 oiioMemReader.get());
             if (!oiioInput)
             {
-                throw std::runtime_error(OIIO::geterror());
+                std::stringstream ss;
+                ss << "Cannot open file: " << fileName;
+                throw std::runtime_error(ss.str());
             }
 
             // Find the layer.
