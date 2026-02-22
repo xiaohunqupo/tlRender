@@ -31,6 +31,8 @@ namespace tl
             _labels["Info"] = ftk::Label::create(context, _layout);
             _labels["Info"]->setMarginRole(ftk::SizeRole::MarginInside);
 
+            _messagesTimer = ftk::Timer::create(context);
+
             _messagesObserver = ftk::ListObserver<std::string>::create(
                 app->getSysLogModel()->observeMessages(),
                 [this](const std::vector<std::string>& value)
@@ -55,8 +57,6 @@ namespace tl
                 {
                     _infoUpdate(value);
                 });
-
-            _messagesTimer = ftk::Timer::create(context);
         }
 
         StatusBar::~StatusBar()
