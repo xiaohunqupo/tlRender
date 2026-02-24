@@ -37,7 +37,7 @@ namespace tl
                 {
                     if (auto viewport = viewportWeak.lock())
                     {
-                        viewport->viewZoomReset();
+                        viewport->resetZoom();
                     }
                 });
             _actions["ZoomReset"]->setTooltip("Reset the view zoom.");
@@ -49,7 +49,7 @@ namespace tl
                 {
                     if (auto viewport = viewportWeak.lock())
                     {
-                        viewport->viewZoomIn();
+                        viewport->zoomIn();
                     }
                 });
             _actions["ZoomIn"]->setTooltip("Zoom the view in.");
@@ -61,7 +61,7 @@ namespace tl
                 {
                     if (auto viewport = viewportWeak.lock())
                     {
-                        viewport->viewZoomOut();
+                        viewport->zoomOut();
                     }
                 });
             _actions["ZoomOut"]->setTooltip("Zoom the view out.");

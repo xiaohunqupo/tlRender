@@ -95,11 +95,11 @@ namespace tl
                     "observeViewPos",
                     &Viewport::observeViewPos)
                 .def_property_readonly(
-                    "viewZoom",
-                    &Viewport::getViewZoom)
+                    "zoom",
+                    &Viewport::getZoom)
                 .def_property_readonly(
-                    "observeViewZoom",
-                    &Viewport::observeViewZoom)
+                    "observeZoom",
+                    &Viewport::observeZoom)
                 .def_property_readonly(
                     "viewPosAndZoom",
                     &Viewport::getViewPosAndZoom)
@@ -112,10 +112,14 @@ namespace tl
                     "observeViewPosAndZoom",
                     &Viewport::observeViewPosAndZoom)
                 .def(
-                    "setViewZoom",
+                    "setZoom",
                     &Viewport::setViewPosAndZoom,
                     py::arg("zoom"),
                     py::arg("focus"))
+                .def_property(
+                    "zoomRange",
+                    &Viewport::getZoomRange,
+                    &Viewport::setZoomRange)
                 .def_property(
                     "frameView",
                     &Viewport::hasFrameView,
@@ -126,9 +130,9 @@ namespace tl
                 .def_property_readonly(
                     "observeFramed",
                     &Viewport::observeFramed)
-                .def("viewZoomReset", &Viewport::viewZoomReset)
-                .def("viewZoomIn", &Viewport::viewZoomIn)
-                .def("viewZoomOut", &Viewport::viewZoomOut)
+                .def("resetZoom", &Viewport::resetZoom)
+                .def("zoomIn", &Viewport::zoomIn)
+                .def("zoomOut", &Viewport::zoomOut)
                 .def_property_readonly(
                     "FPS",
                     &Viewport::getFPS)

@@ -124,10 +124,10 @@ namespace tl
             TL_API std::shared_ptr<ftk::IObservable<ftk::V2I> > observeViewPos() const;
 
             //! Get the view zoom.
-            TL_API double getViewZoom() const;
+            TL_API double getZoom() const;
 
             //! Observe the view zoom.
-            TL_API std::shared_ptr<ftk::IObservable<double> > observeViewZoom() const;
+            TL_API std::shared_ptr<ftk::IObservable<double> > observeZoom() const;
 
             //! Get the view position and zoom.
             TL_API std::pair<ftk::V2I, double> getViewPosAndZoom() const;
@@ -139,7 +139,13 @@ namespace tl
             TL_API void setViewPosAndZoom(const ftk::V2I&, double);
 
             //! Set the view zoom.
-            TL_API void setViewZoom(double, const ftk::V2I& focus = ftk::V2I());
+            TL_API void setZoom(double, const ftk::V2I& focus = ftk::V2I());
+
+            //! Get the view zoom range.
+            TL_API const ftk::RangeD& getZoomRange() const;
+
+            //! Set the view zoom range.
+            TL_API void setZoomRange(const ftk::RangeD&);
 
             //! Get whether the view is framed automatically.
             TL_API bool hasFrameView() const;
@@ -154,13 +160,13 @@ namespace tl
             TL_API void setFrameView(bool);
 
             //! Reset the view zoom to 1:1.
-            TL_API void viewZoomReset();
+            TL_API void resetZoom();
 
             //! Zoom the view in.
-            TL_API void viewZoomIn();
+            TL_API void zoomIn();
 
             //! Zoom the view out.
-            TL_API void viewZoomOut();
+            TL_API void zoomOut();
 
             ///@}
 

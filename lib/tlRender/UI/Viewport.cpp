@@ -32,7 +32,8 @@ namespace tl
             std::shared_ptr<Player> player;
             std::vector<VideoFrame> videoFrame;
             std::shared_ptr<ftk::Observable<ftk::V2I> > viewPos;
-            std::shared_ptr<ftk::Observable<double> > viewZoom;
+            std::shared_ptr<ftk::Observable<double> > zoom;
+            ftk::RangeD zoomRange = ftk::RangeD(0.01, 100.0);
             std::shared_ptr<ftk::Observable<std::pair<ftk::V2I, double> > > viewPosZoom;
             std::shared_ptr<ftk::Observable<bool> > frameView;
             std::shared_ptr<ftk::Observable<bool> > framed;
@@ -110,7 +111,7 @@ namespace tl
             p.colorBuffer = ftk::Observable<ftk::gl::TextureType>::create(
                 ftk::gl::TextureType::RGBA_F32);
             p.viewPos = ftk::Observable<ftk::V2I>::create();
-            p.viewZoom = ftk::Observable<double>::create(1.0);
+            p.zoom = ftk::Observable<double>::create(1.0);
             p.viewPosZoom = ftk::Observable<std::pair<ftk::V2I, double> >::create(
                 std::make_pair(ftk::V2I(), 1.0));
             p.frameView = ftk::Observable<bool>::create(true);
@@ -381,14 +382,14 @@ namespace tl
             return _p->viewPos;
         }
 
-        double Viewport::getViewZoom() const
+        double Viewport::getZoom() const
         {
-            return _p->viewZoom->get();
+            return _p->zoom->get();
         }
 
-        std::shared_ptr<ftk::IObservable<double> > Viewport::observeViewZoom() const
+        std::shared_ptr<ftk::IObservable<double> > Viewport::observeZoom() const
         {
-            return _p->viewZoom;
+            return _p->zoom;
         }
 
         std::pair<ftk::V2I, double> Viewport::getViewPosAndZoom() const
@@ -404,7 +405,8 @@ namespace tl
         void Viewport::setViewPosAndZoom(const ftk::V2I& pos, double zoom)
         {
             FTK_P();
-            const std::pair<ftk::V2I, double> pair(pos, zoom);
+            const double zoomClamped = ftk::clamp(zoom, p.zoomRange.min(), p.zoomRange.max());
+            const std::pair<ftk::V2I, double> pair(pos, zoomClamped);
             if (pair != p.viewPosZoom->get())
             {
                 setFrameView(false);
@@ -412,21 +414,22 @@ namespace tl
             if (p.viewPosZoom->setIfChanged(pair))
             {
                 p.viewPos->setIfChanged(pos);
-                p.viewZoom->setIfChanged(zoom);
+                p.zoom->setIfChanged(zoomClamped);
                 p.doRender = true;
                 setDrawUpdate();
             }
         }
 
-        void Viewport::setViewZoom(double zoom, const ftk::V2I& focus)
+        void Viewport::setZoom(double zoom, const ftk::V2I& focus)
         {
             FTK_P();
             ftk::V2I pos;
             const ftk::V2I& viewPos = p.viewPos->get();
-            const double viewZoom = p.viewZoom->get();
-            pos.x = focus.x + (viewPos.x - focus.x) * (zoom / viewZoom);
-            pos.y = focus.y + (viewPos.y - focus.y) * (zoom / viewZoom);
-            setViewPosAndZoom(pos, zoom);
+            const double zoomPrev = p.zoom->get();
+            const double zoomClamped = ftk::clamp(zoom, p.zoomRange.min(), p.zoomRange.max());
+            pos.x = focus.x + (viewPos.x - focus.x) * (zoomClamped / zoomPrev);
+            pos.y = focus.y + (viewPos.y - focus.y) * (zoomClamped / zoomPrev);
+            setViewPosAndZoom(pos, zoomClamped);
         }
 
         bool Viewport::hasFrameView() const
@@ -458,24 +461,36 @@ namespace tl
             }
         }
 
-        void Viewport::viewZoomReset()
+        void Viewport::resetZoom()
         {
             FTK_P();
-            setViewZoom(1.F, _getViewportCenter());
+            setZoom(1.F, _getViewportCenter());
         }
 
-        void Viewport::viewZoomIn()
+        void Viewport::zoomIn()
         {
             FTK_P();
-            setViewZoom(
-                p.viewZoom->get() * 2.0,
+            setZoom(
+                p.zoom->get() * 2.0,
                 p.mouse.inside ? p.mouse.pos : _getViewportCenter());
         }
 
-        void Viewport::viewZoomOut()
+        void Viewport::zoomOut()
         {
             FTK_P();
-            setViewZoom(p.viewZoom->get() / 2.0, _getViewportCenter());
+            setZoom(p.zoom->get() / 2.0, _getViewportCenter());
+        }
+
+        const ftk::RangeD& Viewport::getZoomRange() const
+        {
+            return _p->zoomRange;
+        }
+
+        void Viewport::setZoomRange(const ftk::RangeD& value)
+        {
+            FTK_P();
+            p.zoomRange = value;
+            setZoom(p.zoom->get());
         }
 
         double Viewport::getFPS() const
@@ -659,10 +674,10 @@ namespace tl
                     const CompareOptions& compareOptions = p.compareOptions->get();
                     const auto boxes = getBoxes(compareOptions.compare, p.videoFrame);
                     const ftk::V2I& viewPos = p.viewPos->get();
-                    const double viewZoom = p.viewZoom->get();
+                    const double zoom = p.zoom->get();
                     const ftk::M44F vm =
                         ftk::translate(ftk::V3F(viewPos.x, viewPos.y, 0.F)) *
-                        ftk::scale(ftk::V3F(viewZoom, viewZoom, 1.F));
+                        ftk::scale(ftk::V3F(zoom, zoom, 1.F));
 
                     // Setup the state.
                     const ftk::ViewportState viewportState(render);
@@ -783,16 +798,16 @@ namespace tl
                 case Private::MouseMode::View:
                 {
                     const ftk::V2I viewPos = p.mouse.viewPos + (p.mouse.pos - p.mouse.press);
-                    const double viewZoom = p.viewZoom->get();
-                    const std::pair<ftk::V2I, double> pair(viewPos, viewZoom);
+                    const double zoom = p.zoom->get();
+                    const std::pair<ftk::V2I, double> pair(viewPos, zoom);
                     if (pair != p.viewPosZoom->get())
                     {
                         setFrameView(false);
                     }
-                    if (p.viewPosZoom->setIfChanged(std::make_pair(viewPos, viewZoom)))
+                    if (p.viewPosZoom->setIfChanged(std::make_pair(viewPos, zoom)))
                     {
                         p.viewPos->setIfChanged(viewPos);
-                        p.viewZoom->setIfChanged(viewZoom);
+                        p.zoom->setIfChanged(zoom);
                         p.doRender = true;
                         setDrawUpdate();
                     }
@@ -806,12 +821,12 @@ namespace tl
                         if (!ioInfo.video.empty())
                         {
                             const ftk::V2I& viewPos = p.viewPos->get();
-                            const double viewZoom = p.viewZoom->get();
+                            const double zoom = p.zoom->get();
                             const auto& imageInfo = ioInfo.video[0];
                             CompareOptions compareOptions = p.compareOptions->get();
-                            compareOptions.wipeCenter.x = (p.mouse.pos.x - viewPos.x) / viewZoom /
+                            compareOptions.wipeCenter.x = (p.mouse.pos.x - viewPos.x) / zoom /
                                 static_cast<float>(imageInfo.size.w * imageInfo.pixelAspectRatio);
-                            compareOptions.wipeCenter.y = (p.mouse.pos.y - viewPos.y) / viewZoom /
+                            compareOptions.wipeCenter.y = (p.mouse.pos.y - viewPos.y) / zoom /
                                 static_cast<float>(imageInfo.size.h);
                             if (p.compareOptions->setIfChanged(compareOptions))
                             {
@@ -875,12 +890,12 @@ namespace tl
                     const ftk::Box2I& g = getGeometry();
                     p.mouse.pos = event.pos - g.min;
 
-                    const double viewZoom = p.viewZoom->get();
+                    const double zoom = p.zoom->get();
                     const double newZoom =
                         event.value.y > 0 ?
-                        viewZoom * p.mouseWheelScale :
-                        viewZoom / p.mouseWheelScale;
-                    setViewZoom(newZoom, p.mouse.pos);
+                        zoom * p.mouseWheelScale :
+                        zoom / p.mouseWheelScale;
+                    setZoom(newZoom, p.mouse.pos);
                 }
                 else if (event.modifiers & static_cast<int>(ftk::KeyModifier::Control))
                 {
@@ -909,17 +924,17 @@ namespace tl
                     {
                     case ftk::Key::_0:
                         event.accept = true;
-                        setViewZoom(1.0, p.mouse.pos);
+                        setZoom(1.0, p.mouse.pos);
                         break;
 
                     case ftk::Key::Equals:
                         event.accept = true;
-                        setViewZoom(p.viewZoom->get() * 2.0, p.mouse.pos);
+                        setZoom(p.zoom->get() * 2.0, p.mouse.pos);
                         break;
 
                     case ftk::Key::Minus:
                         event.accept = true;
-                        setViewZoom(p.viewZoom->get() / 2.0, p.mouse.pos);
+                        setZoom(p.zoom->get() / 2.0, p.mouse.pos);
                         break;
 
                     case ftk::Key::Backspace:
@@ -964,26 +979,26 @@ namespace tl
         {
             FTK_P();
             ftk::V2I viewPos;
-            double viewZoom = 1.0;
+            double zoom = 1.0;
             const ftk::Box2I& g = getGeometry();
             const ftk::Size2I viewportSize = g.size();
             const ftk::Size2I renderSize = _getRenderSize();
             if (renderSize.w > 0 && renderSize.h > 0)
             {
-                viewZoom = viewportSize.w / static_cast<double>(renderSize.w);
-                if (viewZoom * renderSize.h > viewportSize.h)
+                zoom = viewportSize.w / static_cast<double>(renderSize.w);
+                if (zoom * renderSize.h > viewportSize.h)
                 {
-                    viewZoom = viewportSize.h / static_cast<double>(renderSize.h);
+                    zoom = viewportSize.h / static_cast<double>(renderSize.h);
                 }
                 const ftk::V2I c(renderSize.w / 2, renderSize.h / 2);
                 viewPos = ftk::V2I(
-                    viewportSize.w / 2.F - c.x * viewZoom,
-                    viewportSize.h / 2.F - c.y * viewZoom);
+                    viewportSize.w / 2.F - c.x * zoom,
+                    viewportSize.h / 2.F - c.y * zoom);
             }
-            if (p.viewPosZoom->setIfChanged(std::make_pair(viewPos, viewZoom)))
+            if (p.viewPosZoom->setIfChanged(std::make_pair(viewPos, zoom)))
             {
                 p.viewPos->setIfChanged(viewPos);
-                p.viewZoom->setIfChanged(viewZoom);
+                p.zoom->setIfChanged(zoom);
             }
         }
 
