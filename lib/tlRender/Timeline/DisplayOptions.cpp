@@ -19,7 +19,7 @@ namespace tl
             brightness == other.brightness &&
             contrast == other.contrast &&
             saturation == other.saturation &&
-            tint == other.tint &&
+            hue == other.hue &&
             invert == other.invert;
     }
 
@@ -34,7 +34,7 @@ namespace tl
             ftk::brightness(in.brightness) *
             ftk::contrast(in.contrast) *
             ftk::saturation(in.saturation) *
-            ftk::tint(in.tint);
+            ftk::hue(in.hue);
     }
 
     bool Levels::operator == (const Levels& other) const
@@ -104,7 +104,7 @@ namespace tl
         json["Brightness"] = in.brightness;
         json["Contrast"] = in.contrast;
         json["Saturation"] = in.saturation;
-        json["Tint"] = in.tint;
+        json["Hue"] = in.hue;
         json["Invert"] = in.invert;
     }
 
@@ -151,7 +151,7 @@ namespace tl
         json.at("Brightness").get_to(out.brightness);
         json.at("Contrast").get_to(out.contrast);
         json.at("Saturation").get_to(out.saturation);
-        json.at("Tint").get_to(out.tint);
+        json.at("Hue").get_to(out.hue);
         json.at("Invert").get_to(out.invert);
     }
 

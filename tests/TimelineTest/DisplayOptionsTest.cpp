@@ -35,7 +35,7 @@ namespace tl
                 color.brightness = ftk::V3F(2.F, 1.F, 1.F);
                 color.contrast = ftk::V3F(2.F, 1.F, 1.F);
                 color.saturation = ftk::V3F(2.F, 1.F, 1.F);
-                color.tint = 2.F;
+                color.hue = .5F;
                 color.invert = true;
                 const ftk::V3F v(1.F, 1.F, 1.F);
                 const auto m = tl::color(color);

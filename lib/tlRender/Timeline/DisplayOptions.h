@@ -19,7 +19,7 @@ namespace tl
         ftk::V3F brightness = ftk::V3F(1.F, 1.F, 1.F);
         ftk::V3F contrast   = ftk::V3F(1.F, 1.F, 1.F);
         ftk::V3F saturation = ftk::V3F(1.F, 1.F, 1.F);
-        float    tint       = 0.F;
+        float    hue        = 0.F;
         bool     invert     = false;
 
         TL_API bool operator == (const Color&) const;
