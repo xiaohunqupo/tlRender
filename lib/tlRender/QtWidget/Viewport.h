@@ -42,7 +42,7 @@ namespace tl
             const ftk::V2I& viewPos() const;
 
             //! Get the view zoom.
-            double viewZoom() const;
+            double zoom() const;
 
             //! Get whether the view is framed.
             bool hasFrameView() const;
@@ -85,19 +85,19 @@ namespace tl
             void setViewPosAndZoom(const ftk::V2I&, double);
 
             //! Set the view zoom.
-            void setViewZoom(double, const ftk::V2I& focus = ftk::V2I());
+            void setZoom(double, const ftk::V2I& focus = ftk::V2I());
 
             //! Frame the view.
             void setFrameView(bool);
 
             //! Reset the view zoom to 1:1.
-            void viewZoomReset();
+            void resetZoom();
 
             //! Zoom the view in.
-            void viewZoomIn();
+            void zoomIn();
 
             //! Zoom the view out.
-            void viewZoomOut();
+            void zoomOut();
 
         Q_SIGNALS:
             //! This signal is emitted when the comparison options are changed.

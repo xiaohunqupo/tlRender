@@ -39,9 +39,9 @@ namespace tl
             return _p->viewport->getViewPos();
         }
 
-        double Viewport::viewZoom() const
+        double Viewport::zoom() const
         {
-            return _p->viewport->getViewZoom();
+            return _p->viewport->getZoom();
         }
 
         bool Viewport::hasFrameView() const
@@ -109,9 +109,9 @@ namespace tl
             _p->viewport->setViewPosAndZoom(pos, zoom);
         }
 
-        void Viewport::setViewZoom(double zoom, const ftk::V2I& focus)
+        void Viewport::setZoom(double zoom, const ftk::V2I& focus)
         {
-            _p->viewport->setViewZoom(zoom, focus);
+            _p->viewport->setZoom(zoom, focus);
         }
 
         void Viewport::setFrameView(bool value)
@@ -119,19 +119,19 @@ namespace tl
             _p->viewport->setFrameView(value);
         }
         
-        void Viewport::viewZoomReset()
+        void Viewport::resetZoom()
         {
-            _p->viewport->viewZoomReset();
+            _p->viewport->resetZoom();
         }
 
-        void Viewport::viewZoomIn()
+        void Viewport::zoomIn()
         {
-            _p->viewport->viewZoomIn();
+            _p->viewport->zoomIn();
         }
 
-        void Viewport::viewZoomOut()
+        void Viewport::zoomOut()
         {
-            _p->viewport->viewZoomOut();
+            _p->viewport->zoomOut();
         }
     }
 }
