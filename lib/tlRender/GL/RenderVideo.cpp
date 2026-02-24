@@ -55,13 +55,13 @@ namespace tl
                     options.gradientColor.second.b,
                     options.gradientColor.second.a));
                 mesh.triangles.push_back({
-                    ftk::Vertex2(1, 0, 2),
-                    ftk::Vertex2(3, 0, 1),
-                    ftk::Vertex2(2, 0, 2), });
+                    ftk::Vertex2(1, 0, 1),
+                    ftk::Vertex2(3, 0, 2),
+                    ftk::Vertex2(2, 0, 1), });
                 mesh.triangles.push_back({
-                    ftk::Vertex2(1, 0, 2),
-                    ftk::Vertex2(4, 0, 1),
-                    ftk::Vertex2(3, 0, 1), });
+                    ftk::Vertex2(1, 0, 1),
+                    ftk::Vertex2(4, 0, 2),
+                    ftk::Vertex2(3, 0, 2), });
                 drawColorMesh(
                     mesh,
                     ftk::Color4F(1.F, 1.F, 1.F));
