@@ -23,7 +23,7 @@ namespace tl
                 .def_readwrite("brightness", &Color::brightness)
                 .def_readwrite("contrast", &Color::contrast)
                 .def_readwrite("saturation", &Color::saturation)
-                .def_readwrite("tint", &Color::tint)
+                .def_readwrite("hue", &Color::hue)
                 .def_readwrite("invert", &Color::invert)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
