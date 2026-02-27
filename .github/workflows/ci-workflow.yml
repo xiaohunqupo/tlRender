@@ -206,10 +206,11 @@ jobs:
     - name: Package
       run: cmake --build build-Release -j 4 --target package
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: tlRender-Linux-Packages
         path: build-Release/tlRender-*.tar.gz
+        archive: false
 
   macos-build:
     runs-on: macos-latest
@@ -327,10 +328,11 @@ jobs:
         rm -rf sbuild-Release
         cmake --build build-Release -j 4 --target package
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: tlRender-macOS-Packages
         path: build-Release/tlRender-*.dmg
+        archive: false
 
   windows-build:
     runs-on: windows-latest
@@ -441,7 +443,8 @@ jobs:
       shell: cmd
       run: cmake --build build-Release -j 4 --config Release --target package
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: tlRender-Windows-Packages
         path: build-Release\tlRender-*.zip
+        archive: false
