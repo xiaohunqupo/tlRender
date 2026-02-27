@@ -580,6 +580,11 @@ namespace tl
                 i.second->setUniform("transform.mvp", value);
             }
         }
+        
+        ftk::RenderDiag Render::getDiag() const
+        {
+            return _p->baseRender->getDiag();
+        }
 
         void Render::_displayShader()
         {
