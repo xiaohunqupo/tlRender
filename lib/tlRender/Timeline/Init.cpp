@@ -4,6 +4,7 @@
 #include <tlRender/Timeline/Init.h>
 
 #include <tlRender/Timeline/MemRef.h>
+#include <tlRender/Timeline/Player.h>
 #include <tlRender/Timeline/System.h>
 
 #include <tlRender/IO/System.h>
@@ -12,6 +13,7 @@
 
 #include <ftk/GL/Init.h>
 #include <ftk/Core/Context.h>
+#include <ftk/Core/DiagSystem.h>
 #include <ftk/Core/Format.h>
 
 #include <opentimelineio/typeRegistry.h>
@@ -24,6 +26,23 @@ namespace tl
         logSystem->print(
             "tl::init",
             ftk::Format("tlRender version: {0}").arg(TLRENDER_VERSION_FULL));
+
+        auto diagSystem = context->getSystem<ftk::DiagSystem>();
+        diagSystem->addSampler(
+            "tlRender Memory/Audio: {0}MB",
+            [] { return tl::Audio::getTotalByteCount() / ftk::megabyte; });
+        diagSystem->addSampler(
+            "tlRender Objects/Audio: {0}",
+            [] { return tl::Audio::getObjectCount(); });
+        diagSystem->addSampler(
+            "tlRender Objects/I/O: {0}",
+            [] { return tl::IIO::getObjectCount(); });
+        diagSystem->addSampler(
+            "tlRender Objects/Players: {0}",
+            [] { return tl::Player::getObjectCount(); });
+        diagSystem->addSampler(
+            "tlRender Objects/Timelines: {0}",
+            [] { return tl::Timeline::getObjectCount(); });
 
         ftk::gl::init(context);
 
