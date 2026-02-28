@@ -146,7 +146,7 @@ namespace tl
             ftk::Divider::create(context, ftk::Orientation::Vertical, vLayout);
             _timelineWidget->setParent(vLayout);
             ftk::Divider::create(context, ftk::Orientation::Vertical, vLayout);
-            _statusBar->setParent(vLayout);
+            _statusBar->setParent(_layout);
 
             // Create observers.
             _playerObserver = ftk::Observer<std::shared_ptr<Player> >::create(
