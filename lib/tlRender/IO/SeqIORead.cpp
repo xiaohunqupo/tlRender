@@ -268,7 +268,7 @@ namespace tl
             }
 
             // Logging.
-            if (auto logSystem = _logSystem.lock())
+            /*if (auto logSystem = _logSystem.lock())
             {
                 const auto now = std::chrono::steady_clock::now();
                 const std::chrono::duration<float> diff = now - p.thread.logTimer;
@@ -291,7 +291,7 @@ namespace tl
                         arg(p.thread.videoRequestsInProgress.size()).
                         arg(p.threadCount));
                 }
-            }
+            }*/
         }
     }
 

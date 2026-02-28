@@ -139,8 +139,7 @@ namespace tl
             public:
                 File(
                     const std::string& fileName,
-                    const ftk::MemFile* mem,
-                    const std::shared_ptr<ftk::LogSystem>& logSystem)
+                    const ftk::MemFile* mem)
                 {
                     // Open the file.
                     if (mem)
@@ -152,11 +151,6 @@ namespace tl
                         _s.reset(new IStream(fileName));
                     }
                     _f.reset(new Imf::MultiPartInputFile(*_s));
-
-                    {
-                        const std::string id = ftk::Format("tl::io::exr::Read {0}").arg(this);
-                        logSystem->print(id, ftk::Format("file name: {0}").arg(fileName));
-                    }
 
                     // Get the tags.
                     const int partsCount = _f->parts();
@@ -554,7 +548,7 @@ namespace tl
             const std::string& fileName,
             const ftk::MemFile* mem)
         {
-            IOInfo out = File(fileName, mem, _logSystem.lock()).getInfo();
+            IOInfo out = File(fileName, mem).getInfo();
             float speed = _defaultSpeed;
             const auto i = out.tags.find("Frame Per Second");
             if (i != out.tags.end())
@@ -573,7 +567,7 @@ namespace tl
             const OTIO_NS::RationalTime& time,
             const IOOptions& options)
         {
-            return File(fileName, mem, _logSystem.lock()).read(fileName, time, options);
+            return File(fileName, mem).read(fileName, time, options);
         }
     }
 }

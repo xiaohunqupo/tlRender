@@ -396,7 +396,7 @@ namespace tl
                 }
 
                 // Logging.
-                {
+                /*{
                     const auto now = std::chrono::steady_clock::now();
                     const std::chrono::duration<float> diff = now - p.videoThread.logTimer;
                     if (diff.count() > 10.F)
@@ -418,7 +418,7 @@ namespace tl
                                 arg(requestsSize));
                         }
                     }
-                }
+                }*/
             }
         }
 
@@ -506,7 +506,7 @@ namespace tl
                 }
 
                 // Logging.
-                {
+                /*{
                     const auto now = std::chrono::steady_clock::now();
                     const std::chrono::duration<float> diff = now - p.audioThread.logTimer;
                     if (diff.count() > 10.F)
@@ -528,7 +528,7 @@ namespace tl
                                 arg(requestsSize));
                         }
                     }
-                }
+                }*/
             }
         }
 
