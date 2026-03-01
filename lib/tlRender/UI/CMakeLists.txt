@@ -7,7 +7,6 @@ set(HEADERS
     Init.h
     PlaybackLoopWidget.h
     PlaybackToolBar.h
-    ShuttleWidget.h
     ThumbnailSystem.h
     TimeEdit.h
     TimeLabel.h
@@ -29,7 +28,6 @@ set(SOURCE
     Init.cpp
     PlaybackLoopWidget.cpp
     PlaybackToolBar.cpp
-    ShuttleWidget.cpp
     ThumbnailSystem.cpp
     TimeEdit.cpp
     TimeLabel.cpp
