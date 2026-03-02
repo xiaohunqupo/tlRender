@@ -11,7 +11,7 @@ if(TLRENDER_PROGRAMS)
     add_subdirectory(PlayApp)
 endif()
 
-if(TLRENDER_QT6 OR TLRENDER_QT5)
+if(TLRENDER_QT6)
     add_subdirectory(Qt)
     add_subdirectory(QtQuick)
     add_subdirectory(QtWidget)

@@ -57,10 +57,6 @@ namespace tl
                             { ftk::Box2I(0, 0, size.w, size.h) });
                     }
                     _render->end();
-
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-                    _framebufferObject->window()->resetOpenGLState();
-#endif // QT_VERSION
                 }
 
                 void synchronize(QQuickFramebufferObject*) override

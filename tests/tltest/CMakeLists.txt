@@ -7,7 +7,7 @@ set(LIBRARIES
     tlCoreTest
     tlIOTest
     tlTimelineTest)
-if(TLRENDER_QT6 OR TLRENDER_QT5)
+if(TLRENDER_QT6)
     list(APPEND LIBRARIES tlQtTest)
 endif()
 

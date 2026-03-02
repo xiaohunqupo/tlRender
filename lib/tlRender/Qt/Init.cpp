@@ -40,28 +40,15 @@ namespace tl
             qRegisterMetaType<ftk::InputVideoLevels>("ftk::InputVideoLevels");
             qRegisterMetaType<ftk::PathOptions>("ftk::PathOptions");
             qRegisterMetaType<ftk::Size2I>("ftk::Size2I");
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            QMetaType::registerComparators<ftk::AlphaBlend>();
-            QMetaType::registerComparators<ftk::ChannelDisplay>();
-            QMetaType::registerComparators<ftk::ImageType>();
-            QMetaType::registerComparators<ftk::ImageFilter>();
-            QMetaType::registerComparators<ftk::InputVideoLevels>();
-#endif // QT_VERSION
 
             qRegisterMetaType<AudioType>("tl::AudioType");
             qRegisterMetaType<AudioDeviceID>("tl::AudioDeviceID");
             qRegisterMetaType<AudioDeviceInfo>("tl::AudioDeviceInfo");
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            QMetaType::registerComparators<AudioType>();
-#endif // QT_VERSION
 
             qRegisterMetaType<FileType>("tl::FileType");
             qRegisterMetaType<IOInfo>("tl::IOInfo");
             qRegisterMetaType<VideoData>("tl::VideoData");
             qRegisterMetaType<AudioData>("tl::AudioData");
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            QMetaType::registerComparators<io::FileType>();
-#endif // QT_VERSION
 
             qRegisterMetaType<AudioFrame>("tl::AudioFrame");
             qRegisterMetaType<AudioLayer>("tl::AudioLayer");
@@ -85,16 +72,6 @@ namespace tl
             qRegisterMetaType<Transition>("tl::Transition");
             qRegisterMetaType<VideoFrame>("tl::VideoFrame");
             qRegisterMetaType<VideoLayer>("tl::VideoLayer");
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            QMetaType::registerComparators<Compare>();
-            QMetaType::registerComparators<CompareTime>();
-            QMetaType::registerComparators<ImageuenceAudio>();
-            QMetaType::registerComparators<Loop>();
-            QMetaType::registerComparators<Playback>();
-            QMetaType::registerComparators<TimeAction>();
-            QMetaType::registerComparators<TimeUnits>();
-            QMetaType::registerComparators<Transition>();
-#endif // QT_VERSION
 
             switch (defaultSurfaceFormat)
             {

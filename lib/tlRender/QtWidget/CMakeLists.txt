@@ -22,8 +22,6 @@ set(SOURCE
 set(LIBRARIES tlQt tlUI)
 if(TLRENDER_QT6)
     list(APPEND LIBRARIES Qt6::Widgets Qt6::OpenGLWidgets Qt6::Svg)
-elseif(TLRENDER_QT5)
-    list(APPEND LIBRARIES Qt5::Widgets Qt5::Svg)
 endif()
 
 add_library(tlQtWidget ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})

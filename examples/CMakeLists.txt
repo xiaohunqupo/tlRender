@@ -1,5 +1,5 @@
 add_subdirectory(test-patterns)
-if(TLRENDER_QT6 OR TLRENDER_QT5)
+if(TLRENDER_QT6)
     add_subdirectory(panorama-qtwidget)
     add_subdirectory(player-qtquick)
     add_subdirectory(player-qtwidget)

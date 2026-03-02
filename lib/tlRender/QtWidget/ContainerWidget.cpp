@@ -378,21 +378,15 @@ namespace tl
             }
         }
 
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-        void ContainerWidget::enterEvent(QEvent* event)
-#else
         void ContainerWidget::enterEvent(QEnterEvent* event)
-#endif // QT_VERSION
         {
             FTK_P();
             if (p.inputEnabled)
             {
                 event->accept();
                 p.window->cursorEnter(true);
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
                 p.window->cursorPos(
                     ftk::V2I(_toUI(event->x()), _toUI(event->y())));
-#endif // QT_VERSION
             }
         }
 

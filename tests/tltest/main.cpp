@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#if defined(TLRENDER_QT5) || defined(TLRENDER_QT6)
+#if defined(TLRENDER_QT6)
 #include <QtTest/TimeObjectTest.h>
 #include <tlRender/Qt/Init.h>
-#endif // TLRENDER_QT5 || TLRENDER_QT6
+#endif // TLRENDER_QT6
 
 #include <TimelineTest/ColorOptionsTest.h>
 #include <TimelineTest/CompareOptionsTest.h>
@@ -85,21 +85,21 @@ void qtTests(
     std::vector<std::shared_ptr<tests::ITest> >& tests,
     const std::shared_ptr<ftk::Context>& context)
 {
-#if defined(TLRENDER_QT5) || defined(TLRENDER_QT6)
+#if defined(TLRENDER_QT6)
     tests.push_back(qt_tests::TimeObjectTest::create(context));
-#endif // TLRENDER_QT5 || TLRENDER_QT6
+#endif // TLRENDER_QT6
 }
 
 int main(int argc, char* argv[])
 {
     auto context = ftk::Context::create();
-#if defined(TLRENDER_QT5) || defined(TLRENDER_QT6)
+#if defined(TLRENDER_QT6)
     qt::init(
         context,
         qt::DefaultSurfaceFormat::OpenGL_4_1_CoreProfile);
-#else // TLRENDER_QT5 || TLRENDER_QT6
+#else // TLRENDER_QT6
     tl::init(context);
-#endif // TLRENDER_QT5 || TLRENDER_QT6
+#endif // TLRENDER_QT6
 
     auto logObserver = ftk::ListObserver<ftk::LogItem>::create(
         context->getSystem<ftk::LogSystem>()->observeLogItems(),

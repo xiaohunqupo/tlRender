@@ -47,11 +47,7 @@ namespace tl
             void resizeGL(int w, int h) override;
             void paintGL() override;
 
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            void enterEvent(QEvent*) override;
-#else
             void enterEvent(QEnterEvent*) override;
-#endif // QT_VERSION
             void leaveEvent(QEvent*) override;
             void mousePressEvent(QMouseEvent*) override;
             void mouseReleaseEvent(QMouseEvent*) override;

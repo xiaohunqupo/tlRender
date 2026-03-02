@@ -42,7 +42,6 @@ set(TLRENDER_WMF ${WIN32} CACHE BOOL "Enable support for Windows Media Foundatio
 set(TLRENDER_BMD OFF CACHE BOOL "Enable support for Blackmagic Design devices")
 set(TLRENDER_BMD_SDK "" CACHE PATH "Full path to the Blackmagic Design SDK")
 set(TLRENDER_QT6 OFF CACHE BOOL "Enable support for Qt6")
-set(TLRENDER_QT5 OFF CACHE BOOL "Enable support for Qt5")
 set(TLRENDER_PYTHON OFF CACHE BOOL "Enable support for Python")
 set(TLRENDER_PROGRAMS ON CACHE BOOL "Build programs")
 set(TLRENDER_EXAMPLES ON CACHE BOOL "Build examples")
@@ -77,8 +76,6 @@ endif()
 
 if(TLRENDER_QT6)
     add_definitions(-DTLRENDER_QT6)
-elseif(TLRENDER_QT5)
-    add_definitions(-DTLRENDER_QT5)
 endif()
 
 if(TLRENDER_IGNORE_PREFIX_PATH)
@@ -299,11 +296,6 @@ if(TLRENDER_QT6)
     set(CMAKE_AUTORCC ON)
     set(CMAKE_AUTOUIC ON)
     find_package(Qt6 REQUIRED COMPONENTS Quick Widgets OpenGLWidgets Svg HINTS "$ENV{QTDIR}")
-elseif(TLRENDER_QT5)
-    set(CMAKE_AUTOMOC ON)
-    set(CMAKE_AUTORCC ON)
-    set(CMAKE_AUTOUIC ON)
-    find_package(Qt5 REQUIRED COMPONENTS Quick Widgets Svg HINTS "$ENV{QTDIR}")
 endif()
 
 # Python dependencies
