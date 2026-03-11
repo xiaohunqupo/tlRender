@@ -6,6 +6,7 @@
 #include <tlRender/Timeline/TimeUnits.h>
 
 #include <ftk/UI/LineEdit.h>
+#include <ftk/UI/LineEditModel.h>
 #include <ftk/UI/IncButtons.h>
 #include <ftk/UI/RowLayout.h>
 
@@ -40,6 +41,7 @@ namespace tl
             }
 
             p.lineEdit = ftk::LineEdit::create(context, shared_from_this());
+            p.lineEdit->getModel()->setRegex("[0-9\\-\\.\\,\\:]+");
             p.lineEdit->setFontRole(ftk::FontRole::Mono);
             p.lineEdit->setHStretch(ftk::Stretch::Expanding);
 
