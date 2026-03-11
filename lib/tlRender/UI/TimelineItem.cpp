@@ -458,6 +458,7 @@ namespace tl
         {
             IItem::mousePressEvent(event);
             FTK_P();
+            takeKeyFocus();
             if (_options.inputEnabled &&
                 ftk::MouseButton::Left == event.button &&
                 0 == event.modifiers)

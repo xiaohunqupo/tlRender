@@ -848,6 +848,7 @@ namespace tl
             if (p.inputEnabled)
             {
                 event.accept = true;
+                takeKeyFocus();
 
                 const ftk::Box2I& g = getGeometry();
                 p.mouse.pos = event.pos - g.min;
