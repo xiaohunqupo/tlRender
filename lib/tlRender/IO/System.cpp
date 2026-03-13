@@ -150,13 +150,25 @@ namespace tl
         const IOOptions& options)
     {
         const std::string ext = ftk::toLower(path.getExt());
+        std::string err;
         for (const auto& i : _plugins)
         {
-            const auto& exts = i->getExts();
-            if (exts.find(ext) != exts.end())
+            try
             {
-                return i->read(path, options);
+                const auto& exts = i->getExts();
+                if (exts.find(ext) != exts.end())
+                {
+                    return i->read(path, options);
+                }
             }
+            catch(const std::exception& e)
+            {
+                err = e.what();
+            }
+        }
+        if (!err.empty())
+        {
+            throw std::runtime_error(err);
         }
         return nullptr;
     }
@@ -167,13 +179,25 @@ namespace tl
         const IOOptions& options)
     {
         const std::string ext = ftk::toLower(path.getExt());
+        std::string err;
         for (const auto& i : _plugins)
         {
-            const auto& exts = i->getExts();
-            if (exts.find(ext) != exts.end())
+            try
             {
-                return i->read(path, memory, options);
+                const auto& exts = i->getExts();
+                if (exts.find(ext) != exts.end())
+                {
+                    return i->read(path, memory, options);
+                }
             }
+            catch(const std::exception& e)
+            {
+                err = e.what();
+            }
+        }
+        if (!err.empty())
+        {
+            throw std::runtime_error(err);
         }
         return nullptr;
     }
