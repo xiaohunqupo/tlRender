@@ -165,7 +165,6 @@ namespace tl
             {
                 std::list<std::shared_ptr<InfoRequest> > infoRequests;
                 std::list<std::shared_ptr<VideoRequest> > videoRequests;
-                //std::shared_ptr<VideoRequest> videoRequest;
                 bool stopped = false;
                 std::mutex mutex;
             };

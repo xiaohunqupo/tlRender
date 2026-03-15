@@ -26,7 +26,7 @@ namespace tl
         //! Get FFmpeg options.
         TL_API IOOptions getOptions(const Options&);
 
-        //! FFmpeg reader
+        //! FFmpeg reader.
         class TL_API_TYPE Read : public IRead
         {
         protected:

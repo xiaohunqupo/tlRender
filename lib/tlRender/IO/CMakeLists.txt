@@ -1,4 +1,5 @@
 set(HEADERS
+    FFmpegPipe.h
     IO.h
     IOInline.h
     Plugin.h
@@ -8,9 +9,12 @@ set(HEADERS
     SystemInline.h
     Write.h)
 set(HEADERS_PRIVATE
+    FFmpegPipePrivate.h
     SeqIOReadPrivate.h)
 
 set(SOURCE
+    FFmpegPipe.cpp
+    FFmpegPipeRead.cpp
     IO.cpp
     Plugin.cpp
     Read.cpp

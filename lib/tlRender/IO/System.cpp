@@ -3,6 +3,7 @@
 
 #include <tlRender/IO/System.h>
 
+#include <tlRender/IO/FFmpegPipe.h>
 #if defined(TLRENDER_FFMPEG)
 #include <tlRender/IO/FFmpeg.h>
 #endif // TLRENDER_FFMPEG
@@ -52,11 +53,12 @@ namespace tl
             //_plugins.push_back(wmf::ReadPlugin::create(logSystem));
 #endif // TLRENDER_WMF
 #if defined(TLRENDER_FFMPEG)
-            _plugins.push_back(ffmpeg::ReadPlugin::create(logSystem));
+            //_plugins.push_back(ffmpeg::ReadPlugin::create(logSystem));
 #endif // TLRENDER_FFMPEG
 #if defined(TLRENDER_USD)
             _plugins.push_back(usd::ReadPlugin::create(logSystem));
 #endif // TLRENDER_USD
+            _plugins.push_back(ffmpeg_pipe::ReadPlugin::create(logSystem));
         }
 
         for (const auto& plugin : _plugins)
@@ -67,8 +69,7 @@ namespace tl
     }
 
     ReadSystem::~ReadSystem()
-    {
-    }
+    {}
 
     std::shared_ptr<ReadSystem> ReadSystem::create(const std::shared_ptr<ftk::Context>& context)
     {
