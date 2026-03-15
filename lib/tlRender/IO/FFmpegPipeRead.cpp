@@ -464,6 +464,7 @@ namespace tl
                 }
 
                 if (videoRequest &&
+                    !p.info.video.empty() &&
                     (!p.thread.pipe || videoRequest->options != ioOptions))
                 {
                     const Options options = getOptions(ioOptions);
@@ -480,14 +481,17 @@ namespace tl
                 {
                     VideoData video;
                     video.time = videoRequest->time;
-                    video.image = ftk::Image::create(p.info.video.front());
-                    if (p.thread.pipe && p.thread.pipe->f())
+                    if (!p.info.video.empty())
                     {
-                        fread(video.image->getData(), video.image->getByteCount(), 1, p.thread.pipe->f());
-                    }
-                    else
-                    {
-                        video.image->zero();
+                        video.image = ftk::Image::create(p.info.video.front());
+                        if (p.thread.pipe && p.thread.pipe->f())
+                        {
+                            fread(video.image->getData(), video.image->getByteCount(), 1, p.thread.pipe->f());
+                        }
+                        else
+                        {
+                            video.image->zero();
+                        }
                     }
                     videoRequest->promise.set_value(video);
                     p.thread.time += OTIO_NS::RationalTime(1.0, p.info.videoTime.duration().rate());
