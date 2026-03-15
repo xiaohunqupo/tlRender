@@ -53,7 +53,7 @@ namespace tl
             //_plugins.push_back(wmf::ReadPlugin::create(logSystem));
 #endif // TLRENDER_WMF
 #if defined(TLRENDER_FFMPEG)
-            //_plugins.push_back(ffmpeg::ReadPlugin::create(logSystem));
+            _plugins.push_back(ffmpeg::ReadPlugin::create(logSystem));
 #endif // TLRENDER_FFMPEG
 #if defined(TLRENDER_USD)
             _plugins.push_back(usd::ReadPlugin::create(logSystem));

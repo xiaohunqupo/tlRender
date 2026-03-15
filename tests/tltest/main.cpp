@@ -57,7 +57,7 @@ void ioTests(
 {
     tests.push_back(io_tests::IOTest::create(context));
 #if defined(TLRENDER_FFMPEG)
-    //tests.push_back(io_tests::FFmpegTest::create(context));
+    tests.push_back(io_tests::FFmpegTest::create(context));
 #endif // TLRENDER_FFMPEG
 #if defined(TLRENDER_OIIO)
     tests.push_back(io_tests::OIIOTest::create(context));
