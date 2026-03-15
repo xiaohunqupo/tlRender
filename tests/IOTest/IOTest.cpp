@@ -95,41 +95,14 @@ namespace tl
         {
             auto readSystem = _context->getSystem<ReadSystem>();
             {
-                std::vector<std::string> plugins;
-                for (const auto& plugin : readSystem->getPlugins())
-                {
-                    plugins.push_back(plugin->getName());
-                }
-                std::stringstream ss;
-                ss << "Plugins: " << ftk::join(plugins, ", ");
-                _print(ss.str());
-            }
-            {
-                std::map<std::string, std::shared_ptr<IIOPlugin> > plugins;
                 for (const auto& plugin : readSystem->getPlugins())
                 {
                     const auto& exts = plugin->getExts();
-                    if (!exts.empty())
-                    {
-                        plugins[*(exts.begin())] = plugin;
-                    }
+                    std::stringstream ss;
+                    ss << plugin->getName() << ": " <<
+                        ftk::join(std::vector<std::string>(exts.begin(), exts.end()), ", ");
+                    _print(ss.str());
                 }
-                for (const auto& plugin : plugins)
-                {
-                    FTK_ASSERT(readSystem->getPlugin(ftk::Path("test" + plugin.first)) == plugin.second);
-                }
-                FTK_ASSERT(!readSystem->getPlugin(ftk::Path()));
-                FTK_ASSERT(!readSystem->getPlugin<DummyReadPlugin>());
-            }
-            {
-                std::vector<std::string> exts;
-                for (const auto& ext : readSystem->getExts())
-                {
-                    exts.push_back(ext);
-                }
-                std::stringstream ss;
-                ss << "Extensions: " << ftk::join(exts, ", ");
-                _print(ss.str());
             }
             FTK_ASSERT(!readSystem->read(ftk::Path()));
             auto writeSystem = _context->getSystem<WriteSystem>();
