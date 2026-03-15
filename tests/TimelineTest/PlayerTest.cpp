@@ -49,11 +49,13 @@ namespace tl
             // Test timeline players.
             const std::vector<ftk::Path> paths =
             {
-                ftk::Path(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v"),
                 ftk::Path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg"),
+#if defined(TLRENDER_FFMPEG)
+                ftk::Path(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v"),
                 ftk::Path(TLRENDER_SAMPLE_DATA, "MovieAndSeq.otio"),
                 ftk::Path(TLRENDER_SAMPLE_DATA, "TransitionGap.otio"),
                 ftk::Path(TLRENDER_SAMPLE_DATA, "SingleClip.otioz"),
+#endif // TLRENDER_FFMPEG
                 ftk::Path(TLRENDER_SAMPLE_DATA, "SingleClipSeq.otioz")
             };
             for (const auto& path : paths)
