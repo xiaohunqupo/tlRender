@@ -20,12 +20,20 @@ namespace tl
         POpen::POpen(const std::string& cmd, const std::string& mode) :
             _p(new Private)
         {
+#if defined(_WINDOWS)
+            _p->f = _wpopen(ftk::toWide(cmd).c_str(), ftk::toWide(mode).c_str());
+#else // _WINDOWS
             _p->f = popen(cmd.c_str(), mode.c_str());
+#endif // _WINDOWS
         }
 
         POpen::~POpen()
         {
+#if defined(_WINDOWS)
+            _pclose(_p->f);
+#else // _WINDOWS
             pclose(_p->f);
+#endif // _WINDOWS
         }
 
         std::string POpen::readAll()
