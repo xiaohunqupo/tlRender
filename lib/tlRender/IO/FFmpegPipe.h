@@ -24,6 +24,9 @@ namespace tl
         //! Get FFmpeg pipe options.
         TL_API IOOptions getOptions(const Options&);
 
+        //! Get FFmpeg pipe options.
+        TL_API Options getOptions(const IOOptions&);
+
         //! FFmpeg pipe reader.
         class TL_API_TYPE Read : public IRead
         {
@@ -62,8 +65,9 @@ namespace tl
             TL_API void cancelRequests() override;
 
         private:
+            void _info(const IOOptions&);
             void _thread();
-            void _info();
+            void _audioThread();
 
             FTK_PRIVATE();
         };

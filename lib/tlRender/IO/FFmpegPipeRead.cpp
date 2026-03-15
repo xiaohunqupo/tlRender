@@ -15,7 +15,7 @@ namespace tl
     {
         struct Read::Private
         {
-            Options options;
+            IOInfo info;
 
             struct InfoRequest
             {
@@ -25,12 +25,14 @@ namespace tl
             struct VideoRequest
             {
                 OTIO_NS::RationalTime time = invalidTime;
+                IOOptions options;
                 std::promise<VideoData> promise;
             };
 
             struct AudioRequest
             {
                 OTIO_NS::TimeRange timeRange = invalidTimeRange;
+                IOOptions options;
                 std::promise<AudioData> promise;
             };
 
@@ -38,21 +40,36 @@ namespace tl
             {
                 std::list<std::shared_ptr<InfoRequest> > infoRequests;
                 std::list<std::shared_ptr<VideoRequest> > videoRequests;
-                std::list<std::shared_ptr<AudioRequest> > audioRequests;
                 std::mutex mutex;
             };
             Mutex mutex;
 
+            struct AudioMutex
+            {
+                std::list<std::shared_ptr<AudioRequest> > requests;
+                std::mutex mutex;
+            };
+            AudioMutex audioMutex;
+
             struct Thread
             {
-                IOInfo info;
-                OTIO_NS::RationalTime videoTime = invalidTime;
-                std::shared_ptr<POpen> videoPipe = nullptr;
+                OTIO_NS::RationalTime time = invalidTime;
+                std::shared_ptr<POpen> pipe = nullptr;
                 std::atomic<bool> running;
                 std::condition_variable cv;
                 std::thread thread;
             };
             Thread thread;
+
+            struct AudioThread
+            {
+                OTIO_NS::RationalTime time = invalidTime;
+                std::shared_ptr<POpen> pipe = nullptr;
+                std::atomic<bool> running;
+                std::condition_variable cv;
+                std::thread thread;
+            };
+            AudioThread audioThread;
         };
 
         void Read::_init(
@@ -63,24 +80,24 @@ namespace tl
         {
             IRead::_init(path, mem, options, logSystem);
             FTK_P();
-
-            auto i = options.find("FFmpegPipe/FFmpegPath");
-            if (i != options.end())
-            {
-                std::stringstream ss(i->second);
-                ss >> p.options.ffmpegPath;
-            }
-            i = options.find("FFmpegPipe/FFprobePath");
-            if (i != options.end())
-            {
-                std::stringstream ss(i->second);
-                ss >> p.options.ffprobePath;
-            }
-
             p.thread.running = true;
             p.thread.thread = std::thread(
-                [this, path]
+                [this, options]
                 {
+                    FTK_P();
+
+                    // Get the I/O information.
+                    _info(options);
+
+                    // Start the audio thread.
+                    p.audioThread.running = true;
+                    p.audioThread.thread = std::thread(
+                        [this]
+                        {
+                            _audioThread();
+                        });
+
+                    // Start the info/video thread.
                     _thread();
                 });
         }
@@ -92,11 +109,22 @@ namespace tl
         Read::~Read()
         {
             FTK_P();
+
+            // Stop the thread.
             p.thread.running = false;
             if (p.thread.thread.joinable())
             {
                 p.thread.thread.join();
             }
+
+            // Stop the audio thread.
+            p.audioThread.running = false;
+            if (p.audioThread.thread.joinable())
+            {
+                p.audioThread.thread.join();
+            }
+
+            // Cancel the requests.
             for (auto& request : p.mutex.infoRequests)
             {
                 request->promise.set_value(IOInfo());
@@ -104,6 +132,10 @@ namespace tl
             for (auto& request : p.mutex.videoRequests)
             {
                 request->promise.set_value(VideoData());
+            }
+            for (auto& request : p.audioMutex.requests)
+            {
+                request->promise.set_value(AudioData());
             }
         }
 
@@ -163,10 +195,10 @@ namespace tl
             auto request = std::make_shared<Private::AudioRequest>();
             request->timeRange = timeRange;
             {
-                std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                p.mutex.audioRequests.push_back(request);
+                std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
+                p.audioMutex.requests.push_back(request);
             }
-            p.thread.cv.notify_one();
+            p.audioThread.cv.notify_one();
             return request->promise.get_future();
         }
 
@@ -180,7 +212,10 @@ namespace tl
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 infoRequests = std::move(p.mutex.infoRequests);
                 videoRequests = std::move(p.mutex.videoRequests);
-                audioRequests = std::move(p.mutex.audioRequests);
+            }
+            {
+                std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
+                audioRequests = std::move(p.audioMutex.requests);
             }
             for (auto& request : infoRequests)
             {
@@ -194,111 +229,6 @@ namespace tl
             {
                 request->promise.set_value(AudioData());
             }
-        }
-
-        void Read::_thread()
-        {
-            FTK_P();
-            _info();
-            p.thread.videoTime = p.thread.info.videoTime.start_time();
-            while (p.thread.running)
-            {
-                std::list<std::shared_ptr<Private::InfoRequest> > infoRequests;
-                std::shared_ptr<Private::VideoRequest> videoRequest;
-                std::shared_ptr<Private::AudioRequest> audioRequest;
-                {
-                    std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                    if (p.thread.cv.wait_for(
-                        lock,
-                        std::chrono::milliseconds(10),
-                        [this]
-                        {
-                            return
-                                !_p->mutex.infoRequests.empty() ||
-                                !_p->mutex.videoRequests.empty() ||
-                                !_p->mutex.audioRequests.empty();
-                        }))
-                    {
-                        infoRequests = std::move(p.mutex.infoRequests);
-                        if (!p.mutex.videoRequests.empty())
-                        {
-                            videoRequest = p.mutex.videoRequests.front();
-                            p.mutex.videoRequests.pop_front();
-                        }
-                        if (!p.mutex.audioRequests.empty())
-                        {
-                            audioRequest = p.mutex.audioRequests.front();
-                            p.mutex.audioRequests.pop_front();
-                        }
-                    }
-                }
-
-                for (auto& request : infoRequests)
-                {
-                    request->promise.set_value(p.thread.info);
-                }
-
-                if (videoRequest &&
-                    !videoRequest->time.strictly_equal(p.thread.videoTime))
-                {
-                    p.thread.videoTime = videoRequest->time;
-                    p.thread.videoPipe.reset();
-                }
-
-                if (!p.thread.videoPipe)
-                {
-                    const std::string cmd = ftk::Format("{0} -v quiet -ss {1} -i \"{2}\" -f rawvideo -pix_fmt rgb24 pipe:1").
-                        arg("ffmpeg").
-                        arg(p.thread.videoTime.to_seconds()).
-                        arg(_path.get());
-                    //std::cout << cmd << std::endl;
-                    p.thread.videoPipe = std::make_shared<POpen>(cmd, "r");
-                }
-
-                if (videoRequest)
-                {
-                    VideoData video;
-                    video.time = videoRequest->time;
-                    video.image = ftk::Image::create(p.thread.info.video.front());
-                    if (p.thread.videoPipe && p.thread.videoPipe->f())
-                    {
-                        fread(video.image->getData(), video.image->getByteCount(), 1, p.thread.videoPipe->f());
-                    }
-                    else
-                    {
-                        video.image->zero();
-                    }
-                    videoRequest->promise.set_value(video);                    
-                    p.thread.videoTime += OTIO_NS::RationalTime(1.0, p.thread.info.videoTime.duration().rate());
-                }
-
-                if (audioRequest)
-                {
-                    AudioData audio;
-                    audio.time = audioRequest->timeRange.start_time();
-                    audio.audio = Audio::create(
-                        p.thread.info.audio,
-                        audioRequest->timeRange.duration().rescaled_to(1.0).value() * p.thread.info.audio.sampleRate);
-                    const std::string cmd = ftk::Format("{0} -v quiet -ss {1} -t {2} -i \"{3}\" -f s16le pipe:1").
-                        arg("ffmpeg").
-                        arg(audioRequest->timeRange.start_time().to_seconds()).
-                        arg(audioRequest->timeRange.duration().to_seconds()).
-                        arg(_path.get());
-                    //std::cout << cmd << std::endl;
-                    POpen pipe(cmd, "r");
-                    if (pipe.f())
-                    {
-                        fread(audio.audio->getData(), audio.audio->getByteCount(), 1, pipe.f());
-                    }
-                    else
-                    {
-                        audio.audio->zero();
-                    }
-                    audioRequest->promise.set_value(audio);
-                }
-            }
-
-            p.thread.videoPipe.reset();
         }
 
         namespace
@@ -323,15 +253,67 @@ namespace tl
                     (value.first / static_cast<double>(value.second)) :
                     0.0;
             }
+
+            ftk::ImageType toImageType(const std::string& value)
+            {
+                return ftk::ImageType::RGB_U8;
+            }
+
+            std::string fromImageType(ftk::ImageType value)
+            {
+                return "rgb24";
+            }
+
+            AudioType toAudioType(const std::string& value)
+            {
+                AudioType out = AudioType::S16;
+                if ("s16" == value || "s16p" == value)
+                {
+                    out = AudioType::S16;
+                }
+                else if ("s32" == value || "s32p" == value)
+                {
+                    out = AudioType::S32;
+                }
+                else if ("flt" == value || "fltp" == value)
+                {
+                    out = AudioType::F32;
+                }
+                else if ("dbl" == value || "dblp" == value)
+                {
+                    out = AudioType::F64;
+                }
+                return out;
+            }
+
+            std::string fromAudioType(AudioType value)
+            {
+                std::string out = "s16";
+                switch (value)
+                {
+                    case AudioType::S32: out = "s32"; break;
+                    case AudioType::F32: out = "f32"; break;
+                    case AudioType::F64: out = "f64"; break;
+                    default: break;
+                }
+                switch (ftk::getEndian())
+                {
+                    case ftk::Endian::LSB: out += "le"; break;
+                    case ftk::Endian::MSB: out += "be"; break;
+                    default: break;
+                }
+                return out;
+            }
         }
 
-        void Read::_info()
+        void Read::_info(const IOOptions& ioOptions)
         {
             FTK_P();
             try
             {
+                const Options options = getOptions(ioOptions);
                 std::string cmd = ftk::Format("{0} -v quiet -print_format json -show_streams -show_format \"{1}\"").
-                    arg("ffprobe").
+                    arg(options.ffprobePath).
                     arg(_path.get());
                 nlohmann::json json = nlohmann::json::parse(POpen(cmd, "r").readAll());
                 for (const auto& i : json.items())
@@ -345,7 +327,6 @@ namespace tl
                             {
                                 ftk::ImageInfo info;
                                 info.layout.mirror.y = true;
-                                info.type = ftk::ImageType::RGB_U8;
 
                                 k = j.find("width");
                                 if (k != j.end())
@@ -356,6 +337,11 @@ namespace tl
                                 if (k != j.end())
                                 {
                                     info.size.h = *k;
+                                }
+                                k = j.find("pix_fmt");
+                                if (k != j.end())
+                                {
+                                    info.type = toImageType(*k);
                                 }
 
                                 double rate = 0.0;
@@ -391,25 +377,28 @@ namespace tl
                                         }
                                     }                                    
                                 }
-                                p.thread.info.videoTime = OTIO_NS::TimeRange(
+                                p.info.videoTime = OTIO_NS::TimeRange(
                                     OTIO_NS::RationalTime(0.0, rate),
                                     OTIO_NS::RationalTime(frames, rate));
 
-                                p.thread.info.video.push_back(info);
+                                p.info.video.push_back(info);
                             }
                             else if (k != j.end() && "audio" == *k)
                             {
-                                p.thread.info.audio.type = AudioType::S16;
-
-                                k = j.find("sample_rate");
-                                if (k != j.end())
-                                {
-                                    p.thread.info.audio.sampleRate = atoi(k->get<std::string>().c_str());
-                                }
                                 k = j.find("channels");
                                 if (k != j.end())
                                 {
-                                    p.thread.info.audio.channelCount = *k;
+                                    p.info.audio.channelCount = *k;
+                                }
+                                k = j.find("sample_fmt");
+                                if (k != j.end())
+                                {
+                                    p.info.audio.type = toAudioType(*k);
+                                }
+                                k = j.find("sample_rate");
+                                if (k != j.end())
+                                {
+                                    p.info.audio.sampleRate = atoi(k->get<std::string>().c_str());
                                 }
 
                                 double duration = 0.0;
@@ -418,9 +407,9 @@ namespace tl
                                 {
                                     duration = atof(k->get<std::string>().c_str());
                                 }
-                                p.thread.info.audioTime = OTIO_NS::TimeRange(
-                                    OTIO_NS::RationalTime(0.0, p.thread.info.audio.sampleRate),
-                                    OTIO_NS::RationalTime(duration * p.thread.info.audio.sampleRate, p.thread.info.audio.sampleRate));
+                                p.info.audioTime = OTIO_NS::TimeRange(
+                                    OTIO_NS::RationalTime(0.0, p.info.audio.sampleRate),
+                                    OTIO_NS::RationalTime(duration * p.info.audio.sampleRate, p.info.audio.sampleRate));
                             }
                         }
                     }
@@ -430,6 +419,151 @@ namespace tl
             {
                 _logSystem.lock()->print("tl::ffmpeg_pipe", e.what(), ftk::LogType::Error);
             }
+        }
+
+        void Read::_thread()
+        {
+            FTK_P();
+            p.thread.time = p.info.videoTime.start_time();
+            IOOptions ioOptions;
+            while (p.thread.running)
+            {
+                std::list<std::shared_ptr<Private::InfoRequest> > infoRequests;
+                std::shared_ptr<Private::VideoRequest> videoRequest;
+                {
+                    std::unique_lock<std::mutex> lock(p.mutex.mutex);
+                    if (p.thread.cv.wait_for(
+                        lock,
+                        std::chrono::milliseconds(10),
+                        [this]
+                        {
+                            return
+                                !_p->mutex.infoRequests.empty() ||
+                                !_p->mutex.videoRequests.empty();
+                        }))
+                    {
+                        infoRequests = std::move(p.mutex.infoRequests);
+                        if (!p.mutex.videoRequests.empty())
+                        {
+                            videoRequest = p.mutex.videoRequests.front();
+                            p.mutex.videoRequests.pop_front();
+                        }
+                    }
+                }
+
+                for (auto& request : infoRequests)
+                {
+                    request->promise.set_value(p.info);
+                }
+
+                if (videoRequest &&
+                    !videoRequest->time.strictly_equal(p.thread.time))
+                {
+                    p.thread.time = videoRequest->time;
+                    p.thread.pipe.reset();
+                }
+
+                if (videoRequest &&
+                    (!p.thread.pipe || videoRequest->options != ioOptions))
+                {
+                    const Options options = getOptions(ioOptions);
+                    const std::string cmd = ftk::Format("{0} -v quiet -ss {1} -i \"{2}\" -f rawvideo -pix_fmt {3} pipe:1").
+                        arg(options.ffmpegPath).
+                        arg(p.thread.time.to_seconds()).
+                        arg(_path.get()).
+                        arg(fromImageType(p.info.video.front().type));
+                    //std::cout << cmd << std::endl;
+                    p.thread.pipe = std::make_shared<POpen>(cmd, "r");
+                }
+
+                if (videoRequest)
+                {
+                    VideoData video;
+                    video.time = videoRequest->time;
+                    video.image = ftk::Image::create(p.info.video.front());
+                    if (p.thread.pipe && p.thread.pipe->f())
+                    {
+                        fread(video.image->getData(), video.image->getByteCount(), 1, p.thread.pipe->f());
+                    }
+                    else
+                    {
+                        video.image->zero();
+                    }
+                    videoRequest->promise.set_value(video);
+                    p.thread.time += OTIO_NS::RationalTime(1.0, p.info.videoTime.duration().rate());
+                }
+            }
+
+            p.thread.pipe.reset();
+        }
+
+        void Read::_audioThread()
+        {
+            FTK_P();
+            p.audioThread.time = p.info.audioTime.start_time();
+            IOOptions ioOptions;
+            while (p.audioThread.running)
+            {
+                std::shared_ptr<Private::AudioRequest> request;
+                {
+                    std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
+                    if (p.audioThread.cv.wait_for(
+                        lock,
+                        std::chrono::milliseconds(10),
+                        [this]
+                        {
+                            return !_p->audioMutex.requests.empty();
+                        }))
+                    {
+                        if (!p.audioMutex.requests.empty())
+                        {
+                            request = p.audioMutex.requests.front();
+                            p.audioMutex.requests.pop_front();
+                        }
+                    }
+                }
+
+                if (request &&
+                    !request->timeRange.start_time().strictly_equal(p.audioThread.time))
+                {
+                    p.audioThread.time = request->timeRange.start_time();
+                    p.audioThread.pipe.reset();
+                }
+
+                if (request &&
+                    (!p.audioThread.pipe || request->options != ioOptions))
+                {
+                    const Options options = getOptions(ioOptions);
+                    const std::string cmd = ftk::Format("{0} -v quiet -ss {1} -i \"{2}\" -f {3} pipe:1").
+                        arg(options.ffmpegPath).
+                        arg(p.audioThread.time.to_seconds()).
+                        arg(_path.get()).
+                        arg(fromAudioType(p.info.audio.type));
+                    //std::cout << cmd << std::endl;
+                    p.audioThread.pipe = std::make_shared<POpen>(cmd, "r");
+                }
+
+                if (request)
+                {
+                    AudioData audio;
+                    audio.time = request->timeRange.start_time();
+                    audio.audio = Audio::create(
+                        p.info.audio,
+                        request->timeRange.duration().rescaled_to(1.0).value() * p.info.audio.sampleRate);
+                    if (p.audioThread.pipe->f())
+                    {
+                        fread(audio.audio->getData(), audio.audio->getByteCount(), 1, p.audioThread.pipe->f());
+                    }
+                    else
+                    {
+                        audio.audio->zero();
+                    }
+                    request->promise.set_value(audio);
+                    p.audioThread.time += request->timeRange.duration();
+                }
+            }
+
+            p.audioThread.pipe.reset();
         }
     }
 }

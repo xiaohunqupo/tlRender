@@ -48,6 +48,32 @@ namespace tl
             return _p->f;
         }
 
+        IOOptions getOptions(const Options& value)
+        {
+            IOOptions out;
+            out["FFmpegPipe/FFmpegPath"] = value.ffmpegPath;
+            out["FFmpegPipe/FFprobePath"] = value.ffprobePath;
+            return out;
+        }
+
+        Options getOptions(const IOOptions& value)
+        {
+            Options out;
+            auto i = value.find("FFmpegPipe/FFmpegPath");
+            if (i != value.end())
+            {
+                std::stringstream ss(i->second);
+                ss >> out.ffmpegPath;
+            }
+            i = value.find("FFmpegPipe/FFprobePath");
+            if (i != value.end())
+            {
+                std::stringstream ss(i->second);
+                ss >> out.ffprobePath;
+            }
+            return out;
+        }
+
         struct ReadPlugin::Private
         {
         };
