@@ -380,10 +380,20 @@ namespace tl
                                 p.info.videoTime = OTIO_NS::TimeRange(
                                     OTIO_NS::RationalTime(0.0, rate),
                                     OTIO_NS::RationalTime(frames, rate));
-
                                 p.info.video.push_back(info);
+                                break;
                             }
-                            else if (k != j.end() && "audio" == *k)
+                        }
+                    }
+                }
+                for (const auto& i : json.items())
+                {
+                    if ("streams" == i.key())
+                    {
+                        for (const auto& j : i.value())
+                        {
+                            auto k = j.find("codec_type");
+                            if (k != j.end() && "audio" == *k)
                             {
                                 k = j.find("channels");
                                 if (k != j.end())
@@ -410,6 +420,7 @@ namespace tl
                                 p.info.audioTime = OTIO_NS::TimeRange(
                                     OTIO_NS::RationalTime(0.0, p.info.audio.sampleRate),
                                     OTIO_NS::RationalTime(duration * p.info.audio.sampleRate, p.info.audio.sampleRate));
+                                break;
                             }
                         }
                     }
