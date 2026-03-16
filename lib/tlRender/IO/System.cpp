@@ -3,10 +3,12 @@
 
 #include <tlRender/IO/System.h>
 
-#include <tlRender/IO/FFmpegPipe.h>
-#if defined(TLRENDER_FFMPEG)
+#if defined(TLRENDER_FFMPEG_PLUGIN)
 #include <tlRender/IO/FFmpeg.h>
-#endif // TLRENDER_FFMPEG
+#endif // TLRENDER_FFMPEG_PLUGIN
+#if defined(TLRENDER_FFMPEG_PIPE)
+#include <tlRender/IO/FFmpegPipe.h>
+#endif // TLRENDER_FFMPEG_PIPE
 #if defined(TLRENDER_EXR)
 #include <tlRender/IO/EXR.h>
 #endif // TLRENDER_EXR
@@ -52,13 +54,15 @@ namespace tl
             // \todo WMF support is still a WIP.
             //_plugins.push_back(wmf::ReadPlugin::create(logSystem));
 #endif // TLRENDER_WMF
-#if defined(TLRENDER_FFMPEG)
+#if defined(TLRENDER_FFMPEG_PLUGIN)
             _plugins.push_back(ffmpeg::ReadPlugin::create(logSystem));
-#endif // TLRENDER_FFMPEG
+#endif // TLRENDER_FFMPEG_PLUGIN
+#if defined(TLRENDER_FFMPEG_PIPE)
+            _plugins.push_back(ffmpeg_pipe::ReadPlugin::create(logSystem));
+#endif // TLRENDER_FFMPEG_PIPE
 #if defined(TLRENDER_USD)
             _plugins.push_back(usd::ReadPlugin::create(logSystem));
 #endif // TLRENDER_USD
-            _plugins.push_back(ffmpeg_pipe::ReadPlugin::create(logSystem));
         }
 
         for (const auto& plugin : _plugins)
@@ -223,9 +227,9 @@ namespace tl
 #if defined(TLRENDER_OIIO)
             _plugins.push_back(oiio::WritePlugin::create(logSystem));
 #endif // TLRENDER_OIIO
-#if defined(TLRENDER_FFMPEG)
+#if defined(TLRENDER_FFMPEG_PLUGIN)
             _plugins.push_back(ffmpeg::WritePlugin::create(logSystem));
-#endif // TLRENDER_FFMPEG
+#endif // TLRENDER_FFMPEG_PLUGIN
         }
 
         for (const auto& plugin : _plugins)

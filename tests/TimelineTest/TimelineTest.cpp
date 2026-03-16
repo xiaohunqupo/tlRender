@@ -91,8 +91,10 @@ namespace tl
                 ftk::Path(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v"),
                 ftk::Path(TLRENDER_SAMPLE_DATA, "MovieAndSeq.otio"),
                 ftk::Path(TLRENDER_SAMPLE_DATA, "TransitionGap.otio"),
-                ftk::Path(TLRENDER_SAMPLE_DATA, "SingleClip.otioz"),
 #endif // TLRENDER_FFMPEG
+#if defined(TLRENDER_FFMPEG_PLUGIN)
+                ftk::Path(TLRENDER_SAMPLE_DATA, "SingleClip.otioz"),
+#endif // TLRENDER_FFMPEG_PLUGIN
                 ftk::Path(TLRENDER_SAMPLE_DATA, "SingleClipSeq.otioz")
             };
             for (const auto& path : paths)
@@ -221,7 +223,7 @@ namespace tl
             try
             {
                 const ftk::Path path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg");
-                const ftk::Path audioPath(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v");
+                const ftk::Path audioPath(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.wav");
                 auto timeline = Timeline::create(_context, path.get(), audioPath.get());
             }
             catch (const std::exception& e)
@@ -231,7 +233,7 @@ namespace tl
             try
             {
                 const ftk::Path path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg");
-                const ftk::Path audioPath(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v");
+                const ftk::Path audioPath(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.wav");
                 auto timeline = Timeline::create(_context, path, audioPath);
             }
             catch (const std::exception& e)

@@ -8,9 +8,9 @@
 #if defined(TLRENDER_EXR)
 #include <tlRender/IO/EXR.h>
 #endif // TLRENDER_EXR
-#if defined(TLRENDER_FFMPEG)
+#if defined(TLRENDER_FFMPEG_PLUGIN)
 #include <tlRender/IO/FFmpeg.h>
-#endif // TLRENDER_FFMPEG
+#endif // TLRENDER_FFMPEG_PLUGIN
 #if defined(TLRENDER_USD)
 #include <tlRender/IO/USD.h>
 #endif // TLRENDER_USD
@@ -53,10 +53,10 @@ namespace tl
             std::shared_ptr<ftk::CmdLineOption<exr::Compression> > exrCompression;
             std::shared_ptr<ftk::CmdLineOption<float> > exrDWACompressionLevel;
 #endif // TLRENDER_EXR
-#if defined(TLRENDER_FFMPEG)
+#if defined(TLRENDER_FFMPEG_PLUGIN)
             std::shared_ptr<ftk::CmdLineOption<std::string> > ffmpegCodec;
             std::shared_ptr<ftk::CmdLineOption<int> > ffmpegThreadCount;
-#endif // TLRENDER_FFMPEG
+#endif // TLRENDER_FFMPEG_PLUGIN
 #if defined(TLRENDER_USD)
             std::shared_ptr<ftk::CmdLineOption<int> > usdRenderWidth;
             std::shared_ptr<ftk::CmdLineOption<float> > usdComplexity;

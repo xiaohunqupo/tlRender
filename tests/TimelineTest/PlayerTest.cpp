@@ -54,8 +54,10 @@ namespace tl
                 ftk::Path(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v"),
                 ftk::Path(TLRENDER_SAMPLE_DATA, "MovieAndSeq.otio"),
                 ftk::Path(TLRENDER_SAMPLE_DATA, "TransitionGap.otio"),
-                ftk::Path(TLRENDER_SAMPLE_DATA, "SingleClip.otioz"),
 #endif // TLRENDER_FFMPEG
+#if defined(TLRENDER_FFMPEG_PLUGIN)
+                ftk::Path(TLRENDER_SAMPLE_DATA, "SingleClip.otioz"),
+#endif // TLRENDER_FFMPEG_PLUGIN
                 ftk::Path(TLRENDER_SAMPLE_DATA, "SingleClipSeq.otioz")
             };
             for (const auto& path : paths)

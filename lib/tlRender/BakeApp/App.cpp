@@ -27,11 +27,11 @@ namespace tl
             std::vector<std::string>& argv)
         {
             std::vector<std::string> ffmpegCodecs;
-#if defined(TLRENDER_FFMPEG)
+#if defined(TLRENDER_FFMPEG_PLUGIN)
             auto ioSystem = context->getSystem<WriteSystem>();
             auto ffmpegPlugin = ioSystem->getPlugin<ffmpeg::WritePlugin>();
             ffmpegCodecs = ffmpegPlugin->getCodecs();
-#endif // TLRENDER_FFMPEG
+#endif // TLRENDER_FFMPEG_PLUGIN
             _cmdLine.input = ftk::CmdLineArg<std::string>::create(
                 "input",
                 "The input timeline.");
@@ -105,7 +105,7 @@ namespace tl
                 "OpenEXR",
                 45.F);
 #endif // TLRENDER_EXR
-#if defined(TLRENDER_FFMPEG)
+#if defined(TLRENDER_FFMPEG_PLUGIN)
             _cmdLine.ffmpegCodec = ftk::CmdLineOption<std::string>::create(
                 { "-ffmpegCodec", "-ffc" },
                 "Output codec.",
@@ -117,7 +117,7 @@ namespace tl
                 "Number of threads for I/O.",
                 "FFmpeg",
                 static_cast<int>(ffmpeg::Options().threadCount));
-#endif // TLRENDER_FFMPEG
+#endif // TLRENDER_FFMPEG_PLUGIN
 #if defined(TLRENDER_USD)
             _cmdLine.usdRenderWidth = ftk::CmdLineOption<int>::create(
                 { "-usdRenderWidth" },
@@ -183,10 +183,10 @@ namespace tl
                     _cmdLine.exrCompression,
                     _cmdLine.exrDWACompressionLevel,
 #endif // TLRENDER_EXR
-#if defined(TLRENDER_FFMPEG)
+#if defined(TLRENDER_FFMPEG_PLUGIN)
                     _cmdLine.ffmpegCodec,
                     _cmdLine.ffmpegThreadCount,
-#endif // TLRENDER_FFMPEG
+#endif // TLRENDER_FFMPEG_PLUGIN
 #if defined(TLRENDER_USD)
                     _cmdLine.usdRenderWidth,
                     _cmdLine.usdComplexity,
@@ -382,7 +382,7 @@ namespace tl
                 out["OpenEXR/DWACompressionLevel"] = ss.str();
             }
 #endif // TLRENDER_EXR
-#if defined(TLRENDER_FFMPEG)
+#if defined(TLRENDER_FFMPEG_PLUGIN)
             if (_cmdLine.ffmpegCodec->hasValue())
             {
                 out["FFmpeg/Codec"] = _cmdLine.ffmpegCodec->getValue();
@@ -393,7 +393,7 @@ namespace tl
                 ss << _cmdLine.ffmpegThreadCount->getValue();
                 out["FFmpeg/ThreadCount"] = ss.str();
             }
-#endif // TLRENDER_FFMPEG
+#endif // TLRENDER_FFMPEG_PLUGIN
 
 #if defined(TLRENDER_USD)
             if (_cmdLine.usdRenderWidth->hasValue())

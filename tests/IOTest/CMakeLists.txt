@@ -4,7 +4,7 @@ set(HEADERS
 set(SOURCE
     IOTest.cpp)
 
-if(TLRENDER_FFMPEG)
+if(TLRENDER_FFMPEG_PLUGIN)
     list(APPEND HEADERS FFmpegTest.h)
     list(APPEND SOURCE FFmpegTest.cpp)
 endif()

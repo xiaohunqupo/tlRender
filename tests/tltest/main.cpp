@@ -16,9 +16,9 @@
 #include <TimelineTest/UtilTest.h>
 
 #include <IOTest/IOTest.h>
-#if defined(TLRENDER_FFMPEG)
+#if defined(TLRENDER_FFMPEG_PLUGIN)
 #include <IOTest/FFmpegTest.h>
-#endif // TLRENDER_FFMPEG
+#endif // TLRENDER_FFMPEG_PLUGIN
 #if defined(TLRENDER_EXR)
 #include <IOTest/EXRTest.h>
 #endif // TLRENDER_EXR
@@ -56,9 +56,9 @@ void ioTests(
     const std::shared_ptr<ftk::Context>& context)
 {
     tests.push_back(io_tests::IOTest::create(context));
-#if defined(TLRENDER_FFMPEG)
+#if defined(TLRENDER_FFMPEG_PLUGIN)
     tests.push_back(io_tests::FFmpegTest::create(context));
-#endif // TLRENDER_FFMPEG
+#endif // TLRENDER_FFMPEG_PLUGIN
 #if defined(TLRENDER_OIIO)
     tests.push_back(io_tests::OIIOTest::create(context));
 #endif // TLRENDER_OIIO

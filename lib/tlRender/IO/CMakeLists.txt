@@ -1,5 +1,4 @@
 set(HEADERS
-    FFmpegPipe.h
     IO.h
     IOInline.h
     Plugin.h
@@ -9,12 +8,9 @@ set(HEADERS
     SystemInline.h
     Write.h)
 set(HEADERS_PRIVATE
-    FFmpegPipePrivate.h
     SeqIOReadPrivate.h)
 
 set(SOURCE
-    FFmpegPipe.cpp
-    FFmpegPipeRead.cpp
     IO.cpp
     Plugin.cpp
     Read.cpp
@@ -32,11 +28,17 @@ if(TLRENDER_EXR)
     list(APPEND SOURCE EXR.cpp EXRRead.cpp EXRWrite.cpp)
     list(APPEND LIBRARIES_PRIVATE OpenEXR::OpenEXR)
 endif()
-if(TLRENDER_FFMPEG)
+if(TLRENDER_FFMPEG_PLUGIN)
     list(APPEND HEADERS FFmpeg.h)
     list(APPEND HEADERS_PRIVATE FFmpegPrivate.h FFmpegReadPrivate.h)
     list(APPEND SOURCE FFmpeg.cpp FFmpegRead.cpp FFmpegReadAudio.cpp
         FFmpegReadVideo.cpp FFmpegWrite.cpp)
+    list(APPEND LIBRARIES_PRIVATE FFmpeg::FFmpeg)
+endif()
+if(TLRENDER_FFMPEG_PIPE)
+    list(APPEND HEADERS FFmpegPipe.h)
+    list(APPEND HEADERS_PRIVATE FFmpegPipePrivate.h)
+    list(APPEND SOURCE FFmpegPipe.cpp FFmpegPipeRead.cpp)
     list(APPEND LIBRARIES_PRIVATE FFmpeg::FFmpeg)
 endif()
 if(TLRENDER_OIIO)
