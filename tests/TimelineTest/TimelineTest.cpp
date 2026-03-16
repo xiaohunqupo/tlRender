@@ -87,11 +87,11 @@ namespace tl
             const std::vector<ftk::Path> paths =
             {
                 ftk::Path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg"),
-#if defined(TLRENDER_FFMPEG)
+#if defined(TLRENDER_FFMPEG_PLUGIN) or defined(TLRENDER_FFMPEG_PIPE)
                 ftk::Path(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v"),
                 ftk::Path(TLRENDER_SAMPLE_DATA, "MovieAndSeq.otio"),
                 ftk::Path(TLRENDER_SAMPLE_DATA, "TransitionGap.otio"),
-#endif // TLRENDER_FFMPEG
+#endif // TLRENDER_FFMPEG_PLUGIN or TLRENDER_FFMPEG_PIPE
 #if defined(TLRENDER_FFMPEG_PLUGIN)
                 ftk::Path(TLRENDER_SAMPLE_DATA, "SingleClip.otioz"),
 #endif // TLRENDER_FFMPEG_PLUGIN
@@ -219,7 +219,7 @@ namespace tl
 
         void TimelineTest::_separateAudio()
         {
-#if defined(TLRENDER_FFMPEG)
+#if defined(TLRENDER_FFMPEG_PLUGIN) or defined(TLRENDER_FFMPEG_PIPE)
             try
             {
                 const ftk::Path path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg");
@@ -287,7 +287,7 @@ namespace tl
             {
                 _printError(e.what());
             }
-#endif // TLRENDER_FFMPEG
+#endif // TLRENDER_FFMPEGPLUGIN or TLRENDER_FFMPEG_PIPE
         }
     }
 }
