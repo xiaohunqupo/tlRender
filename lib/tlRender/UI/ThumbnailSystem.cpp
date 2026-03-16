@@ -1086,8 +1086,10 @@ namespace tl
                                     auto resample = AudioResample::create(
                                         audioData.audio->getInfo(),
                                         AudioInfo(1, AudioType::F32, audioData.audio->getSampleRate()));
-                                    const auto resampledAudio = resample->process(audioData.audio);
-                                    mesh = audioMesh(resampledAudio, request->size);
+                                    if (auto resampledAudio = resample->process(audioData.audio))
+                                    {
+                                        mesh = audioMesh(resampledAudio, request->size);
+                                    }
                                 }
                             }
                         }
