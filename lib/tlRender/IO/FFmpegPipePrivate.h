@@ -23,5 +23,16 @@ namespace tl
         private:
             FTK_PRIVATE();
         };
+
+        typedef std::pair<int, int> Rational;
+
+        Rational toRational(const std::string&);
+        double toDouble(const Rational&);
+
+        ftk::ImageType toImageType(const std::string&);
+        std::string fromImageType(ftk::ImageType);
+
+        AudioType toAudioType(const std::string&);
+        std::string fromAudioType(AudioType);
     }
 }

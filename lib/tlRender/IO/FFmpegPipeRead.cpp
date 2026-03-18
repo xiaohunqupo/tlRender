@@ -231,90 +231,13 @@ namespace tl
             }
         }
 
-        namespace
-        {
-            typedef std::pair<int, int> Rational;
-
-            Rational toRational(const std::string& value)
-            {
-                Rational out;
-                const auto s = ftk::split(value, '/');
-                if (2 == s.size())
-                {
-                    out.first = atoi(s[0].c_str());
-                    out.second = atoi(s[1].c_str());
-                }
-                return out;
-            }
-
-            double toDouble(const Rational& value)
-            {
-                return value.second != 0 ?
-                    (value.first / static_cast<double>(value.second)) :
-                    0.0;
-            }
-
-            ftk::ImageType toImageType(const std::string& value)
-            {
-                return ftk::ImageType::RGB_U8;
-            }
-
-            std::string fromImageType(ftk::ImageType value)
-            {
-                return "rgb24";
-            }
-
-            AudioType toAudioType(const std::string& value)
-            {
-                AudioType out = AudioType::S16;
-                if ("s16" == value || "s16p" == value)
-                {
-                    out = AudioType::S16;
-                }
-                else if ("s32" == value || "s32p" == value)
-                {
-                    out = AudioType::S32;
-                }
-                else if ("flt" == value || "fltp" == value)
-                {
-                    out = AudioType::F32;
-                }
-                else if ("dbl" == value || "dblp" == value)
-                {
-                    out = AudioType::F64;
-                }
-                return out;
-            }
-
-            std::string fromAudioType(AudioType value)
-            {
-                std::string out = "s16";
-                switch (value)
-                {
-                    case AudioType::S32: out = "s32"; break;
-                    case AudioType::F32: out = "f32"; break;
-                    case AudioType::F64: out = "f64"; break;
-                    default: break;
-                }
-                switch (ftk::getEndian())
-                {
-                    case ftk::Endian::LSB: out += "le"; break;
-                    case ftk::Endian::MSB: out += "be"; break;
-                    default: break;
-                }
-                return out;
-            }
-        }
-
         void Read::_info(const IOOptions& ioOptions)
         {
             FTK_P();
             try
             {
-                const Options options = getOptions(ioOptions);
-                std::string cmd = ftk::Format("{0} -v quiet -print_format json -show_streams -show_format \"{1}\"").
-                    arg(options.ffprobePath).
-                    arg(_path.get());
+                const Options options(ioOptions);
+                std::string cmd = ftk::Format("{0} -v quiet -print_format json -show_streams -show_format \"{1}\"").arg(options.ffprobePath).arg(_path.get());
                 nlohmann::json json = nlohmann::json::parse(POpen(cmd, "r").readAll());
                 for (const auto& i : json.items())
                 {
@@ -342,6 +265,10 @@ namespace tl
                                 if (k != j.end())
                                 {
                                     info.type = toImageType(*k);
+                                }
+                                if (ftk::ImageType::None == info.type)
+                                {
+                                    info.type = ftk::ImageType::RGB_U8;
                                 }
 
                                 double rate = 0.0;
@@ -375,7 +302,7 @@ namespace tl
                                         {
                                             frames = d * rate;
                                         }
-                                    }                                    
+                                    }
                                 }
                                 p.info.videoTime = OTIO_NS::TimeRange(
                                     OTIO_NS::RationalTime(0.0, rate),
@@ -404,6 +331,10 @@ namespace tl
                                 if (k != j.end())
                                 {
                                     p.info.audio.type = toAudioType(*k);
+                                }
+                                if (AudioType::None == p.info.audio.type)
+                                {
+                                    p.info.audio.type = AudioType::S16;
                                 }
                                 k = j.find("sample_rate");
                                 if (k != j.end())
@@ -448,9 +379,8 @@ namespace tl
                         std::chrono::milliseconds(10),
                         [this]
                         {
-                            return
-                                !_p->mutex.infoRequests.empty() ||
-                                !_p->mutex.videoRequests.empty();
+                            return !_p->mutex.infoRequests.empty() ||
+                                    !_p->mutex.videoRequests.empty();
                         }))
                     {
                         infoRequests = std::move(p.mutex.infoRequests);
@@ -478,13 +408,9 @@ namespace tl
                     !p.info.video.empty() &&
                     (!p.thread.pipe || videoRequest->options != ioOptions))
                 {
-                    const Options options = getOptions(ioOptions);
-                    const std::string cmd = ftk::Format("{0} -v quiet -ss {1} -i \"{2}\" -f rawvideo -pix_fmt {3} pipe:1").
-                        arg(options.ffmpegPath).
-                        arg(p.thread.time.to_seconds()).
-                        arg(_path.get()).
-                        arg(fromImageType(p.info.video.front().type));
-                    //std::cout << cmd << std::endl;
+                    const Options options(ioOptions);
+                    const std::string cmd = ftk::Format("{0} -v quiet -ss {1} -i \"{2}\" -f rawvideo -pix_fmt {3} pipe:1").arg(options.ffmpegPath).arg(p.thread.time.to_seconds()).arg(_path.get()).arg(fromImageType(p.info.video.front().type));
+                    // std::cout << cmd << std::endl;
                     p.thread.pipe = std::make_shared<POpen>(cmd, "r");
                 }
 
@@ -523,12 +449,12 @@ namespace tl
                 {
                     std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
                     if (p.audioThread.cv.wait_for(
-                        lock,
-                        std::chrono::milliseconds(10),
-                        [this]
-                        {
-                            return !_p->audioMutex.requests.empty();
-                        }))
+                            lock,
+                            std::chrono::milliseconds(10),
+                            [this]
+                            {
+                                return !_p->audioMutex.requests.empty();
+                            }))
                     {
                         if (!p.audioMutex.requests.empty())
                         {
@@ -548,13 +474,9 @@ namespace tl
                 if (request &&
                     (!p.audioThread.pipe || request->options != ioOptions))
                 {
-                    const Options options = getOptions(ioOptions);
-                    const std::string cmd = ftk::Format("{0} -v quiet -ss {1} -i \"{2}\" -f {3} pipe:1").
-                        arg(options.ffmpegPath).
-                        arg(p.audioThread.time.to_seconds()).
-                        arg(_path.get()).
-                        arg(fromAudioType(p.info.audio.type));
-                    //std::cout << cmd << std::endl;
+                    const Options options(ioOptions);
+                    const std::string cmd = ftk::Format("{0} -v quiet -ss {1} -i \"{2}\" -f {3} pipe:1").arg(options.ffmpegPath).arg(p.audioThread.time.to_seconds()).arg(_path.get()).arg(fromAudioType(p.info.audio.type));
+                    // std::cout << cmd << std::endl;
                     p.audioThread.pipe = std::make_shared<POpen>(cmd, "r");
                 }
 
