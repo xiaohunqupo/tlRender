@@ -7,6 +7,7 @@
 #include <ftk/Core/String.h>
 
 #include <regex>
+#include <signal.h>
 
 namespace tl
 {
@@ -163,6 +164,7 @@ namespace tl
             }
             return out;
         }
+
         struct POpen::Private
         {
             FILE* f = nullptr;
@@ -176,6 +178,10 @@ namespace tl
 #else // _WINDOWS
             _p->f = popen(cmd.c_str(), mode.c_str());
 #endif // _WINDOWS
+            if (!_p->f)
+            {
+                throw std::runtime_error(ftk::Format("Cannot run command: \"{0}\"").arg(cmd));
+            }
         }
 
         POpen::~POpen()
@@ -226,6 +232,8 @@ namespace tl
             extensions[".ogg"] = FileType::Media;
             extensions[".wav"] = FileType::Media;
             IReadPlugin::_init("FFmpegPipe", extensions, logSystem);
+
+            signal(SIGPIPE, [](int) {});
         }
 
         std::shared_ptr<ReadPlugin> ReadPlugin::create(
@@ -259,6 +267,8 @@ namespace tl
             extensions[".m4v"] = FileType::Media;
             extensions[".y4m"] = FileType::Media;
             IWritePlugin::_init("FFmpegPipe", extensions, logSystem);
+
+            signal(SIGPIPE, [](int) {});
         }
 
         std::shared_ptr<WritePlugin> WritePlugin::create(

@@ -42,7 +42,7 @@ namespace tl
                 arg(options.codec).
                 arg(ftk::join(options.extraArgs, ' ')).
                 arg(p.fileName);
-            std::cout << cmd << std::endl;
+            //std::cout << cmd << std::endl;
             p.pipe = std::make_shared<POpen>(cmd, "w");
         }
 
@@ -86,7 +86,7 @@ namespace tl
                     scanlineByteCount,
                     p.pipe->f()) < scanlineByteCount)
                 {
-                    break;
+                    throw std::runtime_error(ftk::Format("Cannot write: \"{0}\"").arg(p.fileName));
                 }
             }
         }
