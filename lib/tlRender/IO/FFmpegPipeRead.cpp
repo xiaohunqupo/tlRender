@@ -379,8 +379,9 @@ namespace tl
                         std::chrono::milliseconds(10),
                         [this]
                         {
-                            return !_p->mutex.infoRequests.empty() ||
-                                    !_p->mutex.videoRequests.empty();
+                            return
+                                !_p->mutex.infoRequests.empty() ||
+                                !_p->mutex.videoRequests.empty();
                         }))
                     {
                         infoRequests = std::move(p.mutex.infoRequests);
@@ -423,7 +424,7 @@ namespace tl
                         video.image = ftk::Image::create(p.info.video.front());
                         if (p.thread.pipe && p.thread.pipe->f())
                         {
-                            fread(video.image->getData(), video.image->getByteCount(), 1, p.thread.pipe->f());
+                            fread(video.image->getData(), 1, video.image->getByteCount(), p.thread.pipe->f());
                         }
                         else
                         {

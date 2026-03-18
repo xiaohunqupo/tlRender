@@ -80,11 +80,14 @@ namespace tl
             const uint8_t* data = image->getData();
             for (int y = 0; y < size.h; ++y)
             {
-                fwrite(
+                if (fwrite(
                     data + (size.h - 1 - y) * scanlineByteCount,
-                    scanlineByteCount,
                     1,
-                    p.pipe->f());
+                    scanlineByteCount,
+                    p.pipe->f()) < scanlineByteCount)
+                {
+                    break;
+                }
             }
         }
     }
