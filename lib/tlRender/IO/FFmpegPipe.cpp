@@ -173,6 +173,7 @@ namespace tl
         POpen::POpen(const std::string& cmd, const std::string& mode) :
             _p(new Private)
         {
+            signal(SIGPIPE, [](int) {});
 #if defined(_WINDOWS)
             _p->f = _wpopen(ftk::toWide(cmd).c_str(), ftk::toWide(mode).c_str());
 #else // _WINDOWS
@@ -232,8 +233,6 @@ namespace tl
             extensions[".ogg"] = FileType::Media;
             extensions[".wav"] = FileType::Media;
             IReadPlugin::_init("FFmpegPipe", extensions, logSystem);
-
-            signal(SIGPIPE, [](int) {});
         }
 
         std::shared_ptr<ReadPlugin> ReadPlugin::create(
@@ -267,8 +266,6 @@ namespace tl
             extensions[".m4v"] = FileType::Media;
             extensions[".y4m"] = FileType::Media;
             IWritePlugin::_init("FFmpegPipe", extensions, logSystem);
-
-            signal(SIGPIPE, [](int) {});
         }
 
         std::shared_ptr<WritePlugin> WritePlugin::create(
