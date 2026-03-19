@@ -9,16 +9,18 @@ namespace tl
 {
     namespace ffmpeg_pipe
     {
-        class POpen
+        class PipeRead
         {
         public:
-            POpen(const std::string& cmd, const std::string& mode);
+            PipeRead(const std::vector<std::string>& cmd);
 
-            ~POpen();
+            ~PipeRead();
+
+            size_t read(uint8_t*, size_t);
 
             std::string readAll();
 
-            FILE* f();
+            std::string readError();
 
         private:
             FTK_PRIVATE();

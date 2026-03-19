@@ -6,8 +6,9 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
 
+#include <subprocess.h>
+
 #include <regex>
-#include <signal.h>
 
 namespace tl
 {
@@ -165,53 +166,88 @@ namespace tl
             return out;
         }
 
-        struct POpen::Private
+        struct PipeRead::Private
         {
-            FILE* f = nullptr;
+            subprocess_s subprocess;
         };
 
-        POpen::POpen(const std::string& cmd, const std::string& mode) :
+        PipeRead::PipeRead(const std::vector<std::string>& cmd) :
             _p(new Private)
         {
-            signal(SIGPIPE, [](int) {});
-#if defined(_WINDOWS)
-            _p->f = _wpopen(ftk::toWide(cmd).c_str(), ftk::toWide(mode).c_str());
-#else // _WINDOWS
-            _p->f = popen(cmd.c_str(), mode.c_str());
-#endif // _WINDOWS
-            if (!_p->f)
+            FTK_P();
+            std::vector<const char*> args;
+            for (const auto& i : cmd)
             {
-                throw std::runtime_error(ftk::Format("Cannot run command: \"{0}\"").arg(cmd));
+                args.push_back(i.c_str());
+            }
+            args.push_back(nullptr);
+            int r = subprocess_create(
+                args.data(),
+                subprocess_option_inherit_environment |
+                subprocess_option_search_user_path |
+                subprocess_option_enable_async,
+                &p.subprocess);
+            if (r != 0)
+            {
+                throw std::runtime_error(ftk::Format("Cannot run command: \"{0}\"").
+                    arg(ftk::join(cmd, ' ')));
             }
         }
 
-        POpen::~POpen()
-        {
-#if defined(_WINDOWS)
-            _pclose(_p->f);
-#else // _WINDOWS
-            pclose(_p->f);
-#endif // _WINDOWS
-        }
-
-        std::string POpen::readAll()
+        PipeRead::~PipeRead()
         {
             FTK_P();
-            std::string out;
-            while (!feof(p.f))
+            subprocess_terminate(&p.subprocess);
+        }
+
+        size_t PipeRead::read(uint8_t* data, size_t size)
+        {
+            FTK_P();
+            size_t out = 0;
+            size_t r = 0;
+            do
             {
-                const size_t chunkSize = 1024;
-                std::string chunk(chunkSize, 0);
-                size_t size = fread(chunk.data(), 1, chunkSize, p.f);
-                chunk.resize(size);
-                out.insert(out.end(), chunk.begin(), chunk.end());
-            }
+                r = subprocess_read_stdout(
+                    &p.subprocess,
+                    reinterpret_cast<char*>(data + out),
+                    size - out);
+                out += r;
+            } while (subprocess_alive(&p.subprocess) != 0 && out < size && r > 0);
             return out;
         }
 
-        FILE* POpen::f()
+        std::string PipeRead::readAll()
         {
-            return _p->f;
+            FTK_P();
+            std::string out;
+            size_t size = 0;
+            do
+            {
+                const size_t chunkSize = 1024;
+                std::string chunk(chunkSize, 0);
+                size = subprocess_read_stdout(&p.subprocess, chunk.data(), chunkSize);
+                chunk.resize(size);
+                out.insert(out.end(), chunk.begin(), chunk.end());
+            }
+            while (subprocess_alive(&p.subprocess) != 0 && size > 0);
+            return out;
+        }
+
+        std::string PipeRead::readError()
+        {
+            FTK_P();
+            std::string out;
+            size_t size = 0;
+            do
+            {
+                const size_t chunkSize = 1024;
+                std::string chunk(chunkSize, 0);
+                size = subprocess_read_stderr(&p.subprocess, chunk.data(), chunkSize);
+                chunk.resize(size);
+                out.insert(out.end(), chunk.begin(), chunk.end());
+            }
+            while (size > 0);
+            return out;
         }
 
         void ReadPlugin::_init(const std::shared_ptr<ftk::LogSystem>& logSystem)
@@ -233,7 +269,6 @@ namespace tl
             extensions[".ogg"] = FileType::Media;
             extensions[".wav"] = FileType::Media;
             IReadPlugin::_init("FFmpegPipe", extensions, logSystem);
-            signal(SIGPIPE, [](int) {});
         }
 
         std::shared_ptr<ReadPlugin> ReadPlugin::create(
@@ -267,7 +302,6 @@ namespace tl
             extensions[".m4v"] = FileType::Media;
             extensions[".y4m"] = FileType::Media;
             IWritePlugin::_init("FFmpegPipe", extensions, logSystem);
-            signal(SIGPIPE, [](int) {});
         }
 
         std::shared_ptr<WritePlugin> WritePlugin::create(

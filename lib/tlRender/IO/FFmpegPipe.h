@@ -25,12 +25,17 @@ namespace tl
             std::string codec = "vp9";
             std::vector<std::string> extraArgs =
             {
-                "-crf 22 -b:v 0 -quality good",
-                "-pix_fmt yuv420p10le",
-                "-row-mt 1",
-                "-sws_flags spline+accurate_rnd+full_chroma_int",
-                "-vf 'scale=in_range=full:in_color_matrix=bt709:out_range=tv:out_color_matrix=bt709'",
-                "-color_range tv -colorspace bt709 -color_primaries bt709 -color_trc iec61966-2-1"
+                "-crf", "22",
+                "-b:v", "0",
+                "-quality", "good",
+                "-pix_fmt", "yuv420p10le",
+                "-row-mt", "1",
+                "-sws_flags", "spline+accurate_rnd+full_chroma_int",
+                "-vf", "'scale=in_range=full:in_color_matrix=bt709:out_range=tv:out_color_matrix=bt709'",
+                "-color_range", "tv",
+                "-colorspace", "bt709",
+                "-color_primaries",  "bt709",
+                "-color_trc", "iec61966-2-1"
             };
 
             TL_API IOOptions getIOOptions() const;

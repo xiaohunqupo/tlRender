@@ -54,7 +54,7 @@ namespace tl
             struct Thread
             {
                 OTIO_NS::RationalTime time = invalidTime;
-                std::shared_ptr<POpen> pipe = nullptr;
+                std::shared_ptr<PipeRead> pipe = nullptr;
                 std::atomic<bool> running;
                 std::condition_variable cv;
                 std::thread thread;
@@ -64,7 +64,7 @@ namespace tl
             struct AudioThread
             {
                 OTIO_NS::RationalTime time = invalidTime;
-                std::shared_ptr<POpen> pipe = nullptr;
+                std::shared_ptr<PipeRead> pipe = nullptr;
                 std::atomic<bool> running;
                 std::condition_variable cv;
                 std::thread thread;
@@ -237,8 +237,17 @@ namespace tl
             try
             {
                 const Options options(ioOptions);
-                std::string cmd = ftk::Format("{0} -v quiet -print_format json -show_streams -show_format \"{1}\"").arg(options.ffprobePath).arg(_path.get());
-                nlohmann::json json = nlohmann::json::parse(POpen(cmd, "r").readAll());
+                std::vector<std::string> cmd;
+                cmd.push_back(options.ffprobePath);
+                cmd.push_back("-v");
+                cmd.push_back("quiet");
+                cmd.push_back("-print_format");
+                cmd.push_back("json");
+                cmd.push_back("-show_streams");
+                cmd.push_back("-show_format");
+                cmd.push_back(_path.get());
+                //std::cout << ftk::join(cmd, ' ') << std::endl;
+                nlohmann::json json = nlohmann::json::parse(PipeRead(cmd).readAll());
                 for (const auto& i : json.items())
                 {
                     if ("streams" == i.key())
@@ -409,10 +418,29 @@ namespace tl
                     !p.info.video.empty() &&
                     (!p.thread.pipe || videoRequest->options != ioOptions))
                 {
-                    const Options options(ioOptions);
-                    const std::string cmd = ftk::Format("{0} -v quiet -ss {1} -i \"{2}\" -f rawvideo -pix_fmt {3} pipe:1").arg(options.ffmpegPath).arg(p.thread.time.to_seconds()).arg(_path.get()).arg(fromImageType(p.info.video.front().type));
-                    // std::cout << cmd << std::endl;
-                    p.thread.pipe = std::make_shared<POpen>(cmd, "r");
+                    try
+                    {
+                        const Options options(ioOptions);
+                        std::vector<std::string> cmd;
+                        cmd.push_back(options.ffmpegPath);
+                        cmd.push_back("-v");
+                        cmd.push_back("quiet");
+                        cmd.push_back("-ss");
+                        cmd.push_back(ftk::Format("{0}").arg(p.thread.time.to_seconds()));
+                        cmd.push_back("-i");
+                        cmd.push_back(_path.get());
+                        cmd.push_back("-f");
+                        cmd.push_back("rawvideo");
+                        cmd.push_back("-pix_fmt");
+                        cmd.push_back(fromImageType(p.info.video.front().type));
+                        cmd.push_back("pipe:1");
+                        //std::cout << ftk::join(cmd, ' ') << std::endl;
+                        p.thread.pipe = std::make_shared<PipeRead>(cmd);
+                    }
+                    catch (const std::exception& e)
+                    {
+                        _logSystem.lock()->print("tl::ffmpeg_pipe", e.what(), ftk::LogType::Error);
+                    }
                 }
 
                 if (videoRequest)
@@ -422,9 +450,9 @@ namespace tl
                     if (!p.info.video.empty())
                     {
                         video.image = ftk::Image::create(p.info.video.front());
-                        if (p.thread.pipe && p.thread.pipe->f())
+                        if (p.thread.pipe)
                         {
-                            fread(video.image->getData(), 1, video.image->getByteCount(), p.thread.pipe->f());
+                            p.thread.pipe->read(video.image->getData(), video.image->getByteCount());
                         }
                         else
                         {
@@ -475,10 +503,27 @@ namespace tl
                 if (request &&
                     (!p.audioThread.pipe || request->options != ioOptions))
                 {
-                    const Options options(ioOptions);
-                    const std::string cmd = ftk::Format("{0} -v quiet -ss {1} -i \"{2}\" -f {3} pipe:1").arg(options.ffmpegPath).arg(p.audioThread.time.to_seconds()).arg(_path.get()).arg(fromAudioType(p.info.audio.type));
-                    // std::cout << cmd << std::endl;
-                    p.audioThread.pipe = std::make_shared<POpen>(cmd, "r");
+                    try
+                    {
+                        const Options options(ioOptions);
+                        std::vector<std::string> cmd;
+                        cmd.push_back(options.ffmpegPath);
+                        cmd.push_back("-v");
+                        cmd.push_back("quiet");
+                        cmd.push_back("-ss");
+                        cmd.push_back(ftk::Format("{0}").arg(p.audioThread.time.to_seconds()));
+                        cmd.push_back("-i");
+                        cmd.push_back(_path.get());
+                        cmd.push_back("-f");
+                        cmd.push_back(fromAudioType(p.info.audio.type));
+                        cmd.push_back("pipe:1");
+                        //std::cout << ftk::join(cmd, ' ') << std::endl;
+                        p.audioThread.pipe = std::make_shared<PipeRead>(cmd);
+                    }
+                    catch (const std::exception& e)
+                    {
+                        _logSystem.lock()->print("tl::ffmpeg_pipe", e.what(), ftk::LogType::Error);
+                    }
                 }
 
                 if (request)
@@ -488,9 +533,9 @@ namespace tl
                     audio.audio = Audio::create(
                         p.info.audio,
                         request->timeRange.duration().rescaled_to(1.0).value() * p.info.audio.sampleRate);
-                    if (p.audioThread.pipe->f())
+                    if (p.audioThread.pipe)
                     {
-                        fread(audio.audio->getData(), audio.audio->getByteCount(), 1, p.audioThread.pipe->f());
+                        p.audioThread.pipe->read(audio.audio->getData(), audio.audio->getByteCount());
                     }
                     else
                     {

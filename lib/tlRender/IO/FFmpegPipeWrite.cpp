@@ -12,7 +12,7 @@ namespace tl
         struct Write::Private
         {
             std::string fileName;
-            std::shared_ptr<POpen> pipe;
+            //std::shared_ptr<POpen> pipe;
         };
 
         void Write::_init(
@@ -43,7 +43,7 @@ namespace tl
                 arg(ftk::join(options.extraArgs, ' ')).
                 arg(p.fileName);
             //std::cout << cmd << std::endl;
-            p.pipe = std::make_shared<POpen>(cmd, "w");
+            //p.pipe = std::make_shared<POpen>(cmd, "w");
         }
 
         Write::Write() :
@@ -80,14 +80,14 @@ namespace tl
             const uint8_t* data = image->getData();
             for (int y = 0; y < size.h; ++y)
             {
-                if (fwrite(
+                /*if (fwrite(
                     data + (size.h - 1 - y) * scanlineByteCount,
                     1,
                     scanlineByteCount,
                     p.pipe->f()) < scanlineByteCount)
                 {
                     throw std::runtime_error(ftk::Format("Cannot write: \"{0}\"").arg(p.fileName));
-                }
+                }*/
             }
         }
     }
