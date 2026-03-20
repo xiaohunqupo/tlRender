@@ -230,9 +230,6 @@ namespace tl
 #if defined(TLRENDER_FFMPEG_PLUGIN)
             _plugins.push_back(ffmpeg::WritePlugin::create(logSystem));
 #endif // TLRENDER_FFMPEG_PLUGIN
-#if defined(TLRENDER_FFMPEG_PIPE)
-            _plugins.push_back(ffmpeg_pipe::WritePlugin::create(logSystem));
-#endif // TLRENDER_FFMPEG_PIPE
         }
 
         for (const auto& plugin : _plugins)

@@ -28,20 +28,6 @@ namespace tl
                 std::stringstream ss(i->second);
                 ss >> ffprobePath;
             }
-            i = value.find("FFmpegPipe/Codec");
-            if (i != value.end())
-            {
-                std::stringstream ss(i->second);
-                ss >> codec;
-            }
-            for (size_t j = 0; j < value.size(); ++j)
-            {
-                i = value.find(ftk::Format("FFmpegPipe/ExtraArgs{0}").arg(j));
-                if (i != value.end())
-                {
-                    extraArgs.push_back(i->second);
-                }
-            }
         }
 
         IOOptions Options::getIOOptions() const
@@ -49,11 +35,6 @@ namespace tl
             IOOptions out;
             out["FFmpegPipe/FFmpegPath"] = ffmpegPath;
             out["FFmpegPipe/FFprobePath"] = ffprobePath;
-            out["FFmpegPipe/Codec"] = codec;
-            for (size_t i = 0; i < extraArgs.size(); ++i)
-            {
-                out[ftk::Format("FFmpegPipe/ExtraArgs{0}").arg(i)] = extraArgs[i];
-            }
             return out;
         }
 
@@ -61,9 +42,7 @@ namespace tl
         {
             return
                 ffmpegPath == other.ffmpegPath &&
-                ffprobePath == other.ffprobePath &&
-                codec == other.codec &&
-                extraArgs == other.extraArgs;
+                ffprobePath == other.ffprobePath;
         }
 
         bool Options::operator != (const Options& other) const
@@ -185,7 +164,8 @@ namespace tl
                 args.data(),
                 subprocess_option_inherit_environment |
                 subprocess_option_search_user_path |
-                subprocess_option_enable_async,
+                subprocess_option_enable_async |
+                subprocess_option_no_window,
                 &p.subprocess);
             if (r != 0)
             {
@@ -204,6 +184,10 @@ namespace tl
         size_t Pipe::read(uint8_t* data, size_t size)
         {
             FTK_P();
+            if (0 == subprocess_alive(&p.subprocess))
+            {
+                throw std::runtime_error("Cannot read from process");
+            }
             size_t out = 0;
             size_t r = 0;
             do
@@ -213,13 +197,17 @@ namespace tl
                     reinterpret_cast<char*>(data + out),
                     size - out);
                 out += r;
-            } while (subprocess_alive(&p.subprocess) != 0 && out < size && r > 0);
+            } while (out < size && r > 0);
             return out;
         }
 
         std::string Pipe::readAll()
         {
             FTK_P();
+            if (0 == subprocess_alive(&p.subprocess))
+            {
+                throw std::runtime_error("Cannot read from process");
+            }
             std::string out;
             size_t size = 0;
             do
@@ -230,31 +218,7 @@ namespace tl
                 chunk.resize(size);
                 out.insert(out.end(), chunk.begin(), chunk.end());
             }
-            while (subprocess_alive(&p.subprocess) != 0 && size > 0);
-            return out;
-        }
-
-        std::string Pipe::readError()
-        {
-            FTK_P();
-            std::string out;
-            size_t size = 0;
-            do
-            {
-                const size_t chunkSize = 1024;
-                std::string chunk(chunkSize, 0);
-                size = subprocess_read_stderr(&p.subprocess, chunk.data(), chunkSize);
-                chunk.resize(size);
-                out.insert(out.end(), chunk.begin(), chunk.end());
-            }
             while (size > 0);
-            return out;
-        }
-
-        size_t Pipe::write(const uint8_t* data, size_t size)
-        {
-            FTK_P();
-            size_t out = fwrite(data, 1, size, subprocess_stdin(&p.subprocess));
             return out;
         }
 
@@ -300,55 +264,6 @@ namespace tl
             const IOOptions& options)
         {
             return Read::create(path, memory, options, _logSystem.lock());
-        }
-
-        void WritePlugin::_init(const std::shared_ptr<ftk::LogSystem>& logSystem)
-        {
-            std::map<std::string, FileType> extensions;
-            extensions[".mov"] = FileType::Media;
-            extensions[".mp4"] = FileType::Media;
-            extensions[".m4v"] = FileType::Media;
-            extensions[".y4m"] = FileType::Media;
-            IWritePlugin::_init("FFmpegPipe", extensions, logSystem);
-        }
-
-        std::shared_ptr<WritePlugin> WritePlugin::create(
-            const std::shared_ptr<ftk::LogSystem>& logSystem)
-        {
-            auto out = std::shared_ptr<WritePlugin>(new WritePlugin);
-            out->_init(logSystem);
-            return out;
-        }
-
-        ftk::ImageInfo WritePlugin::getInfo(
-            const ftk::ImageInfo& info,
-            const IOOptions& options) const
-        {
-            ftk::ImageInfo out;
-            out.size = info.size;
-            switch (info.type)
-            {
-            case ftk::ImageType::L_U8:
-            case ftk::ImageType::RGB_U8:
-            case ftk::ImageType::RGBA_U8:
-                out.type = info.type;
-                break;
-            default:
-                out.type = ftk::ImageType::RGB_U8;
-                break;
-            }
-            return out;
-        }
-
-        std::shared_ptr<IWrite> WritePlugin::write(
-            const ftk::Path& path,
-            const IOInfo& info,
-            const IOOptions& options)
-        {
-            if (info.video.empty() || (!info.video.empty() && !_isCompatible(info.video[0], options)))
-                throw std::runtime_error(ftk::Format("Unsupported video: \"{0}\"").
-                    arg(path.get()));
-            return Write::create(path, info, options, _logSystem.lock());
         }
     }
 }

@@ -20,10 +20,6 @@ namespace tl
 
             std::string readAll();
 
-            std::string readError();
-
-            size_t write(const uint8_t*, size_t);
-
             private:
             FTK_PRIVATE();
         };

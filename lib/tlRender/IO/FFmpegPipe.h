@@ -22,21 +22,6 @@ namespace tl
 
             std::string ffmpegPath  = "ffmpeg";
             std::string ffprobePath = "ffprobe";
-            std::string codec = "vp9";
-            std::vector<std::string> extraArgs =
-            {
-                "-crf", "22",
-                "-b:v", "0",
-                "-quality", "good",
-                "-pix_fmt", "yuv420p10le",
-                "-row-mt", "1",
-                "-sws_flags", "spline+accurate_rnd+full_chroma_int",
-                "-vf", "'scale=in_range=full:in_color_matrix=bt709:out_range=tv:out_color_matrix=bt709'",
-                "-color_range", "tv",
-                "-colorspace", "bt709",
-                "-color_primaries",  "bt709",
-                "-color_trc", "iec61966-2-1"
-            };
 
             TL_API IOOptions getIOOptions() const;
 
@@ -89,37 +74,6 @@ namespace tl
             FTK_PRIVATE();
         };
 
-        //! FFmpeg pipe writer.
-        class TL_API_TYPE Write : public IWrite
-        {
-        protected:
-            void _init(
-                const ftk::Path&,
-                const IOInfo&,
-                const IOOptions&,
-                const std::shared_ptr<ftk::LogSystem>&);
-
-            Write();
-
-        public:
-            TL_API virtual ~Write();
-
-            //! Create a new writer.
-            TL_API static std::shared_ptr<Write> create(
-                const ftk::Path&,
-                const IOInfo&,
-                const IOOptions&,
-                const std::shared_ptr<ftk::LogSystem>&);
-
-            TL_API void writeVideo(
-                const OTIO_NS::RationalTime&,
-                const std::shared_ptr<ftk::Image>&,
-                const IOOptions& = IOOptions()) override;
-
-        private:
-            FTK_PRIVATE();
-        };
-
         //! FFmpeg pipe read plugin.
         class TL_API_TYPE ReadPlugin : public IReadPlugin
         {
@@ -139,28 +93,6 @@ namespace tl
             TL_API std::shared_ptr<IRead> read(
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
-                const IOOptions & = IOOptions()) override;
-        };
-
-        //! FFmpeg pipe write plugin.
-        class TL_API_TYPE WritePlugin : public IWritePlugin
-        {
-        protected:
-            void _init(const std::shared_ptr<ftk::LogSystem>&);
-
-            WritePlugin() = default;
-
-        public:
-            //! Create a new write plugin.
-            TL_API static std::shared_ptr<WritePlugin> create(
-                const std::shared_ptr<ftk::LogSystem>&);
-
-            TL_API ftk::ImageInfo getInfo(
-                const ftk::ImageInfo&,
-                const IOOptions & = IOOptions()) const override;
-            TL_API std::shared_ptr<IWrite> write(
-                const ftk::Path&,
-                const IOInfo&,
                 const IOOptions & = IOOptions()) override;
         };
     }
