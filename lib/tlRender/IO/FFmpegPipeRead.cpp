@@ -174,11 +174,12 @@ namespace tl
 
         std::future<VideoData> Read::readVideo(
             const OTIO_NS::RationalTime& time,
-            const IOOptions&)
+            const IOOptions& options)
         {
             FTK_P();
             auto request = std::make_shared<Private::VideoRequest>();
             request->time = time;
+            request->options = options;
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.videoRequests.push_back(request);
@@ -194,6 +195,7 @@ namespace tl
             FTK_P();
             auto request = std::make_shared<Private::AudioRequest>();
             request->timeRange = timeRange;
+            request->options = options;
             {
                 std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
                 p.audioMutex.requests.push_back(request);
@@ -418,9 +420,10 @@ namespace tl
                     !p.info.video.empty() &&
                     (!p.thread.pipe || videoRequest->options != ioOptions))
                 {
+                    ioOptions = videoRequest->options;
                     try
                     {
-                        const Options options(ioOptions);
+                        const Options options(merge(_options, ioOptions));
                         std::vector<std::string> cmd;
                         cmd.push_back(options.ffmpegPath);
                         cmd.push_back("-v");
@@ -503,9 +506,10 @@ namespace tl
                 if (request &&
                     (!p.audioThread.pipe || request->options != ioOptions))
                 {
+                    ioOptions = request->options;
                     try
                     {
-                        const Options options(ioOptions);
+                        const Options options(merge(_options, ioOptions));
                         std::vector<std::string> cmd;
                         cmd.push_back(options.ffmpegPath);
                         cmd.push_back("-v");
