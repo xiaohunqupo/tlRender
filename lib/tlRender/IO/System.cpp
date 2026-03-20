@@ -54,12 +54,12 @@ namespace tl
             // \todo WMF support is still a WIP.
             //_plugins.push_back(wmf::ReadPlugin::create(logSystem));
 #endif // TLRENDER_WMF
-#if defined(TLRENDER_FFMPEG_PLUGIN)
-            _plugins.push_back(ffmpeg::ReadPlugin::create(logSystem));
-#endif // TLRENDER_FFMPEG_PLUGIN
 #if defined(TLRENDER_FFMPEG_PIPE)
             _plugins.push_back(ffmpeg_pipe::ReadPlugin::create(logSystem));
 #endif // TLRENDER_FFMPEG_PIPE
+#if defined(TLRENDER_FFMPEG_PLUGIN)
+            _plugins.push_back(ffmpeg::ReadPlugin::create(logSystem));
+#endif // TLRENDER_FFMPEG_PLUGIN
 #if defined(TLRENDER_USD)
             _plugins.push_back(usd::ReadPlugin::create(logSystem));
 #endif // TLRENDER_USD
