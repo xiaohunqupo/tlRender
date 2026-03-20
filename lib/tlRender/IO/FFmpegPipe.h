@@ -95,5 +95,14 @@ namespace tl
                 const std::vector<ftk::MemFile>&,
                 const IOOptions & = IOOptions()) override;
         };
+
+        //! \name Serialize
+        ///@{
+
+        TL_API void to_json(nlohmann::json&, const Options&);
+
+        TL_API void from_json(const nlohmann::json&, Options&);
+
+        ///@}
     }
 }

@@ -265,5 +265,17 @@ namespace tl
         {
             return Read::create(path, memory, options, _logSystem.lock());
         }
+
+        void to_json(nlohmann::json& json, const Options& value)
+        {
+            json["FFprobe"] = value.ffprobePath;
+            json["FFmpeg"] = value.ffmpegPath;
+        }
+
+        void from_json(const nlohmann::json& json, Options& value)
+        {
+            json.at("FFprobe").get_to(value.ffprobePath);
+            json.at("FFmpeg").get_to(value.ffmpegPath);
+        }
     }
 }
