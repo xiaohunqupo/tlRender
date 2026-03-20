@@ -192,6 +192,13 @@ namespace tl
                 throw std::runtime_error(ftk::Format("Cannot run command: \"{0}\"").
                     arg(ftk::join(cmd, ' ')));
             }
+            const std::string error = readError();
+            if (!error.empty())
+            {
+                throw std::runtime_error(ftk::Format("Cannot run command: \"{0}\": {1}").
+                    arg(ftk::join(cmd, ' ')).
+                    arg(error));
+            }
         }
 
         Pipe::~Pipe()
