@@ -198,6 +198,7 @@ namespace tl
         {
             FTK_P();
             subprocess_terminate(&p.subprocess);
+            subprocess_destroy(&p.subprocess);
         }
 
         size_t PipeRead::read(uint8_t* data, size_t size)
