@@ -192,13 +192,6 @@ namespace tl
                 throw std::runtime_error(ftk::Format("Cannot run command: \"{0}\"").
                     arg(ftk::join(cmd, ' ')));
             }
-            const std::string error = readError();
-            if (!error.empty())
-            {
-                throw std::runtime_error(ftk::Format("Cannot run command: \"{0}\": {1}").
-                    arg(ftk::join(cmd, ' ')).
-                    arg(error));
-            }
         }
 
         Pipe::~Pipe()
@@ -261,11 +254,7 @@ namespace tl
         size_t Pipe::write(const uint8_t* data, size_t size)
         {
             FTK_P();
-            size_t out = 0;
-            if (subprocess_alive(&p.subprocess))
-            {
-                fwrite(data, 1, size, subprocess_stdin(&p.subprocess));
-            }
+            size_t out = fwrite(data, 1, size, subprocess_stdin(&p.subprocess));
             return out;
         }
 
