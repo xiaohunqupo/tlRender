@@ -166,12 +166,12 @@ namespace tl
             return out;
         }
 
-        struct PipeRead::Private
+        struct Pipe::Private
         {
             subprocess_s subprocess;
         };
 
-        PipeRead::PipeRead(const std::vector<std::string>& cmd) :
+        Pipe::Pipe(const std::vector<std::string>& cmd) :
             _p(new Private)
         {
             FTK_P();
@@ -194,14 +194,14 @@ namespace tl
             }
         }
 
-        PipeRead::~PipeRead()
+        Pipe::~Pipe()
         {
             FTK_P();
             subprocess_terminate(&p.subprocess);
             subprocess_destroy(&p.subprocess);
         }
 
-        size_t PipeRead::read(uint8_t* data, size_t size)
+        size_t Pipe::read(uint8_t* data, size_t size)
         {
             FTK_P();
             size_t out = 0;
@@ -217,7 +217,7 @@ namespace tl
             return out;
         }
 
-        std::string PipeRead::readAll()
+        std::string Pipe::readAll()
         {
             FTK_P();
             std::string out;
@@ -234,7 +234,7 @@ namespace tl
             return out;
         }
 
-        std::string PipeRead::readError()
+        std::string Pipe::readError()
         {
             FTK_P();
             std::string out;
@@ -248,6 +248,13 @@ namespace tl
                 out.insert(out.end(), chunk.begin(), chunk.end());
             }
             while (size > 0);
+            return out;
+        }
+
+        size_t Pipe::write(const uint8_t* data, size_t size)
+        {
+            FTK_P();
+            size_t out = fwrite(data, 1, size, subprocess_stdin(&p.subprocess));
             return out;
         }
 

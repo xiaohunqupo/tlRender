@@ -9,12 +9,12 @@ namespace tl
 {
     namespace ffmpeg_pipe
     {
-        class PipeRead
+        class Pipe
         {
         public:
-            PipeRead(const std::vector<std::string>& cmd);
+            Pipe(const std::vector<std::string>& cmd);
 
-            ~PipeRead();
+            ~Pipe();
 
             size_t read(uint8_t*, size_t);
 
@@ -22,7 +22,9 @@ namespace tl
 
             std::string readError();
 
-        private:
+            size_t write(const uint8_t*, size_t);
+
+            private:
             FTK_PRIVATE();
         };
 

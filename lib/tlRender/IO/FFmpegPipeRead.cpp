@@ -54,7 +54,7 @@ namespace tl
             struct Thread
             {
                 OTIO_NS::RationalTime time = invalidTime;
-                std::shared_ptr<PipeRead> pipe = nullptr;
+                std::shared_ptr<Pipe> pipe = nullptr;
                 std::atomic<bool> running;
                 std::condition_variable cv;
                 std::thread thread;
@@ -64,7 +64,7 @@ namespace tl
             struct AudioThread
             {
                 OTIO_NS::RationalTime time = invalidTime;
-                std::shared_ptr<PipeRead> pipe = nullptr;
+                std::shared_ptr<Pipe> pipe = nullptr;
                 std::atomic<bool> running;
                 std::condition_variable cv;
                 std::thread thread;
@@ -247,7 +247,7 @@ namespace tl
                 cmd.push_back("-show_format");
                 cmd.push_back(_path.get());
                 //std::cout << ftk::join(cmd, ' ') << std::endl;
-                nlohmann::json json = nlohmann::json::parse(PipeRead(cmd).readAll());
+                nlohmann::json json = nlohmann::json::parse(Pipe(cmd).readAll());
                 for (const auto& i : json.items())
                 {
                     if ("streams" == i.key())
@@ -435,7 +435,7 @@ namespace tl
                         cmd.push_back(fromImageType(p.info.video.front().type));
                         cmd.push_back("pipe:1");
                         //std::cout << ftk::join(cmd, ' ') << std::endl;
-                        p.thread.pipe = std::make_shared<PipeRead>(cmd);
+                        p.thread.pipe = std::make_shared<Pipe>(cmd);
                     }
                     catch (const std::exception& e)
                     {
@@ -518,7 +518,7 @@ namespace tl
                         cmd.push_back(fromAudioType(p.info.audio.type));
                         cmd.push_back("pipe:1");
                         //std::cout << ftk::join(cmd, ' ') << std::endl;
-                        p.audioThread.pipe = std::make_shared<PipeRead>(cmd);
+                        p.audioThread.pipe = std::make_shared<Pipe>(cmd);
                     }
                     catch (const std::exception& e)
                     {

@@ -12,7 +12,7 @@ namespace tl
         struct Write::Private
         {
             std::string fileName;
-            //std::shared_ptr<POpen> pipe;
+            std::shared_ptr<Pipe> pipe;
         };
 
         void Write::_init(
@@ -33,17 +33,30 @@ namespace tl
 
             const Options options(ioOptions);
             const auto& imageInfo = info.video.front();
-            const std::string cmd = ftk::Format("{0} -v quiet -f rawvideo -video_size {1}x{2} -pixel_format {3} -framerate {4} -i pipe:0 -c:v {5} {6} -y {7}").
-                arg(options.ffmpegPath).
+            std::vector<std::string> cmd;
+            cmd.push_back(options.ffmpegPath);
+            cmd.push_back("-v");
+            cmd.push_back("quiet");
+            cmd.push_back("-f");
+            cmd.push_back("rawvideo");
+            cmd.push_back("-video_size");
+            cmd.push_back(ftk::Format("{0}x{1}").
                 arg(imageInfo.size.w).
-                arg(imageInfo.size.h).
-                arg(fromImageType(imageInfo.type)).
-                arg(info.videoTime.duration().rate()).
-                arg(options.codec).
-                arg(ftk::join(options.extraArgs, ' ')).
-                arg(p.fileName);
-            //std::cout << cmd << std::endl;
-            //p.pipe = std::make_shared<POpen>(cmd, "w");
+                arg(imageInfo.size.h));
+            cmd.push_back("-pixel_format");
+            cmd.push_back(fromImageType(imageInfo.type));
+            cmd.push_back("-framerate");
+            cmd.push_back(ftk::Format("{0}").
+                arg(info.videoTime.duration().rate()));
+            cmd.push_back("-i");
+            cmd.push_back("pipe:0");
+            cmd.push_back("-c:v");
+            cmd.push_back(options.codec);
+            cmd.insert(cmd.end(), options.extraArgs.begin(), options.extraArgs.end());
+            cmd.push_back("-y");
+            cmd.push_back(p.fileName);
+            std::cout << ftk::join(cmd, ' ') << std::endl;
+            p.pipe = std::make_shared<Pipe>(cmd);
         }
 
         Write::Write() :
@@ -80,14 +93,12 @@ namespace tl
             const uint8_t* data = image->getData();
             for (int y = 0; y < size.h; ++y)
             {
-                /*if (fwrite(
+                if (p.pipe->write(
                     data + (size.h - 1 - y) * scanlineByteCount,
-                    1,
-                    scanlineByteCount,
-                    p.pipe->f()) < scanlineByteCount)
+                    scanlineByteCount) < scanlineByteCount)
                 {
                     throw std::runtime_error(ftk::Format("Cannot write: \"{0}\"").arg(p.fileName));
-                }*/
+                }
             }
         }
     }
