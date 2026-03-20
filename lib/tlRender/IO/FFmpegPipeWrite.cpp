@@ -55,7 +55,7 @@ namespace tl
             cmd.insert(cmd.end(), options.extraArgs.begin(), options.extraArgs.end());
             cmd.push_back("-y");
             cmd.push_back(p.fileName);
-            //std::cout << ftk::join(cmd, ' ') << std::endl;
+            std::cout << ftk::join(cmd, ' ') << std::endl;
             p.pipe = std::make_shared<Pipe>(cmd);
         }
 
