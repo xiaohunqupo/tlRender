@@ -32,4 +32,4 @@ set(LEGAL
 
 install(
     FILES ${LEGAL}
-    DESTINATION etc/tlRender)
+    DESTINATION share/tlRender/Legal)
