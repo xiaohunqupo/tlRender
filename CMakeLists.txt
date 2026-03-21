@@ -333,7 +333,7 @@ set(INCLUDE_INSTALL_DIR include/tlRender)
 configure_package_config_file(
     tlRenderConfig.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/tlRenderConfig.cmake
-    INSTALL_DESTINATION share/tlRender
+    INSTALL_DESTINATION lib/cmake/tlRender
     PATH_VARS INCLUDE_INSTALL_DIR)
 
 #-------------------------------------------------------------------------------
