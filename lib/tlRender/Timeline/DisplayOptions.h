@@ -52,6 +52,7 @@ namespace tl
         float defog    = 0.F;
         float kneeLow  = 0.F;
         float kneeHigh = 5.F;
+        float gamma    = 1.F;
 
         TL_API bool operator == (const Exposure&) const;
         TL_API bool operator != (const Exposure&) const;

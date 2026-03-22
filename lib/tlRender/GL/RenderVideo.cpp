@@ -863,8 +863,8 @@ namespace tl
                     p.shaders["display"]->setUniform("exposure.k", k);
                     p.shaders["display"]->setUniform("exposure.f", f);
                     const float gamma =
-                        displayOptions.levels.gamma > 0.F ?
-                        (1.F / displayOptions.levels.gamma) :
+                        displayOptions.exposure.gamma > 0.F ?
+                        (1.F / displayOptions.exposure.gamma) :
                         1000000.F;
                     p.shaders["display"]->setUniform("exposure.g", gamma);
                 }
