@@ -130,7 +130,7 @@ namespace tl
                 "uniform bool     levelsEnabled;\n"
                 "uniform Levels   levels;\n"
                 "uniform bool     exposureEnabled;\n"
-                "uniform Exposure exposyre;\n"
+                "uniform Exposure exposure;\n"
                 "uniform float    softClip;\n"
                 "\n"
                 "vec4 colorFunc(vec4 value, vec3 add, mat4 m)\n"
