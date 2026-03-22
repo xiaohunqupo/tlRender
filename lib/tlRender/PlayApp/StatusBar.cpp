@@ -26,10 +26,12 @@ namespace tl
             _labels["Log"] = ftk::Label::create(context, _layout);
             _labels["Log"]->setHStretch(ftk::Stretch::Expanding);
             _labels["Log"]->setMarginRole(ftk::SizeRole::MarginInside);
+            _labels["Log"]->setClipText(true);
 
             ftk::Divider::create(context, ftk::Orientation::Horizontal, _layout);
             _labels["Info"] = ftk::Label::create(context, _layout);
             _labels["Info"]->setMarginRole(ftk::SizeRole::MarginInside);
+            _labels["Info"]->setClipText(true);
 
             _messagesTimer = ftk::Timer::create(context);
 
