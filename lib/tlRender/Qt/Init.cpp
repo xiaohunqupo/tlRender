@@ -56,7 +56,7 @@ namespace tl
             qRegisterMetaType<Compare>("tl::Compare");
             qRegisterMetaType<CompareTime>("tl::CompareTime");
             qRegisterMetaType<CompareOptions>("tl::CompareOptions");
-            qRegisterMetaType<EXRDisplay>("tl::EXRDisplay");
+            qRegisterMetaType<Exposure>("tl::Exposure");
             qRegisterMetaType<ImageSeqAudio>("tl::ImageSeqAudio");
             qRegisterMetaType<LUTOptions>("tl::LUTOptions");
             qRegisterMetaType<Levels>("tl::Levels");

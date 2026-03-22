@@ -41,13 +41,14 @@ namespace tl
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
-            py::class_<EXRDisplay>(m, "EXRDisplay")
+            py::class_<Exposure>(m, "Exposure")
                 .def(py::init())
-                .def_readwrite("enabled", &EXRDisplay::enabled)
-                .def_readwrite("exposure", &EXRDisplay::exposure)
-                .def_readwrite("defog", &EXRDisplay::defog)
-                .def_readwrite("kneeLow", &EXRDisplay::kneeLow)
-                .def_readwrite("kneeHigh", &EXRDisplay::kneeHigh)
+                .def_readwrite("enabled", &Exposure::enabled)
+                .def_readwrite("exposure", &Exposure::exposure)
+                .def_readwrite("defog", &Exposure::defog)
+                .def_readwrite("kneeLow", &Exposure::kneeLow)
+                .def_readwrite("kneeHigh", &Exposure::kneeHigh)
+                .def_readwrite("gamma", &Exposure::gamma)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
@@ -64,7 +65,7 @@ namespace tl
                 .def_readwrite("mirror", &DisplayOptions::mirror)
                 .def_readwrite("color", &DisplayOptions::color)
                 .def_readwrite("levels", &DisplayOptions::levels)
-                .def_readwrite("exrDisplay", &DisplayOptions::exrDisplay)
+                .def_readwrite("exposure", &DisplayOptions::exposure)
                 .def_readwrite("softClip", &DisplayOptions::softClip)
                 .def_readwrite("imageFilters", &DisplayOptions::imageFilters)
                 .def(pybind11::self == pybind11::self)
@@ -85,7 +86,7 @@ namespace tl
                     return json.dump();
                 });
             m.def("to_json",
-                [](const EXRDisplay& value)
+                [](const Exposure& value)
                 {
                     nlohmann::json json;
                     to_json(json, value);
@@ -117,7 +118,7 @@ namespace tl
                     from_json(nlohmann::json().parse(value), out);
                 });
             m.def("from_json",
-                [](const std::string& value, EXRDisplay& out)
+                [](const std::string& value, Exposure& out)
                 {
                     from_json(nlohmann::json().parse(value), out);
                 });
