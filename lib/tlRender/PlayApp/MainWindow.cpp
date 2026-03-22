@@ -64,14 +64,16 @@ namespace tl
             //imageOptions.imageFilters.magnify = ftk::ImageFilter::Nearest;
             //imageOptions.alphaBlend = ftk::AlphaBlend::None;
             //_viewport->setImageOptions({ imageOptions, imageOptions });
-            //DisplayOptions displayOptions;
+            DisplayOptions displayOptions;
             //displayOptions.color.enabled = true;
             //displayOptions.color.contrast.x = .1F;
             //displayOptions.color.contrast.y = .1F;
             //displayOptions.color.contrast.z = .1F;
+            displayOptions.exposure.enabled = true;
+            displayOptions.exposure.exposure = 10.F;
             //displayOptions.imageFilters.minify = ftk::ImageFilter::Nearest;
             //displayOptions.imageFilters.magnify = ftk::ImageFilter::Nearest;
-            //_viewport->setDisplayOptions({ displayOptions, displayOptions });
+            _viewport->setDisplayOptions({ displayOptions, displayOptions });
             _viewport->setColorBuffer(ftk::gl::TextureType::RGBA_F32);
 
             // Create the timeline.

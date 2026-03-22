@@ -849,7 +849,7 @@ namespace tl
                     displayOptions.levels.gamma > 0.F ? (1.F / displayOptions.levels.gamma) : 1000000.F);
                 p.shaders["display"]->setUniform("levels.outLow", displayOptions.levels.outLow);
                 p.shaders["display"]->setUniform("levels.outHigh", displayOptions.levels.outHigh);
-                p.shaders["display"]->setUniform("eposureEnabled", displayOptions.exposure.enabled);
+                p.shaders["display"]->setUniform("exposureEnabled", displayOptions.exposure.enabled);
                 if (displayOptions.exposure.enabled)
                 {
                     const float v = powf(2.F, displayOptions.exposure.exposure + 2.47393F);
@@ -866,7 +866,7 @@ namespace tl
                         displayOptions.levels.gamma > 0.F ?
                         (1.F / displayOptions.levels.gamma) :
                         1000000.F;
-                    p.shaders["display"]->setUniform("exposure.g", gamma );
+                    p.shaders["display"]->setUniform("exposure.g", gamma);
                 }
                 p.shaders["display"]->setUniform(
                     "softClip",
