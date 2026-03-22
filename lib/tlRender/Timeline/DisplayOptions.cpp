@@ -53,7 +53,7 @@ namespace tl
         return !(*this == other);
     }
 
-    bool EXRDisplay::operator == (const EXRDisplay& other) const
+    bool Exposure::operator == (const Exposure& other) const
     {
         return
             enabled == other.enabled &&
@@ -63,7 +63,7 @@ namespace tl
             kneeHigh == other.kneeHigh;
     }
 
-    bool EXRDisplay::operator != (const EXRDisplay& other) const
+    bool Exposure::operator != (const Exposure& other) const
     {
         return !(*this == other);
     }
@@ -87,7 +87,7 @@ namespace tl
             mirror == other.mirror &&
             color == other.color &&
             levels == other.levels &&
-            exrDisplay == other.exrDisplay &&
+            exposure == other.exposure &&
             softClip == other.softClip &&
             imageFilters == other.imageFilters;
     }
@@ -118,7 +118,7 @@ namespace tl
         json["OutHigh"] = in.outHigh;
     }
 
-    void to_json(nlohmann::json& json, const EXRDisplay& in)
+    void to_json(nlohmann::json& json, const Exposure& in)
     {
         json["Enabled"] = in.enabled;
         json["Exposure"] = in.exposure;
@@ -139,7 +139,7 @@ namespace tl
         json["Mirror"] = in.mirror;
         json["Color"] = in.color;
         json["Levels"] = in.levels;
-        json["EXRDisplay"] = in.exrDisplay;
+        json["Exposure"] = in.exposure;
         json["SoftClip"] = in.softClip;
         json["ImageFilters"] = in.imageFilters;
     }
@@ -165,7 +165,7 @@ namespace tl
         json.at("OutHigh").get_to(out.outHigh);
     }
 
-    void from_json(const nlohmann::json& json, EXRDisplay& out)
+    void from_json(const nlohmann::json& json, Exposure& out)
     {
         json.at("Enabled").get_to(out.enabled);
         json.at("Exposure").get_to(out.exposure);
@@ -186,7 +186,7 @@ namespace tl
         json.at("Mirror").get_to(out.mirror);
         json.at("Color").get_to(out.color);
         json.at("Levels").get_to(out.levels);
-        json.at("EXRDisplay").get_to(out.exrDisplay);
+        json.at("Exposure").get_to(out.exposure);
         json.at("SoftClip").get_to(out.softClip);
         json.at("ImageFilters").get_to(out.imageFilters);
     }

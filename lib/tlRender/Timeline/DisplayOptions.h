@@ -43,9 +43,9 @@ namespace tl
         TL_API bool operator != (const Levels&) const;
     };
 
-    //! These values match the ones in exrdisplay for comparison and
+    //! These values match the controls in exrdisplay for comparison and
     //! testing.
-    struct TL_API_TYPE EXRDisplay
+    struct TL_API_TYPE Exposure
     {
         bool  enabled  = false;
         float exposure = 0.F;
@@ -53,8 +53,8 @@ namespace tl
         float kneeLow  = 0.F;
         float kneeHigh = 5.F;
 
-        TL_API bool operator == (const EXRDisplay&) const;
-        TL_API bool operator != (const EXRDisplay&) const;
+        TL_API bool operator == (const Exposure&) const;
+        TL_API bool operator != (const Exposure&) const;
     };
 
     //! Soft clip.
@@ -74,7 +74,7 @@ namespace tl
         ftk::ImageMirror    mirror;
         Color               color;
         Levels              levels;
-        EXRDisplay          exrDisplay;
+        Exposure            exposure;
         SoftClip            softClip;
         ftk::ImageFilters   imageFilters;
 
@@ -87,13 +87,13 @@ namespace tl
 
     TL_API void to_json(nlohmann::json&, const Color&);
     TL_API void to_json(nlohmann::json&, const Levels&);
-    TL_API void to_json(nlohmann::json&, const EXRDisplay&);
+    TL_API void to_json(nlohmann::json&, const Exposure&);
     TL_API void to_json(nlohmann::json&, const SoftClip&);
     TL_API void to_json(nlohmann::json&, const DisplayOptions&);
 
     TL_API void from_json(const nlohmann::json&, Color&);
     TL_API void from_json(const nlohmann::json&, Levels&);
-    TL_API void from_json(const nlohmann::json&, EXRDisplay&);
+    TL_API void from_json(const nlohmann::json&, Exposure&);
     TL_API void from_json(const nlohmann::json&, SoftClip&);
     TL_API void from_json(const nlohmann::json&, DisplayOptions&);
 

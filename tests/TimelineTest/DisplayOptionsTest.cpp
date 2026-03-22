@@ -48,10 +48,10 @@ namespace tl
                 FTK_ASSERT(levels != Levels());
             }
             {
-                EXRDisplay exrDisplay;
-                exrDisplay.enabled = true;
-                FTK_ASSERT(exrDisplay == exrDisplay);
-                FTK_ASSERT(exrDisplay != EXRDisplay());
+                Exposure exposure;
+                exposure.enabled = true;
+                FTK_ASSERT(exposure == exposure);
+                FTK_ASSERT(exposure != Exposure());
             }
             {
                 SoftClip softClip;
