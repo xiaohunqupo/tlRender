@@ -5,7 +5,7 @@ if(WIN32)
     find_package(Msys REQUIRED)
 endif()
 
-set(FFmpeg_URL https://ffmpeg.org/releases/ffmpeg-8.0.tar.bz2)
+set(FFmpeg_URL https://ffmpeg.org/releases/ffmpeg-8.1.tar.xz)
 
 set(FFmpeg_DEPS ZLIB)
 if(TLRENDER_NET)
