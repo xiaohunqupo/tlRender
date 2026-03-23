@@ -1,7 +1,7 @@
 include(ExternalProject)
 
 set(svt-av1_GIT_REPOSITORY "https://gitlab.com/AOMediaCodec/SVT-AV1.git")
-set(svt-av1_GIT_TAG "v2.3.0")
+set(svt-av1_GIT_TAG "v4.0.1")
 
 set(svt-av1_DEPS)
 if(TLRENDER_NASM)

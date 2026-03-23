@@ -337,7 +337,12 @@ if(WIN32)
     endif()
     
     set(FFmpeg_PKG_CONFIG ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
+    # \bug The colon in "C:" seems to be replaced with a space,
+    # so replace "C:" with "/C".
     #string(REPLACE C: /C FFmpeg_PKG_CONFIG ${FFmpeg_PKG_CONFIG})
+    string(SUBSTRING ${FFmpeg_PKG_CONFIG} 0 2 FFmpeg_PKG_CONFIG_DRIVE)
+    string(SUBSTRING ${FFmpeg_PKG_CONFIG} 0 1 FFmpeg_PKG_CONFIG_DRIVE_LETTER)
+    string(REPLACE ${FFmpeg_PKG_CONFIG_DRIVE} /${FFmpeg_PKG_CONFIG_DRIVE_LETTER} FFmpeg_PKG_CONFIG ${FFmpeg_PKG_CONFIG})
 
     list(JOIN FFmpeg_CONFIGURE_ARGS " " FFmpeg_CONFIGURE_ARGS_TMP)
     set(FFmpeg_CONFIGURE ${FFmpeg_MSYS2}
