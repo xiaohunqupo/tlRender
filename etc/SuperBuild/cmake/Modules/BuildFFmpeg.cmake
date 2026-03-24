@@ -359,7 +359,11 @@ if(WIN32)
         COMMAND ${FFmpeg_MSYS2} -c "mv ${CMAKE_INSTALL_PREFIX}/bin/swresample.lib ${CMAKE_INSTALL_PREFIX}/lib"
         COMMAND ${FFmpeg_MSYS2} -c "mv ${CMAKE_INSTALL_PREFIX}/bin/swscale.lib ${CMAKE_INSTALL_PREFIX}/lib")
 else()
-    set(FFmpeg_CONFIGURE ${CMAKE_COMMAND} -E env PKG_CONFIG_PATH=${CMAKE_INSTALL_PREFIX}/lib/pkgconfig ./configure ${FFmpeg_CONFIGURE_ARGS})
+    list(APPEND FFmpeg_CONFIGURE_ARGS --extra-libs=-lm)
+
+    set(FFmpeg_CONFIGURE
+        ${CMAKE_COMMAND} -E env PKG_CONFIG_PATH=${CMAKE_INSTALL_PREFIX}/lib/pkgconfig
+        ./configure ${FFmpeg_CONFIGURE_ARGS})
     if(BSD)
         set(FFmpeg_BUILD gmake)
         set(FFmpeg_INSTALL gmake install)
