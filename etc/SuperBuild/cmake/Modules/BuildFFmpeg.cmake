@@ -11,7 +11,7 @@ set(FFmpeg_DEPS ZLIB)
 if(TLRENDER_NET)
     list(APPEND FFmpeg_DEPS OpenSSL)
 endif()
-if(TLRENDER_AV1)
+if(TLRENDER_SVTAV1)
     list(APPEND FFmpeg_DEPS svt-av1)
 endif()
 if(TLRENDER_NASM)
@@ -288,7 +288,7 @@ if(TLRENDER_FFMPEG_MINIMAL)
         --enable-protocol=tls
         --enable-protocol=udp)
 endif()
-if(TLRENDER_AV1)
+if(TLRENDER_SVTAV1)
     list(APPEND FFmpeg_CONFIGURE_ARGS
         --enable-libsvtav1
         --enable-encoder=libsvtav1)
