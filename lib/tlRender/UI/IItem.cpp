@@ -53,8 +53,6 @@ namespace tl
                 waveformWidth == other.waveformWidth &&
                 waveformHeight == other.waveformHeight &&
                 waveformPrim == other.waveformPrim &&
-                regularFont == other.regularFont &&
-                monoFont == other.monoFont &&
                 fontSize == other.fontSize &&
                 clipRectScale == other.clipRectScale &&
                 ocio == other.ocio &&
@@ -279,8 +277,6 @@ namespace tl
             json["WaveformWidth"] = value.waveformWidth;
             json["WaveformHeight"] = value.waveformHeight;
             json["WaveformPrim"] = to_string(value.waveformPrim);
-            json["RegularFont"] = value.regularFont;
-            json["MonoFont"] = value.monoFont;
             json["FontSize"] = value.fontSize;
             json["ClipRectScale"] = value.clipRectScale;
             json["OCIO"] = value.ocio;
@@ -303,8 +299,6 @@ namespace tl
             json["WaveformWidth"].get_to(value.waveformWidth);
             json["WaveformHeight"].get_to(value.waveformHeight);
             from_string(json["WaveformPrim"].get<std::string>(), value.waveformPrim);
-            json["RegularFont"].get_to(value.regularFont);
-            json["MonoFont"].get_to(value.monoFont);
             json["FontSize"].get_to(value.fontSize);
             json["ClipRectScale"].get_to(value.clipRectScale);
             json["OCIO"].get_to(value.ocio);

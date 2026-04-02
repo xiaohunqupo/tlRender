@@ -396,7 +396,7 @@ namespace tl
                 p.size.border = event.style->getSizeRole(ftk::SizeRole::Border, event.displayScale);
                 p.size.handle = event.style->getSizeRole(ftk::SizeRole::Handle, event.displayScale);
                 p.size.fontInfo = ftk::FontInfo(
-                    _displayOptions.monoFont,
+                    ftk::FontType::Mono,
                     _displayOptions.fontSize * event.displayScale);
                 p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             }

@@ -47,7 +47,7 @@ namespace tl
                 int spacing = 0;
                 int border = 0;
                 int handle = 0;
-                ftk::FontInfo fontInfo = ftk::FontInfo("", 0);
+                ftk::FontInfo fontInfo;
                 ftk::FontMetrics fontMetrics;
                 ftk::Box2I scrollArea;
             };

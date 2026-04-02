@@ -44,12 +44,12 @@ namespace tl
 
                 auto fontSystem = context->getSystem<ftk::FontSystem>();
                 _secondsFontInfo = ftk::FontInfo(
-                    "NotoMono-Regular",
+                    ftk::FontType::Mono,
                     _size.h / 2.F);
                 _secondsFontMetrics = fontSystem->getMetrics(_secondsFontInfo);
 
                 _framesFontInfo = ftk::FontInfo(
-                    "NotoMono-Regular",
+                    ftk::FontType::Mono,
                     _secondsFontInfo.size / 4.F);
                 _framesFontMetrics = fontSystem->getMetrics(_framesFontInfo);
             }

@@ -86,8 +86,6 @@ namespace tl
             int waveformHeight = 50;
             WaveformPrim waveformPrim = WaveformPrim::Mesh;
 
-            std::string regularFont = "NotoSans-Regular";
-            std::string monoFont = "NotoMono-Regular";
             int fontSize = 12;
             float clipRectScale = 2.F;
 
