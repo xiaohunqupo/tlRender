@@ -19,9 +19,9 @@
 
 namespace ftk_resource
 {
-    extern std::vector<uint8_t> NotoSansBold;
-    extern std::vector<uint8_t> NotoMonoRegular;
-    extern std::vector<uint8_t> NotoSansRegular;
+    extern std::vector<uint8_t> NotoSans_Bold;
+    extern std::vector<uint8_t> NotoMono_Regular;
+    extern std::vector<uint8_t> NotoSans_Regular;
 }
 
 namespace tl
@@ -40,9 +40,9 @@ namespace tl
         {
             const std::vector<std::vector<uint8_t> > fonts =
             {
-                ftk_resource::NotoMonoRegular,
-                ftk_resource::NotoSansBold,
-                ftk_resource::NotoSansRegular
+                ftk_resource::NotoMono_Regular,
+                ftk_resource::NotoSans_Bold,
+                ftk_resource::NotoSans_Regular
             };
             std::vector<std::string> fontFamilyList;
             for (const auto& font : fonts)
