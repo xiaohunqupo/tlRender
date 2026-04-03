@@ -84,6 +84,7 @@ namespace tl
 
             TL_API ftk::Size2I getSizeHint() const override;
             TL_API void setGeometry(const ftk::Box2I&) override;
+            TL_API void styleEvent(const ftk::StyleEvent&) override;
             TL_API void sizeHintEvent(const ftk::SizeHintEvent&) override;
             TL_API void drawOverlayEvent(const ftk::Box2I&, const ftk::DrawEvent&) override;
             TL_API void mouseMoveEvent(ftk::MouseMoveEvent&) override;

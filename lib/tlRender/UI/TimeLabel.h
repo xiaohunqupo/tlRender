@@ -53,6 +53,7 @@ namespace tl
             TL_API void setFontRole(ftk::FontRole);
 
             TL_API ftk::Size2I getSizeHint() const override;
+            TL_API void styleEvent(const ftk::StyleEvent&) override;
             TL_API void sizeHintEvent(const ftk::SizeHintEvent&) override;
             TL_API void clipEvent(const ftk::Box2I&, bool) override;
             TL_API void drawEvent(const ftk::Box2I&, const ftk::DrawEvent&) override;

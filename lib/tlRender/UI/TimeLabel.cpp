@@ -24,14 +24,13 @@ namespace tl
 
             struct SizeData
             {
-                std::optional<float> displayScale;
                 int margin = 0;
                 ftk::FontInfo fontInfo;
                 ftk::FontMetrics fontMetrics;
                 ftk::Size2I textSize;
                 ftk::Size2I formatSize;
             };
-            SizeData size;
+            std::optional<SizeData> size;
 
             struct DrawData
             {
@@ -110,7 +109,7 @@ namespace tl
             if (value == p.marginRole)
                 return;
             p.marginRole = value;
-            p.size.displayScale.reset();
+            p.size.reset();
             setSizeUpdate();
             setDrawUpdate();
         }
@@ -121,7 +120,7 @@ namespace tl
             if (value == p.fontRole)
                 return;
             p.fontRole = value;
-            p.size.displayScale.reset();
+            p.size.reset();
             setSizeUpdate();
             setDrawUpdate();
         }
@@ -131,27 +130,36 @@ namespace tl
             FTK_P();
             ftk::Size2I out;
             out.w =
-                std::max(p.size.textSize.w, p.size.formatSize.w) +
-                p.size.margin * 2;
+                std::max(p.size->textSize.w, p.size->formatSize.w) +
+                p.size->margin * 2;
             out.h =
-                p.size.fontMetrics.lineHeight +
-                p.size.margin * 2;
+                p.size->fontMetrics.lineHeight +
+                p.size->margin * 2;
             return out;
+        }
+
+        void TimeLabel::styleEvent(const ftk::StyleEvent& event)
+        {
+            FTK_P();
+            if (event.hasChanges())
+            {
+                p.size.reset();
+                p.draw.reset();
+            }
         }
 
         void TimeLabel::sizeHintEvent(const ftk::SizeHintEvent& event)
         {
             IWidget::sizeHintEvent(event);
             FTK_P();
-            if (!p.size.displayScale.has_value() ||
-                (p.size.displayScale.has_value() && p.size.displayScale.value() != event.displayScale))
+            if (!p.size.has_value())
             {
-                p.size.displayScale = event.displayScale;
-                p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
-                p.size.fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
-                p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
-                p.size.textSize = event.fontSystem->getSize(p.text, p.size.fontInfo);
-                p.size.formatSize = event.fontSystem->getSize(p.format, p.size.fontInfo);
+                p.size = Private::SizeData();
+                p.size->margin = event.style->getSizeRole(p.marginRole, event.displayScale);
+                p.size->fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
+                p.size->fontMetrics = event.fontSystem->getMetrics(p.size->fontInfo);
+                p.size->textSize = event.fontSystem->getSize(p.text, p.size->fontInfo);
+                p.size->formatSize = event.fontSystem->getSize(p.format, p.size->fontInfo);
                 p.draw.reset();
             }
         }
@@ -184,15 +192,15 @@ namespace tl
                     getSizeHint(),
                     getHAlign(),
                     getVAlign()),
-                -p.size.margin);
+                -p.size->margin);
 
             if (!p.text.empty() && p.draw->glyphs.empty())
             {
-                p.draw->glyphs = event.fontSystem->getGlyphs(p.text, p.size.fontInfo);
+                p.draw->glyphs = event.fontSystem->getGlyphs(p.text, p.size->fontInfo);
             }
             event.render->drawText(
                 p.draw->glyphs,
-                p.size.fontMetrics,
+                p.size->fontMetrics,
                 g.min,
                 event.style->getColorRole(
                     isEnabled() ?
@@ -211,7 +219,7 @@ namespace tl
                 p.text = timeToText(p.value, timeUnits);
                 p.format = formatString(timeUnits);
             }
-            p.size.displayScale.reset();
+            p.size.reset();
             setSizeUpdate();
             setDrawUpdate();
         }
