@@ -49,8 +49,6 @@ namespace tl
                 .def_readwrite("waveformWidth", &DisplayOptions::waveformWidth)
                 .def_readwrite("waveformHeight", &DisplayOptions::waveformHeight)
                 .def_readwrite("waveformPrim", &DisplayOptions::waveformPrim)
-                .def_readwrite("regularFont", &DisplayOptions::regularFont)
-                .def_readwrite("monoFont", &DisplayOptions::monoFont)
                 .def_readwrite("fontSize", &DisplayOptions::fontSize)
                 .def_readwrite("clipRectScale", &DisplayOptions::clipRectScale)
                 .def_readwrite("ocio", &DisplayOptions::ocio)

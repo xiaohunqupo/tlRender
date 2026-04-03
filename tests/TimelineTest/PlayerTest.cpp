@@ -50,7 +50,7 @@ namespace tl
             const std::vector<ftk::Path> paths =
             {
                 ftk::Path(TLRENDER_SAMPLE_DATA, "Seq/BART_2021-02-07.0001.jpg"),
-#if defined(TLRENDER_FFMPEG_PLUGIN) or defined(TLRENDER_FFMPEG_PIPE)
+#if defined(TLRENDER_FFMPEG_PLUGIN) || defined(TLRENDER_FFMPEG_PIPE)
                 ftk::Path(TLRENDER_SAMPLE_DATA, "BART_2021-02-07.m4v"),
                 ftk::Path(TLRENDER_SAMPLE_DATA, "MovieAndSeq.otio"),
                 ftk::Path(TLRENDER_SAMPLE_DATA, "TransitionGap.otio"),

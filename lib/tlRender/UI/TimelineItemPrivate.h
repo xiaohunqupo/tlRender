@@ -42,6 +42,7 @@ namespace tl
 
             struct SizeData
             {
+                bool init = true;
                 int margin = 0;
                 int spacing = 0;
                 int border = 0;
@@ -50,7 +51,7 @@ namespace tl
                 ftk::FontMetrics fontMetrics;
                 ftk::Box2I scrollArea;
             };
-            std::optional<SizeData> size;
+            SizeData size;
 
             enum class MouseMode
             {

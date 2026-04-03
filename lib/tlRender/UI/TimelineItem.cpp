@@ -265,7 +265,7 @@ namespace tl
             FTK_P();
             if (changed)
             {
-                p.size.reset();
+                p.size.init = true;
                 _tracksUpdate();
             }
         }
@@ -301,11 +301,11 @@ namespace tl
             }
             return ftk::Size2I(
                 _timeRange.duration().rescaled_to(1.0).value() * _scale,
-                p.size->margin +
-                p.size->fontMetrics.lineHeight +
-                p.size->margin +
-                p.size->border * 4 +
-                p.size->border +
+                p.size.margin +
+                p.size.fontMetrics.lineHeight +
+                p.size.margin +
+                p.size.border * 4 +
+                p.size.border +
                 tracksHeight);
         }
 
@@ -315,11 +315,11 @@ namespace tl
             FTK_P();
 
             float y =
-                p.size->margin +
-                p.size->fontMetrics.lineHeight +
-                p.size->margin +
-                p.size->border * 4 +
-                p.size->border +
+                p.size.margin +
+                p.size.fontMetrics.lineHeight +
+                p.size.margin +
+                p.size.border * 4 +
+                p.size.border +
                 value.min.y;
             for (auto& track : p.tracks)
             {
@@ -377,7 +377,7 @@ namespace tl
 
             if (auto scrollArea = getParentT<ftk::ScrollArea>())
             {
-                p.size->scrollArea = ftk::Box2I(
+                p.size.scrollArea = ftk::Box2I(
                     scrollArea->getScrollPos(),
                     scrollArea->getGeometry().size());
             }
@@ -389,7 +389,7 @@ namespace tl
             FTK_P();
             if (event.hasChanges())
             {
-                p.size.reset();
+                p.size.init = true;
             }
         }
 
@@ -397,17 +397,17 @@ namespace tl
         {
             IItem::sizeHintEvent(event);
             FTK_P();
-            if (!p.size.has_value())
+            if (p.size.init)
             {
-                p.size = Private::SizeData();
-                p.size->margin = event.style->getSizeRole(ftk::SizeRole::MarginInside, event.displayScale);
-                p.size->spacing = event.style->getSizeRole(ftk::SizeRole::SpacingSmall, event.displayScale);
-                p.size->border = event.style->getSizeRole(ftk::SizeRole::Border, event.displayScale);
-                p.size->handle = event.style->getSizeRole(ftk::SizeRole::Handle, event.displayScale);
-                p.size->fontInfo = ftk::FontInfo(
+                p.size.init = false;
+                p.size.margin = event.style->getSizeRole(ftk::SizeRole::MarginInside, event.displayScale);
+                p.size.spacing = event.style->getSizeRole(ftk::SizeRole::SpacingSmall, event.displayScale);
+                p.size.border = event.style->getSizeRole(ftk::SizeRole::Border, event.displayScale);
+                p.size.handle = event.style->getSizeRole(ftk::SizeRole::Handle, event.displayScale);
+                p.size.fontInfo = ftk::FontInfo(
                     ftk::FontType::Mono,
                     _displayOptions.fontSize * event.displayScale);
-                p.size->fontMetrics = event.fontSystem->getMetrics(p.size->fontInfo);
+                p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
             }
         }
 
@@ -421,19 +421,19 @@ namespace tl
             const ftk::Box2I& g = getGeometry();
 
             int y =
-                p.size->scrollArea.min.y +
+                p.size.scrollArea.min.y +
                 g.min.y;
             int h =
-                p.size->margin +
-                p.size->fontMetrics.lineHeight +
-                p.size->margin +
-                p.size->border * 4;
+                p.size.margin +
+                p.size.fontMetrics.lineHeight +
+                p.size.margin +
+                p.size.border * 4;
             event.render->drawRect(
                 ftk::Box2I(g.min.x, y, g.w(), h),
                 event.style->getColorRole(ftk::ColorRole::Base));
 
             y = y + h;
-            h = p.size->border;
+            h = p.size.border;
             event.render->drawRect(
                 ftk::Box2I(g.min.x, y, g.w(), h),
                 event.style->getColorRole(ftk::ColorRole::Border));
@@ -516,7 +516,7 @@ namespace tl
         {
             FTK_P();
             const std::string labelMax = _data->timeUnitsModel->getLabel(_timeRange.duration());
-            const ftk::Size2I labelMaxSize = fontSystem->getSize(labelMax, p.size->fontInfo);
+            const ftk::Size2I labelMaxSize = fontSystem->getSize(labelMax, p.size.fontInfo);
             return labelMaxSize;
         }
 
@@ -532,7 +532,7 @@ namespace tl
             const int minutesTick = 60.0 / duration * w;
             const int hoursTick = 3600.0 / duration * w;
             const ftk::Size2I labelMaxSize = _getLabelMaxSize(fontSystem);
-            const int distanceMin = p.size->border + p.size->margin + labelMaxSize.w;
+            const int distanceMin = p.size.border + p.size.margin + labelMaxSize.w;
             seconds = 0.0;
             tick = 0;
             if (secondsTick >= distanceMin)
@@ -563,7 +563,7 @@ namespace tl
                 const ftk::Box2I& g = getGeometry();
                 const ftk::Color4F color(.4F, .5F, .9F);
 
-                const int h = p.size->border * 2;
+                const int h = p.size.border * 2;
                 switch (_displayOptions.inOutDisplay)
                 {
                 case InOutDisplay::InsideRange:
@@ -572,7 +572,7 @@ namespace tl
                     const int x1 = timeToPos(_p->inOutRange.end_time_exclusive());
                     const ftk::Box2I box(
                         x0,
-                        p.size->scrollArea.min.y +
+                        p.size.scrollArea.min.y +
                         g.min.y,
                         x1 - x0 + 1,
                         h);
@@ -585,7 +585,7 @@ namespace tl
                     int x1 = timeToPos(_p->inOutRange.start_time());
                     ftk::Box2I box(
                         x0,
-                        p.size->scrollArea.min.y +
+                        p.size.scrollArea.min.y +
                         g.min.y,
                         x1 - x0 + 1,
                         h);
@@ -594,7 +594,7 @@ namespace tl
                     x1 = timeToPos(_timeRange.end_time_exclusive());
                     box = ftk::Box2I(
                         x0,
-                        p.size->scrollArea.min.y +
+                        p.size.scrollArea.min.y +
                         g.min.y,
                         x1 - x0 + 1,
                         h);
@@ -618,13 +618,13 @@ namespace tl
             {
                 const ftk::Box2I g2(
                     timeToPos(OTIO_NS::RationalTime(frameMarker, rate)),
-                    p.size->scrollArea.min.y +
+                    p.size.scrollArea.min.y +
                     g.min.y,
-                    p.size->border * 2,
-                    p.size->margin +
-                    p.size->fontMetrics.lineHeight +
-                    p.size->margin +
-                    p.size->border * 4);
+                    p.size.border * 2,
+                    p.size.margin +
+                    p.size.fontMetrics.lineHeight +
+                    p.size.margin +
+                    p.size.border * 4);
                 if (ftk::intersects(g2, drawRect))
                 {
                     event.render->drawRect(g2, color);
@@ -651,15 +651,15 @@ namespace tl
                     const int x0 = timeToPos(t.start_time());
                     const int x1 = timeToPos(t.end_time_exclusive());
                     const int h = CacheDisplay::VideoAndAudio == _displayOptions.cacheDisplay ?
-                        p.size->border * 2 :
-                        p.size->border * 4;
+                        p.size.border * 2 :
+                        p.size.border * 4;
                     const ftk::Box2I box(
                         x0,
-                        p.size->scrollArea.min.y +
+                        p.size.scrollArea.min.y +
                         g.min.y +
-                        p.size->margin +
-                        p.size->fontMetrics.lineHeight +
-                        p.size->margin,
+                        p.size.margin +
+                        p.size.fontMetrics.lineHeight +
+                        p.size.margin,
                         x1 - x0 + 1,
                         h);
                     if (ftk::intersects(box, drawRect))
@@ -690,14 +690,14 @@ namespace tl
                     const int x1 = timeToPos(t.end_time_exclusive());
                     const ftk::Box2I box(
                         x0,
-                        p.size->scrollArea.min.y +
+                        p.size.scrollArea.min.y +
                         g.min.y +
-                        p.size->margin +
-                        p.size->fontMetrics.lineHeight +
-                        p.size->margin +
-                        p.size->border * 2,
+                        p.size.margin +
+                        p.size.fontMetrics.lineHeight +
+                        p.size.margin +
+                        p.size.border * 2,
                         x1 - x0 + 1,
-                        p.size->border * 2);
+                        p.size.border * 2);
                     if (ftk::intersects(box, drawRect))
                     {
                         mesh.v.push_back(ftk::V2F(box.min.x, box.min.y));
@@ -744,19 +744,19 @@ namespace tl
                         const ftk::Box2I box(
                             g.min.x +
                             t / duration * w +
-                            p.size->border +
-                            p.size->margin,
-                            p.size->scrollArea.min.y +
+                            p.size.border +
+                            p.size.margin,
+                            p.size.scrollArea.min.y +
                             g.min.y +
-                            p.size->margin,
+                            p.size.margin,
                             labelMaxSize.w,
-                            p.size->fontMetrics.lineHeight);
+                            p.size.fontMetrics.lineHeight);
                         if (time != p.currentTime && ftk::intersects(box, drawRect))
                         {
                             const std::string label = _data->timeUnitsModel->getLabel(time);
                             event.render->drawText(
-                                event.fontSystem->getGlyphs(label, p.size->fontInfo),
-                                p.size->fontMetrics,
+                                event.fontSystem->getGlyphs(label, p.size.fontInfo),
+                                p.size.fontMetrics,
                                 box.min,
                                 event.style->getColorRole(ftk::ColorRole::TextDisabled));
                         }
@@ -776,7 +776,7 @@ namespace tl
                 const int w = getSizeHint().w;
                 const float duration = _timeRange.duration().rescaled_to(1.0).value();
                 const int frameTick = 1.0 / _timeRange.duration().value() * w;
-                if (duration > 0.0 && frameTick >= p.size->handle)
+                if (duration > 0.0 && frameTick >= p.size.handle)
                 {
                     ftk::TriMesh2F mesh;
                     size_t i = 1;
@@ -790,13 +790,13 @@ namespace tl
                         const ftk::Box2I box(
                             g.min.x +
                             t / duration * w,
-                            p.size->scrollArea.min.y +
+                            p.size.scrollArea.min.y +
                             g.min.y +
-                            p.size->margin +
-                            p.size->fontMetrics.lineHeight,
-                            p.size->border,
-                            p.size->margin +
-                            p.size->border * 4);
+                            p.size.margin +
+                            p.size.fontMetrics.lineHeight,
+                            p.size.border,
+                            p.size.margin +
+                            p.size.border * 4);
                         if (ftk::intersects(box, drawRect))
                         {
                             mesh.v.push_back(ftk::V2F(box.min.x, box.min.y));
@@ -833,13 +833,13 @@ namespace tl
                         const ftk::Box2I box(
                             g.min.x +
                             t / duration * w,
-                            p.size->scrollArea.min.y +
+                            p.size.scrollArea.min.y +
                             g.min.y,
-                            p.size->border,
-                            p.size->margin +
-                            p.size->fontMetrics.lineHeight +
-                            p.size->margin +
-                            p.size->border * 4);
+                            p.size.border,
+                            p.size.margin +
+                            p.size.fontMetrics.lineHeight +
+                            p.size.margin +
+                            p.size.border * 4);
                         if (ftk::intersects(box, drawRect))
                         {
                             mesh.v.push_back(ftk::V2F(box.min.x, box.min.y));
@@ -873,36 +873,36 @@ namespace tl
             {
                 const ftk::V2I pos(
                     timeToPos(p.currentTime),
-                    p.size->scrollArea.min.y +
+                    p.size.scrollArea.min.y +
                     g.min.y);
 
                 event.render->drawRect(
                     ftk::Box2I(
                         pos.x,
                         pos.y,
-                        p.size->border * 2,
+                        p.size.border * 2,
                         g.h()),
                     event.style->getColorRole(ftk::ColorRole::Red));
 
                 const std::string label = _data->timeUnitsModel->getLabel(p.currentTime);
                 ftk::V2I labelPos(
-                    pos.x + p.size->border * 2 + p.size->margin,
-                    pos.y + p.size->margin);
-                const ftk::Size2I labelSize = event.fontSystem->getSize(label, p.size->fontInfo);
-                const ftk::Box2I g2(p.size->scrollArea.min + g.min, p.size->scrollArea.size());
+                    pos.x + p.size.border * 2 + p.size.margin,
+                    pos.y + p.size.margin);
+                const ftk::Size2I labelSize = event.fontSystem->getSize(label, p.size.fontInfo);
+                const ftk::Box2I g2(p.size.scrollArea.min + g.min, p.size.scrollArea.size());
                 if (labelPos.x + labelSize.w > g2.max.x)
                 {
                     const ftk::V2I labelPos2(
-                        pos.x - p.size->border * 2 - p.size->margin - labelSize.w,
-                        pos.y + p.size->margin);
+                        pos.x - p.size.border * 2 - p.size.margin - labelSize.w,
+                        pos.y + p.size.margin);
                     if (labelPos2.x > g2.min.x)
                     {
                         labelPos = labelPos2;
                     }
                 }
                 event.render->drawText(
-                    event.fontSystem->getGlyphs(label, p.size->fontInfo),
-                    p.size->fontMetrics,
+                    event.fontSystem->getGlyphs(label, p.size.fontInfo),
+                    p.size.fontMetrics,
                     labelPos,
                     event.style->getColorRole(ftk::ColorRole::Text));
             }

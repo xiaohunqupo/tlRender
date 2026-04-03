@@ -24,13 +24,14 @@ namespace tl
 
             struct SizeData
             {
+                bool init = true;
                 int margin = 0;
                 ftk::FontInfo fontInfo;
                 ftk::FontMetrics fontMetrics;
                 ftk::Size2I textSize;
                 ftk::Size2I formatSize;
             };
-            std::optional<SizeData> size;
+            SizeData size;
 
             struct DrawData
             {
@@ -109,7 +110,7 @@ namespace tl
             if (value == p.marginRole)
                 return;
             p.marginRole = value;
-            p.size.reset();
+            p.size.init = true;
             setSizeUpdate();
             setDrawUpdate();
         }
@@ -120,7 +121,7 @@ namespace tl
             if (value == p.fontRole)
                 return;
             p.fontRole = value;
-            p.size.reset();
+            p.size.init = true;
             setSizeUpdate();
             setDrawUpdate();
         }
@@ -130,11 +131,11 @@ namespace tl
             FTK_P();
             ftk::Size2I out;
             out.w =
-                std::max(p.size->textSize.w, p.size->formatSize.w) +
-                p.size->margin * 2;
+                std::max(p.size.textSize.w, p.size.formatSize.w) +
+                p.size.margin * 2;
             out.h =
-                p.size->fontMetrics.lineHeight +
-                p.size->margin * 2;
+                p.size.fontMetrics.lineHeight +
+                p.size.margin * 2;
             return out;
         }
 
@@ -143,7 +144,7 @@ namespace tl
             FTK_P();
             if (event.hasChanges())
             {
-                p.size.reset();
+                p.size.init = true;
                 p.draw.reset();
             }
         }
@@ -152,14 +153,14 @@ namespace tl
         {
             IWidget::sizeHintEvent(event);
             FTK_P();
-            if (!p.size.has_value())
+            if (p.size.init)
             {
-                p.size = Private::SizeData();
-                p.size->margin = event.style->getSizeRole(p.marginRole, event.displayScale);
-                p.size->fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
-                p.size->fontMetrics = event.fontSystem->getMetrics(p.size->fontInfo);
-                p.size->textSize = event.fontSystem->getSize(p.text, p.size->fontInfo);
-                p.size->formatSize = event.fontSystem->getSize(p.format, p.size->fontInfo);
+                p.size.init = false;
+                p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
+                p.size.fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
+                p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
+                p.size.textSize = event.fontSystem->getSize(p.text, p.size.fontInfo);
+                p.size.formatSize = event.fontSystem->getSize(p.format, p.size.fontInfo);
                 p.draw.reset();
             }
         }
@@ -192,15 +193,15 @@ namespace tl
                     getSizeHint(),
                     getHAlign(),
                     getVAlign()),
-                -p.size->margin);
+                -p.size.margin);
 
             if (!p.text.empty() && p.draw->glyphs.empty())
             {
-                p.draw->glyphs = event.fontSystem->getGlyphs(p.text, p.size->fontInfo);
+                p.draw->glyphs = event.fontSystem->getGlyphs(p.text, p.size.fontInfo);
             }
             event.render->drawText(
                 p.draw->glyphs,
-                p.size->fontMetrics,
+                p.size.fontMetrics,
                 g.min,
                 event.style->getColorRole(
                     isEnabled() ?
@@ -219,7 +220,7 @@ namespace tl
                 p.text = timeToText(p.value, timeUnits);
                 p.format = formatString(timeUnits);
             }
-            p.size.reset();
+            p.size.init = true;
             setSizeUpdate();
             setDrawUpdate();
         }

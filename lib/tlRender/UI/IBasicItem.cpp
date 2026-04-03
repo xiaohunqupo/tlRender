@@ -19,6 +19,7 @@ namespace tl
 
             struct SizeData
             {
+                bool init = true;
                 int margin = 0;
                 int border = 0;
                 ftk::FontInfo fontInfo;
@@ -26,7 +27,7 @@ namespace tl
                 ftk::Size2I labelSize;
                 ftk::Size2I durationSize;
             };
-            std::optional<SizeData> size;
+            SizeData size;
 
             struct DrawData
             {
@@ -118,10 +119,10 @@ namespace tl
             if (!_displayOptions.minimize)
             {
                 out.h +=
-                    p.size->fontMetrics.lineHeight +
-                    p.size->margin * 2;
+                    p.size.fontMetrics.lineHeight +
+                    p.size.margin * 2;
             }
-            out.h += p.size->border * 4;
+            out.h += p.size.border * 4;
             return out;
         }
 
@@ -140,7 +141,7 @@ namespace tl
             FTK_P();
             if (event.hasChanges())
             {
-                p.size.reset();
+                p.size.init = true;
                 p.draw.reset();
             }
         }
@@ -149,20 +150,20 @@ namespace tl
         {
             IItem::sizeHintEvent(event);
             FTK_P();
-            if (!p.size.has_value())
+            if (p.size.init)
             {
-                p.size = Private::SizeData();
-                p.size->margin = event.style->getSizeRole(ftk::SizeRole::MarginInside, event.displayScale);
-                p.size->border = event.style->getSizeRole(ftk::SizeRole::Border, event.displayScale);
-                p.size->fontInfo = ftk::FontInfo(
+                p.size.init = false;
+                p.size.margin = event.style->getSizeRole(ftk::SizeRole::MarginInside, event.displayScale);
+                p.size.border = event.style->getSizeRole(ftk::SizeRole::Border, event.displayScale);
+                p.size.fontInfo = ftk::FontInfo(
                     ftk::FontType::Regular,
                     _displayOptions.fontSize * event.displayScale);
-                p.size->fontMetrics = event.fontSystem->getMetrics(p.size->fontInfo);
-                p.size->labelSize = !_displayOptions.minimize ?
-                    event.fontSystem->getSize(p.label, p.size->fontInfo) :
+                p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
+                p.size.labelSize = !_displayOptions.minimize ?
+                    event.fontSystem->getSize(p.label, p.size.fontInfo) :
                     ftk::Size2I();
-                p.size->durationSize = !_displayOptions.minimize ?
-                    event.fontSystem->getSize(p.durationLabel, p.size->fontInfo) :
+                p.size.durationSize = !_displayOptions.minimize ?
+                    event.fontSystem->getSize(p.durationLabel, p.size.fontInfo) :
                     ftk::Size2I();
                 p.draw.reset();
             }
@@ -189,20 +190,20 @@ namespace tl
             {
                 p.draw = Private::DrawData();
                 p.draw->g = getGeometry();
-                p.draw->g2 = ftk::margin(p.draw->g, -(p.size->border * 2));
+                p.draw->g2 = ftk::margin(p.draw->g, -(p.size.border * 2));
                 p.draw->labelGeometry = ftk::Box2I(
-                    p.draw->g2.min.x + p.size->margin,
-                    p.draw->g2.min.y + p.size->margin,
-                    p.size->labelSize.w,
-                    p.size->fontMetrics.lineHeight);
+                    p.draw->g2.min.x + p.size.margin,
+                    p.draw->g2.min.y + p.size.margin,
+                    p.size.labelSize.w,
+                    p.size.fontMetrics.lineHeight);
                 p.draw->durationGeometry = ftk::Box2I(
                     p.draw->g2.max.x -
-                    p.size->durationSize.w -
-                    p.size->margin,
-                    p.draw->g2.min.y + p.size->margin,
-                    p.size->durationSize.w,
-                    p.size->fontMetrics.lineHeight);
-                p.draw->border = ftk::border(p.draw->g, p.size->border * 2);
+                    p.size.durationSize.w -
+                    p.size.margin,
+                    p.draw->g2.min.y + p.size.margin,
+                    p.size.durationSize.w,
+                    p.size.fontMetrics.lineHeight);
+                p.draw->border = ftk::border(p.draw->g, p.size.border * 2);
             }
 
             // Draw the selection border.
@@ -238,11 +239,11 @@ namespace tl
                 {
                     if (!p.label.empty() && p.draw->labelGlyphs.empty())
                     {
-                        p.draw->labelGlyphs = event.fontSystem->getGlyphs(p.label, p.size->fontInfo);
+                        p.draw->labelGlyphs = event.fontSystem->getGlyphs(p.label, p.size.fontInfo);
                     }
                     event.render->drawText(
                         p.draw->labelGlyphs,
-                        p.size->fontMetrics,
+                        p.size.fontMetrics,
                         p.draw->labelGeometry.min,
                         event.style->getColorRole(
                             enabled ?
@@ -255,11 +256,11 @@ namespace tl
                 {
                     if (!p.durationLabel.empty() && p.draw->durationGlyphs.empty())
                     {
-                        p.draw->durationGlyphs = event.fontSystem->getGlyphs(p.durationLabel, p.size->fontInfo);
+                        p.draw->durationGlyphs = event.fontSystem->getGlyphs(p.durationLabel, p.size.fontInfo);
                     }
                     event.render->drawText(
                         p.draw->durationGlyphs,
-                        p.size->fontMetrics,
+                        p.size.fontMetrics,
                         p.draw->durationGeometry.min,
                         event.style->getColorRole(
                             enabled ?
@@ -271,18 +272,18 @@ namespace tl
 
         int IBasicItem::_getMargin() const
         {
-            return _p->size->margin;
+            return _p->size.margin;
         }
 
         int IBasicItem::_getLineHeight() const
         {
-            return _p->size->fontMetrics.lineHeight;
+            return _p->size.fontMetrics.lineHeight;
         }
 
         ftk::Box2I IBasicItem::_getInsideGeometry() const
         {
             const ftk::Box2I& g = getGeometry();
-            return ftk::margin(g, -(_p->size->border * 2));
+            return ftk::margin(g, -(_p->size.border * 2));
         }
 
         void IBasicItem::_timeUnitsUpdate()
@@ -295,7 +296,7 @@ namespace tl
         {
             FTK_P();
             p.durationLabel = _getDurationLabel(_timeRange.duration());
-            p.size.reset();
+            p.size.init = true;
             setSizeUpdate();
             setDrawUpdate();
         }
