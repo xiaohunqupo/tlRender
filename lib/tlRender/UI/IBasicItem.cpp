@@ -156,7 +156,7 @@ namespace tl
                 p.size.margin = event.style->getSizeRole(ftk::SizeRole::MarginInside, event.displayScale);
                 p.size.border = event.style->getSizeRole(ftk::SizeRole::Border, event.displayScale);
                 p.size.fontInfo = ftk::FontInfo(
-                    ftk::FontType::Regular,
+                    ftk::getDefaultFont(ftk::FontType::Regular),
                     _displayOptions.fontSize * event.displayScale);
                 p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
                 p.size.labelSize = !_displayOptions.minimize ?

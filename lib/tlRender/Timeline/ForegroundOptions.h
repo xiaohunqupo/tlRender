@@ -32,7 +32,7 @@ namespace tl
         GridLabels    labels       = GridLabels::None;
         ftk::Color4F  textColor    = ftk::Color4F(1.F, 1.F, 1.F);
         ftk::Color4F  overlayColor = ftk::Color4F(0.F, 0.F, 0.F, .5F);
-        ftk::FontInfo fontInfo     = ftk::FontInfo(ftk::FontType::Mono, 12);
+        ftk::FontInfo fontInfo     = ftk::FontInfo(ftk::getDefaultFont(ftk::FontType::Mono), 12);
         int           textMargin   = 2;
 
         TL_API bool operator == (const Grid&) const;
