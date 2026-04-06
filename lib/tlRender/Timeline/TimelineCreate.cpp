@@ -127,9 +127,9 @@ namespace tl
                 fileNameToMem[fileInfo->filename] = std::make_pair(
                     fileInfo->disk_offset + headerSize,
                     fileInfo->uncompressed_size);
-                std::cout << fileInfo->filename << ": " <<
-                    (fileInfo->disk_offset + headerSize) << " / " <<
-                    fileInfo->uncompressed_size << std::endl;
+                //std::cout << fileInfo->filename << ": " <<
+                //    (fileInfo->disk_offset + headerSize) << " / " <<
+                //    fileInfo->uncompressed_size << std::endl;
                 err = mz_zip_reader_goto_next_entry(reader);
                 if (err != MZ_OK && err != MZ_END_OF_LIST)
                 {
