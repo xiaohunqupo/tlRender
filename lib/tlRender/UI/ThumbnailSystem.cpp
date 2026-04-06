@@ -192,10 +192,7 @@ namespace tl
                 [this]
                 {
                     FTK_P();
-                    while (p.infoThread.running)
-                    {
-                        _infoRun();
-                    }
+                    _infoRun();
                     {
                         std::unique_lock<std::mutex> lock(p.infoMutex.mutex);
                         p.infoMutex.stopped = true;
@@ -219,10 +216,7 @@ namespace tl
                     }
                     if (p.thumbnailThread.render)
                     {
-                        while (p.thumbnailThread.running)
-                        {
-                            _thumbnailRun();
-                        }
+                        _thumbnailRun();
                     }
                     {
                         std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
@@ -241,10 +235,7 @@ namespace tl
                 [this]
                 {
                     FTK_P();
-                    while (p.waveformThread.running)
-                    {
-                        _waveformRun();
-                    }
+                    _waveformRun();
                     {
                         std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
                         p.waveformMutex.stopped = true;
@@ -571,31 +562,32 @@ namespace tl
         void ThumbnailSystem::_infoRun()
         {
             FTK_P();
-            std::shared_ptr<Private::InfoRequest> request;
+            while (p.infoThread.running)
             {
-                std::unique_lock<std::mutex> lock(p.infoMutex.mutex);
-                if (p.infoThread.cv.wait_for(
-                    lock,
-                    std::chrono::milliseconds(5),
-                    [this]
+                std::shared_ptr<Private::InfoRequest> request;
+                {
+                    std::unique_lock<std::mutex> lock(p.infoMutex.mutex);
+                    if (p.infoThread.cv.wait_for(
+                        lock,
+                        std::chrono::milliseconds(5),
+                        [this]
+                        {
+                            return !_p->infoMutex.requests.empty();
+                        }))
                     {
-                        return !_p->infoMutex.requests.empty();
-                    }))
-                {
-                    request = p.infoMutex.requests.front();
-                    p.infoMutex.requests.pop_front();
+                        request = p.infoMutex.requests.front();
+                        p.infoMutex.requests.pop_front();
+                    }
                 }
-            }
-            if (request)
-            {
-                IOInfo info;
-                if (auto context = p.context.lock())
+                if (request)
                 {
-                    auto ioSystem = context->getSystem<ReadSystem>();
+                    IOInfo info;
                     try
                     {
                         const std::string& fileName = request->path.get();
                         //std::cout << "info request: " << request->path.get() << std::endl;
+                        auto context = p.context.lock();
+                        auto ioSystem = context->getSystem<ReadSystem>();
                         std::shared_ptr<IRead> read = ioSystem->read(
                             request->path,
                             request->memoryRead,
@@ -607,47 +599,55 @@ namespace tl
                     }
                     catch (const std::exception&)
                     {}
-                }
-                request->promise.set_value(info);
+                    request->promise.set_value(info);
 
-                const std::string key = getInfoKey(request->path, request->options);
-                std::unique_lock<std::mutex> lock(p.infoMutex.mutex);
-                p.infoMutex.cache.add(key, info);
+                    const std::string key = getInfoKey(request->path, request->options);
+                    std::unique_lock<std::mutex> lock(p.infoMutex.mutex);
+                    p.infoMutex.cache.add(key, info);
+                }
             }
         }
 
         void ThumbnailSystem::_thumbnailRun()
         {
             FTK_P();
-            std::shared_ptr<Private::ThumbnailRequest> request;
+            tl::IOOptions ioOptions;
+            while (p.thumbnailThread.running)
             {
-                std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
-                if (p.thumbnailThread.cv.wait_for(
-                    lock,
-                    std::chrono::milliseconds(5),
-                    [this]
+                std::shared_ptr<Private::ThumbnailRequest> request;
+                {
+                    std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
+                    if (p.thumbnailThread.cv.wait_for(
+                        lock,
+                        std::chrono::milliseconds(5),
+                        [this]
+                        {
+                            return !_p->thumbnailMutex.requests.empty();
+                        }))
                     {
-                        return !_p->thumbnailMutex.requests.empty();
-                    }))
-                {
-                    request = p.thumbnailMutex.requests.front();
-                    p.thumbnailMutex.requests.pop_front();
+                        request = p.thumbnailMutex.requests.front();
+                        p.thumbnailMutex.requests.pop_front();
+                    }
                 }
-            }
-            if (request)
-            {
-                std::shared_ptr<ftk::Image> image;
-                if (auto context = p.context.lock())
+                if (request)
                 {
-                    auto ioSystem = context->getSystem<ReadSystem>();
+                    if (request->options != ioOptions)
+                    {
+                        p.thumbnailThread.ioCache.clear();;
+                        ioOptions = request->options;
+                    }
+
+                    std::shared_ptr<ftk::Image> image;
                     try
                     {
                         const std::string& fileName = request->path.get();
                         //std::cout << "thumbnail request: " << fileName << " " <<
                         //    request->time << std::endl;
                         std::shared_ptr<IRead> read;
+                        auto context = p.context.lock();
                         if (!p.thumbnailThread.ioCache.get(fileName, read))
                         {
+                            auto ioSystem = context->getSystem<ReadSystem>();
                             read = ioSystem->read(
                                 request->path,
                                 request->memoryRead,
@@ -769,16 +769,16 @@ namespace tl
                     }
                     catch (const std::exception&)
                     {}
-                }
-                request->promise.set_value(image);
+                    request->promise.set_value(image);
 
-                const std::string key = getThumbnailKey(
-                    request->path,
-                    request->height,
-                    request->time,
-                    request->options);
-                std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
-                p.thumbnailMutex.cache.add(key, image);
+                    const std::string key = getThumbnailKey(
+                        request->path,
+                        request->height,
+                        request->time,
+                        request->options);
+                    std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
+                    p.thumbnailMutex.cache.add(key, image);
+                }
             }
         }
 
@@ -905,32 +905,40 @@ namespace tl
         void ThumbnailSystem::_waveformRun()
         {
             FTK_P();
-            std::shared_ptr<Private::WaveformRequest> request;
+            tl::IOOptions ioOptions;
+            while (p.waveformThread.running)
             {
-                std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
-                if (p.waveformThread.cv.wait_for(
-                    lock,
-                    std::chrono::milliseconds(5),
-                    [this]
+                std::shared_ptr<Private::WaveformRequest> request;
+                {
+                    std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
+                    if (p.waveformThread.cv.wait_for(
+                        lock,
+                        std::chrono::milliseconds(5),
+                        [this]
+                        {
+                            return !_p->waveformMutex.requests.empty();
+                        }))
                     {
-                        return !_p->waveformMutex.requests.empty();
-                    }))
-                {
-                    request = p.waveformMutex.requests.front();
-                    p.waveformMutex.requests.pop_front();
+                        request = p.waveformMutex.requests.front();
+                        p.waveformMutex.requests.pop_front();
+                    }
                 }
-            }
-            if (request)
-            {
-                std::shared_ptr<ftk::TriMesh2F> mesh;
-                if (auto context = p.context.lock())
+                if (request)
                 {
+                    if (request->options != ioOptions)
+                    {
+                        p.waveformThread.ioCache.clear();;
+                        ioOptions = request->options;
+                    }
+
+                    std::shared_ptr<ftk::TriMesh2F> mesh;
                     try
                     {
                         const std::string& fileName = request->path.get();
                         std::shared_ptr<IRead> read;
                         if (!p.waveformThread.ioCache.get(fileName, read))
                         {
+                            auto context = p.context.lock();
                             auto ioSystem = context->getSystem<ReadSystem>();
                             read = ioSystem->read(
                                 request->path,
@@ -962,16 +970,16 @@ namespace tl
                     }
                     catch (const std::exception&)
                     {}
-                }
-                request->promise.set_value(mesh);
+                    request->promise.set_value(mesh);
 
-                const std::string key = getWaveformKey(
-                    request->path,
-                    request->size,
-                    request->timeRange,
-                    request->options);
-                std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
-                p.waveformMutex.cache.add(key, mesh);
+                    const std::string key = getWaveformKey(
+                        request->path,
+                        request->size,
+                        request->timeRange,
+                        request->options);
+                    std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
+                    p.waveformMutex.cache.add(key, mesh);
+                }
             }
         }
 
