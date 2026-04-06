@@ -551,6 +551,23 @@ namespace tl
             }
         }
 
+        void ThumbnailSystem::clearCache()
+        {
+            FTK_P();
+            {
+                std::unique_lock<std::mutex> lock(p.infoMutex.mutex);
+                p.infoMutex.cache.clear();
+            }
+            {
+                std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
+                p.thumbnailMutex.cache.clear();
+            }
+            {
+                std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
+                p.waveformMutex.cache.clear();
+            }
+        }
+
         void ThumbnailSystem::_infoRun()
         {
             FTK_P();

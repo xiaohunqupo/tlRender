@@ -99,6 +99,9 @@ namespace tl
             //! Cancel pending requests.
             TL_API void cancelRequests(const std::vector<uint64_t>&);
 
+            //! Clear the cache.
+            TL_API void clearCache();
+
         private:
             void _infoRun();
             void _thumbnailRun();
