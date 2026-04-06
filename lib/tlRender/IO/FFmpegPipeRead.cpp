@@ -423,7 +423,7 @@ namespace tl
                     ioOptions = videoRequest->options;
                     try
                     {
-                        const Options options(merge(_options, ioOptions));
+                        const Options options(merge(ioOptions, _options));
                         std::vector<std::string> cmd;
                         cmd.push_back(options.ffmpegPath);
                         cmd.push_back("-v");
@@ -509,7 +509,7 @@ namespace tl
                     ioOptions = request->options;
                     try
                     {
-                        const Options options(merge(_options, ioOptions));
+                        const Options options(merge(ioOptions, _options));
                         std::vector<std::string> cmd;
                         cmd.push_back(options.ffmpegPath);
                         cmd.push_back("-v");
