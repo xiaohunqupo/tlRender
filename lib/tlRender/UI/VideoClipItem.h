@@ -11,8 +11,6 @@ namespace tl
 {
     namespace ui
     {
-        class ThumbnailGenerator;
-
         //! Video clip item.
         class TL_API_TYPE VideoClipItem : public IBasicItem
         {
@@ -24,7 +22,6 @@ namespace tl
                 const ItemOptions&,
                 const DisplayOptions&,
                 const std::shared_ptr<ItemData>&,
-                const std::shared_ptr<ThumbnailGenerator>,
                 const std::shared_ptr<IWidget>& parent);
 
             VideoClipItem();
@@ -40,7 +37,6 @@ namespace tl
                 const ItemOptions&,
                 const DisplayOptions&,
                 const std::shared_ptr<ItemData>&,
-                const std::shared_ptr<ThumbnailGenerator>,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
             TL_API void setScale(double) override;

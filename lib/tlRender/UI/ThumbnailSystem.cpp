@@ -28,227 +28,64 @@ namespace tl
     {
         namespace
         {
-            const size_t ioCacheMax = 2;
-        }
+            const size_t ioCacheMax        = 2;
+            const size_t infoCacheMax      = 1000;
+            const size_t thumbnailCacheMax = 1000;
+            const size_t waveformCacheMax  = 1000;
 
-        struct ThumbnailCache::Private
-        {
-            size_t max = 16;
-            ftk::LRUCache<std::string, IOInfo> info;
-            ftk::LRUCache<std::string, std::shared_ptr<ftk::Image> > thumbnails;
-            ftk::LRUCache<std::string, std::shared_ptr<ftk::TriMesh2F> > waveforms;
-            std::mutex mutex;
-        };
-
-        void ThumbnailCache::_init(const std::shared_ptr<ftk::Context>& context)
-        {
-            _maxUpdate();
-        }
-
-        ThumbnailCache::ThumbnailCache() :
-            _p(new Private)
-        {}
-
-        ThumbnailCache::~ThumbnailCache()
-        {}
-
-        std::shared_ptr<ThumbnailCache> ThumbnailCache::create(
-            const std::shared_ptr<ftk::Context>& context)
-        {
-            auto out = std::shared_ptr<ThumbnailCache>(new ThumbnailCache);
-            out->_init(context);
-            return out;
-        }
-
-        size_t ThumbnailCache::getMax() const
-        {
-            return _p->max;
-        }
-
-        void ThumbnailCache::setMax(size_t value)
-        {
-            FTK_P();
-            if (value == p.max)
-                return;
-            p.max = value;
-            _maxUpdate();
-        }
-
-        size_t ThumbnailCache::getInfoSize() const
-        {
-            FTK_P();
-            std::unique_lock<std::mutex> lock(p.mutex);
-            return p.info.getSize();
-        }
-
-        size_t ThumbnailCache::getThumbnailsSize() const
-        {
-            FTK_P();
-            std::unique_lock<std::mutex> lock(p.mutex);
-            return p.thumbnails.getSize();
-        }
-
-        size_t ThumbnailCache::getWaveformsSize() const
-        {
-            FTK_P();
-            std::unique_lock<std::mutex> lock(p.mutex);
-            return p.waveforms.getSize();
-        }
-
-        float ThumbnailCache::getPercentage() const
-        {
-            FTK_P();
-            std::unique_lock<std::mutex> lock(p.mutex);
-            const size_t averageSize = (p.info.getSize() + p.thumbnails.getSize() + p.waveforms.getSize()) / 3;
-            return averageSize / static_cast<float>(p.max) * 100.F;
-        }
-
-        std::string ThumbnailCache::getInfoKey(
-            intptr_t id,
-            const ftk::Path& path,
-            const IOOptions& options)
-        {
-            std::stringstream ss;
-            ss << id << ";" << path.get() << ";";
-            for (const auto& i : options)
+            std::string getInfoKey(
+                const ftk::Path& path,
+                const IOOptions& options)
             {
-                ss << i.first << ":" << i.second << ";";
+                std::stringstream ss;
+                ss << path.get() << ";";
+                for (const auto& i : options)
+                {
+                    ss << i.first << ":" << i.second << ";";
+                }
+                return ss.str();
             }
-            return ss.str();
-        }
 
-        void ThumbnailCache::addInfo(const std::string& key, const IOInfo& info)
-        {
-            FTK_P();
-            std::unique_lock<std::mutex> lock(p.mutex);
-            p.info.add(key, info);
-        }
-
-        bool ThumbnailCache::containsInfo(const std::string& key)
-        {
-            FTK_P();
-            std::unique_lock<std::mutex> lock(p.mutex);
-            return p.info.contains(key);
-        }
-
-        bool ThumbnailCache::getInfo(const std::string& key, IOInfo& info) const
-        {
-            FTK_P();
-            std::unique_lock<std::mutex> lock(p.mutex);
-            return p.info.get(key, info);
-        }
-
-        std::string ThumbnailCache::getThumbnailKey(
-            intptr_t id,
-            const ftk::Path& path,
-            int height,
-            const OTIO_NS::RationalTime& time,
-            const IOOptions& options)
-        {
-            std::stringstream ss;
-            ss << id << ";" << path.get() << ";" << height << ";" << time << ";";
-            for (const auto& i : options)
+            std::string getThumbnailKey(
+                const ftk::Path& path,
+                int height,
+                const OTIO_NS::RationalTime& time,
+                const IOOptions& options)
             {
-                ss << i.first << ":" << i.second << ";";
+                std::stringstream ss;
+                ss << path.get() << ";" << height << ";" << time << ";";
+                for (const auto& i : options)
+                {
+                    ss << i.first << ":" << i.second << ";";
+                }
+                return ss.str();
             }
-            return ss.str();
-        }
 
-        void ThumbnailCache::addThumbnail(
-            const std::string& key,
-            const std::shared_ptr<ftk::Image>& thumbnail)
-        {
-            FTK_P();
-            std::unique_lock<std::mutex> lock(p.mutex);
-            p.thumbnails.add(key, thumbnail);
-        }
-
-        bool ThumbnailCache::containsThumbnail(const std::string& key)
-        {
-            FTK_P();
-            std::unique_lock<std::mutex> lock(p.mutex);
-            return p.thumbnails.contains(key);
-        }
-
-        bool ThumbnailCache::getThumbnail(
-            const std::string& key,
-            std::shared_ptr<ftk::Image>& thumbnail) const
-        {
-            FTK_P();
-            std::unique_lock<std::mutex> lock(p.mutex);
-            return p.thumbnails.get(key, thumbnail);
-        }
-
-        std::string ThumbnailCache::getWaveformKey(
-            intptr_t id,
-            const ftk::Path& path,
-            const ftk::Size2I& size,
-            const OTIO_NS::TimeRange& timeRange,
-            const IOOptions& options)
-        {
-            std::stringstream ss;
-            ss << id << ";" << path.get() << ";" << size << ";" << timeRange << ";";
-            for (const auto& i : options)
+            std::string getWaveformKey(
+                const ftk::Path& path,
+                const ftk::Size2I& size,
+                const OTIO_NS::TimeRange& timeRange,
+                const IOOptions& options)
             {
-                ss << i.first << ":" << i.second << ";";
+                std::stringstream ss;
+                ss << path.get() << ";" << size << ";" << timeRange << ";";
+                for (const auto& i : options)
+                {
+                    ss << i.first << ":" << i.second << ";";
+                }
+                return ss.str();
             }
-            return ss.str();
         }
 
-        void ThumbnailCache::addWaveform(
-            const std::string& key,
-            const std::shared_ptr<ftk::TriMesh2F>& waveform)
-        {
-            FTK_P();
-            std::unique_lock<std::mutex> lock(p.mutex);
-            p.waveforms.add(key, waveform);
-        }
-
-        bool ThumbnailCache::containsWaveform(const std::string& key)
-        {
-            FTK_P();
-            std::unique_lock<std::mutex> lock(p.mutex);
-            return p.waveforms.contains(key);
-        }
-
-        bool ThumbnailCache::getWaveform(
-            const std::string& key,
-            std::shared_ptr<ftk::TriMesh2F>& waveform) const
-        {
-            FTK_P();
-            std::unique_lock<std::mutex> lock(p.mutex);
-            return p.waveforms.get(key, waveform);
-        }
-
-        void ThumbnailCache::clear()
-        {
-            FTK_P();
-            std::unique_lock<std::mutex> lock(p.mutex);
-            p.info.clear();
-            p.thumbnails.clear();
-            p.waveforms.clear();
-        }
-
-        void ThumbnailCache::_maxUpdate()
-        {
-            FTK_P();
-            std::unique_lock<std::mutex> lock(p.mutex);
-            p.info.setMax(p.max);
-            p.thumbnails.setMax(p.max);
-            p.waveforms.setMax(p.max);
-        }
-
-        struct ThumbnailGenerator::Private
+        struct ThumbnailSystem::Private
         {
             std::weak_ptr<ftk::Context> context;
-            std::shared_ptr<ThumbnailCache> cache;
             std::shared_ptr<ftk::gl::Window> window;
             uint64_t requestId = 0;
 
             struct InfoRequest
             {
                 uint64_t id = 0;
-                intptr_t callerId = 0;
                 ftk::Path path;
                 std::vector<ftk::MemFile> memoryRead;
                 IOOptions options;
@@ -258,7 +95,6 @@ namespace tl
             struct ThumbnailRequest
             {
                 uint64_t id = 0;
-                intptr_t callerId = 0;
                 ftk::Path path;
                 std::vector<ftk::MemFile> memoryRead;
                 int height = 0;
@@ -270,7 +106,6 @@ namespace tl
             struct WaveformRequest
             {
                 uint64_t id = 0;
-                intptr_t callerId = 0;
                 ftk::Path path;
                 std::vector<ftk::MemFile> memoryRead;
                 ftk::Size2I size;
@@ -282,6 +117,7 @@ namespace tl
             struct InfoMutex
             {
                 std::list<std::shared_ptr<InfoRequest> > requests;
+                ftk::LRUCache<std::string, IOInfo> cache;
                 bool stopped = false;
                 std::mutex mutex;
             };
@@ -290,6 +126,7 @@ namespace tl
             struct ThumbnailMutex
             {
                 std::list<std::shared_ptr<ThumbnailRequest> > requests;
+                ftk::LRUCache<std::string, std::shared_ptr<ftk::Image> > cache;
                 bool stopped = false;
                 std::mutex mutex;
             };
@@ -298,6 +135,7 @@ namespace tl
             struct WaveformMutex
             {
                 std::list<std::shared_ptr<WaveformRequest> > requests;
+                ftk::LRUCache<std::string, std::shared_ptr<ftk::TriMesh2F> > cache;
                 bool stopped = false;
                 std::mutex mutex;
             };
@@ -334,27 +172,21 @@ namespace tl
             std::shared_ptr<ftk::Timer> logTimer;
         };
 
-        void ThumbnailGenerator::_init(
-            const std::shared_ptr<ThumbnailCache>& cache,
-            const std::shared_ptr<ftk::Context>& context,
-            const std::shared_ptr<ftk::gl::Window>& window)
+        ThumbnailSystem::ThumbnailSystem(const std::shared_ptr<ftk::Context>& context) :
+            ISystem(context, "tl::ui::ThumbnailSystem"),
+            _p(new Private)
         {
             FTK_P();
             
             p.context = context;
 
-            p.cache = cache;
+            p.window = ftk::gl::Window::create(
+                context,
+                "tl::ui::ThumbnailGenerator",
+                ftk::Size2I(1, 1),
+                static_cast<int>(ftk::gl::WindowOptions::None));
 
-            p.window = window;
-            if (!p.window)
-            {
-                p.window = ftk::gl::Window::create(
-                    context,
-                    "tl::ui::ThumbnailGenerator",
-                    ftk::Size2I(1, 1),
-                    static_cast<int>(ftk::gl::WindowOptions::None));
-            }
-
+            p.infoMutex.cache.setMax(infoCacheMax);
             p.infoThread.running = true;
             p.infoThread.thread = std::thread(
                 [this]
@@ -371,6 +203,7 @@ namespace tl
                     _infoCancel();
                 });
 
+            p.thumbnailMutex.cache.setMax(thumbnailCacheMax);
             p.thumbnailThread.ioCache.setMax(ioCacheMax);
             p.thumbnailThread.running = true;
             p.thumbnailThread.thread = std::thread(
@@ -401,6 +234,7 @@ namespace tl
                     p.window->clearCurrent();
                 });
 
+            p.waveformMutex.cache.setMax(waveformCacheMax);
             p.waveformThread.ioCache.setMax(ioCacheMax);
             p.waveformThread.running = true;
             p.waveformThread.thread = std::thread(
@@ -427,6 +261,21 @@ namespace tl
                     FTK_P();
                     if (auto context = p.context.lock())
                     {
+                        size_t infoCacheSize = 0;
+                        size_t thumbnailCacheSize = 0;
+                        size_t waveformCacheSize = 0;
+                        {
+                            std::unique_lock<std::mutex> lock(p.infoMutex.mutex);
+                            infoCacheSize = p.infoMutex.cache.getSize();
+                        }
+                        {
+                            std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
+                            thumbnailCacheSize = p.thumbnailMutex.cache.getSize();
+                        }
+                        {
+                            std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
+                            waveformCacheSize = p.waveformMutex.cache.getSize();
+                        }
                         auto logSystem = context->getLogSystem();
                         logSystem->print(
                             "tl::ui::ThumbnailGenerator",
@@ -434,25 +283,19 @@ namespace tl
                                 "\n"
                                 "    * Information: {0}/{1}\n"
                                 "    * Thumbnails: {2}/{3}\n"
-                                "    * Waveforms: {4}/{5}\n"
-                                "    * Percentage: {6}"
+                                "    * Waveforms: {4}/{5}"
                             ).
-                            arg(p.cache->getInfoSize()).
-                            arg(p.cache->getMax()).
-                            arg(p.cache->getThumbnailsSize()).
-                            arg(p.cache->getMax()).
-                            arg(p.cache->getWaveformsSize()).
-                            arg(p.cache->getMax()).
-                            arg(p.cache->getPercentage()));
+                            arg(infoCacheSize).
+                            arg(infoCacheMax).
+                            arg(thumbnailCacheSize).
+                            arg(thumbnailCacheMax).
+                            arg(waveformCacheSize).
+                            arg(waveformCacheMax));
                     }
                 });
         }
 
-        ThumbnailGenerator::ThumbnailGenerator() :
-            _p(new Private)
-        {}
-
-        ThumbnailGenerator::~ThumbnailGenerator()
+        ThumbnailSystem::~ThumbnailSystem()
         {
             FTK_P();
             p.infoThread.running = false;
@@ -472,73 +315,77 @@ namespace tl
             }
         }
 
-        std::shared_ptr<ThumbnailGenerator> ThumbnailGenerator::create(
-            const std::shared_ptr<ThumbnailCache>& cache,
-            const std::shared_ptr<ftk::Context>& context,
-            const std::shared_ptr<ftk::gl::Window>& window)
+        std::shared_ptr<ThumbnailSystem> ThumbnailSystem::create(
+            const std::shared_ptr<ftk::Context>& context)
         {
-            auto out = std::shared_ptr<ThumbnailGenerator>(new ThumbnailGenerator);
-            out->_init(cache, context, window);
+            auto out = context->getSystem<ThumbnailSystem>();
+            if (!out)
+            {
+                out = std::shared_ptr<ThumbnailSystem>(new ThumbnailSystem(context));
+                context->addSystem(out);
+            }
             return out;
         }
 
-        InfoRequest ThumbnailGenerator::getInfo(
-            intptr_t id,
+        InfoRequest ThumbnailSystem::getInfo(
             const ftk::Path& path,
             const IOOptions& options)
         {
-            return getInfo(id, path, {}, options);
+            return getInfo(path, {}, options);
         }
 
-        InfoRequest ThumbnailGenerator::getInfo(
-            intptr_t id,
+        InfoRequest ThumbnailSystem::getInfo(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& memoryRead,
             const IOOptions& options)
         {
             FTK_P();
             (p.requestId)++;
+
             auto request = std::make_shared<Private::InfoRequest>();
             request->id = p.requestId;
-            request->callerId = id;
             request->path = path;
             request->memoryRead = memoryRead;
             request->options = options;
-            InfoRequest out;
-            out.id = p.requestId;
-            out.future = request->promise.get_future();
-            bool valid = false;
+
+            const std::string key = getInfoKey(path, options);
+            IOInfo info;
+            bool notify = false;
             {
                 std::unique_lock<std::mutex> lock(p.infoMutex.mutex);
-                if (!p.infoMutex.stopped)
+                if (p.infoMutex.cache.get(key, info))
+                    ;
+                else if (!p.infoMutex.stopped)
                 {
-                    valid = true;
+                    notify = true;
                     p.infoMutex.requests.push_back(request);
                 }
             }
-            if (valid)
+            if (notify)
             {
                 p.infoThread.cv.notify_one();
             }
             else
             {
-                request->promise.set_value(IOInfo());
+                request->promise.set_value(info);
             }
+
+            InfoRequest out;
+            out.id = p.requestId;
+            out.future = request->promise.get_future();
             return out;
         }
 
-        ThumbnailRequest ThumbnailGenerator::getThumbnail(
-            intptr_t id,
+        ThumbnailRequest ThumbnailSystem::getThumbnail(
             const ftk::Path& path,
             int height,
             const OTIO_NS::RationalTime& time,
             const IOOptions& options)
         {
-            return getThumbnail(id, path, {}, height, time, options);
+            return getThumbnail(path, {}, height, time, options);
         }
 
-        ThumbnailRequest ThumbnailGenerator::getThumbnail(
-            intptr_t id,
+        ThumbnailRequest ThumbnailSystem::getThumbnail(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& memoryRead,
             int height,
@@ -547,51 +394,59 @@ namespace tl
         {
             FTK_P();
             (p.requestId)++;
+
             auto request = std::make_shared<Private::ThumbnailRequest>();
             request->id = p.requestId;
-            request->callerId = id;
             request->path = path;
             request->memoryRead = memoryRead;
             request->height = height;
             request->time = time;
             request->options = options;
-            ThumbnailRequest out;
-            out.id = p.requestId;
-            out.height = height;
-            out.time = time;
-            out.future = request->promise.get_future();
-            bool valid = false;
+
+            const std::string key = getThumbnailKey(
+                path,
+                height,
+                time,
+                options);
+            std::shared_ptr<ftk::Image> thumbnail;
+            bool notify = false;
             {
                 std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
-                if (!p.thumbnailMutex.stopped)
+                if (p.thumbnailMutex.cache.get(key, thumbnail))
+                    ;
+                else if (!p.thumbnailMutex.stopped)
                 {
-                    valid = true;
+                    notify = true;
                     p.thumbnailMutex.requests.push_back(request);
                 }
             }
-            if (valid)
+            if (notify)
             {
                 p.thumbnailThread.cv.notify_one();
             }
             else
             {
-                request->promise.set_value(nullptr);
+                request->promise.set_value(thumbnail);
             }
+
+            ThumbnailRequest out;
+            out.id = p.requestId;
+            out.height = height;
+            out.time = time;
+            out.future = request->promise.get_future();
             return out;
         }
 
-        WaveformRequest ThumbnailGenerator::getWaveform(
-            intptr_t id,
+        WaveformRequest ThumbnailSystem::getWaveform(
             const ftk::Path& path,
             const ftk::Size2I& size,
             const OTIO_NS::TimeRange& range,
             const IOOptions& options)
         {
-            return getWaveform(id, path, {}, size, range, options);
+            return getWaveform(path, {}, size, range, options);
         }
 
-        WaveformRequest ThumbnailGenerator::getWaveform(
-            intptr_t id,
+        WaveformRequest ThumbnailSystem::getWaveform(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& memoryRead,
             const ftk::Size2I& size,
@@ -600,40 +455,50 @@ namespace tl
         {
             FTK_P();
             (p.requestId)++;
+
             auto request = std::make_shared<Private::WaveformRequest>();
             request->id = p.requestId;
-            request->callerId = id;
             request->path = path;
             request->memoryRead = memoryRead;
             request->size = size;
             request->timeRange = timeRange;
             request->options = options;
-            WaveformRequest out;
-            out.id = p.requestId;
-            out.size = size;
-            out.timeRange = timeRange;
-            out.future = request->promise.get_future();
-            bool valid = false;
+
+            const std::string key = getWaveformKey(
+                path,
+                size,
+                timeRange,
+                options);
+            std::shared_ptr<ftk::TriMesh2F> mesh;
+            bool notify = false;
             {
                 std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
-                if (!p.waveformMutex.stopped)
+                if (p.waveformMutex.cache.get(key, mesh))
+                    ;
+                else if (!p.waveformMutex.stopped)
                 {
-                    valid = true;
+                    notify = true;
                     p.waveformMutex.requests.push_back(request);
                 }
             }
-            if (valid)
+            if (notify)
             {
                 p.waveformThread.cv.notify_one();
             }
             else
             {
-                request->promise.set_value(nullptr);
+                request->promise.set_value(mesh);
             }
+
+            WaveformRequest out;
+            out.id = p.requestId;
+            out.size = size;
+            out.timeRange = timeRange;
+            out.future = request->promise.get_future();
             return out;
         }
 
-        void ThumbnailGenerator::cancelRequests(const std::vector<uint64_t>& ids)
+        void ThumbnailSystem::cancelRequests(const std::vector<uint64_t>& ids)
         {
             FTK_P();
             {
@@ -686,7 +551,7 @@ namespace tl
             }
         }
 
-        void ThumbnailGenerator::_infoRun()
+        void ThumbnailSystem::_infoRun()
         {
             FTK_P();
             std::shared_ptr<Private::InfoRequest> request;
@@ -707,39 +572,34 @@ namespace tl
             if (request)
             {
                 IOInfo info;
-                const std::string key = ThumbnailCache::getInfoKey(
-                    request->callerId,
-                    request->path,
-                    request->options);
-                if (!p.cache->getInfo(key, info))
+                if (auto context = p.context.lock())
                 {
-                    if (auto context = p.context.lock())
+                    auto ioSystem = context->getSystem<ReadSystem>();
+                    try
                     {
-                        auto ioSystem = context->getSystem<ReadSystem>();
-                        try
+                        const std::string& fileName = request->path.get();
+                        //std::cout << "info request: " << request->path.get() << std::endl;
+                        std::shared_ptr<IRead> read = ioSystem->read(
+                            request->path,
+                            request->memoryRead,
+                            request->options);
+                        if (read)
                         {
-                            const std::string& fileName = request->path.get();
-                            //std::cout << "info request: " << request->path.get() << std::endl;
-                            std::shared_ptr<IRead> read = ioSystem->read(
-                                request->path,
-                                request->memoryRead,
-                                request->options);
-                            if (read)
-                            {
-                                info = read->getInfo().get();
-                            }
-                        }
-                        catch (const std::exception&)
-                        {
+                            info = read->getInfo().get();
                         }
                     }
+                    catch (const std::exception&)
+                    {}
                 }
                 request->promise.set_value(info);
-                p.cache->addInfo(key, info);
+
+                const std::string key = getInfoKey(request->path, request->options);
+                std::unique_lock<std::mutex> lock(p.infoMutex.mutex);
+                p.infoMutex.cache.add(key, info);
             }
         }
 
-        void ThumbnailGenerator::_thumbnailRun()
+        void ThumbnailSystem::_thumbnailRun()
         {
             FTK_P();
             std::shared_ptr<Private::ThumbnailRequest> request;
@@ -760,41 +620,102 @@ namespace tl
             if (request)
             {
                 std::shared_ptr<ftk::Image> image;
-                const std::string key = ThumbnailCache::getThumbnailKey(
-                    request->callerId,
-                    request->path,
-                    request->height,
-                    request->time,
-                    request->options);
-                if (!p.cache->getThumbnail(key, image))
+                if (auto context = p.context.lock())
                 {
-                    if (auto context = p.context.lock())
+                    auto ioSystem = context->getSystem<ReadSystem>();
+                    try
                     {
-                        auto ioSystem = context->getSystem<ReadSystem>();
-                        try
+                        const std::string& fileName = request->path.get();
+                        //std::cout << "thumbnail request: " << fileName << " " <<
+                        //    request->time << std::endl;
+                        std::shared_ptr<IRead> read;
+                        if (!p.thumbnailThread.ioCache.get(fileName, read))
                         {
-                            const std::string& fileName = request->path.get();
-                            //std::cout << "thumbnail request: " << fileName << " " <<
-                            //    request->time << std::endl;
-                            std::shared_ptr<IRead> read;
-                            if (!p.thumbnailThread.ioCache.get(fileName, read))
+                            read = ioSystem->read(
+                                request->path,
+                                request->memoryRead,
+                                request->options);
+                            p.thumbnailThread.ioCache.add(fileName, read);
+                        }
+                        if (read)
+                        {
+                            const IOInfo info = read->getInfo().get();
+                            ftk::Size2I size;
+                            if (!info.video.empty())
                             {
-                                read = ioSystem->read(
-                                    request->path,
-                                    request->memoryRead,
-                                    request->options);
-                                p.thumbnailThread.ioCache.add(fileName, read);
+                                size.w = request->height * ftk::aspectRatio(info.video[0].size);
+                                size.h = request->height;
                             }
-                            if (read)
+                            ftk::gl::OffscreenBufferOptions options;
+                            if (ftk::gl::doCreate(
+                                p.thumbnailThread.buffer,
+                                size,
+                                ftk::gl::TextureType::RGBA_U8))
                             {
-                                const IOInfo info = read->getInfo().get();
-                                ftk::Size2I size;
-                                if (!info.video.empty())
-                                {
-                                    size.w = request->height * ftk::aspectRatio(info.video[0].size);
-                                    size.h = request->height;
-                                }
-                                ftk::gl::OffscreenBufferOptions options;
+                                p.thumbnailThread.buffer = ftk::gl::OffscreenBuffer::create(
+                                    size,
+                                    ftk::gl::TextureType::RGBA_U8);
+                            }
+                            const OTIO_NS::RationalTime time =
+                                request->time != invalidTime ?
+                                request->time :
+                                info.videoTime.start_time();
+                            const auto videoData = read->readVideo(time, request->options).get();
+                            if (p.thumbnailThread.render &&
+                                p.thumbnailThread.buffer &&
+                                videoData.image &&
+                                p.thumbnailThread.running)
+                            {
+                                ftk::gl::OffscreenBufferBinding binding(p.thumbnailThread.buffer);
+                                p.thumbnailThread.render->begin(size);
+                                ftk::ImageOptions imageOptions;
+                                imageOptions.cache = false;
+                                p.thumbnailThread.render->IRender::drawImage(
+                                    videoData.image,
+                                    ftk::Box2I(0, 0, size.w, size.h),
+                                    ftk::Color4F(1.F, 1.F, 1.F),
+                                    imageOptions);
+                                p.thumbnailThread.render->end();
+                                image = ftk::Image::create(
+                                    ftk::ImageInfo(size.w, size.h, ftk::ImageType::RGBA_U8));
+                                glPixelStorei(GL_PACK_ALIGNMENT, 1);
+                                glReadPixels(
+                                    0,
+                                    0,
+                                    size.w,
+                                    size.h,
+                                    GL_RGBA,
+                                    GL_UNSIGNED_BYTE,
+                                    image->getData());
+                            }
+                        }
+                        else if (
+                            ftk::compare(
+                                ".otio",
+                                request->path.getExt(),
+                                ftk::CaseCompare::Insensitive) ||
+                            ftk::compare(
+                                ".otioz",
+                                request->path.getExt(),
+                                ftk::CaseCompare::Insensitive))
+                        {
+                            Options timelineOptions;
+                            timelineOptions.ioOptions = request->options;
+                            auto timeline = Timeline::create(
+                                context,
+                                request->path,
+                                timelineOptions);
+                            const auto info = timeline->getIOInfo();
+                            const auto videoData = timeline->getVideo(
+                                timeline->getTimeRange().start_time()).future.get();
+                            ftk::Size2I size;
+                            if (!info.video.empty())
+                            {
+                                size.w = request->height * ftk::aspectRatio(info.video.front().size);
+                                size.h = request->height;
+                            }
+                            if (size.isValid())
+                            {
                                 if (ftk::gl::doCreate(
                                     p.thumbnailThread.buffer,
                                     size,
@@ -804,28 +725,18 @@ namespace tl
                                         size,
                                         ftk::gl::TextureType::RGBA_U8);
                                 }
-                                const OTIO_NS::RationalTime time =
-                                    request->time != invalidTime ?
-                                    request->time :
-                                    info.videoTime.start_time();
-                                const auto videoData = read->readVideo(time, request->options).get();
-                                if (p.thumbnailThread.render &&
-                                    p.thumbnailThread.buffer &&
-                                    videoData.image &&
-                                    p.thumbnailThread.running)
+                                if (p.thumbnailThread.render && p.thumbnailThread.buffer)
                                 {
                                     ftk::gl::OffscreenBufferBinding binding(p.thumbnailThread.buffer);
                                     p.thumbnailThread.render->begin(size);
-                                    ftk::ImageOptions imageOptions;
-                                    imageOptions.cache = false;
-                                    p.thumbnailThread.render->IRender::drawImage(
-                                        videoData.image,
-                                        ftk::Box2I(0, 0, size.w, size.h),
-                                        ftk::Color4F(1.F, 1.F, 1.F),
-                                        imageOptions);
+                                    p.thumbnailThread.render->drawVideo(
+                                        { videoData },
+                                        { ftk::Box2I(0, 0, size.w, size.h) });
                                     p.thumbnailThread.render->end();
-                                    image = ftk::Image::create(
-                                        ftk::ImageInfo(size.w, size.h, ftk::ImageType::RGBA_U8));
+                                    ftk::ImageInfo info(size.w,
+                                        size.h,
+                                        ftk::ImageType::RGBA_U8);
+                                    image = ftk::Image::create(info);
                                     glPixelStorei(GL_PACK_ALIGNMENT, 1);
                                     glReadPixels(
                                         0,
@@ -837,73 +748,20 @@ namespace tl
                                         image->getData());
                                 }
                             }
-                            else if (
-                                ftk::compare(
-                                    ".otio",
-                                    request->path.getExt(),
-                                    ftk::CaseCompare::Insensitive) ||
-                                ftk::compare(
-                                    ".otioz",
-                                    request->path.getExt(),
-                                    ftk::CaseCompare::Insensitive))
-                            {
-                                Options timelineOptions;
-                                timelineOptions.ioOptions = request->options;
-                                auto timeline = Timeline::create(
-                                    context,
-                                    request->path,
-                                    timelineOptions);
-                                const auto info = timeline->getIOInfo();
-                                const auto videoData = timeline->getVideo(
-                                    timeline->getTimeRange().start_time()).future.get();
-                                ftk::Size2I size;
-                                if (!info.video.empty())
-                                {
-                                    size.w = request->height * ftk::aspectRatio(info.video.front().size);
-                                    size.h = request->height;
-                                }
-                                if (size.isValid())
-                                {
-                                    if (ftk::gl::doCreate(
-                                        p.thumbnailThread.buffer,
-                                        size,
-                                        ftk::gl::TextureType::RGBA_U8))
-                                    {
-                                        p.thumbnailThread.buffer = ftk::gl::OffscreenBuffer::create(
-                                            size,
-                                            ftk::gl::TextureType::RGBA_U8);
-                                    }
-                                    if (p.thumbnailThread.render && p.thumbnailThread.buffer)
-                                    {
-                                        ftk::gl::OffscreenBufferBinding binding(p.thumbnailThread.buffer);
-                                        p.thumbnailThread.render->begin(size);
-                                        p.thumbnailThread.render->drawVideo(
-                                            { videoData },
-                                            { ftk::Box2I(0, 0, size.w, size.h) });
-                                        p.thumbnailThread.render->end();
-                                        ftk::ImageInfo info(size.w,
-                                            size.h,
-                                            ftk::ImageType::RGBA_U8);
-                                        image = ftk::Image::create(info);
-                                        glPixelStorei(GL_PACK_ALIGNMENT, 1);
-                                        glReadPixels(
-                                            0,
-                                            0,
-                                            size.w,
-                                            size.h,
-                                            GL_RGBA,
-                                            GL_UNSIGNED_BYTE,
-                                            image->getData());
-                                    }
-                                }
-                            }
                         }
-                        catch (const std::exception&)
-                        {}
                     }
+                    catch (const std::exception&)
+                    {}
                 }
                 request->promise.set_value(image);
-                p.cache->addThumbnail(key, image);
+
+                const std::string key = getThumbnailKey(
+                    request->path,
+                    request->height,
+                    request->time,
+                    request->options);
+                std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
+                p.thumbnailMutex.cache.add(key, image);
             }
         }
 
@@ -1027,7 +885,7 @@ namespace tl
             }
         }
 
-        void ThumbnailGenerator::_waveformRun()
+        void ThumbnailSystem::_waveformRun()
         {
             FTK_P();
             std::shared_ptr<Private::WaveformRequest> request;
@@ -1048,61 +906,59 @@ namespace tl
             if (request)
             {
                 std::shared_ptr<ftk::TriMesh2F> mesh;
-                const std::string key = ThumbnailCache::getWaveformKey(
-                    request->callerId,
+                if (auto context = p.context.lock())
+                {
+                    try
+                    {
+                        const std::string& fileName = request->path.get();
+                        std::shared_ptr<IRead> read;
+                        if (!p.waveformThread.ioCache.get(fileName, read))
+                        {
+                            auto ioSystem = context->getSystem<ReadSystem>();
+                            read = ioSystem->read(
+                                request->path,
+                                request->memoryRead,
+                                request->options);
+                            p.waveformThread.ioCache.add(fileName, read);
+                        }
+                        if (read)
+                        {
+                            const auto info = read->getInfo().get();
+                            const OTIO_NS::TimeRange timeRange =
+                                request->timeRange != invalidTimeRange ?
+                                request->timeRange :
+                                OTIO_NS::TimeRange(
+                                    OTIO_NS::RationalTime(0.0, 1.0),
+                                    OTIO_NS::RationalTime(1.0, 1.0));
+                            const auto audioData = read->readAudio(timeRange, request->options).get();
+                            if (audioData.audio && p.waveformThread.running)
+                            {
+                                auto resample = AudioResample::create(
+                                    audioData.audio->getInfo(),
+                                    AudioInfo(1, AudioType::F32, audioData.audio->getSampleRate()));
+                                if (auto resampledAudio = resample->process(audioData.audio))
+                                {
+                                    mesh = audioMesh(resampledAudio, request->size);
+                                }
+                            }
+                        }
+                    }
+                    catch (const std::exception&)
+                    {}
+                }
+                request->promise.set_value(mesh);
+
+                const std::string key = getWaveformKey(
                     request->path,
                     request->size,
                     request->timeRange,
                     request->options);
-                if (!p.cache->getWaveform(key, mesh))
-                {
-                    if (auto context = p.context.lock())
-                    {
-                        try
-                        {
-                            const std::string& fileName = request->path.get();
-                            std::shared_ptr<IRead> read;
-                            if (!p.waveformThread.ioCache.get(fileName, read))
-                            {
-                                auto ioSystem = context->getSystem<ReadSystem>();
-                                read = ioSystem->read(
-                                    request->path,
-                                    request->memoryRead,
-                                    request->options);
-                                p.waveformThread.ioCache.add(fileName, read);
-                            }
-                            if (read)
-                            {
-                                const auto info = read->getInfo().get();
-                                const OTIO_NS::TimeRange timeRange =
-                                    request->timeRange != invalidTimeRange ?
-                                    request->timeRange :
-                                    OTIO_NS::TimeRange(
-                                        OTIO_NS::RationalTime(0.0, 1.0),
-                                        OTIO_NS::RationalTime(1.0, 1.0));
-                                const auto audioData = read->readAudio(timeRange, request->options).get();
-                                if (audioData.audio && p.waveformThread.running)
-                                {
-                                    auto resample = AudioResample::create(
-                                        audioData.audio->getInfo(),
-                                        AudioInfo(1, AudioType::F32, audioData.audio->getSampleRate()));
-                                    if (auto resampledAudio = resample->process(audioData.audio))
-                                    {
-                                        mesh = audioMesh(resampledAudio, request->size);
-                                    }
-                                }
-                            }
-                        }
-                        catch (const std::exception&)
-                        {}
-                    }
-                }
-                request->promise.set_value(mesh);
-                p.cache->addWaveform(key, mesh);
+                std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
+                p.waveformMutex.cache.add(key, mesh);
             }
         }
 
-        void ThumbnailGenerator::_infoCancel()
+        void ThumbnailSystem::_infoCancel()
         {
             FTK_P();
             std::list<std::shared_ptr<Private::InfoRequest> > requests;
@@ -1116,7 +972,7 @@ namespace tl
             }
         }
 
-        void ThumbnailGenerator::_thumbnailCancel()
+        void ThumbnailSystem::_thumbnailCancel()
         {
             FTK_P();
             std::list<std::shared_ptr<Private::ThumbnailRequest> > requests;
@@ -1130,7 +986,7 @@ namespace tl
             }
         }
 
-        void ThumbnailGenerator::_waveformCancel()
+        void ThumbnailSystem::_waveformCancel()
         {
             FTK_P();
             std::list<std::shared_ptr<Private::WaveformRequest> > requests;
@@ -1142,74 +998,6 @@ namespace tl
             {
                 request->promise.set_value(nullptr);
             }
-        }
-
-        struct ThumbnailSystem::Private
-        {
-            std::shared_ptr<ThumbnailCache> cache;
-            std::shared_ptr<ThumbnailGenerator> generator;
-        };
-
-        ThumbnailSystem::ThumbnailSystem(const std::shared_ptr<ftk::Context>& context) :
-            ISystem(context, "tl::ui::ThumbnailSystem"),
-            _p(new Private)
-        {
-            FTK_P();
-            p.cache = ThumbnailCache::create(context);
-            p.generator = ThumbnailGenerator::create(p.cache, context);
-        }
-
-        ThumbnailSystem::~ThumbnailSystem()
-        {}
-
-        std::shared_ptr<ThumbnailSystem> ThumbnailSystem::create(
-            const std::shared_ptr<ftk::Context>& context)
-        {
-            auto out = context->getSystem<ThumbnailSystem>();
-            if (!out)
-            {
-                out = std::shared_ptr<ThumbnailSystem>(new ThumbnailSystem(context));
-                context->addSystem(out);
-            }
-            return out;
-        }
-
-        InfoRequest ThumbnailSystem::getInfo(
-            intptr_t id,
-            const ftk::Path& path,
-            const IOOptions& ioOptions)
-        {
-            return _p->generator->getInfo(id, path, ioOptions);
-        }
-
-        ThumbnailRequest ThumbnailSystem::getThumbnail(
-            intptr_t id,
-            const ftk::Path& path,
-            int height,
-            const OTIO_NS::RationalTime& time,
-            const IOOptions& ioOptions)
-        {
-            return _p->generator->getThumbnail(id, path, height, time, ioOptions);
-        }
-
-        WaveformRequest ThumbnailSystem::getWaveform(
-            intptr_t id,
-            const ftk::Path& path,
-            const ftk::Size2I& size,
-            const OTIO_NS::TimeRange& timeRange,
-            const IOOptions& ioOptions)
-        {
-            return _p->generator->getWaveform(id, path, size, timeRange, ioOptions);
-        }
-
-        void ThumbnailSystem::cancelRequests(const std::vector<uint64_t>& ids)
-        {
-            _p->generator->cancelRequests(ids);
-        }
-        
-        const std::shared_ptr<ThumbnailCache>& ThumbnailSystem::getCache() const
-        {
-            return _p->cache;
         }
     }
 }

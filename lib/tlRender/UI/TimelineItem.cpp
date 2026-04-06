@@ -54,11 +54,6 @@ namespace tl
             p.scrub = ftk::Observable<bool>::create(false);
             p.timeScrub = ftk::Observable<OTIO_NS::RationalTime>::create(invalidTime);
 
-            p.thumbnailGenerator = ThumbnailGenerator::create(
-                context->getSystem<ThumbnailSystem>()->getCache(),
-                context,
-                window);
-
             const auto otioTimeline = p.player->getTimeline()->getTimeline();
             int stackIndex = 0;
             for (const auto& child : otioTimeline->tracks()->children())
@@ -120,7 +115,6 @@ namespace tl
                                     options,
                                     displayOptions,
                                     itemData,
-                                    p.thumbnailGenerator,
                                     shared_from_this());
                                 break;
                             case TrackType::Audio:
@@ -131,7 +125,6 @@ namespace tl
                                     options,
                                     displayOptions,
                                     itemData,
-                                    p.thumbnailGenerator,
                                     shared_from_this());
                                 break;
                             default: break;

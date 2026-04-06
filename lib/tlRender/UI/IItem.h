@@ -24,9 +24,6 @@ namespace tl
             std::string dir;
             Options options;
             std::shared_ptr<ITimeUnitsModel> timeUnitsModel;
-            std::map<std::string, std::shared_ptr<IOInfo> > info;
-            std::map<std::string, std::shared_ptr<ftk::Image> > thumbnails;
-            std::map<std::string, std::shared_ptr<ftk::TriMesh2F> > waveforms;
         };
 
         //! In/out points display options.

@@ -18,7 +18,7 @@ namespace tl
         {
             ftk::Path path;
             std::vector<ftk::MemFile> memRead;
-            std::shared_ptr<ThumbnailGenerator> thumbnailGenerator;
+            std::shared_ptr<ThumbnailSystem> thumbnailSystem;
 
             struct SizeData
             {
@@ -30,6 +30,7 @@ namespace tl
             InfoRequest infoRequest;
             std::shared_ptr<IOInfo> ioInfo;
             std::map<OTIO_NS::RationalTime, WaveformRequest> waveformRequests;
+            std::map< OTIO_NS::RationalTime, std::shared_ptr<ftk::TriMesh2F> > waveforms;
         };
 
         void AudioClipItem::_init(
@@ -39,7 +40,6 @@ namespace tl
             const ItemOptions& options,
             const DisplayOptions& displayOptions,
             const std::shared_ptr<ItemData>& itemData,
-            const std::shared_ptr<ThumbnailGenerator> thumbnailGenerator,
             const std::shared_ptr<IWidget>& parent)
         {
             const auto path = getPath(
@@ -61,17 +61,7 @@ namespace tl
 
             p.path = path;
             p.memRead = getMemRead(clip->media_reference());
-            p.thumbnailGenerator = thumbnailGenerator;
-
-            const std::string infoCacheKey = ThumbnailCache::getInfoKey(
-                reinterpret_cast<intptr_t>(this),
-                path,
-                _data->options.ioOptions);
-            const auto i = itemData->info.find(infoCacheKey);
-            if (i != itemData->info.end())
-            {
-                p.ioInfo = i->second;
-            }
+            p.thumbnailSystem = context->getSystem<ThumbnailSystem>();
         }
 
         AudioClipItem::AudioClipItem() :
@@ -91,7 +81,6 @@ namespace tl
             const ItemOptions& options,
             const DisplayOptions& displayOptions,
             const std::shared_ptr<ItemData>& itemData,
-            const std::shared_ptr<ThumbnailGenerator> thumbnailGenerator,
             const std::shared_ptr<IWidget>& parent)
         {
             auto out = std::shared_ptr<AudioClipItem>(new AudioClipItem);
@@ -102,7 +91,6 @@ namespace tl
                 options,
                 displayOptions,
                 itemData,
-                thumbnailGenerator,
                 parent);
             return out;
         }
@@ -114,6 +102,7 @@ namespace tl
             FTK_P();
             if (changed)
             {
+                p.waveforms.clear();
                 _cancelRequests();
                 setDrawUpdate();
             }
@@ -130,6 +119,7 @@ namespace tl
             FTK_P();
             if (thumbnailsChanged)
             {
+                p.waveforms.clear();
                 _cancelRequests();
                 setDrawUpdate();
             }
@@ -149,8 +139,10 @@ namespace tl
         {
             const ftk::Size2I size = getGeometry().size();
             IBasicItem::setGeometry(value);
+            FTK_P();
             if (size != value.size())
             {
+                p.waveforms.clear();
                 _cancelRequests();
             }
         }
@@ -168,11 +160,6 @@ namespace tl
                 p.infoRequest.future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
             {
                 p.ioInfo = std::make_shared<IOInfo>(p.infoRequest.future.get());
-                const std::string infoCacheKey = ThumbnailCache::getInfoKey(
-                    reinterpret_cast<intptr_t>(this),
-                    p.path,
-                    _data->options.ioOptions);
-                _data->info[infoCacheKey] = p.ioInfo;
                 setSizeUpdate();
                 setDrawUpdate();
             }
@@ -184,16 +171,8 @@ namespace tl
                 if (i->second.future.valid() &&
                     i->second.future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
                 {
-                    const auto mesh = i->second.future.get();
-                    const std::string cacheKey = ThumbnailCache::getWaveformKey(
-                        reinterpret_cast<intptr_t>(this),
-                        p.path,
-                        ftk::Size2I(
-                            _displayOptions.waveformWidth,
-                            _displayOptions.waveformHeight),
-                        i->second.timeRange,
-                        _data->options.ioOptions);
-                    _data->waveforms[cacheKey] = mesh;
+                    auto mesh = i->second.future.get();
+                    p.waveforms[i->second.timeRange.start_time()] = mesh;
                     i = p.waveformRequests.erase(i);
                     setDrawUpdate();
                 }
@@ -220,6 +199,7 @@ namespace tl
             p.size.clipRect = clipRect;
             if (clipped)
             {
+                p.waveforms.clear();
                 _cancelRequests();
                 setDrawUpdate();
             }
@@ -246,19 +226,19 @@ namespace tl
             const int m = _getMargin();
             const int lineHeight = _getLineHeight();
 
-            const ftk::Box2I box(
+            const ftk::Box2I g2(
                 g.min.x,
                 g.min.y +
                 (!_displayOptions.minimize ? (lineHeight + m * 2) : 0),
                 g.w(),
                 _displayOptions.waveformHeight);
             event.render->drawRect(
-                box,
+                g2,
                 ftk::Color4F(0.F, 0.F, 0.F));
             const ftk::ClipRectEnabledState clipRectEnabledState(event.render);
             const ftk::ClipRectState clipRectState(event.render);
             event.render->setClipRectEnabled(true);
-            event.render->setClipRect(ftk::intersect(box, clipRectState.getClipRect()));
+            event.render->setClipRect(ftk::intersect(g2, clipRectState.getClipRect()));
 
             const ftk::Box2I clipRect = _getClipRect(
                 drawRect,
@@ -267,14 +247,14 @@ namespace tl
             {
                 if (!p.ioInfo && !p.infoRequest.future.valid())
                 {
-                    p.infoRequest = p.thumbnailGenerator->getInfo(
-                        reinterpret_cast<intptr_t>(this),
+                    p.infoRequest = p.thumbnailSystem->getInfo(
                         p.path,
                         p.memRead,
                         _data->options.ioOptions);
                 }
             }
 
+            std::map< OTIO_NS::RationalTime, std::shared_ptr<ftk::TriMesh2F> > waveforms;
             if (_displayOptions.waveformWidth > 0 && p.ioInfo)
             {
                 const int w = g.w();
@@ -318,43 +298,48 @@ namespace tl
                             _timeRange,
                             trimmedRange,
                             p.ioInfo->audio.sampleRate);
-
-                        const std::string cacheKey = ThumbnailCache::getWaveformKey(
-                            reinterpret_cast<intptr_t>(this),
-                            p.path,
-                            box.size(),
-                            mediaRange,
-                            _data->options.ioOptions);
-                        const auto i = _data->waveforms.find(cacheKey);
-                        if (i != _data->waveforms.end())
+                        std::shared_ptr<ftk::TriMesh2F> mesh;
+                        const auto i = p.waveforms.find(mediaRange.start_time());
+                        if (i != p.waveforms.end())
                         {
-                            if (i->second)
-                            {
-                                event.render->drawMesh(
-                                    *i->second,
-                                    enabled ?
-                                        ftk::Color4F(1.F, 1.F, 1.F) :
-                                        ftk::Color4F(.5F, .5F, .5F),
-                                    ftk::V2F(box.min.x, box.min.y));
-                            }
+                            mesh = i->second;
                         }
                         else if (p.ioInfo && p.ioInfo->audio.isValid())
                         {
                             const auto j = p.waveformRequests.find(mediaRange.start_time());
                             if (j == p.waveformRequests.end())
                             {
-                                p.waveformRequests[mediaRange.start_time()] = p.thumbnailGenerator->getWaveform(
-                                    reinterpret_cast<intptr_t>(this),
+                                auto request = p.thumbnailSystem->getWaveform(
                                     p.path,
                                     p.memRead,
                                     box.size(),
                                     mediaRange,
                                     _data->options.ioOptions);
+                                if (request.future.valid() &&
+                                    request.future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+                                {
+                                    mesh = request.future.get();
+                                }
+                                else
+                                {
+                                    p.waveformRequests[mediaRange.start_time()] = std::move(request);
+                                }
                             }
+                        }
+                        if (mesh)
+                        {
+                            event.render->drawMesh(
+                                *mesh,
+                                enabled ?
+                                ftk::Color4F(1.F, 1.F, 1.F) :
+                                ftk::Color4F(.5F, .5F, .5F),
+                                ftk::V2F(box.min.x, box.min.y));
+                            waveforms[mediaRange.start_time()] = mesh;
                         }
                     }
                 }
             }
+            p.waveforms = waveforms;
         }
 
         void AudioClipItem::_cancelRequests()
@@ -371,7 +356,7 @@ namespace tl
                 ids.push_back(i.second.id);
             }
             p.waveformRequests.clear();
-            p.thumbnailGenerator->cancelRequests(ids);
+            p.thumbnailSystem->cancelRequests(ids);
         }
     }
 }

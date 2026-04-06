@@ -22,7 +22,6 @@ namespace tl
             std::shared_ptr<ftk::Observable<bool> > scrub;
             std::shared_ptr<ftk::Observable<OTIO_NS::RationalTime> > timeScrub;
             std::vector<int> frameMarkers;
-            std::shared_ptr<ThumbnailGenerator> thumbnailGenerator;
 
             struct Track
             {

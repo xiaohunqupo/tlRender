@@ -20,7 +20,7 @@ namespace tl
             std::string clipName;
             ftk::Path path;
             std::vector<ftk::MemFile> memRead;
-            std::shared_ptr<ThumbnailGenerator> thumbnailGenerator;
+            std::shared_ptr<ThumbnailSystem> thumbnailSystem;
 
             struct SizeData
             {
@@ -33,6 +33,7 @@ namespace tl
             InfoRequest infoRequest;
             std::shared_ptr<IOInfo> ioInfo;
             std::map<OTIO_NS::RationalTime, ThumbnailRequest> thumbnailRequests;
+            std::map<OTIO_NS::RationalTime, std::shared_ptr<ftk::Image> > thumbnails;
         };
 
         void VideoClipItem::_init(
@@ -42,7 +43,6 @@ namespace tl
             const ItemOptions& options,
             const DisplayOptions& displayOptions,
             const std::shared_ptr<ItemData>& itemData,
-            const std::shared_ptr<ThumbnailGenerator> thumbnailGenerator,
             const std::shared_ptr<IWidget>& parent)
         {
             const auto path = getPath(
@@ -65,19 +65,10 @@ namespace tl
             p.clipName = clip->name();
             p.path = path;
             p.memRead = getMemRead(clip->media_reference());
-            p.thumbnailGenerator = thumbnailGenerator;
+            p.thumbnailSystem = context->getSystem<ThumbnailSystem>();
 
             p.ioOptions = _data->options.ioOptions;
             p.ioOptions["USD/CameraName"] = p.clipName;
-            const std::string infoCacheKey = ThumbnailCache::getInfoKey(
-                reinterpret_cast<intptr_t>(this),
-                path,
-                p.ioOptions);
-            const auto i = itemData->info.find(infoCacheKey);
-            if (i != itemData->info.end())
-            {
-                p.ioInfo = i->second;
-            }
         }
 
         VideoClipItem::VideoClipItem() :
@@ -97,7 +88,6 @@ namespace tl
             const ItemOptions& options,
             const DisplayOptions& displayOptions,
             const std::shared_ptr<ItemData>& itemData,
-            const std::shared_ptr<ThumbnailGenerator> thumbnailGenerator,
             const std::shared_ptr<IWidget>& parent)
         {
             auto out = std::shared_ptr<VideoClipItem>(new VideoClipItem);
@@ -108,7 +98,6 @@ namespace tl
                 options,
                 displayOptions,
                 itemData,
-                thumbnailGenerator,
                 parent);
             return out;
         }
@@ -120,6 +109,7 @@ namespace tl
             FTK_P();
             if (changed)
             {
+                p.thumbnails.clear();
                 _cancelRequests();
                 setDrawUpdate();
             }
@@ -134,6 +124,7 @@ namespace tl
             FTK_P();
             if (thumbnailsChanged)
             {
+                p.thumbnails.clear();
                 _cancelRequests();
                 setDrawUpdate();
             }
@@ -154,8 +145,10 @@ namespace tl
         {
             const ftk::Size2I size = getGeometry().size();
             IBasicItem::setGeometry(value);
+            FTK_P();
             if (size != value.size())
             {
+                p.thumbnails.clear();
                 _cancelRequests();
             }
         }
@@ -173,11 +166,6 @@ namespace tl
                 p.infoRequest.future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
             {
                 p.ioInfo = std::make_shared<IOInfo>(p.infoRequest.future.get());
-                const std::string infoCacheKey = ThumbnailCache::getInfoKey(
-                    reinterpret_cast<intptr_t>(this),
-                    p.path,
-                    p.ioOptions);
-                _data->info[infoCacheKey] = p.ioInfo;
                 setSizeUpdate();
                 setDrawUpdate();
             }
@@ -190,13 +178,7 @@ namespace tl
                     i->second.future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
                 {
                     const auto image = i->second.future.get();
-                    const std::string cacheKey = ThumbnailCache::getThumbnailKey(
-                        reinterpret_cast<intptr_t>(this),
-                        p.path,
-                        _displayOptions.thumbnailHeight,
-                        i->first,
-                        p.ioOptions);
-                    _data->thumbnails[cacheKey] = image;
+                    p.thumbnails[i->second.time] = image;
                     i = p.thumbnailRequests.erase(i);
                     setDrawUpdate();
                 }
@@ -223,6 +205,7 @@ namespace tl
             p.size.clipRect = clipRect;
             if (clipped)
             {
+                p.thumbnails.clear();
                 _cancelRequests();
                 setDrawUpdate();
             }
@@ -250,19 +233,19 @@ namespace tl
             const int m = _getMargin();
             const int lineHeight = _getLineHeight();
 
-            const ftk::Box2I box(
+            const ftk::Box2I g2(
                 g.min.x,
                 g.min.y +
                 (!_displayOptions.minimize ? (lineHeight + m * 2) : 0),
                 g.w(),
                 _displayOptions.thumbnailHeight);
             render->drawRect(
-                box,
+                g2,
                 ftk::Color4F(0.F, 0.F, 0.F));
             const ftk::ClipRectEnabledState clipRectEnabledState(render);
             const ftk::ClipRectState clipRectState(render);
             render->setClipRectEnabled(true);
-            render->setClipRect(ftk::intersect(box, clipRectState.getClipRect()));
+            render->setClipRect(ftk::intersect(g2, clipRectState.getClipRect()));
             render->setOCIOOptions(_displayOptions.ocio);
             render->setLUTOptions(_displayOptions.lut);
 
@@ -273,14 +256,14 @@ namespace tl
             {
                 if (!p.ioInfo && !p.infoRequest.future.valid())
                 {
-                    p.infoRequest = p.thumbnailGenerator->getInfo(
-                        reinterpret_cast<intptr_t>(this),
+                    p.infoRequest = p.thumbnailSystem->getInfo(
                         p.path,
                         p.memRead,
                         p.ioOptions);
                 }
             }
 
+            std::map<OTIO_NS::RationalTime, std::shared_ptr<ftk::Image> > thumbnails;
             const int thumbnailWidth =
                 (_displayOptions.thumbnails && p.ioInfo && !p.ioInfo->video.empty()) ?
                 static_cast<int>(_displayOptions.thumbnailHeight * ftk::aspectRatio(p.ioInfo->video[0].size)) :
@@ -322,53 +305,58 @@ namespace tl
                             _timeRange,
                             trimmedRange,
                             p.ioInfo->videoTime.duration().rate());
-
-                        const std::string cacheKey = ThumbnailCache::getThumbnailKey(
-                            reinterpret_cast<intptr_t>(this),
-                            p.path,
-                            _displayOptions.thumbnailHeight,
-                            mediaTime,
-                            p.ioOptions);
-                        const auto i = _data->thumbnails.find(cacheKey);
-                        if (i != _data->thumbnails.end())
+                        std::shared_ptr<ftk::Image> image;
+                        const auto i = p.thumbnails.find(mediaTime);
+                        if (i != p.thumbnails.end())
                         {
-                            if (i->second)
-                            {
-                                tl::DisplayOptions displayOptions;
-                                if (!enabled)
-                                {
-                                    displayOptions.color.enabled = true;
-                                    displayOptions.color.saturation.x = 0.F;
-                                    displayOptions.color.saturation.y = 0.F;
-                                    displayOptions.color.saturation.z = 0.F;
-                                }
-                                VideoFrame videoFrame;
-                                videoFrame.size = i->second->getSize();
-                                videoFrame.layers.push_back({ i->second });
-                                render->drawVideo(
-                                    { videoFrame },
-                                    { box },
-                                    {},
-                                    { displayOptions });
-                            }
+                            image = i->second;
                         }
                         else if (p.ioInfo && !p.ioInfo->video.empty())
                         {
                             const auto k = p.thumbnailRequests.find(mediaTime);
                             if (k == p.thumbnailRequests.end())
                             {
-                                p.thumbnailRequests[mediaTime] = p.thumbnailGenerator->getThumbnail(
-                                    reinterpret_cast<intptr_t>(this),
+                                auto request = p.thumbnailSystem->getThumbnail(
                                     p.path,
                                     p.memRead,
                                     _displayOptions.thumbnailHeight,
                                     mediaTime,
                                     p.ioOptions);
+                                if (request.future.valid() &&
+                                    request.future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+                                {
+                                    image = request.future.get();
+                                }
+                                else
+                                {
+                                    p.thumbnailRequests[mediaTime] = std::move(request);
+                                }
                             }
+                        }
+                        if (image)
+                        {
+                            tl::DisplayOptions displayOptions;
+                            if (!enabled)
+                            {
+                                displayOptions.color.enabled = true;
+                                displayOptions.color.saturation.x = 0.F;
+                                displayOptions.color.saturation.y = 0.F;
+                                displayOptions.color.saturation.z = 0.F;
+                            }
+                            VideoFrame videoFrame;
+                            videoFrame.size = image->getSize();
+                            videoFrame.layers.push_back({ image });
+                            render->drawVideo(
+                                { videoFrame },
+                                { box },
+                                {},
+                                { displayOptions });
+                            thumbnails[mediaTime] = image;
                         }
                     }
                 }
             }
+            p.thumbnails = thumbnails;
         }
 
         void VideoClipItem::_cancelRequests()
@@ -385,7 +373,7 @@ namespace tl
                 ids.push_back(i.second.id);
             }
             p.thumbnailRequests.clear();
-            p.thumbnailGenerator->cancelRequests(ids);
+            p.thumbnailSystem->cancelRequests(ids);
         }
     }
 }

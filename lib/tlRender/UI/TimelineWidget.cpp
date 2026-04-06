@@ -148,9 +148,6 @@ namespace tl
             if (player == p.player)
                 return;
 
-            p.itemData->info.clear();
-            p.itemData->thumbnails.clear();
-            p.itemData->waveforms.clear();
             p.timeRange = invalidTimeRange;
             p.playback = Playback::Stop;
             p.playbackObserver.reset();
@@ -370,19 +367,8 @@ namespace tl
         void TimelineWidget::setDisplayOptions(const DisplayOptions& value)
         {
             FTK_P();
-            const DisplayOptions prev = p.displayOptions->get();
             if (p.displayOptions->setIfChanged(value))
             {
-                if (prev.thumbnailHeight != value.thumbnailHeight)
-                {
-                    p.itemData->thumbnails.clear();
-                }
-                if (prev.waveformWidth != value.waveformWidth ||
-                    prev.waveformHeight != value.waveformHeight ||
-                    prev.waveformPrim != value.waveformPrim)
-                {
-                    p.itemData->waveforms.clear();
-                }
                 if (p.timelineItem)
                 {
                     _setDisplayOptions(p.timelineItem, value);
@@ -604,7 +590,6 @@ namespace tl
         void TimelineWidget::_setItemScale()
         {
             FTK_P();
-            p.itemData->waveforms.clear();
             if (p.timelineItem)
             {
                 _setItemScale(p.timelineItem, p.scale);
