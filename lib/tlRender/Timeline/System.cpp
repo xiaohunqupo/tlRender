@@ -25,14 +25,12 @@ namespace tl
     {
         FTK_P();
 
-        const auto lutNames = getLUTFormatNames();
-        const auto lutExts = getLUTFormatExts();
         std::vector<std::string> s;
-        for (size_t i = 0; i < lutNames.size() && i < lutExts.size(); ++i)
+        for (const auto& ext : getLUTFormatExts())
         {
-            s.push_back(ftk::Format("    * {0}: {1}").arg(lutNames[i]).arg(lutExts[i]));
+            s.push_back(ext);
         }
-        _log(ftk::Format("Supported LUT formats:\n{0}").arg(ftk::join(s, '\n')));
+        _log(ftk::Format("\n    LUT formats: {0}").arg(ftk::join(s, ", ")));
 
         p.logTimer = ftk::Timer::create(context);
         p.logTimer->setRepeating(true);
