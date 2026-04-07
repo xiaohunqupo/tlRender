@@ -52,8 +52,8 @@ namespace tl
             //! Select all.
             TL_API void selectAll();
 
-            //! Set the font role.
-            TL_API void setFontRole(ftk::FontRole);
+            //! Set the font.
+            TL_API void setFont(ftk::FontType);
 
             TL_API ftk::Size2I getSizeHint() const override;
             TL_API void setGeometry(const ftk::Box2I&) override;

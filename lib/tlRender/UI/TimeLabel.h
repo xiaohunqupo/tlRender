@@ -49,8 +49,8 @@ namespace tl
             //! Set the margin role.
             TL_API void setMarginRole(ftk::SizeRole);
 
-            //! Set the font role.
-            TL_API void setFontRole(ftk::FontRole);
+            //! Set the font 
+            TL_API void setFont(ftk::FontType);
 
             TL_API ftk::Size2I getSizeHint() const override;
             TL_API void styleEvent(const ftk::StyleEvent&) override;

@@ -42,7 +42,7 @@ namespace tl
 
             p.lineEdit = ftk::LineEdit::create(context, shared_from_this());
             p.lineEdit->getModel()->setRegex("[0-9\\-\\.\\,\\:]+");
-            p.lineEdit->setFontRole(ftk::FontRole::Mono);
+            p.lineEdit->setFont(ftk::FontType::Mono);
             p.lineEdit->setHStretch(ftk::Stretch::Expanding);
 
             p.incButtons = ftk::IncButtons::create(context);
@@ -133,9 +133,9 @@ namespace tl
             _p->lineEdit->selectAll();
         }
 
-        void TimeEdit::setFontRole(ftk::FontRole value)
+        void TimeEdit::setFont(ftk::FontType value)
         {
-            _p->lineEdit->setFontRole(value);
+            _p->lineEdit->setFont(value);
         }
         
         ftk::Size2I TimeEdit::getSizeHint() const

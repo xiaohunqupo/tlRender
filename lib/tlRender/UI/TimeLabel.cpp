@@ -20,7 +20,7 @@ namespace tl
             std::string text;
             std::string format;
             ftk::SizeRole marginRole = ftk::SizeRole::None;
-            ftk::FontRole fontRole = ftk::FontRole::Label;
+            ftk::FontType font = ftk::FontType::Mono;
 
             struct SizeData
             {
@@ -115,12 +115,12 @@ namespace tl
             setDrawUpdate();
         }
 
-        void TimeLabel::setFontRole(ftk::FontRole value)
+        void TimeLabel::setFont(ftk::FontType value)
         {
             FTK_P();
-            if (value == p.fontRole)
+            if (value == p.font)
                 return;
-            p.fontRole = value;
+            p.font = value;
             p.size.init = true;
             setSizeUpdate();
             setDrawUpdate();
@@ -157,7 +157,7 @@ namespace tl
             {
                 p.size.init = false;
                 p.size.margin = event.style->getSizeRole(p.marginRole, event.displayScale);
-                p.size.fontInfo = event.style->getFontRole(p.fontRole, event.displayScale);
+                p.size.fontInfo = event.style->getFont(p.font, event.displayScale);
                 p.size.fontMetrics = event.fontSystem->getMetrics(p.size.fontInfo);
                 p.size.textSize = event.fontSystem->getSize(p.text, p.size.fontInfo);
                 p.size.formatSize = event.fontSystem->getSize(p.format, p.size.fontInfo);
