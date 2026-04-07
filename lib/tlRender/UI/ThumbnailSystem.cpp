@@ -30,8 +30,8 @@ namespace tl
         {
             const size_t ioCacheMax        = 2;
             const size_t infoCacheMax      = 1000;
-            const size_t thumbnailCacheMax = 1000;
-            const size_t waveformCacheMax  = 1000;
+            const size_t thumbnailCacheMax = 16 * ftk::megabyte;
+            const size_t waveformCacheMax  = 16 * ftk::megabyte;
 
             std::string getInfoKey(
                 const ftk::Path& path,
@@ -82,6 +82,9 @@ namespace tl
             std::weak_ptr<ftk::Context> context;
             std::shared_ptr<ftk::gl::Window> window;
             uint64_t requestId = 0;
+            std::shared_ptr<ftk::Observable<size_t> > thumbnailCacheMax;
+            std::shared_ptr<ftk::Observable<size_t> > waveformCacheMax;
+
 
             struct InfoRequest
             {
@@ -182,9 +185,12 @@ namespace tl
 
             p.window = ftk::gl::Window::create(
                 context,
-                "tl::ui::ThumbnailGenerator",
+                "tl::ui::ThumbnailSystem",
                 ftk::Size2I(1, 1),
                 static_cast<int>(ftk::gl::WindowOptions::None));
+
+            p.thumbnailCacheMax = ftk::Observable<size_t>::create(thumbnailCacheMax);
+            p.waveformCacheMax = ftk::Observable<size_t>::create(waveformCacheMax);
 
             p.infoMutex.cache.setMax(infoCacheMax);
             p.infoThread.running = true;
@@ -269,19 +275,19 @@ namespace tl
                         }
                         auto logSystem = context->getLogSystem();
                         logSystem->print(
-                            "tl::ui::ThumbnailGenerator",
+                            "tl::ui::ThumbnailSystem",
                             ftk::Format(
                                 "\n"
                                 "    * Information: {0}/{1}\n"
-                                "    * Thumbnails: {2}/{3}\n"
-                                "    * Waveforms: {4}/{5}"
+                                "    * Thumbnails: {2}/{3}MB\n"
+                                "    * Waveforms: {4}/{5}MB"
                             ).
                             arg(infoCacheSize).
                             arg(infoCacheMax).
-                            arg(thumbnailCacheSize).
-                            arg(thumbnailCacheMax).
-                            arg(waveformCacheSize).
-                            arg(waveformCacheMax));
+                            arg(thumbnailCacheSize / ftk::megabyte).
+                            arg(thumbnailCacheMax / ftk::megabyte).
+                            arg(waveformCacheSize / ftk::megabyte).
+                            arg(waveformCacheMax / ftk::megabyte));
                     }
                 });
         }
@@ -542,6 +548,46 @@ namespace tl
             }
         }
 
+        size_t ThumbnailSystem::getThumbnailCacheMax() const
+        {
+            return _p->thumbnailCacheMax->get();
+        }
+
+        std::shared_ptr<ftk::IObservable<size_t> > ThumbnailSystem::observeThumbnailCacheMax() const
+        {
+            return _p->thumbnailCacheMax;
+        }
+
+        void ThumbnailSystem::setThumbnailCacheMax(size_t value)
+        {
+            FTK_P();
+            if (p.thumbnailCacheMax->setIfChanged(value))
+            {
+                std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
+                p.thumbnailMutex.cache.setMax(value);
+            }
+        }
+
+        size_t ThumbnailSystem::getWaveformCacheMax() const
+        {
+            return _p->waveformCacheMax->get();
+        }
+
+        std::shared_ptr<ftk::IObservable<size_t> > ThumbnailSystem::observeWaveformCacheMax() const
+        {
+            return _p->waveformCacheMax;
+        }
+
+        void ThumbnailSystem::setWaveformCacheMax(size_t value)
+        {
+            FTK_P();
+            if (p.waveformCacheMax->setIfChanged(value))
+            {
+                std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
+                p.waveformMutex.cache.setMax(value);
+            }
+        }
+
         void ThumbnailSystem::clearCache()
         {
             FTK_P();
@@ -633,7 +679,7 @@ namespace tl
                 {
                     if (request->options != ioOptions)
                     {
-                        p.thumbnailThread.ioCache.clear();;
+                        p.thumbnailThread.ioCache.clear();
                         ioOptions = request->options;
                     }
 
@@ -777,7 +823,7 @@ namespace tl
                         request->time,
                         request->options);
                     std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
-                    p.thumbnailMutex.cache.add(key, image);
+                    p.thumbnailMutex.cache.add(key, image, image->getByteCount());
                 }
             }
         }
@@ -927,7 +973,7 @@ namespace tl
                 {
                     if (request->options != ioOptions)
                     {
-                        p.waveformThread.ioCache.clear();;
+                        p.waveformThread.ioCache.clear();
                         ioOptions = request->options;
                     }
 
@@ -978,7 +1024,7 @@ namespace tl
                         request->timeRange,
                         request->options);
                     std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
-                    p.waveformMutex.cache.add(key, mesh);
+                    p.waveformMutex.cache.add(key, mesh, mesh->getByteCount());
                 }
             }
         }

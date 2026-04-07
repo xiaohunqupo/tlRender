@@ -9,6 +9,7 @@
 #include <ftk/Core/ISystem.h>
 #include <ftk/Core/Image.h>
 #include <ftk/Core/Mesh.h>
+#include <ftk/Core/Observable.h>
 #include <ftk/Core/Path.h>
 
 #include <future>
@@ -99,8 +100,28 @@ namespace tl
             //! Cancel pending requests.
             TL_API void cancelRequests(const std::vector<uint64_t>&);
 
+            //! Get the thumbnail cache maximum size in bytes.
+            TL_API size_t getThumbnailCacheMax() const;
+
+            //! Observe the thumbnail cache maximum size in bytes.
+            TL_API std::shared_ptr<ftk::IObservable<size_t> > observeThumbnailCacheMax() const;
+
+            //! Set the thumbnail cache maximum size in bytes.
+            TL_API void setThumbnailCacheMax(size_t);
+
+            //! Get the waveform cache maximum size in bytes.
+            TL_API size_t getWaveformCacheMax() const;
+
+            //! Observe the waveform cache maximum size in bytes.
+            TL_API std::shared_ptr<ftk::IObservable<size_t> > observeWaveformCacheMax() const;
+
+            //! Set the waveform cache maximum size in bytes.
+            TL_API void setWaveformCacheMax(size_t);
+
             //! Clear the cache.
             TL_API void clearCache();
+
+            ///@}
 
         private:
             void _infoRun();
