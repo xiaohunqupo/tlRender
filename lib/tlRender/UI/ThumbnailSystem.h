@@ -43,6 +43,19 @@ namespace tl
             std::future<std::shared_ptr<ftk::TriMesh2F> > future;
         };
 
+        //! Thumbnails cache options.
+        struct TL_API_TYPE ThumbnailCacheOptions
+        {
+            //! Video cache size in megabytes.
+            float thumbnailMB = 16.F;
+
+            //! Audio cache size in megabytes.
+            float waveformMB = 16.F;
+
+            TL_API bool operator == (const ThumbnailCacheOptions&) const;
+            TL_API bool operator != (const ThumbnailCacheOptions&) const;
+        };
+
         //! Thumbnail system.
         class TL_API_TYPE ThumbnailSystem : public ftk::ISystem
         {
@@ -100,23 +113,14 @@ namespace tl
             //! Cancel pending requests.
             TL_API void cancelRequests(const std::vector<uint64_t>&);
 
-            //! Get the thumbnail cache maximum size in bytes.
-            TL_API size_t getThumbnailCacheMax() const;
+            //! Get the cache options.
+            TL_API const ThumbnailCacheOptions& getCacheOptions() const;
 
-            //! Observe the thumbnail cache maximum size in bytes.
-            TL_API std::shared_ptr<ftk::IObservable<size_t> > observeThumbnailCacheMax() const;
+            //! Observe the cache opions.
+            TL_API std::shared_ptr<ftk::IObservable<ThumbnailCacheOptions> > observeCacheOptions() const;
 
-            //! Set the thumbnail cache maximum size in bytes.
-            TL_API void setThumbnailCacheMax(size_t);
-
-            //! Get the waveform cache maximum size in bytes.
-            TL_API size_t getWaveformCacheMax() const;
-
-            //! Observe the waveform cache maximum size in bytes.
-            TL_API std::shared_ptr<ftk::IObservable<size_t> > observeWaveformCacheMax() const;
-
-            //! Set the waveform cache maximum size in bytes.
-            TL_API void setWaveformCacheMax(size_t);
+            //! Set the cache options.
+            TL_API void setCacheOptions(const ThumbnailCacheOptions&);
 
             //! Clear the cache.
             TL_API void clearCache();
@@ -133,5 +137,14 @@ namespace tl
 
             FTK_PRIVATE();
         };
+
+        //! \name Serialize
+        ///@{
+
+        TL_API void to_json(nlohmann::json&, const ThumbnailCacheOptions&);
+
+        TL_API void from_json(const nlohmann::json&, ThumbnailCacheOptions&);
+
+        ///@}
     }
 }

@@ -26,12 +26,22 @@ namespace tl
 {
     namespace ui
     {
+        bool ThumbnailCacheOptions::operator == (const ThumbnailCacheOptions& other) const
+        {
+            return
+                thumbnailMB == other.thumbnailMB &&
+                waveformMB == other.waveformMB;
+        }
+
+        bool ThumbnailCacheOptions::operator != (const ThumbnailCacheOptions& other) const
+        {
+            return !(*this == other);
+        }
+
         namespace
         {
-            const size_t ioCacheMax        = 2;
-            const size_t infoCacheMax      = 1000;
-            const size_t thumbnailCacheMax = 16 * ftk::megabyte;
-            const size_t waveformCacheMax  = 16 * ftk::megabyte;
+            const size_t ioCacheMax   = 2;
+            const size_t infoCacheMax = 1000;
 
             std::string getInfoKey(
                 const ftk::Path& path,
@@ -82,9 +92,7 @@ namespace tl
             std::weak_ptr<ftk::Context> context;
             std::shared_ptr<ftk::gl::Window> window;
             uint64_t requestId = 0;
-            std::shared_ptr<ftk::Observable<size_t> > thumbnailCacheMax;
-            std::shared_ptr<ftk::Observable<size_t> > waveformCacheMax;
-
+            std::shared_ptr<ftk::Observable<ThumbnailCacheOptions> > cacheOptions;
 
             struct InfoRequest
             {
@@ -189,8 +197,7 @@ namespace tl
                 ftk::Size2I(1, 1),
                 static_cast<int>(ftk::gl::WindowOptions::None));
 
-            p.thumbnailCacheMax = ftk::Observable<size_t>::create(thumbnailCacheMax);
-            p.waveformCacheMax = ftk::Observable<size_t>::create(waveformCacheMax);
+            p.cacheOptions = ftk::Observable<ThumbnailCacheOptions>::create();
 
             p.infoMutex.cache.setMax(infoCacheMax);
             p.infoThread.running = true;
@@ -206,7 +213,7 @@ namespace tl
                     _infoCancel();
                 });
 
-            p.thumbnailMutex.cache.setMax(thumbnailCacheMax);
+            p.thumbnailMutex.cache.setMax(p.cacheOptions->get().thumbnailMB * ftk::megabyte);
             p.thumbnailThread.ioCache.setMax(ioCacheMax);
             p.thumbnailThread.running = true;
             p.thumbnailThread.thread = std::thread(
@@ -234,7 +241,7 @@ namespace tl
                     p.window->clearCurrent();
                 });
 
-            p.waveformMutex.cache.setMax(waveformCacheMax);
+            p.waveformMutex.cache.setMax(p.cacheOptions->get().waveformMB * ftk::megabyte);
             p.waveformThread.ioCache.setMax(ioCacheMax);
             p.waveformThread.running = true;
             p.waveformThread.thread = std::thread(
@@ -285,9 +292,9 @@ namespace tl
                             arg(infoCacheSize).
                             arg(infoCacheMax).
                             arg(thumbnailCacheSize / ftk::megabyte).
-                            arg(thumbnailCacheMax / ftk::megabyte).
+                            arg(p.cacheOptions->get().thumbnailMB).
                             arg(waveformCacheSize / ftk::megabyte).
-                            arg(waveformCacheMax / ftk::megabyte));
+                            arg(p.cacheOptions->get().waveformMB));
                     }
                 });
         }
@@ -548,43 +555,29 @@ namespace tl
             }
         }
 
-        size_t ThumbnailSystem::getThumbnailCacheMax() const
+        const ThumbnailCacheOptions& ThumbnailSystem::getCacheOptions() const
         {
-            return _p->thumbnailCacheMax->get();
+            return _p->cacheOptions->get();
         }
 
-        std::shared_ptr<ftk::IObservable<size_t> > ThumbnailSystem::observeThumbnailCacheMax() const
+        std::shared_ptr<ftk::IObservable<ThumbnailCacheOptions> > ThumbnailSystem::observeCacheOptions() const
         {
-            return _p->thumbnailCacheMax;
+            return _p->cacheOptions;
         }
 
-        void ThumbnailSystem::setThumbnailCacheMax(size_t value)
+        void ThumbnailSystem::setCacheOptions(const ThumbnailCacheOptions& value)
         {
             FTK_P();
-            if (p.thumbnailCacheMax->setIfChanged(value))
+            if (p.cacheOptions->setIfChanged(value))
             {
-                std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
-                p.thumbnailMutex.cache.setMax(value);
-            }
-        }
-
-        size_t ThumbnailSystem::getWaveformCacheMax() const
-        {
-            return _p->waveformCacheMax->get();
-        }
-
-        std::shared_ptr<ftk::IObservable<size_t> > ThumbnailSystem::observeWaveformCacheMax() const
-        {
-            return _p->waveformCacheMax;
-        }
-
-        void ThumbnailSystem::setWaveformCacheMax(size_t value)
-        {
-            FTK_P();
-            if (p.waveformCacheMax->setIfChanged(value))
-            {
-                std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
-                p.waveformMutex.cache.setMax(value);
+                {
+                    std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
+                    p.thumbnailMutex.cache.setMax(value.thumbnailMB * ftk::megabyte);
+                }
+                {
+                    std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
+                    p.waveformMutex.cache.setMax(value.waveformMB * ftk::megabyte);
+                }
             }
         }
 
@@ -1069,6 +1062,18 @@ namespace tl
             {
                 request->promise.set_value(nullptr);
             }
+        }
+
+        void to_json(nlohmann::json& json, const ThumbnailCacheOptions& value)
+        {
+            json["ThumbnailMB"] = value.thumbnailMB;
+            json["WaveformMB"] = value.waveformMB;
+        }
+
+        void from_json(const nlohmann::json& json, ThumbnailCacheOptions& value)
+        {
+            json.at("ThumbnailMB").get_to(value.thumbnailMB);
+            json.at("WaveformMB").get_to(value.waveformMB);
         }
     }
 }
