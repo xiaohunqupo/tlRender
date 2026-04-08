@@ -63,7 +63,6 @@ namespace tl
         struct TL_API_TYPE ItemOptions
         {
             bool inputEnabled = true;
-            bool editAssociatedClips = true;
 
             TL_API bool operator == (const ItemOptions&) const;
             TL_API bool operator != (const ItemOptions&) const;

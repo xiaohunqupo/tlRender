@@ -33,8 +33,7 @@ namespace tl
         bool ItemOptions::operator == (const ItemOptions& other) const
         {
             return
-                inputEnabled == other.inputEnabled &&
-                editAssociatedClips == other.editAssociatedClips;
+                inputEnabled == other.inputEnabled;
         }
 
         bool ItemOptions::operator != (const ItemOptions& other) const
@@ -264,7 +263,6 @@ namespace tl
         void to_json(nlohmann::json& json, const ItemOptions& value)
         {
             json["InputEnabled"] = value.inputEnabled;
-            json["EditAssociatedClips"] = value.editAssociatedClips;
         }
 
         void to_json(nlohmann::json& json, const DisplayOptions& value)
@@ -286,7 +284,6 @@ namespace tl
         void from_json(const nlohmann::json& json, ItemOptions& value)
         {
             json.at("InputEnabled").get_to(value.inputEnabled);
-            json.at("EditAssociatedClips").get_to(value.editAssociatedClips);
         }
 
         void from_json(const nlohmann::json& json, DisplayOptions& value)
