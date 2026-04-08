@@ -258,7 +258,6 @@ namespace tl
             if (_displayOptions.waveformWidth > 0 && p.ioInfo)
             {
                 const int w = g.w();
-                const bool enabled = isEnabled();
                 for (int x = 0; x < w; x += _displayOptions.waveformWidth)
                 {
                     const ftk::Box2I box(
@@ -330,9 +329,7 @@ namespace tl
                         {
                             event.render->drawMesh(
                                 *mesh,
-                                enabled ?
-                                ftk::Color4F(1.F, 1.F, 1.F) :
-                                ftk::Color4F(.5F, .5F, .5F),
+                                ftk::Color4F(1.F, 1.F, 1.F),
                                 ftk::V2F(box.min.x, box.min.y));
                             waveforms[mediaRange.start_time()] = mesh;
                         }

@@ -271,7 +271,6 @@ namespace tl
             if (thumbnailWidth > 0)
             {
                 const int w = g.w();
-                const bool enabled = isEnabled();
                 for (int x = 0; x < w; x += thumbnailWidth)
                 {
                     const ftk::Box2I box(
@@ -335,7 +334,7 @@ namespace tl
                         }
                         if (image)
                         {
-                            tl::DisplayOptions displayOptions;
+                            /*tl::DisplayOptions displayOptions;
                             if (!enabled)
                             {
                                 displayOptions.color.enabled = true;
@@ -350,7 +349,8 @@ namespace tl
                                 { videoFrame },
                                 { box },
                                 {},
-                                { displayOptions });
+                                { displayOptions });*/
+                            render->drawImage(image, box);
                             thumbnails[mediaTime] = image;
                         }
                     }
