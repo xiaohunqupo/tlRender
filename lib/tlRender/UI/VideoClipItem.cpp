@@ -31,7 +31,7 @@ namespace tl
 
             IOOptions ioOptions;
             InfoRequest infoRequest;
-            std::shared_ptr<IOInfo> ioInfo;
+            std::optional<IOInfo> ioInfo;
             std::map<OTIO_NS::RationalTime, ThumbnailRequest> thumbnailRequests;
             std::map<OTIO_NS::RationalTime, std::shared_ptr<ftk::Image> > thumbnails;
         };
@@ -165,7 +165,7 @@ namespace tl
             if (p.infoRequest.future.valid() &&
                 p.infoRequest.future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
             {
-                p.ioInfo = std::make_shared<IOInfo>(p.infoRequest.future.get());
+                p.ioInfo = p.infoRequest.future.get();
                 setSizeUpdate();
                 setDrawUpdate();
             }
@@ -252,20 +252,21 @@ namespace tl
             const ftk::Box2I clipRect = _getClipRect(
                 drawRect,
                 _displayOptions.clipRectScale);
-            if (ftk::intersects(g, clipRect))
+
+            // Get thumbnail information.
+            if (!p.ioInfo.has_value() &&
+                !p.infoRequest.future.valid() &&
+                ftk::intersects(g, clipRect))
             {
-                if (!p.ioInfo && !p.infoRequest.future.valid())
-                {
-                    p.infoRequest = p.thumbnailSystem->getInfo(
-                        p.path,
-                        p.memRead,
-                        p.ioOptions);
-                }
+                p.infoRequest = p.thumbnailSystem->getInfo(
+                    p.path,
+                    p.memRead,
+                    p.ioOptions);
             }
 
             std::map<OTIO_NS::RationalTime, std::shared_ptr<ftk::Image> > thumbnails;
             const int thumbnailWidth =
-                (_displayOptions.thumbnails && p.ioInfo && !p.ioInfo->video.empty()) ?
+                (_displayOptions.thumbnails && p.ioInfo.has_value() && !p.ioInfo->video.empty()) ?
                 static_cast<int>(_displayOptions.thumbnailHeight * ftk::aspectRatio(p.ioInfo->video[0].size)) :
                 0;
             if (thumbnailWidth > 0)
@@ -310,7 +311,7 @@ namespace tl
                         {
                             image = i->second;
                         }
-                        else if (p.ioInfo && !p.ioInfo->video.empty())
+                        else if (!p.ioInfo->video.empty())
                         {
                             const auto k = p.thumbnailRequests.find(mediaTime);
                             if (k == p.thumbnailRequests.end())
@@ -334,22 +335,6 @@ namespace tl
                         }
                         if (image)
                         {
-                            /*tl::DisplayOptions displayOptions;
-                            if (!enabled)
-                            {
-                                displayOptions.color.enabled = true;
-                                displayOptions.color.saturation.x = 0.F;
-                                displayOptions.color.saturation.y = 0.F;
-                                displayOptions.color.saturation.z = 0.F;
-                            }
-                            VideoFrame videoFrame;
-                            videoFrame.size = image->getSize();
-                            videoFrame.layers.push_back({ image });
-                            render->drawVideo(
-                                { videoFrame },
-                                { box },
-                                {},
-                                { displayOptions });*/
                             render->drawImage(image, box);
                             thumbnails[mediaTime] = image;
                         }

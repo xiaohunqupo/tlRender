@@ -28,7 +28,7 @@ namespace tl
             SizeData size;
 
             InfoRequest infoRequest;
-            std::shared_ptr<IOInfo> ioInfo;
+            std::optional<IOInfo> ioInfo;
             std::map<OTIO_NS::RationalTime, WaveformRequest> waveformRequests;
             std::map< OTIO_NS::RationalTime, std::shared_ptr<ftk::TriMesh2F> > waveforms;
         };
@@ -159,7 +159,7 @@ namespace tl
             if (p.infoRequest.future.valid() &&
                 p.infoRequest.future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
             {
-                p.ioInfo = std::make_shared<IOInfo>(p.infoRequest.future.get());
+                p.ioInfo = p.infoRequest.future.get();
                 setSizeUpdate();
                 setDrawUpdate();
             }
@@ -243,19 +243,18 @@ namespace tl
             const ftk::Box2I clipRect = _getClipRect(
                 drawRect,
                 _displayOptions.clipRectScale);
-            if (ftk::intersects(g, clipRect))
+            if (!p.ioInfo.has_value() &&
+                !p.infoRequest.future.valid() &&
+                ftk::intersects(g, clipRect))
             {
-                if (!p.ioInfo && !p.infoRequest.future.valid())
-                {
-                    p.infoRequest = p.thumbnailSystem->getInfo(
-                        p.path,
-                        p.memRead,
-                        _data->options.ioOptions);
-                }
+                p.infoRequest = p.thumbnailSystem->getInfo(
+                    p.path,
+                    p.memRead,
+                    _data->options.ioOptions);
             }
 
             std::map< OTIO_NS::RationalTime, std::shared_ptr<ftk::TriMesh2F> > waveforms;
-            if (_displayOptions.waveformWidth > 0 && p.ioInfo)
+            if (_displayOptions.waveformWidth > 0 && p.ioInfo.has_value())
             {
                 const int w = g.w();
                 for (int x = 0; x < w; x += _displayOptions.waveformWidth)
@@ -303,7 +302,7 @@ namespace tl
                         {
                             mesh = i->second;
                         }
-                        else if (p.ioInfo && p.ioInfo->audio.isValid())
+                        else if (p.ioInfo->audio.isValid())
                         {
                             const auto j = p.waveformRequests.find(mediaRange.start_time());
                             if (j == p.waveformRequests.end())
