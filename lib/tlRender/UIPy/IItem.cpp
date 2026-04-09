@@ -48,7 +48,6 @@ namespace tl
                 .def_readwrite("waveformWidth", &DisplayOptions::waveformWidth)
                 .def_readwrite("waveformHeight", &DisplayOptions::waveformHeight)
                 .def_readwrite("waveformPrim", &DisplayOptions::waveformPrim)
-                .def_readwrite("fontSize", &DisplayOptions::fontSize)
                 .def_readwrite("clipRectScale", &DisplayOptions::clipRectScale)
                 .def_readwrite("ocio", &DisplayOptions::ocio)
                 .def_readwrite("lut", &DisplayOptions::lut)
