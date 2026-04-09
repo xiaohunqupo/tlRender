@@ -54,7 +54,7 @@ namespace tl
             for (const auto& path : getPaths(
                 _context,
                 ftk::Path(TLRENDER_SAMPLE_DATA),
-                ftk::PathOptions()))
+                ftk::DirListOptions()))
             {
                 _print(ftk::Format("Path: {0}").arg(path.get()));
             }

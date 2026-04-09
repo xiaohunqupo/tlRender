@@ -262,16 +262,13 @@ namespace tl
     std::vector<ftk::Path> getPaths(
         const std::shared_ptr<ftk::Context>& context,
         const ftk::Path& path,
-        const ftk::PathOptions& pathOptions)
+        const ftk::DirListOptions& options)
     {
         std::vector<ftk::Path> out;
         if (std::filesystem::is_directory(std::filesystem::u8path(path.get())))
         {
             auto ioSystem = context->getSystem<ReadSystem>();
-            ftk::DirListOptions listOptions;
-            listOptions.seqNegative = pathOptions.seqNegative;
-            listOptions.seqMaxDigits = pathOptions.seqMaxDigits;
-            const auto entries = ftk::dirList(path.getFileName(true), listOptions);
+            const auto entries = ftk::dirList(path.getFileName(true), options);
             for (const auto& entry : entries)
             {
                 const ftk::Path& path = entry.path;

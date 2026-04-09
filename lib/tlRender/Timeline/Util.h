@@ -74,7 +74,7 @@ namespace tl
     TL_API std::vector<ftk::Path> getPaths(
         const std::shared_ptr<ftk::Context>&,
         const ftk::Path&,
-        const ftk::PathOptions&);
+        const ftk::DirListOptions&);
 
     //! Get an absolute path.
     TL_API ftk::Path getPath(

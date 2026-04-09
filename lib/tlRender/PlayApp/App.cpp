@@ -100,16 +100,21 @@ namespace tl
 
         void App::open(const ftk::Path& path)
         {
-            try
+            ftk::DirListOptions dirListOptions;
+            dirListOptions.seqExts = tl::getExts(_context, static_cast<int>(tl::FileType::Seq));
+            for (const auto& i : tl::getPaths(_context, path, dirListOptions))
             {
-                _filesModel->open(path);
+                try
+                {
+                    _filesModel->open(i);
+                    _recentFilesModel->addRecent(i.get());
+                }
+                catch (const std::exception& e)
+                {
+                    auto dialogSystem = _context->getSystem<ftk::DialogSystem>();
+                    dialogSystem->message("ERROR", e.what(), _window);
+                }
             }
-            catch (const std::exception& e)
-            {
-                auto dialogSystem = _context->getSystem<ftk::DialogSystem>();
-                dialogSystem->message("ERROR", e.what(), _window);
-            }
-            _recentFilesModel->addRecent(path.get());
         }
 
         void App::open()
