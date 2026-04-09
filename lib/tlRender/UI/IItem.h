@@ -82,7 +82,6 @@ namespace tl
             int waveformHeight = 50;
             WaveformPrim waveformPrim = WaveformPrim::Mesh;
 
-            int fontSize = 12;
             float clipRectScale = 2.F;
 
             OCIOOptions ocio;
