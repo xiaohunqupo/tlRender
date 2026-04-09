@@ -35,7 +35,6 @@ namespace tl
             py::class_<ItemOptions>(m, "ItemOptions")
                 .def(py::init())
                 .def_readwrite("inputEnabled", &ItemOptions::inputEnabled)
-                .def_readwrite("editAssociatedClips", &ItemOptions::editAssociatedClips)
                 .def(pybind11::self == pybind11::self)
                 .def(pybind11::self != pybind11::self);
 
