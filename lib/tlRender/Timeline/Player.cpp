@@ -119,10 +119,10 @@ namespace tl
         p.currentAudioFrame = ftk::ObservableList<AudioFrame>::create();
         p.cacheOptions = ftk::Observable<PlayerCacheOptions>::create(playerOptions.cache);
         p.cacheInfo = ftk::Observable<PlayerCacheInfo>::create();
-        auto audioSystem = context->getSystem<AudioSystem>();
-        auto weak = std::weak_ptr<Player>(shared_from_this());
 
         // Create observers.
+        auto audioSystem = context->getSystem<AudioSystem>();
+        auto weak = std::weak_ptr<Player>(shared_from_this());
         p.audioDevicesObserver = ftk::ListObserver<AudioDeviceInfo>::create(
             audioSystem->observeDevices(),
             [weak](const std::vector<AudioDeviceInfo>&)
@@ -134,7 +134,8 @@ namespace tl
                         player->_p->audioInit(context);
                     }
                 }
-            });
+            },
+            ftk::ObserverAction::Suppress);
         p.defaultAudioDeviceObserver = ftk::Observer<AudioDeviceInfo>::create(
             audioSystem->observeDefaultDevice(),
             [weak](const AudioDeviceInfo&)
@@ -149,7 +150,8 @@ namespace tl
                         }
                     }
                 }
-            });
+            },
+            ftk::ObserverAction::Suppress);
 
         // Initialize the audio.
         p.audioInit(context);
