@@ -107,7 +107,7 @@ namespace tl
                 try
                 {
                     _filesModel->open(i);
-                    _recentFilesModel->addRecent(i.get());
+                    _recentFilesModel->addRecent(std::filesystem::u8path(i.get()));
                 }
                 catch (const std::exception& e)
                 {
