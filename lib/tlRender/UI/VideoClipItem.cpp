@@ -335,7 +335,13 @@ namespace tl
                         }
                         if (image)
                         {
-                            render->drawImage(image, box);
+                            ftk::ImageOptions imageOptions;
+                            imageOptions.cache = false;
+                            render->drawImage(
+                                image,
+                                box,
+                                ftk::Color4F(1.F, 1.F, 1.F),
+                                imageOptions);
                             thumbnails[mediaTime] = image;
                         }
                     }
