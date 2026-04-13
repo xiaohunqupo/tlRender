@@ -21,8 +21,7 @@ namespace tl
         protected:
             void _init(
                 const std::shared_ptr<ftk::LogSystem>&,
-                const std::shared_ptr<ftk::FontSystem>&,
-                const std::shared_ptr<ftk::gl::TextureCache>&);
+                const std::shared_ptr<ftk::FontSystem>&);
 
             Render();
 
@@ -32,10 +31,7 @@ namespace tl
             //! Create a new renderer.
             TL_API static std::shared_ptr<Render> create(
                 const std::shared_ptr<ftk::LogSystem>&,
-                const std::shared_ptr<ftk::FontSystem>&,
-                const std::shared_ptr<ftk::gl::TextureCache>& = nullptr);
-
-            TL_API const std::shared_ptr<ftk::gl::TextureCache>& getTextureCache() const;
+                const std::shared_ptr<ftk::FontSystem>&);
 
             TL_API void setOCIOOptions(const OCIOOptions&) override;
             TL_API void setLUTOptions(const LUTOptions&) override;

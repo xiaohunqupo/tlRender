@@ -54,12 +54,11 @@ namespace tl
 
         void Render::_init(
             const std::shared_ptr<ftk::LogSystem>& logSystem,
-            const std::shared_ptr<ftk::FontSystem>& fontSystem,
-            const std::shared_ptr<ftk::gl::TextureCache>& textureCache)
+            const std::shared_ptr<ftk::FontSystem>& fontSystem)
         {
             IRender::_init(logSystem, fontSystem);
             FTK_P();
-            p.baseRender = ftk::gl::Render::create(logSystem, fontSystem, textureCache);
+            p.baseRender = ftk::gl::Render::create(logSystem, fontSystem);
         }
 
         Render::Render() :
@@ -71,17 +70,11 @@ namespace tl
 
         std::shared_ptr<Render> Render::create(
             const std::shared_ptr<ftk::LogSystem>& logSystem,
-            const std::shared_ptr<ftk::FontSystem>& fontSystem,
-            const std::shared_ptr<ftk::gl::TextureCache>& textureCache)
+            const std::shared_ptr<ftk::FontSystem>& fontSystem)
         {
             auto out = std::shared_ptr<Render>(new Render);
-            out->_init(logSystem, fontSystem, textureCache);
+            out->_init(logSystem, fontSystem);
             return out;
-        }
-
-        const std::shared_ptr<ftk::gl::TextureCache>& Render::getTextureCache() const
-        {
-            return _p->baseRender->getTextureCache();
         }
 
         void Render::begin(
