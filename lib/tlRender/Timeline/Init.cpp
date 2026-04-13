@@ -29,19 +29,19 @@ namespace tl
 
         auto diagSystem = context->getSystem<ftk::DiagSystem>();
         diagSystem->addSampler(
-            "tlRender Memory/Audio: {0}MB",
+            "tl Memory/Audio: {0}MB",
             [] { return tl::Audio::getTotalByteCount() / ftk::megabyte; });
         diagSystem->addSampler(
-            "tlRender Objects/Audio: {0}",
+            "tl Objects/Audio: {0}",
             [] { return tl::Audio::getObjectCount(); });
         diagSystem->addSampler(
-            "tlRender Objects/I/O: {0}",
+            "tl Objects/I/O: {0}",
             [] { return tl::IIO::getObjectCount(); });
         diagSystem->addSampler(
-            "tlRender Objects/Players: {0}",
+            "tl Objects/Players: {0}",
             [] { return tl::Player::getObjectCount(); });
         diagSystem->addSampler(
-            "tlRender Objects/Timelines: {0}",
+            "tl Objects/Timelines: {0}",
             [] { return tl::Timeline::getObjectCount(); });
 
         ftk::gl::init(context);
