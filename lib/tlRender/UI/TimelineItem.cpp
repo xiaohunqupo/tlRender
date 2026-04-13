@@ -511,36 +511,31 @@ namespace tl
             return labelMaxSize;
         }
 
-        void TimelineItem::_getTimeTicks(
-            const std::shared_ptr<ftk::FontSystem>& fontSystem,
-            double& seconds,
-            int& tick)
+        double TimelineItem::_getSecondsInc(
+            const std::shared_ptr<ftk::FontSystem>& fontSystem)
         {
             FTK_P();
+            double out = 0.0;
             const int w = getSizeHint().w;
-            const float duration = _timeRange.duration().rescaled_to(1.0).value();
+            const double duration = _timeRange.duration().rescaled_to(1.0).value();
             const int secondsTick = 1.0 / duration * w;
             const int minutesTick = 60.0 / duration * w;
             const int hoursTick = 3600.0 / duration * w;
             const ftk::Size2I labelMaxSize = _getLabelMaxSize(fontSystem);
             const int distanceMin = p.size.border + p.size.margin + labelMaxSize.w;
-            seconds = 0.0;
-            tick = 0;
             if (secondsTick >= distanceMin)
             {
-                seconds = 1.0;
-                tick = secondsTick;
+                out = 1.0;
             }
             else if (minutesTick >= distanceMin)
             {
-                seconds = 60.0;
-                tick = minutesTick;
+                out = 60.0;
             }
             else if (hoursTick >= distanceMin)
             {
-                seconds = 3600.0;
-                tick = hoursTick;
+                out = 3600.0;
             }
+            return out;
         }
 
         void TimelineItem::_drawInOutPoints(
@@ -716,41 +711,29 @@ namespace tl
             {
                 const ftk::Box2I& g = getGeometry();
                 const int w = getSizeHint().w;
-                const float duration = _timeRange.duration().rescaled_to(1.0).value();
-                double seconds = 0;
-                int tick = 0;
-                _getTimeTicks(event.fontSystem, seconds, tick);
-                if (seconds > 0.0 && tick > 0)
+                const double duration = _timeRange.duration().rescaled_to(1.0).value();
+                const double rate = _timeRange.duration().rate();
+                const double seconds = _getSecondsInc(event.fontSystem);
+                if (seconds > 0.0)
                 {
                     const ftk::Size2I labelMaxSize = _getLabelMaxSize(event.fontSystem);
-                    const OTIO_NS::RationalTime t0 = posToTime(g.min.x) - _timeRange.start_time();
-                    const OTIO_NS::RationalTime t1 = posToTime(g.max.x) - _timeRange.start_time();
-                    const double inc = seconds;
-                    const double x0 = static_cast<int>(t0.rescaled_to(1.0).value() / inc) * inc;
-                    const double x1 = static_cast<int>(t1.rescaled_to(1.0).value() / inc) * inc;
-                    for (double t = x0; t <= x1; t += inc)
+                    const double t0 = std::floor(posToTime(drawRect.min.x).rescaled_to(1.0).value() / seconds) * seconds;
+                    const double t1 = std::ceil(posToTime(drawRect.max.x).rescaled_to(1.0).value() / seconds) * seconds;
+                    for (double t = t0; t <= t1; t += seconds)
                     {
-                        const OTIO_NS::RationalTime time = _timeRange.start_time() +
-                            OTIO_NS::RationalTime(t, 1.0).rescaled_to(_timeRange.duration().rate());
-                        const ftk::Box2I box(
-                            g.min.x +
-                            t / duration * w +
-                            p.size.border +
-                            p.size.margin,
-                            p.size.scrollArea.min.y +
-                            g.min.y +
-                            p.size.margin,
-                            labelMaxSize.w,
-                            p.size.fontMetrics.lineHeight);
-                        if (time != p.currentTime && ftk::intersects(box, drawRect))
-                        {
-                            const std::string label = _data->timeUnitsModel->getLabel(time);
-                            event.render->drawText(
-                                event.fontSystem->getGlyphs(label, p.size.fontInfo),
-                                p.size.fontMetrics,
-                                box.min,
-                                event.style->getColorRole(ftk::ColorRole::TextDisabled));
-                        }
+                        const int x = timeToPos(OTIO_NS::RationalTime(t, 1.0));
+                        const std::string label = _data->timeUnitsModel->getLabel(OTIO_NS::RationalTime(t, 1.0).rescaled_to(rate));
+                        event.render->drawText(
+                            event.fontSystem->getGlyphs(label, p.size.fontInfo),
+                            p.size.fontMetrics,
+                            ftk::V2I(
+                                x +
+                                p.size.border +
+                                p.size.margin,
+                                p.size.scrollArea.min.y +
+                                g.min.y +
+                                p.size.margin),
+                            event.style->getColorRole(ftk::ColorRole::TextDisabled));
                     }
                 }
             }
@@ -765,89 +748,60 @@ namespace tl
             {
                 const ftk::Box2I& g = getGeometry();
                 const int w = getSizeHint().w;
-                const float duration = _timeRange.duration().rescaled_to(1.0).value();
+                const double duration = _timeRange.duration().rescaled_to(1.0).value();
+                std::vector<ftk::Box2I> rects;
+
+                // Compute the frame ticks.
                 const int frameTick = 1.0 / _timeRange.duration().value() * w;
                 if (duration > 0.0 && frameTick >= p.size.handle)
                 {
-                    ftk::TriMesh2F mesh;
-                    size_t i = 1;
-                    const OTIO_NS::RationalTime t0 = posToTime(g.min.x) - _timeRange.start_time();
-                    const OTIO_NS::RationalTime t1 = posToTime(g.max.x) - _timeRange.start_time();
-                    const double inc = 1.0 / _timeRange.duration().rate();
-                    const double x0 = static_cast<int>(t0.rescaled_to(1.0).value() / inc) * inc;
-                    const double x1 = static_cast<int>(t1.rescaled_to(1.0).value() / inc) * inc;
-                    for (double t = x0; t <= x1; t += inc)
+                    const OTIO_NS::RationalTime t0 = posToTime(drawRect.min.x);
+                    const OTIO_NS::RationalTime t1 = posToTime(drawRect.max.x);
+                    const OTIO_NS::RationalTime inc(1.0, _timeRange.duration().rate());
+                    for (OTIO_NS::RationalTime t = t0; t <= t1; t += inc)
                     {
-                        const ftk::Box2I box(
-                            g.min.x +
-                            t / duration * w,
+                        const int x = timeToPos(t);
+                        rects.emplace_back(ftk::Box2I(
+                            x,
                             p.size.scrollArea.min.y +
                             g.min.y +
                             p.size.margin +
                             p.size.fontMetrics.lineHeight,
                             p.size.border,
                             p.size.margin +
-                            p.size.border * 4);
-                        if (ftk::intersects(box, drawRect))
-                        {
-                            mesh.v.push_back(ftk::V2F(box.min.x, box.min.y));
-                            mesh.v.push_back(ftk::V2F(box.max.x + 1, box.min.y));
-                            mesh.v.push_back(ftk::V2F(box.max.x + 1, box.max.y + 1));
-                            mesh.v.push_back(ftk::V2F(box.min.x, box.max.y + 1));
-                            mesh.triangles.push_back({ i + 0, i + 2, i + 1 });
-                            mesh.triangles.push_back({ i + 2, i + 0, i + 3 });
-                            i += 4;
-                        }
-                    }
-                    if (!mesh.v.empty())
-                    {
-                        event.render->drawMesh(
-                            mesh,
-                            event.style->getColorRole(ftk::ColorRole::TextDisabled));
+                            p.size.border * 4));
                     }
                 }
 
-                double seconds = 0;
-                int tick = 0;
-                _getTimeTicks(event.fontSystem, seconds, tick);
-                if (duration > 0.0 && seconds > 0.0 && tick > 0)
+                // Compute the time ticks.
+                const double seconds = _getSecondsInc(event.fontSystem);
+                if (duration > 0.0 && seconds > 0.0)
                 {
-                    ftk::TriMesh2F mesh;
-                    size_t i = 1;
-                    const OTIO_NS::RationalTime t0 = posToTime(g.min.x) - _timeRange.start_time();
-                    const OTIO_NS::RationalTime t1 = posToTime(g.max.x) - _timeRange.start_time();
-                    const double inc = seconds;
-                    const double x0 = static_cast<int>(t0.rescaled_to(1.0).value() / inc) * inc;
-                    const double x1 = static_cast<int>(t1.rescaled_to(1.0).value() / inc) * inc;
-                    for (double t = x0; t <= x1; t += inc)
+                    const double t0 = std::floor(posToTime(drawRect.min.x).rescaled_to(1.0).value() / seconds) * seconds;
+                    const double t1 = std::ceil(posToTime(drawRect.max.x).rescaled_to(1.0).value() / seconds) * seconds;
+                    for (double t = t0; t <= t1; t += seconds)
                     {
-                        const ftk::Box2I box(
-                            g.min.x +
-                            t / duration * w,
+                        const int x = timeToPos(OTIO_NS::RationalTime(t, 1.0));
+                        rects.emplace_back(ftk::Box2I(
+                            x,
                             p.size.scrollArea.min.y +
-                            g.min.y,
+                            g.min.y +
+                            p.size.margin +
+                            p.size.fontMetrics.lineHeight,
                             p.size.border,
                             p.size.margin +
                             p.size.fontMetrics.lineHeight +
                             p.size.margin +
-                            p.size.border * 4);
-                        if (ftk::intersects(box, drawRect))
-                        {
-                            mesh.v.push_back(ftk::V2F(box.min.x, box.min.y));
-                            mesh.v.push_back(ftk::V2F(box.max.x + 1, box.min.y));
-                            mesh.v.push_back(ftk::V2F(box.max.x + 1, box.max.y + 1));
-                            mesh.v.push_back(ftk::V2F(box.min.x, box.max.y + 1));
-                            mesh.triangles.push_back({ i + 0, i + 2, i + 1 });
-                            mesh.triangles.push_back({ i + 2, i + 0, i + 3 });
-                            i += 4;
-                        }
+                            p.size.border * 4));
                     }
-                    if (!mesh.v.empty())
-                    {
-                        event.render->drawMesh(
-                            mesh,
-                            event.style->getColorRole(ftk::ColorRole::TextDisabled));
-                    }
+                }
+
+                // Draw the ticks.
+                if (!rects.empty())
+                {
+                    event.render->drawRects(
+                        rects,
+                        event.style->getColorRole(ftk::ColorRole::TextDisabled));
                 }
             }
         }

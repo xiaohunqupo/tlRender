@@ -97,12 +97,8 @@ namespace tl
         private:
             bool _isTrackVisible(int) const;
 
-            ftk::Size2I _getLabelMaxSize(
-                const std::shared_ptr<ftk::FontSystem>&) const;
-            void _getTimeTicks(
-                const std::shared_ptr<ftk::FontSystem>&,
-                double& seconds,
-                int& tick);
+            ftk::Size2I _getLabelMaxSize(const std::shared_ptr<ftk::FontSystem>&) const;
+            double _getSecondsInc(const std::shared_ptr<ftk::FontSystem>&);
 
             void _drawInOutPoints(
                 const ftk::Box2I&,
