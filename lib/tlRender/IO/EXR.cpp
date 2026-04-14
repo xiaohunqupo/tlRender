@@ -585,7 +585,7 @@ namespace tl
                 { { ".exr", FileType::Seq } },
                 logSystem);
 
-            Imf::setGlobalThreadCount(0);
+            Imf::setGlobalThreadCount(2);
         }
 
         ReadPlugin::ReadPlugin()
@@ -622,7 +622,7 @@ namespace tl
                 { { ".exr", FileType::Seq } },
                 logSystem);
 
-            Imf::setGlobalThreadCount(0);
+            Imf::setGlobalThreadCount(2);
         }
 
         WritePlugin::WritePlugin()
