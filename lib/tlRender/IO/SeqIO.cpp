@@ -5,8 +5,14 @@
 
 #include <ftk/Core/Format.h>
 
+#include <thread>
+
 namespace tl
 {
+    SeqOptions::SeqOptions() :
+        threadCount(std::max(1, static_cast<int>(std::thread::hardware_concurrency()) - 2))
+    {}
+
     bool SeqOptions::operator == (const SeqOptions& other) const
     {
         return

@@ -585,6 +585,7 @@ namespace tl
                 { { ".exr", FileType::Seq } },
                 logSystem);
 
+            // Set the thread count to zero since we multithread frames.
             Imf::setGlobalThreadCount(0);
         }
 
@@ -622,6 +623,7 @@ namespace tl
                 { { ".exr", FileType::Seq } },
                 logSystem);
 
+            // Set the thread count to zero since we multithread frames.
             Imf::setGlobalThreadCount(0);
         }
 
