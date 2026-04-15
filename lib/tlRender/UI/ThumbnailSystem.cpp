@@ -816,7 +816,7 @@ namespace tl
                         request->time,
                         request->options);
                     std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
-                    p.thumbnailMutex.cache.add(key, image, image->getByteCount());
+                    p.thumbnailMutex.cache.add(key, image, image ? image->getByteCount() : 0);
                 }
             }
         }
