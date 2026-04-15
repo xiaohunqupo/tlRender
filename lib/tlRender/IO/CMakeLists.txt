@@ -60,6 +60,16 @@ if(TLRENDER_WMF)
     list(APPEND SOURCE WMF.cpp WMFRead.cpp)
     list(APPEND LIBRARIES_PRIVATE mf mfplat mfreadwrite mfuuid propsys wmcodecdspuuid)
 endif()
+if(TLRENDER_AVF)
+    list(APPEND HEADERS AVF.h)
+    list(APPEND SOURCE AVF.cpp AVFRead.mm)
+    set_source_files_properties(AVFRead.mm PROPERTIES COMPILE_FLAGS "-fobjc-arc")
+    list(APPEND LIBRARIES_PRIVATE
+        "-framework AVFoundation"
+        "-framework CoreMedia"
+        "-framework CoreVideo"
+        "-framework Foundation")
+endif()
 list(APPEND LIBRARIES tlCore ftk::ftkGL)
 
 add_library(tlIO ${HEADERS})

@@ -41,6 +41,7 @@ set(TLRENDER_FFMPEG_PIPE OFF CACHE BOOL "Enable support for FFmpeg I/O via pipe"
 set(TLRENDER_OIIO ON CACHE BOOL "Enable support for OpenImageIO")
 set(TLRENDER_USD OFF CACHE BOOL "Enable support for USD")
 set(TLRENDER_WMF ${WIN32} CACHE BOOL "Enable support for Windows Media Foundation")
+set(TLRENDER_AVF ${APPLE} CACHE BOOL "Enable support for AVFoundation (macOS)")
 set(TLRENDER_BMD OFF CACHE BOOL "Enable support for Blackmagic Design devices")
 set(TLRENDER_BMD_SDK "" CACHE PATH "Full path to the Blackmagic Design SDK")
 set(TLRENDER_QT6 OFF CACHE BOOL "Enable support for Qt6")
@@ -293,6 +294,9 @@ if(TLRENDER_USD)
 endif()
 if(TLRENDER_WMF)
     add_definitions(-DTLRENDER_WMF)
+endif()
+if(TLRENDER_AVF)
+    add_definitions(-DTLRENDER_AVF)
 endif()
 
 # feather-tk dependencies

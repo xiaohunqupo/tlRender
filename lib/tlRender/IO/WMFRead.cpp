@@ -7,14 +7,6 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
 
-/*extern "C"
-{
-#include <libswscale/swscale.h>
-#include <libavutil/imgutils.h>
-#include <libavutil/opt.h>
-
-} // extern "C"*/
-
 #include <combaseapi.h>
 #include <mfapi.h>
 #include <mferror.h>
@@ -22,8 +14,6 @@
 #include <mfreadwrite.h>
 #include <propvarutil.h>
 #include <wmcodecdsp.h>
-
-//#include <strsafe.h>
 
 namespace tl
 {
@@ -333,8 +323,6 @@ namespace tl
 
             struct Thread
             {
-                OTIO_NS::RationalTime videoTime = invalidTime;
-                OTIO_NS::RationalTime audioTime = invalidTime;
                 std::chrono::steady_clock::time_point logTimer;
                 std::condition_variable cv;
                 std::thread thread;
@@ -1319,7 +1307,6 @@ namespace tl
                     data.time = videoRequest->time;
                     data.image = wmf.readImage(videoRequest->time);
                     videoRequest->promise.set_value(data);
-                    p.thread.videoTime += OTIO_NS::RationalTime(1.0, p.info.videoTime.duration().rate());
                 }
 
                 // Handle audio requests.
@@ -1330,8 +1317,6 @@ namespace tl
                     audioData.audio = Audio::create(p.info.audio, audioRequest->timeRange.duration().value());
                     audioData.audio->zero();
                     audioRequest->promise.set_value(audioData);
-
-                    p.thread.audioTime += audioRequest->timeRange.duration();
                 }
             }
         }

@@ -21,6 +21,9 @@
 #if defined(TLRENDER_WMF)
 #include <tlRender/IO/WMF.h>
 #endif // TLRENDER_WMF
+#if defined(TLRENDER_AVF)
+#include <tlRender/IO/AVF.h>
+#endif // TLRENDER_AVF
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/String.h>
@@ -54,6 +57,9 @@ namespace tl
             // \todo WMF support is still a WIP.
             //_plugins.push_back(wmf::ReadPlugin::create(logSystem));
 #endif // TLRENDER_WMF
+#if defined(TLRENDER_AVF)
+            _plugins.push_back(avf::ReadPlugin::create(logSystem));
+#endif // TLRENDER_AVF
 #if defined(TLRENDER_FFMPEG_PIPE)
             _plugins.push_back(ffmpeg_pipe::ReadPlugin::create(logSystem));
 #endif // TLRENDER_FFMPEG_PIPE
