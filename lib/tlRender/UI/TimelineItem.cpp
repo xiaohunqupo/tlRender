@@ -61,7 +61,7 @@ namespace tl
                 if (auto otioTrack = OTIO_NS::dynamic_retainer_cast<OTIO_NS::Track>(child))
                 {
                     Private::Track track;
-                    track.index = p.tracks.size();
+                    track.index = static_cast<int>(p.tracks.size());
                     std::string trackLabel = otioTrack->name();
                     if (OTIO_NS::Track::Kind::video == otioTrack->kind())
                     {

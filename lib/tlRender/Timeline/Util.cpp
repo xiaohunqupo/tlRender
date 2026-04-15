@@ -870,8 +870,8 @@ namespace tl
                 out = true;
             }
             else if (fileName.size() >= 2 &&
-                (fileName[0] >= 'A' && fileName[0] <= 'Z' ||
-                    fileName[0] >= 'a' && fileName[0] <= 'z') &&
+                ((fileName[0] >= 'A' && fileName[0] <= 'Z') ||
+                    (fileName[0] >= 'a' && fileName[0] <= 'z')) &&
                 ':' == fileName[1])
             {
                 out = true;

@@ -53,7 +53,7 @@ namespace tl
                             {
                                 if (auto app = appWeak.lock())
                                 {
-                                    app->getFilesModel()->setCurrent(i);
+                                    app->getFilesModel()->setCurrent(static_cast<int>(i));
                                 }
                                 close();
                             });
@@ -143,7 +143,7 @@ namespace tl
                                 close();
                                 if (auto app = appWeak.lock())
                                 {
-                                    app->getFilesModel()->setB(value ? i : -1);
+                                    app->getFilesModel()->setB(value ? static_cast<int>(i) : -1);
                                 }
                             });
                         action->setChecked(i == _bPlayerIndex);

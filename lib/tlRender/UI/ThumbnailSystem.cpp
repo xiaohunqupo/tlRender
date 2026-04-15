@@ -840,12 +840,12 @@ namespace tl
                             audio->getData());
                         for (int x = 0; x < size.w; ++x)
                         {
-                            const int x0 = std::min(
+                            const int x0 = static_cast<int>(std::min(
                                 static_cast<size_t>((x + 0) / static_cast<double>(size.w - 1) * (sampleCount - 1)),
-                                sampleCount - 1);
-                            const int x1 = std::min(
+                                sampleCount - 1));
+                            const int x1 = static_cast<int>(std::min(
                                 static_cast<size_t>((x + 1) / static_cast<double>(size.w - 1) * (sampleCount - 1)),
-                                sampleCount - 1);
+                                sampleCount - 1));
                             //std::cout << x << ": " << x0 << " " << x1 << std::endl;
                             float min = 0.F;
                             float max = 0.F;
@@ -904,12 +904,12 @@ namespace tl
                             audio->getData());
                         for (int x = 0; x < size.w; ++x)
                         {
-                            const int x0 = std::min(
+                            const int x0 = static_cast<int>(std::min(
                                 static_cast<size_t>((x + 0) / static_cast<double>(size.w - 1) * (sampleCount - 1)),
-                                sampleCount - 1);
-                            const int x1 = std::min(
+                                sampleCount - 1));
+                            const int x1 = static_cast<int>(std::min(
                                 static_cast<size_t>((x + 1) / static_cast<double>(size.w - 1) * (sampleCount - 1)),
-                                sampleCount - 1);
+                                sampleCount - 1));
                             //std::cout << x << ": " << x0 << " " << x1 << std::endl;
                             float min = 0.F;
                             float max = 0.F;

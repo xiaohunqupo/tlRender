@@ -59,7 +59,7 @@ namespace tl
                 auto timeline = Timeline::create(context, path, options);
                 auto player = Player::create(context, timeline);
                 player->setCacheOptions(_cacheOptions);
-                const int index = _players->getSize();
+                const int index = static_cast<int>(_players->getSize());
                 _players->pushBack(player);
                 _player->setIfChanged(player);
                 _playerIndex->setIfChanged(index);
@@ -68,7 +68,7 @@ namespace tl
 
         void FilesModel::close()
         {
-            close(_players->indexOf(_player->get()));
+            close(static_cast<int>(_players->indexOf(_player->get())));
         }
 
         void FilesModel::close(int index)
@@ -92,11 +92,11 @@ namespace tl
                     _player->setIfChanged(
                         !_players->isEmpty() && j != ftk::ObservableListInvalidIndex ? _players->getItem(j) : nullptr);
                     _playerIndex->setIfChanged(
-                        !_players->isEmpty() && j != ftk::ObservableListInvalidIndex ? j : -1);
+                        !_players->isEmpty() && j != ftk::ObservableListInvalidIndex ? static_cast<int>(j) : -1);
                     _bPlayer->setIfChanged(
                         !_players->isEmpty() && k != ftk::ObservableListInvalidIndex ? _players->getItem(k) : nullptr);
                     _bPlayerIndex->setIfChanged(
-                        !_players->isEmpty() && k != ftk::ObservableListInvalidIndex ? k : -1);
+                        !_players->isEmpty() && k != ftk::ObservableListInvalidIndex ? static_cast<int>(k) : -1);
 
                     if ((player = _player->get()))
                     {
@@ -170,7 +170,7 @@ namespace tl
                 {
                     index = 0;
                 }
-                setCurrent(index);
+                setCurrent(static_cast<int>(index));
             }
         }
 
@@ -187,7 +187,7 @@ namespace tl
                 {
                     index = _players->getSize() - 1;
                 }
-                setCurrent(index);
+                setCurrent(static_cast<int>(index));
             }
         }
 

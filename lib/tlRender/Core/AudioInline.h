@@ -39,7 +39,7 @@ namespace tl
         return _info;
     }
 
-    inline size_t Audio::getChannelCount() const
+    inline int Audio::getChannelCount() const
     {
         return _info.channelCount;
     }
@@ -49,7 +49,7 @@ namespace tl
         return _info.type;
     }
 
-    inline size_t Audio::getSampleRate() const
+    inline int Audio::getSampleRate() const
     {
         return _info.sampleRate;
     }

@@ -36,7 +36,7 @@ namespace tl
         return data[static_cast<size_t>(value)];
     }
 
-    AudioType getIntAudioType(size_t value)
+    AudioType getIntAudioType(int value)
     {
         const std::array<AudioType, 9> data =
         {
@@ -53,7 +53,7 @@ namespace tl
         return value < data.size() ? data[value] : AudioType::None;
     }
 
-    AudioType getFloatAudioType(size_t value)
+    AudioType getFloatAudioType(int value)
     {
         const std::array<AudioType, 9> data =
         {
@@ -73,7 +73,7 @@ namespace tl
     AudioInfo::AudioInfo()
     {}
 
-    AudioInfo::AudioInfo(size_t channelCount, AudioType type, size_t sampleRate) :
+    AudioInfo::AudioInfo(int channelCount, AudioType type, int sampleRate) :
         channelCount(channelCount),
         type(type),
         sampleRate(sampleRate)
@@ -168,7 +168,7 @@ namespace tl
             size_t inCount,
             uint8_t* out,
             float* volume,
-            size_t channelCount,
+            int channelCount,
             size_t sampleCount)
         {
             const T** inP = reinterpret_cast<const T**>(in);
@@ -177,14 +177,14 @@ namespace tl
             const TI max = static_cast<TI>(std::numeric_limits<T>::max());
             for (size_t i = 0; i < sampleCount; ++i, outP += channelCount)
             {
-                for (size_t j = 0; j < channelCount; ++j)
+                for (int j = 0; j < channelCount; ++j)
                 {
                     TI v = 0;
                     for (size_t k = 0; k < inCount; ++k)
                     {
                         v += ftk::clamp(static_cast<TI>(inP[k][i * channelCount + j] * volume[j]), min, max);
                     }
-                    outP[j] = ftk::clamp(v, min, max);
+                    outP[j] = static_cast<T>(ftk::clamp(v, min, max));
                 }
             }
         }
@@ -195,14 +195,14 @@ namespace tl
             size_t inCount,
             uint8_t* out,
             float* volume,
-            size_t channelCount,
+            int channelCount,
             size_t sampleCount)
         {
             const T** inP = reinterpret_cast<const T**>(in);
             T* outP = reinterpret_cast<T*>(out);
             for (size_t i = 0; i < sampleCount; ++i, outP += channelCount)
             {
-                for (size_t j = 0; j < channelCount; ++j)
+                for (int j = 0; j < channelCount; ++j)
                 {
                     T v = static_cast<T>(0);
                     for (size_t k = 0; k < inCount; ++k)
@@ -232,7 +232,7 @@ namespace tl
                 inP.push_back(in[i]->getData());
             }
             std::vector<float> channelVolumes;
-            for (size_t i = 0; i < info.channelCount; ++i)
+            for (int i = 0; i < info.channelCount; ++i)
             {
                 channelVolumes.push_back(
                     i < channelMute.size() && channelMute[i] ?
@@ -297,16 +297,16 @@ namespace tl
         template<typename T>
         void reverseT(
             const uint8_t* in,
-            uint8_t* out,
+            uint8_t*       out,
             size_t         sampleCount,
-            size_t         channelCount)
+            int            channelCount)
         {
             const T* inP = reinterpret_cast<const T*>(in) +
                 (sampleCount - 1) * channelCount;
             T* outP = reinterpret_cast<T*>(out);
             for (size_t i = 0; i < sampleCount; ++i, inP -= channelCount, outP += channelCount)
             {
-                for (size_t j = 0; j < channelCount; ++j)
+                for (int j = 0; j < channelCount; ++j)
                 {
                     outP[j] = inP[j];
                 }
@@ -346,10 +346,10 @@ namespace tl
         template<typename T>
         void changeSpeedT(
             const uint8_t* in,
-            uint8_t* out,
+            uint8_t*       out,
             size_t         inSampleCount,
             size_t         outSampleCount,
-            size_t         channelCount)
+            int            channelCount)
         {
             const T* inP = reinterpret_cast<const T*>(in);
             T* outP = reinterpret_cast<T*>(out);
@@ -357,7 +357,7 @@ namespace tl
             {
                 const size_t j = i / static_cast<double>(outSampleCount - 1) *
                     (inSampleCount - 1);
-                for (size_t c = 0; c < channelCount; ++c)
+                for (int c = 0; c < channelCount; ++c)
                 {
                     outP[i * channelCount + c] = inP[j * channelCount + c];
                 }
@@ -546,7 +546,7 @@ namespace tl
     {
         const AudioType inType = in->getType();
         const size_t sampleCount = in->getSampleCount();
-        const size_t channelCount = in->getChannelCount();
+        const int channelCount = in->getChannelCount();
         auto out = Audio::create(AudioInfo(channelCount, type, in->getSampleRate()), sampleCount);
         if (inType == type)
         {

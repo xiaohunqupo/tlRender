@@ -38,10 +38,10 @@ namespace tl
     TL_API size_t getByteCount(AudioType);
 
     //! Determine the integer data type for a given byte count.
-    TL_API AudioType getIntAudioType(size_t);
+    TL_API AudioType getIntAudioType(int);
 
     //! Determine the floating point data type for a given byte count.
-    TL_API AudioType getFloatAudioType(size_t);
+    TL_API AudioType getFloatAudioType(int);
 
     ///@}
 
@@ -51,14 +51,14 @@ namespace tl
     public:
         TL_API AudioInfo();
         TL_API AudioInfo(
-            size_t    channelCount,
+            int       channelCount,
             AudioType type,
-            size_t    sampleRate);
+            int       sampleRate);
 
         std::string name         = "Default";
-        size_t      channelCount = 0;
+        int         channelCount = 0;
         AudioType   type         = AudioType::None;
-        size_t      sampleRate   = 0;
+        int         sampleRate   = 0;
 
         //! Is the audio valid?
         bool isValid() const;
@@ -93,13 +93,13 @@ namespace tl
         TL_API const AudioInfo& getInfo() const;
 
         //! Get the audio channel count.
-        TL_API size_t getChannelCount() const;
+        TL_API int getChannelCount() const;
 
         //! Get the audio data type.
         TL_API AudioType getType() const;
 
         //! Get the audio sample rate.
-        TL_API size_t getSampleRate() const;
+        TL_API int getSampleRate() const;
 
         //! Get the audio sample count.
         TL_API size_t getSampleCount() const;
