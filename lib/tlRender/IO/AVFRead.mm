@@ -12,6 +12,17 @@
 #import <CoreVideo/CoreVideo.h>
 #import <Foundation/Foundation.h>
 
+// Holds the persistent audio AVAssetReader and its track output.
+// Declared at global scope (required for Objective-C @interface/@implementation)
+// and stored inside AVFObject so ARC correctly retains the reader and output
+// across C++ call boundaries.
+@interface AVFAudioReader : NSObject
+@property (nonatomic, strong) AVAssetReader*            reader;
+@property (nonatomic, strong) AVAssetReaderTrackOutput* output;
+@end
+@implementation AVFAudioReader
+@end
+
 namespace tl
 {
     namespace avf
@@ -32,8 +43,10 @@ namespace tl
             };
 
             // Core AVFoundation reader object. Lives on the read thread.
-            // AVAssetReader is sequential — for random access we recreate
-            // it with the appropriate timeRange before each read operation.
+            // The video AVAssetReader is sequential — for random access we
+            // recreate it with the appropriate timeRange before each read.
+            // The audio AVAssetReader is persistent across sequential calls
+            // to avoid the per-call cost of reopening the asset.
             class AVFObject
             {
             public:
@@ -46,11 +59,42 @@ namespace tl
                 const AudioInfo& getAudioInfo() const { return _audioInfo; }
 
                 std::shared_ptr<ftk::Image> readImage(const OTIO_NS::RationalTime&);
+                std::shared_ptr<Audio>      readAudio(const OTIO_NS::TimeRange&);
 
             private:
                 void _initVideo(AVAsset*);
                 void _initAudio(AVAsset*);
                 void _createReader(const OTIO_NS::RationalTime&);
+                void _createAudioReader(int64_t startSample);
+
+                // Build the AVAssetReaderTrackOutput settings dictionary for
+                // linear PCM output.
+                NSDictionary* _audioOutputSettings() const;
+
+                // Interleave keepCount planar frames from abl into dst,
+                // starting at leadTrim within each channel plane.
+                void _copyPlanarAudio(
+                    const AudioBufferList* abl,
+                    int64_t                leadTrim,
+                    int64_t                keepCount,
+                    int                    bytesPerSample,
+                    uint8_t*               dst) const;
+
+                // Copy keepCount interleaved frames from abl into dst,
+                // handling both interleaved (mNumberBuffers==1) and planar
+                // (mNumberBuffers>1) layouts.  leadTrim frames are skipped
+                // at the start of each buffer.
+                void _copyFromABL(
+                    const AudioBufferList* abl,
+                    int64_t                leadTrim,
+                    int64_t                keepCount,
+                    int                    bytesPerSample,
+                    size_t                 frameBytes,
+                    std::vector<uint8_t>&  dst) const;
+
+                // Convert a double timestamp (seconds) to an exact integer
+                // sample index using CMTime arithmetic to avoid float drift.
+                int64_t _secondsToSamples(double seconds) const;
 
                 NSURL*         _url        = nil;
                 double         _duration   = 0.0;
@@ -58,10 +102,22 @@ namespace tl
                 ftk::ImageInfo _imageInfo;
                 AudioInfo      _audioInfo;
 
-                // Current sequential reader — recreated on seek.
+                // Current sequential video reader — recreated on seek.
                 AVAssetReader*            _reader      = nil;
                 AVAssetReaderTrackOutput* _videoOutput = nil;
                 OTIO_NS::RationalTime     _readerStart;
+
+                // Current sequential audio reader — kept alive between calls.
+                // Stored in an Objective-C object so ARC manages the lifetime
+                // correctly across C++ call boundaries.
+                AVFAudioReader* _audioReaderState = nil;
+                int64_t         _audioReaderNext  = -1; // next expected sample
+
+                // Carry buffer: leftover samples from the last partially-consumed
+                // decoded buffer.  Prepended to the next readAudio call so no
+                // samples are discarded when we stop mid-buffer.
+                std::vector<uint8_t> _audioCarry;
+                int64_t              _audioCarryStart = -1; // sample position of carry[0]
 
                 // Chosen pixel format.
                 OSType _pixelFormat = kCVPixelFormatType_24RGB;
@@ -198,6 +254,128 @@ namespace tl
                 _readerStart = time;
             }
 
+            NSDictionary* AVFObject::_audioOutputSettings() const
+            {
+                const bool wantFloat =
+                    (_audioInfo.type == AudioType::F32 ||
+                     _audioInfo.type == AudioType::F64);
+                const int bitsPerSample = wantFloat ? 32 : 16;
+                return @{
+                    AVFormatIDKey:               @(kAudioFormatLinearPCM),
+                    AVLinearPCMBitDepthKey:      @(bitsPerSample),
+                    AVLinearPCMIsFloatKey:       @(wantFloat ? YES : NO),
+                    AVLinearPCMIsBigEndianKey:   @NO,
+                    AVLinearPCMIsNonInterleaved: @NO,
+                    AVNumberOfChannelsKey:       @(_audioInfo.channelCount),
+                    AVSampleRateKey:             @((double)_audioInfo.sampleRate)
+                };
+            }
+
+            void AVFObject::_copyPlanarAudio(
+                const AudioBufferList* abl,
+                int64_t                leadTrim,
+                int64_t                keepCount,
+                int                    bytesPerSample,
+                uint8_t*               dst) const
+            {
+                const size_t chCount = static_cast<size_t>(_audioInfo.channelCount);
+                for (int64_t s = 0; s < keepCount; ++s)
+                {
+                    for (UInt32 c = 0; c < abl->mNumberBuffers && c < chCount; ++c)
+                    {
+                        const uint8_t* src = static_cast<const uint8_t*>(
+                            abl->mBuffers[c].mData) +
+                            (leadTrim + s) * bytesPerSample;
+                        std::memcpy(dst, src, bytesPerSample);
+                        dst += bytesPerSample;
+                    }
+                }
+            }
+
+            void AVFObject::_copyFromABL(
+                const AudioBufferList* abl,
+                int64_t                leadTrim,
+                int64_t                keepCount,
+                int                    bytesPerSample,
+                size_t                 frameBytes,
+                std::vector<uint8_t>&  dst) const
+            {
+                const size_t oldSize = dst.size();
+                dst.resize(oldSize + keepCount * frameBytes);
+                if (abl->mNumberBuffers == 1)
+                {
+                    // Interleaved — one buffer, direct copy.
+                    const uint8_t* src =
+                        static_cast<const uint8_t*>(abl->mBuffers[0].mData) +
+                        leadTrim * frameBytes;
+                    std::memcpy(dst.data() + oldSize, src, keepCount * frameBytes);
+                }
+                else
+                {
+                    // Planar — interleave channels into output.
+                    _copyPlanarAudio(abl, leadTrim, keepCount,
+                        bytesPerSample, dst.data() + oldSize);
+                }
+            }
+
+            int64_t AVFObject::_secondsToSamples(double seconds) const
+            {
+                return CMTimeConvertScale(
+                    CMTimeMakeWithSeconds(seconds, 1000000),
+                    _audioInfo.sampleRate,
+                    kCMTimeRoundingMethod_RoundHalfAwayFromZero).value;
+            }
+
+            void AVFObject::_createAudioReader(int64_t startSample)
+            {
+                _audioReaderState = nil;
+                _audioReaderNext  = -1;
+                _audioCarry.clear();
+                _audioCarryStart  = -1;
+
+                if (_audioInfo.sampleRate <= 0 || _audioInfo.channelCount == 0)
+                    return;
+
+                AVURLAsset* asset = [AVURLAsset URLAssetWithURL:_url options:nil];
+                NSArray<AVAssetTrack*>* tracks =
+                    [asset tracksWithMediaType:AVMediaTypeAudio];
+                if (tracks.count == 0)
+                    return;
+
+                // Open the reader from the exact requested start sample.
+                // AVFoundation will round the seek point to a packet boundary;
+                // the first delivered buffer may start slightly before or after
+                // requestStart — the decode loop handles both cases via leadTrim
+                // and the forward-skip check.
+                const double startSec =
+                    static_cast<double>(startSample) / _audioInfo.sampleRate;
+                CMTimeRange cmRange = CMTimeRangeMake(
+                    CMTimeMakeWithSeconds(startSec, 1000000),
+                    kCMTimePositiveInfinity);
+
+                NSError* error = nil;
+                AVAssetReader* reader =
+                    [AVAssetReader assetReaderWithAsset:asset error:&error];
+                if (!reader || error)
+                    return;
+                reader.timeRange = cmRange;
+
+                AVAssetReaderTrackOutput* output = [AVAssetReaderTrackOutput
+                    assetReaderTrackOutputWithTrack:tracks[0]
+                    outputSettings:_audioOutputSettings()];
+                output.alwaysCopiesSampleData = NO;
+                [reader addOutput:output];
+
+                if (![reader startReading])
+                    return;
+
+                AVFAudioReader* state = [[AVFAudioReader alloc] init];
+                state.reader = reader;
+                state.output = output;
+                _audioReaderState = state;
+                _audioReaderNext  = startSample;
+            }
+
             std::shared_ptr<ftk::Image> AVFObject::readImage(
                 const OTIO_NS::RationalTime& time)
             {
@@ -277,6 +455,226 @@ namespace tl
                         _readerStart = time +
                             OTIO_NS::RationalTime(1.0, _videoSpeed);
                         break;
+                    }
+                }
+                return out;
+            }
+
+            std::shared_ptr<Audio> AVFObject::readAudio(
+                const OTIO_NS::TimeRange& timeRange)
+            {
+                std::shared_ptr<Audio> out;
+                if (_audioInfo.sampleRate <= 0 || _audioInfo.channelCount == 0)
+                    return out;
+
+                @autoreleasepool
+                {
+                    // Output format — must match _audioOutputSettings().
+                    const bool      wantFloat      = (_audioInfo.type == AudioType::F32 ||
+                                                      _audioInfo.type == AudioType::F64);
+                    const int       bytesPerSample = wantFloat ? 4 : 2;
+                    const AudioType outputType     = wantFloat ? AudioType::F32
+                                                               : AudioType::S16;
+                    const size_t    frameBytes     = _audioInfo.channelCount * bytesPerSample;
+
+                    // Requested window in exact sample units (CMTime arithmetic
+                    // avoids floating-point drift over long files).
+                    const int64_t requestStart =
+                        _secondsToSamples(timeRange.start_time().rescaled_to(1.0).value());
+                    const int64_t requestCount =
+                        _secondsToSamples(timeRange.duration().rescaled_to(1.0).value());
+
+                    if (requestCount <= 0)
+                        return out;
+
+                    // --- Seek decision ---
+                    // Reuse the persistent reader for sequential access.
+                    // maxForwardSkip covers AVFoundation's tendency to round seek
+                    // points forward to the next packet boundary (observed up to
+                    // ~25000 samples in practice for a 60-second AAC file).
+                    // Gaps smaller than one full second are treated as sequential.
+                    const int64_t maxForwardSkip = _audioInfo.sampleRate;
+                    const bool    readerDead     =
+                        (_audioReaderState == nil) ||
+                        (_audioReaderState.reader.status != AVAssetReaderStatusReading);
+                    const bool    seekBack       =
+                        !readerDead && (requestStart < _audioReaderNext);
+                    const bool    seekForward    =
+                        !readerDead && !seekBack &&
+                        (requestStart > _audioReaderNext + maxForwardSkip);
+
+                    if (readerDead || seekBack || seekForward)
+                    {
+                        _createAudioReader(requestStart);
+                        if (!_audioReaderState)
+                            return out;
+                    }
+
+                    AVAssetReader*            audioReader = _audioReaderState.reader;
+                    AVAssetReaderTrackOutput* audioOutput = _audioReaderState.output;
+
+                    std::vector<uint8_t> pcm;
+                    pcm.reserve(requestCount * frameBytes);
+
+                    int64_t samplesAccumulated  = 0;
+                    int64_t nextExpectedSample  = requestStart;
+                    // Tracks where decoded audio actually starts — may be after
+                    // requestStart when AVFoundation rounds a seek point forward.
+                    int64_t actualConsumedStart = requestStart;
+
+                    // --- Phase 1: drain carry buffer ---
+                    // The carry buffer holds the unused tail of the last decoded
+                    // buffer from the previous call.  Consuming it first means no
+                    // samples are ever discarded at chunk boundaries.
+                    if (!_audioCarry.empty() && _audioCarryStart >= 0)
+                    {
+                        const int64_t skipSamples =
+                            std::max(int64_t(0), requestStart - _audioCarryStart);
+                        const size_t  skipBytes   = skipSamples * frameBytes;
+                        const size_t  availBytes  =
+                            (_audioCarry.size() > skipBytes)
+                            ? _audioCarry.size() - skipBytes : 0;
+
+                        if (availBytes > 0)
+                        {
+                            const int64_t keepCount = std::min(
+                                static_cast<int64_t>(availBytes / frameBytes),
+                                requestCount);
+                            pcm.insert(
+                                pcm.end(),
+                                _audioCarry.data() + skipBytes,
+                                _audioCarry.data() + skipBytes + keepCount * frameBytes);
+                            samplesAccumulated = keepCount;
+                            nextExpectedSample = _audioCarryStart + skipSamples + keepCount;
+                        }
+                        _audioCarry.clear();
+                        _audioCarryStart = -1;
+                    }
+
+                    // --- Phase 2: decode new buffers ---
+                    while (audioReader.status == AVAssetReaderStatusReading &&
+                           samplesAccumulated < requestCount)
+                    {
+                        SampleBufferRef sampleBuf([audioOutput copyNextSampleBuffer]);
+                        if (!sampleBuf.p)
+                            break;
+
+                        const int64_t bufStart = CMTimeConvertScale(
+                            CMSampleBufferGetPresentationTimeStamp(sampleBuf.p),
+                            _audioInfo.sampleRate,
+                            kCMTimeRoundingMethod_RoundHalfAwayFromZero).value;
+                        const int64_t bufCount = static_cast<int64_t>(
+                            CMSampleBufferGetNumSamples(sampleBuf.p));
+
+                        // Discard buffers that lie entirely before our window.
+                        if (bufStart + bufCount <= requestStart)
+                            continue;
+
+                        // First buffer after a seek: AVFoundation may have rounded
+                        // the start forward.  Accept the actual start rather than
+                        // reading garbage; the caller gets silence for the gap.
+                        if (samplesAccumulated == 0 && bufStart > requestStart)
+                        {
+                            nextExpectedSample  = bufStart;
+                            actualConsumedStart = bufStart;
+                        }
+
+                        // leadTrim: skip samples before our window.
+                        // Use requestStart for the first buffer, nextExpectedSample
+                        // for subsequent ones to maintain sample-exact continuity.
+                        const int64_t anchor   = (samplesAccumulated == 0)
+                                                    ? requestStart : nextExpectedSample;
+                        const int64_t leadTrim = std::max(int64_t(0), anchor - bufStart);
+
+                        // Unpack the PCM data from the sample buffer.
+                        // Two-call pattern: first call gets the required storage size.
+                        size_t ablSize = 0;
+                        CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
+                            sampleBuf.p, &ablSize, nullptr, 0,
+                            nullptr, nullptr, 0, nullptr);
+
+                        std::vector<uint8_t> ablStorage(ablSize);
+                        auto* abl = reinterpret_cast<AudioBufferList*>(ablStorage.data());
+
+                        CMBlockBufferRef blockBuffer = nil;
+                        const OSStatus ablStatus =
+                            CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
+                                sampleBuf.p, nullptr, abl, ablSize,
+                                nullptr, nullptr,
+                                kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment,
+                                &blockBuffer);
+                        if (ablStatus != noErr || !blockBuffer)
+                            continue;
+
+                        const int64_t availAfterTrim = bufCount - leadTrim;
+                        const int64_t keepCount = std::min(
+                            availAfterTrim,
+                            requestCount - samplesAccumulated);
+
+                        if (keepCount > 0)
+                        {
+                            _copyFromABL(abl, leadTrim, keepCount,
+                                bytesPerSample, frameBytes, pcm);
+                            samplesAccumulated += keepCount;
+                            nextExpectedSample  = bufStart + leadTrim + keepCount;
+
+                            // If we stopped mid-buffer, save the leftover tail
+                            // in the carry buffer for the next call.
+                            const int64_t leftover = availAfterTrim - keepCount;
+                            if (leftover > 0)
+                            {
+                                _audioCarryStart = nextExpectedSample;
+                                _audioCarry.clear();
+                                _copyFromABL(abl, leadTrim + keepCount, leftover,
+                                    bytesPerSample, frameBytes, _audioCarry);
+                            }
+                        }
+
+                        CFRelease(blockBuffer);
+                    }
+
+                    // _audioReaderNext points to the carry start when there are
+                    // leftover samples, otherwise to the end of the last decoded buffer.
+                    _audioReaderNext = (_audioCarryStart >= 0)
+                        ? _audioCarryStart : nextExpectedSample;
+
+                    // On EOF or error, mark the reader dead so it is recreated next call.
+                    if (audioReader.status != AVAssetReaderStatusReading)
+                    {
+                        _audioReaderState = nil;
+                        _audioReaderNext  = -1;
+                        _audioCarry.clear();
+                        _audioCarryStart  = -1;
+                    }
+
+                    if (pcm.empty())
+                        return out;
+
+                    // --- Phase 3: build output Audio ---
+                    AudioInfo outInfo = _audioInfo;
+                    outInfo.type = outputType;
+
+                    // If AVFoundation rounded the seek forward past requestStart,
+                    // prepend silence so the returned buffer starts at requestStart.
+                    // padAudioToOneSecond uses the requested timeline range and expects
+                    // audio to begin at requestStart; the silence fills the unavoidable
+                    // gap at seek boundaries.
+                    const int64_t silenceSamples =
+                        std::max(int64_t(0), actualConsumedStart - requestStart);
+
+                    if (silenceSamples > 0)
+                    {
+                        const size_t silenceBytes = silenceSamples * frameBytes;
+                        out = Audio::create(outInfo,
+                            silenceSamples + pcm.size() / frameBytes);
+                        std::memset(out->getData(), 0, silenceBytes);
+                        std::memcpy(out->getData() + silenceBytes,
+                            pcm.data(), pcm.size());
+                    }
+                    else
+                    {
+                        out = Audio::create(outInfo, pcm.size() / frameBytes);
+                        std::memcpy(out->getData(), pcm.data(), pcm.size());
                     }
                 }
                 return out;
@@ -589,16 +987,36 @@ namespace tl
                         videoRequest->promise.set_value(data);
                     }
 
-                    // Audio requests — return silence for now (audio decode
-                    // via AVAssetReaderTrackOutput can be added similarly).
+                    // Audio requests.
                     if (audioRequest)
                     {
                         AudioData audioData;
                         audioData.time = audioRequest->timeRange.start_time();
-                        audioData.audio = Audio::create(
-                            p.info.audio,
-                            audioRequest->timeRange.duration().value());
-                        audioData.audio->zero();
+                        try
+                        {
+                            audioData.audio = avf.readAudio(audioRequest->timeRange);
+                        }
+                        catch (const std::exception& e)
+                        {
+                            if (auto logSystem = _logSystem.lock())
+                            {
+                                logSystem->print(
+                                    "tl::avf::Read",
+                                    e.what(),
+                                    ftk::LogType::Error);
+                            }
+                        }
+                        if (!audioData.audio)
+                        {
+                            // Fall back to silence on decode failure.
+                            const size_t sampleCount = static_cast<size_t>(
+                                audioRequest->timeRange
+                                    .duration()
+                                    .rescaled_to(p.info.audio.sampleRate)
+                                    .value());
+                            audioData.audio = Audio::create(p.info.audio, sampleCount);
+                            audioData.audio->zero();
+                        }
                         audioRequest->promise.set_value(audioData);
                     }
                 }
@@ -606,3 +1024,4 @@ namespace tl
         }
     }
 }
+
