@@ -1017,7 +1017,7 @@ namespace tl
                         request->timeRange,
                         request->options);
                     std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
-                    p.waveformMutex.cache.add(key, mesh, mesh->getByteCount());
+                    p.waveformMutex.cache.add(key, mesh, mesh ? mesh->getByteCount() : 0);
                 }
             }
         }
