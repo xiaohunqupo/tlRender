@@ -122,16 +122,13 @@ if(WIN32)
             DESTINATION ".")
     endif()
     
-    install(
-        FILES ${INSTALL_DLLS}
-        DESTINATION bin)
+    install(FILES ${INSTALL_DLLS} DESTINATION bin)
 
 elseif(APPLE)
 
     set(CPACK_GENERATOR ZIP)
 
-    list(APPEND CMAKE_INSTALL_RPATH
-        "@executable_path/../lib")
+    list(APPEND CMAKE_INSTALL_RPATH "@executable_path/../lib")
     #set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
     set(INSTALL_DYLIBS)
@@ -287,9 +284,7 @@ elseif(APPLE)
             DESTINATION ".")
     endif()
     
-    install(
-        FILES ${INSTALL_DYLIBS}
-        DESTINATION lib)
+    install(FILES ${INSTALL_DYLIBS} DESTINATION lib)
 
 else()
 
@@ -451,9 +446,7 @@ else()
             DESTINATION ".")
     endif()
     
-    install(
-        FILES ${INSTALL_LIBS}
-        DESTINATION lib)
+    install(FILES ${INSTALL_LIBS} DESTINATION lib)
 
 endif()
 
