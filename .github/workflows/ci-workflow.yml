@@ -165,7 +165,7 @@ jobs:
 
     - name: Build tlRender
       run: |
-        sh tl/etc/Linux/linux-build-gha.sh Debug
+        sh tl/etc/Linux/linux-build-gha.sh tl Debug
 
     - name: Run tests
       run: |
@@ -220,7 +220,7 @@ jobs:
 
     - name: Build tlRender
       run: |
-        sh tl/etc/Linux/linux-build-gha.sh Release
+        sh tl/etc/Linux/linux-build-gha.sh tl Release
 
     - name: Package
       run: |
@@ -412,7 +412,7 @@ jobs:
     - name: Build tlRender
       shell: cmd
       run: |
-        tl\etc\Windows\windows-build-gha.bat Debug
+        tl\etc\Windows\windows-build-gha.bat tl Debug
 
     - name: Run tests
       shell: cmd
@@ -472,7 +472,7 @@ jobs:
     - name: Build tlRender
       shell: cmd
       run: |
-        tl\etc\Windows\windows-build-gha.bat Release
+        tl\etc\Windows\windows-build-gha.bat tl Release
 
     - name: Package
       shell: cmd
