@@ -2,9 +2,10 @@
 
 set -x
 
+SOURCE_DIR=$1
 BUILD_TYPE=Release
-if [ "$#" -eq 1 ]; then
-    BUILD_TYPE=$1
+if [ "$#" -eq 2 ]; then
+    BUILD_TYPE=$2
 fi
 
 export JOBS=4
@@ -33,4 +34,4 @@ export TLRENDER_GCOV=OFF
 export FTK_API=GL_4_1
 export BUILD_SHARED_LIBS=OFF
 
-sh tlRender/etc/Linux/linux-build-gha.sh $BUILD_TYPE
+sh $SOURCE_DIR/etc/Linux/linux-build-gha.sh $SOURCE_DIR $BUILD_TYPE

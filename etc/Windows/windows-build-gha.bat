@@ -1,7 +1,8 @@
-set BUILD_TYPE=%1
+set SOURCE_DIR=%1
+set BUILD_TYPE=%2
 
 cmake ^
-    -S tlRender\etc\SuperBuild ^
+    -S %SOURCE_DIR%\etc\SuperBuild ^
     -B sbuild-%BUILD_TYPE% ^
     -DTLRENDER_NET=%TLRENDER_NET% ^
     -DTLRENDER_OCIO=%TLRENDER_OCIO% ^
@@ -27,7 +28,7 @@ cmake ^
 cmake --build sbuild-%BUILD_TYPE% -j %JOBS% --config %BUILD_TYPE%
 
 cmake ^
-    -S tlRender ^
+    -S %SOURCE_DIR% ^
     -B build-%BUILD_TYPE% ^
     -DTLRENDER_NET=%TLRENDER_NET% ^
     -DTLRENDER_OCIO=%TLRENDER_OCIO% ^

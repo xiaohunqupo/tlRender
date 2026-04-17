@@ -1,4 +1,5 @@
-set BUILD_TYPE=%1
+set SOURCE_DIR=%1
+set BUILD_TYPE=%2
 IF "%BUILD_TYPE%"=="" set BUILD_TYPE=Release
 
 set JOBS=4
@@ -27,4 +28,4 @@ set TLRENDER_GCOV=OFF
 set BUILD_SHARED_LIBS=OFF
 set FTK_API=GL_4_1
 
-tlRender\etc\Windows\windows-build-gha.bat %BUILD_TYPE%
+%SOURCE_DIR%\etc\Windows\windows-build-gha.bat %SOURCE_DIR% %BUILD_TYPE%
