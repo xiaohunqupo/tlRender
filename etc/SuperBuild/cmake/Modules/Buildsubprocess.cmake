@@ -11,7 +11,7 @@ ExternalProject_Add(
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND
-        ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/include
-        ${CMAKE_COMMAND} -E copy
-        ${CMAKE_CURRENT_BINARY_DIR}/subprocess/src/subprocess/subprocess.h
-        ${CMAKE_INSTALL_PREFIX}/include/subprocess.h)
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/include
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_CURRENT_BINARY_DIR}/subprocess/src/subprocess/subprocess.h
+            ${CMAKE_INSTALL_PREFIX}/include/subprocess.h)
