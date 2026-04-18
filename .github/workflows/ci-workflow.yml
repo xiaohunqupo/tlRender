@@ -229,7 +229,7 @@ jobs:
     - uses: actions/upload-artifact@v7
       with:
         name: tlRender-Linux-Packages
-        path: ../build-Release/tlRender-*.tar.gz
+        path: build-Release/tlRender-*.tar.gz
         archive: false
 
   macos-build:
@@ -357,7 +357,7 @@ jobs:
     - uses: actions/upload-artifact@v7
       with:
         name: tlRender-macOS-Packages
-        path: ../build-Release/tlRender-*.dmg
+        path: build-Release/tlRender-*.dmg
         archive: false
 
   windows-build:
@@ -482,5 +482,5 @@ jobs:
     - uses: actions/upload-artifact@v7
       with:
         name: tlRender-Windows-Packages
-        path: ..\build-Release\tlRender-*.zip
+        path: build-Release\tlRender-*.zip
         archive: false
