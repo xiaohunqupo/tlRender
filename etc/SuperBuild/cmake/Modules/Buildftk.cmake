@@ -14,8 +14,8 @@ set(ftk_ARGS
     ${TLRENDER_EXTERNAL_ARGS})
 
 ExternalProject_Add(
-    ftk-sbuild
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ftk-sbuild
+    ftk-sb
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ftk-sb
     DEPENDS ${ftk_DEPS}
     GIT_REPOSITORY ${ftk_GIT_REPOSITORY}
     GIT_TAG ${ftk_GIT_TAG}
@@ -27,7 +27,7 @@ ExternalProject_Add(
 ExternalProject_Add(
     ftk
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ftk
-    DEPENDS ftk-sbuild
+    DEPENDS ftk-sb
     GIT_REPOSITORY ${ftk_GIT_REPOSITORY}
     GIT_TAG ${ftk_GIT_TAG}
     LIST_SEPARATOR |
