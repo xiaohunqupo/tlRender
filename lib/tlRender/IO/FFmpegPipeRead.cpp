@@ -238,6 +238,29 @@ namespace tl
             FTK_P();
             try
             {
+                // Get audio conversion information.
+                AudioInfo audioConvertInfo;
+                {
+                    auto i = ioOptions.find("FFmpeg/AudioChannelCount");
+                    if (i != ioOptions.end())
+                    {
+                        std::stringstream ss(i->second);
+                        ss >> audioConvertInfo.channelCount;
+                    }
+                    i = ioOptions.find("FFmpeg/AudioType");
+                    if (i != ioOptions.end())
+                    {
+                        from_string(i->second, audioConvertInfo.type);
+                    }
+                    i = ioOptions.find("FFmpeg/AudioSampleRate");
+                    if (i != ioOptions.end())
+                    {
+                        std::stringstream ss(i->second);
+                        ss >> audioConvertInfo.sampleRate;
+                    }
+                }
+
+                // Read JSON information from ffprobe.
                 const Options options(ioOptions);
                 std::vector<std::string> cmd;
                 cmd.push_back(options.ffprobePath);
@@ -251,7 +274,7 @@ namespace tl
                 //std::cout << ftk::join(cmd, ' ') << std::endl;
                 nlohmann::json json = nlohmann::json::parse(Pipe(cmd).readAll());
 
-                // Get format information.
+                // Parse format information.
                 double duration = 0.0;
                 std::string timecode;
                 std::string timeReference;
@@ -291,7 +314,7 @@ namespace tl
                     }
                 }
 
-                // Get stream information.
+                // Parse stream information.
                 i = json.find("streams");
                 if (i != json.end())
                 {
@@ -405,6 +428,46 @@ namespace tl
                                 OTIO_NS::RationalTime(frames, videoRate));
 
                             p.info.video.push_back(info);
+
+                            {
+                                std::stringstream ss;
+                                ss << info.size.w << " " << info.size.h;
+                                p.info.tags["Video Resolution"] = ss.str();
+                            }
+                            {
+                                std::stringstream ss;
+                                ss.precision(2);
+                                ss << std::fixed;
+                                ss << info.pixelAspectRatio;
+                                p.info.tags["Video Pixel Aspect Ratio"] = ss.str();
+                            }
+                            {
+                                std::stringstream ss;
+                                ss << info.type;
+                                p.info.tags["Video Pixel Type"] = ss.str();
+                            }
+                            k = j.find("codec_name");
+                            if (k != j.end())
+                            {
+                                p.info.tags["Video Codec"] = k->get<std::string>();
+                            }
+                            {
+                                std::stringstream ss;
+                                ss << p.info.videoTime.start_time().to_timecode();
+                                p.info.tags["Video Start Time"] = ss.str();
+                            }
+                            {
+                                std::stringstream ss;
+                                ss << p.info.videoTime.duration().to_timecode();
+                                p.info.tags["Video Duration"] = ss.str();
+                            }
+                            {
+                                std::stringstream ss;
+                                ss.precision(2);
+                                ss << std::fixed;
+                                ss << videoRate << " FPS";
+                                p.info.tags["Video Speed"] = ss.str();
+                            }
                             break;
                         }
                     }
@@ -415,25 +478,41 @@ namespace tl
                         auto k = j.find("codec_type");
                         if (k != j.end() && "audio" == *k)
                         {
+                            int fileChannelCount = 0;
                             k = j.find("channels");
                             if (k != j.end())
                             {
-                                p.info.audio.channelCount = *k;
+                                fileChannelCount = *k;
                             }
+                            AudioType fileAudioType = AudioType::None;
                             k = j.find("sample_fmt");
                             if (k != j.end())
                             {
-                                p.info.audio.type = toAudioType(*k);
+                                fileAudioType = toAudioType(*k);
                             }
-                            if (AudioType::None == p.info.audio.type)
+                            if (AudioType::None == fileAudioType)
                             {
-                                p.info.audio.type = AudioType::S16;
+                                fileAudioType = AudioType::S16;
                             }
+                            int fileSampleRate = 0;
                             k = j.find("sample_rate");
                             if (k != j.end())
                             {
-                                p.info.audio.sampleRate = atoi(k->get<std::string>().c_str());
+                                fileSampleRate = atoi(k->get<std::string>().c_str());
                             }
+
+                            size_t channelCount = fileChannelCount;
+                            AudioType audioType = fileAudioType;
+                            size_t sampleRate = fileSampleRate;
+                            if (audioConvertInfo.isValid())
+                            {
+                                channelCount = audioConvertInfo.channelCount;
+                                audioType = audioConvertInfo.type;
+                                sampleRate = audioConvertInfo.sampleRate;
+                            }
+                            p.info.audio.channelCount = channelCount;
+                            p.info.audio.type = audioType;
+                            p.info.audio.sampleRate = sampleRate;
 
                             k = j.find("duration");
                             if (k != j.end())
@@ -441,7 +520,7 @@ namespace tl
                                 duration = atof(k->get<std::string>().c_str());
                             }
 
-                            OTIO_NS::RationalTime startTime(0.0, p.info.audio.sampleRate);
+                            OTIO_NS::RationalTime startTime(0.0, sampleRate);
                             if (!timecode.empty())
                             {
                                 opentime::ErrorStatus errorStatus;
@@ -451,19 +530,56 @@ namespace tl
                                     &errorStatus);
                                 if (!opentime::is_error(errorStatus))
                                 {
-                                    startTime = time.rescaled_to(p.info.audio.sampleRate).floor();
+                                    startTime = time.rescaled_to(sampleRate).floor();
                                 }
                             }
                             else if (!timeReference.empty())
                             {
                                 startTime = OTIO_NS::RationalTime(
                                     std::atoi(timeReference.c_str()),
-                                    p.info.audio.sampleRate);
+                                    sampleRate);
                             }
 
                             p.info.audioTime = OTIO_NS::TimeRange(
                                 startTime,
-                                OTIO_NS::RationalTime(duration * p.info.audio.sampleRate, p.info.audio.sampleRate));
+                                OTIO_NS::RationalTime(duration * sampleRate, sampleRate));
+
+                            {
+                                std::stringstream ss;
+                                ss << static_cast<int>(fileChannelCount);
+                                p.info.tags["Audio Channels"] = ss.str();
+                            }
+                            {
+                                std::stringstream ss;
+                                ss << fileAudioType;
+                                p.info.tags["Audio Type"] = ss.str();
+                            }
+                            {
+                                std::stringstream ss;
+                                ss.precision(1);
+                                ss << std::fixed;
+                                ss << fileSampleRate / 1000.F << "kHz";
+                                p.info.tags["Audio Sample Rate"] = ss.str();
+                            }
+                            {
+                                std::stringstream ss;
+                                ss.precision(2);
+                                ss << std::fixed;
+                                ss << startTime.rescaled_to(1.0).value() << " seconds";
+                                p.info.tags["Audio Start Time"] = ss.str();
+                            }
+                            {
+                                std::stringstream ss;
+                                ss.precision(2);
+                                ss << std::fixed;
+                                ss << p.info.audioTime.duration().rescaled_to(1.0).value() << " seconds";
+                                p.info.tags["Audio Duration"] = ss.str();
+                            }
+                            k = j.find("codec_name");
+                            if (k != j.end())
+                            {
+                                p.info.tags["Audio Codec"] = k->get<std::string>();
+                            }
                             break;
                         }
                     }
