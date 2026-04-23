@@ -250,127 +250,228 @@ namespace tl
                 cmd.push_back(_path.get());
                 //std::cout << ftk::join(cmd, ' ') << std::endl;
                 nlohmann::json json = nlohmann::json::parse(Pipe(cmd).readAll());
-                for (const auto& i : json.items())
+
+                // Get format information.
+                double duration = 0.0;
+                std::string timecode;
+                std::string timeReference;
+                auto i = json.find("format");
+                if (i != json.end())
                 {
-                    if ("streams" == i.key())
+                    // Check for a duration.
+                    auto j = i.value().find("duration");
+                    if (j != i.value().end())
                     {
-                        for (const auto& j : i.value())
+                        duration = atoi(j->get<std::string>().c_str());
+                    }
+
+                    // Get the metadata tags.
+                    j = i.value().find("tags");
+                    if (j != i.value().end())
+                    {
+                        for (const auto& k : j->items())
                         {
-                            auto k = j.find("codec_type");
-                            if (k != j.end() && "video" == *k)
+                            p.info.tags[k.key()] = k.value();
+
+                            if (ftk::compare(
+                                k.key(),
+                                "timecode",
+                                ftk::CaseCompare::Insensitive))
                             {
-                                ftk::ImageInfo info;
-                                info.layout.mirror.y = true;
-
-                                k = j.find("width");
-                                if (k != j.end())
-                                {
-                                    info.size.w = *k;
-                                }
-                                k = j.find("height");
-                                if (k != j.end())
-                                {
-                                    info.size.h = *k;
-                                }
-                                k = j.find("pix_fmt");
-                                if (k != j.end())
-                                {
-                                    info.type = toImageType(*k);
-                                }
-                                if (ftk::ImageType::None == info.type)
-                                {
-                                    info.type = ftk::ImageType::RGB_U8;
-                                }
-
-                                double rate = 0.0;
-                                k = j.find("avg_frame_rate");
-                                if (k != j.end())
-                                {
-                                    rate = toDouble(toRational(*k));
-                                }
-                                else
-                                {
-                                    k = j.find("r_frame_rate");
-                                    if (k != j.end())
-                                    {
-                                        rate = toDouble(toRational(*k));
-                                    }
-                                }
-
-                                size_t frames = 0;
-                                k = j.find("nb_frames");
-                                if (k != j.end())
-                                {
-                                    frames = atoi(k->get<std::string>().c_str());
-                                }
-                                else
-                                {
-                                    k = j.find("duration");
-                                    if (k != j.end())
-                                    {
-                                        const double d = atof(k->get<std::string>().c_str());
-                                        if (d > 0.0 && rate > 0.0)
-                                        {
-                                            frames = d * rate;
-                                        }
-                                    }
-                                }
-                                p.info.videoTime = OTIO_NS::TimeRange(
-                                    OTIO_NS::RationalTime(0.0, rate),
-                                    OTIO_NS::RationalTime(frames, rate));
-                                p.info.video.push_back(info);
-                                break;
+                                timecode = k.value();
+                            }
+                            else if (ftk::compare(
+                                k.key(),
+                                "time_reference",
+                                ftk::CaseCompare::Insensitive))
+                            {
+                                timeReference = k.value();
                             }
                         }
                     }
                 }
-                for (const auto& i : json.items())
-                {
-                    if ("streams" == i.key())
-                    {
-                        for (const auto& j : i.value())
-                        {
-                            auto k = j.find("codec_type");
-                            if (k != j.end() && "audio" == *k)
-                            {
-                                k = j.find("channels");
-                                if (k != j.end())
-                                {
-                                    p.info.audio.channelCount = *k;
-                                }
-                                k = j.find("sample_fmt");
-                                if (k != j.end())
-                                {
-                                    p.info.audio.type = toAudioType(*k);
-                                }
-                                if (AudioType::None == p.info.audio.type)
-                                {
-                                    p.info.audio.type = AudioType::S16;
-                                }
-                                k = j.find("sample_rate");
-                                if (k != j.end())
-                                {
-                                    p.info.audio.sampleRate = atoi(k->get<std::string>().c_str());
-                                }
 
-                                double duration = 0.0;
+                // Get stream information.
+                i = json.find("streams");
+                if (i != json.end())
+                {
+                    // Find the first data stream.
+                    for (const auto& j : i.value())
+                    {
+                        auto k = j.find("codec_type");
+                        if (k != j.end() && "data" == *k)
+                        {
+                            k = j.find("tags");
+                            if (k != j.end())
+                            {
+                                for (const auto& l : k.value().items())
+                                {
+                                    if (ftk::compare(
+                                        l.key(),
+                                        "timecode",
+                                        ftk::CaseCompare::Insensitive))
+                                    {
+                                        timecode = l.value();
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+
+                    // Find the first video stream.
+                    double videoRate = 0;
+                    for (const auto& j : i.value())
+                    {
+                        auto k = j.find("codec_type");
+                        if (k != j.end() && "video" == *k)
+                        {
+                            ftk::ImageInfo info;
+                            info.layout.mirror.y = true;
+
+                            k = j.find("width");
+                            if (k != j.end())
+                            {
+                                info.size.w = *k;
+                            }
+                            k = j.find("height");
+                            if (k != j.end())
+                            {
+                                info.size.h = *k;
+                            }
+                            k = j.find("pix_fmt");
+                            if (k != j.end())
+                            {
+                                info.type = toImageType(*k);
+                            }
+                            if (ftk::ImageType::None == info.type)
+                            {
+                                info.type = ftk::ImageType::RGB_U8;
+                            }
+
+                            k = j.find("avg_frame_rate");
+                            if (k != j.end())
+                            {
+                                videoRate = toDouble(toRational(*k));
+                            }
+                            else
+                            {
+                                k = j.find("r_frame_rate");
+                                if (k != j.end())
+                                {
+                                    videoRate = toDouble(toRational(*k));
+                                }
+                            }
+
+                            size_t frames = 0;
+                            k = j.find("nb_frames");
+                            if (k != j.end())
+                            {
+                                frames = atoi(k->get<std::string>().c_str());
+                            }
+                            else
+                            {
                                 k = j.find("duration");
                                 if (k != j.end())
                                 {
-                                    duration = atof(k->get<std::string>().c_str());
+                                    const double d = atof(k->get<std::string>().c_str());
+                                    if (d > 0.0 && videoRate > 0.0)
+                                    {
+                                        frames = d * videoRate;
+                                    }
                                 }
-                                p.info.audioTime = OTIO_NS::TimeRange(
-                                    OTIO_NS::RationalTime(0.0, p.info.audio.sampleRate),
-                                    OTIO_NS::RationalTime(duration * p.info.audio.sampleRate, p.info.audio.sampleRate));
-                                break;
+                                else
+                                {
+                                    frames = duration * videoRate;
+                                }
                             }
+
+                            OTIO_NS::RationalTime startTime(0.0, videoRate);
+                            if (!timecode.empty())
+                            {
+                                opentime::ErrorStatus errorStatus;
+                                const OTIO_NS::RationalTime time = OTIO_NS::RationalTime::from_timecode(
+                                    timecode,
+                                    videoRate,
+                                    &errorStatus);
+                                if (!opentime::is_error(errorStatus))
+                                {
+                                    startTime = time.floor();
+                                }
+                            }
+                            p.info.videoTime = OTIO_NS::TimeRange(
+                                startTime,
+                                OTIO_NS::RationalTime(frames, videoRate));
+
+                            p.info.video.push_back(info);
+                            break;
+                        }
+                    }
+
+                    // Find the first audio stream.
+                    for (const auto& j : i.value())
+                    {
+                        auto k = j.find("codec_type");
+                        if (k != j.end() && "audio" == *k)
+                        {
+                            k = j.find("channels");
+                            if (k != j.end())
+                            {
+                                p.info.audio.channelCount = *k;
+                            }
+                            k = j.find("sample_fmt");
+                            if (k != j.end())
+                            {
+                                p.info.audio.type = toAudioType(*k);
+                            }
+                            if (AudioType::None == p.info.audio.type)
+                            {
+                                p.info.audio.type = AudioType::S16;
+                            }
+                            k = j.find("sample_rate");
+                            if (k != j.end())
+                            {
+                                p.info.audio.sampleRate = atoi(k->get<std::string>().c_str());
+                            }
+
+                            k = j.find("duration");
+                            if (k != j.end())
+                            {
+                                duration = atof(k->get<std::string>().c_str());
+                            }
+
+                            OTIO_NS::RationalTime startTime(0.0, p.info.audio.sampleRate);
+                            if (!timecode.empty())
+                            {
+                                opentime::ErrorStatus errorStatus;
+                                const OTIO_NS::RationalTime time = OTIO_NS::RationalTime::from_timecode(
+                                    timecode,
+                                    videoRate,
+                                    &errorStatus);
+                                if (!opentime::is_error(errorStatus))
+                                {
+                                    startTime = time.rescaled_to(p.info.audio.sampleRate).floor();
+                                }
+                            }
+                            else if (!timeReference.empty())
+                            {
+                                startTime = OTIO_NS::RationalTime(
+                                    std::atoi(timeReference.c_str()),
+                                    p.info.audio.sampleRate);
+                            }
+
+                            p.info.audioTime = OTIO_NS::TimeRange(
+                                startTime,
+                                OTIO_NS::RationalTime(duration * p.info.audio.sampleRate, p.info.audio.sampleRate));
+                            break;
                         }
                     }
                 }
             }
             catch (const std::exception& e)
             {
-                _logSystem.lock()->print("tl::ffmpeg_pipe", e.what(), ftk::LogType::Error);
+                _logSystem.lock()->print("tl::Read::ffmpeg_pipe", e.what(), ftk::LogType::Error);
             }
         }
 
@@ -429,7 +530,8 @@ namespace tl
                         cmd.push_back("-v");
                         cmd.push_back("quiet");
                         cmd.push_back("-ss");
-                        cmd.push_back(ftk::Format("{0}").arg(p.thread.time.to_seconds()));
+                        const double s = (p.thread.time - p.info.videoTime.start_time()).to_seconds();
+                        cmd.push_back(ftk::Format("{0}").arg(s));
                         cmd.push_back("-i");
                         cmd.push_back(_path.get());
                         cmd.push_back("-f");
@@ -442,7 +544,7 @@ namespace tl
                     }
                     catch (const std::exception& e)
                     {
-                        _logSystem.lock()->print("tl::ffmpeg_pipe", e.what(), ftk::LogType::Error);
+                        _logSystem.lock()->print("tl::Read::ffmpeg_pipe", e.what(), ftk::LogType::Error);
                     }
                 }
 
@@ -455,7 +557,14 @@ namespace tl
                         video.image = ftk::Image::create(p.info.video.front());
                         if (p.thread.pipe)
                         {
-                            p.thread.pipe->read(video.image->getData(), video.image->getByteCount());
+                            try
+                            {
+                                p.thread.pipe->read(video.image->getData(), video.image->getByteCount());
+                            }
+                            catch (const std::exception& e)
+                            {
+                                _logSystem.lock()->print("tl::Read::ffmpeg_pipe", e.what(), ftk::LogType::Error);
+                            }
                         }
                         else
                         {
@@ -481,12 +590,12 @@ namespace tl
                 {
                     std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
                     if (p.audioThread.cv.wait_for(
-                            lock,
-                            std::chrono::milliseconds(10),
-                            [this]
-                            {
-                                return !_p->audioMutex.requests.empty();
-                            }))
+                        lock,
+                        std::chrono::milliseconds(10),
+                        [this]
+                        {
+                            return !_p->audioMutex.requests.empty();
+                        }))
                     {
                         if (!p.audioMutex.requests.empty())
                         {
@@ -515,7 +624,8 @@ namespace tl
                         cmd.push_back("-v");
                         cmd.push_back("quiet");
                         cmd.push_back("-ss");
-                        cmd.push_back(ftk::Format("{0}").arg(p.audioThread.time.to_seconds()));
+                        const double s = (p.audioThread.time - p.info.audioTime.start_time()).to_seconds();
+                        cmd.push_back(ftk::Format("{0}").arg(s));
                         cmd.push_back("-i");
                         cmd.push_back(_path.get());
                         cmd.push_back("-f");
@@ -526,7 +636,7 @@ namespace tl
                     }
                     catch (const std::exception& e)
                     {
-                        _logSystem.lock()->print("tl::ffmpeg_pipe", e.what(), ftk::LogType::Error);
+                        _logSystem.lock()->print("tl::Read::ffmpeg_pipe", e.what(), ftk::LogType::Error);
                     }
                 }
 
@@ -539,7 +649,14 @@ namespace tl
                         request->timeRange.duration().rescaled_to(1.0).value() * p.info.audio.sampleRate);
                     if (p.audioThread.pipe)
                     {
-                        p.audioThread.pipe->read(audio.audio->getData(), audio.audio->getByteCount());
+                        try
+                        {
+                            p.audioThread.pipe->read(audio.audio->getData(), audio.audio->getByteCount());
+                        }
+                        catch (const std::exception& e)
+                        {
+                            _logSystem.lock()->print("tl::Read::ffmpeg_pipe", e.what(), ftk::LogType::Error);
+                        }
                     }
                     else
                     {
