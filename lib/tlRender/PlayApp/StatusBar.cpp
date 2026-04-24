@@ -35,12 +35,13 @@ namespace tl
 
             _messagesTimer = ftk::Timer::create(context);
 
-            _messagesObserver = ftk::ListObserver<std::string>::create(
+            _messagesObserver = ftk::ListObserver<ftk::LogItem>::create(
                 app->getSysLogModel()->observeMessages(),
-                [this](const std::vector<std::string>& value)
+                [this](const std::vector<ftk::LogItem>& value)
                 {
-                    _labels["Log"]->setText(!value.empty() ? value.back() : std::string());
-                    _labels["Log"]->setTooltip(!value.empty() ? value.back() : std::string());
+                    const std::string text = !value.empty() ? ftk::getLabel(value.back(), true) : std::string();
+                    _labels["Log"]->setText(text);
+                    _labels["Log"]->setTooltip(text);
                     if (!value.empty())
                     {
                         _messagesTimer->start(
