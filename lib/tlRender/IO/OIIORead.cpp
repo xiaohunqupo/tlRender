@@ -126,7 +126,7 @@ namespace tl
             if (!oiioInput)
             {
                 std::stringstream ss;
-                ss << "Cannot open file: " << fileName;
+                ss << "Cannot open file: " << fileName << ": " << OIIO::geterror();
                 throw std::runtime_error(ss.str());
             }
 
@@ -188,7 +188,7 @@ namespace tl
             if (!oiioInput)
             {
                 std::stringstream ss;
-                ss << "Cannot open file: " << fileName;
+                ss << "Cannot open file: " << fileName << ": " << OIIO::geterror();
                 throw std::runtime_error(ss.str());
             }
 
@@ -202,7 +202,7 @@ namespace tl
             if (!oiioInput->seek_subimage(layer, 0))
             {
                 std::stringstream ss;
-                ss << "Cannot open layer: " << layer;
+                ss << "Cannot open layer: " << layer << ": " << OIIO::geterror();
                 throw std::runtime_error(ss.str());
             }
 
@@ -238,7 +238,9 @@ namespace tl
                 oiioSpec.format,
                 out.image->getData()))
             {
-                throw std::runtime_error(OIIO::geterror());
+                std::stringstream ss;
+                ss << "Cannot read file: " << fileName << ": " << OIIO::geterror();
+                throw std::runtime_error(ss.str());
             }
             return out;
         }
