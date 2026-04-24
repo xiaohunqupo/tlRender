@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <tlRender/IO/FFmpegPipePrivate.h>
+#include <tlRender/IO/FFmpegCmdPrivate.h>
 
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
@@ -11,7 +11,7 @@
 
 namespace tl
 {
-    namespace ffmpeg_pipe
+    namespace ffmpeg_cmd
     {
         struct Read::Private
         {
@@ -587,7 +587,7 @@ namespace tl
             }
             catch (const std::exception& e)
             {
-                _logSystem.lock()->print("tl::Read::ffmpeg_pipe", e.what(), ftk::LogType::Error);
+                _logSystem.lock()->print("tl::Read::ffmpeg_cmd", e.what(), ftk::LogType::Error);
             }
         }
 
@@ -660,7 +660,7 @@ namespace tl
                     }
                     catch (const std::exception& e)
                     {
-                        _logSystem.lock()->print("tl::Read::ffmpeg_pipe", e.what(), ftk::LogType::Error);
+                        _logSystem.lock()->print("tl::Read::ffmpeg_cmd", e.what(), ftk::LogType::Error);
                     }
                 }
 
@@ -679,7 +679,7 @@ namespace tl
                             }
                             catch (const std::exception& e)
                             {
-                                _logSystem.lock()->print("tl::Read::ffmpeg_pipe", e.what(), ftk::LogType::Error);
+                                _logSystem.lock()->print("tl::Read::ffmpeg_cmd", e.what(), ftk::LogType::Error);
                             }
                         }
                         else
@@ -752,7 +752,7 @@ namespace tl
                     }
                     catch (const std::exception& e)
                     {
-                        _logSystem.lock()->print("tl::Read::ffmpeg_pipe", e.what(), ftk::LogType::Error);
+                        _logSystem.lock()->print("tl::Read::ffmpeg_cmd", e.what(), ftk::LogType::Error);
                     }
                 }
 
@@ -771,7 +771,7 @@ namespace tl
                         }
                         catch (const std::exception& e)
                         {
-                            _logSystem.lock()->print("tl::Read::ffmpeg_pipe", e.what(), ftk::LogType::Error);
+                            _logSystem.lock()->print("tl::Read::ffmpeg_cmd", e.what(), ftk::LogType::Error);
                         }
                     }
                     else

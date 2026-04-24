@@ -18,12 +18,10 @@ namespace tl
     }
 
     IWrite::IWrite()
-    {
-    }
+    {}
 
     IWrite::~IWrite()
-    {
-    }
+    {}
 
     struct IWritePlugin::Private
     {
@@ -39,12 +37,10 @@ namespace tl
 
     IWritePlugin::IWritePlugin() :
         _p(new Private)
-    {
-    }
+    {}
 
     IWritePlugin::~IWritePlugin()
-    {
-    }
+    {}
 
     bool IWritePlugin::_isCompatible(const ftk::ImageInfo& info, const IOOptions& options) const
     {

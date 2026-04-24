@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include <tlRender/IO/FFmpegPipe.h>
+#include <tlRender/IO/FFmpegCmd.h>
 
 namespace tl
 {
-    namespace ffmpeg_pipe
+    namespace ffmpeg_cmd
     {
         class Pipe
         {

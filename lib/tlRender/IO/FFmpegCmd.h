@@ -8,10 +8,10 @@
 
 namespace tl
 {
-    //! FFmpeg video and audio I/O via pipe
-    namespace ffmpeg_pipe
+    //! FFmpeg video and audio with the command line application
+    namespace ffmpeg_cmd
     {
-        //! FFmpeg pipe options.
+        //! FFmpeg command line options.
         //!
         //! References:
         //! * https://academysoftwarefoundation.github.io/EncodingGuidelines/EncodeVP9.html
@@ -29,7 +29,7 @@ namespace tl
             TL_API bool operator != (const Options&) const;
         };
 
-        //! FFmpeg pipe reader.
+        //! FFmpeg command line reader.
         class TL_API_TYPE Read : public IRead
         {
         protected:
@@ -74,7 +74,7 @@ namespace tl
             FTK_PRIVATE();
         };
 
-        //! FFmpeg pipe read plugin.
+        //! FFmpeg command line read plugin.
         class TL_API_TYPE ReadPlugin : public IReadPlugin
         {
         protected:

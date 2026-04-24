@@ -654,8 +654,10 @@ namespace tl
             const IOOptions& options)
         {
             if (info.video.empty() || (!info.video.empty() && !_isCompatible(info.video[0], options)))
+            {
                 throw std::runtime_error(ftk::Format("Unsupported video: \"{0}\"").
                     arg(path.get()));
+            }
             return Write::create(path, info, options, _logSystem.lock());
         }
     }

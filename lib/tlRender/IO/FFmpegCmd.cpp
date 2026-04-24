@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <tlRender/IO/FFmpegPipePrivate.h>
+#include <tlRender/IO/FFmpegCmdPrivate.h>
 
 #include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
@@ -12,17 +12,17 @@
 
 namespace tl
 {
-    namespace ffmpeg_pipe
+    namespace ffmpeg_cmd
     {
         Options::Options(const IOOptions& value)
         {
-            auto i = value.find("FFmpegPipe/FFmpegPath");
+            auto i = value.find("FFmpegCmd/FFmpegPath");
             if (i != value.end())
             {
                 std::stringstream ss(i->second);
                 ss >> ffmpegPath;
             }
-            i = value.find("FFmpegPipe/FFprobePath");
+            i = value.find("FFmpegCmd/FFprobePath");
             if (i != value.end())
             {
                 std::stringstream ss(i->second);
@@ -33,8 +33,8 @@ namespace tl
         IOOptions Options::getIOOptions() const
         {
             IOOptions out;
-            out["FFmpegPipe/FFmpegPath"] = ffmpegPath;
-            out["FFmpegPipe/FFprobePath"] = ffprobePath;
+            out["FFmpegCmd/FFmpegPath"] = ffmpegPath;
+            out["FFmpegCmd/FFprobePath"] = ffprobePath;
             return out;
         }
 
@@ -240,7 +240,7 @@ namespace tl
             extensions[".m4a"] = FileType::Media;
             extensions[".ogg"] = FileType::Media;
             extensions[".wav"] = FileType::Media;
-            IReadPlugin::_init("FFmpegPipe", extensions, logSystem);
+            IReadPlugin::_init("FFmpegCmd", extensions, logSystem);
         }
 
         std::shared_ptr<ReadPlugin> ReadPlugin::create(
