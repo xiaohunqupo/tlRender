@@ -195,6 +195,9 @@ namespace tl
             addAction(actions["Next"]);
             addAction(actions["End"]);
             addDivider();
+            addAction(actions["JumpBack1s"]);
+            addAction(actions["JumpForward1s"]);
+            addDivider();
             addAction(actions["SetInPoint"]);
             addAction(actions["ResetInPoint"]);
             addAction(actions["SetOutPoint"]);

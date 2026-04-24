@@ -116,6 +116,30 @@ namespace tl
                 });
             _actions["End"]->setTooltip("Go to the end frame.");
 
+            _actions["JumpBack1s"] = ftk::Action::create(
+                "Jump Back 1s",
+                ftk::KeyShortcut(ftk::Key::J, static_cast<int>(ftk::KeyModifier::Shift)),
+                [this]
+                {
+                    if (_player)
+                    {
+                        _player->timeAction(TimeAction::JumpBack1s);
+                    }
+                });
+            _actions["JumpBack1s"]->setTooltip("Jump backwards one second.");
+
+            _actions["JumpForward1s"] = ftk::Action::create(
+                "Jump Forward 1s",
+                ftk::KeyShortcut(ftk::Key::L, static_cast<int>(ftk::KeyModifier::Shift)),
+                [this]
+                {
+                    if (_player)
+                    {
+                        _player->timeAction(TimeAction::JumpForward1s);
+                    }
+                });
+            _actions["JumpForward1s"]->setTooltip("Jump forwards one second.");
+
             _actions["SetInPoint"] = ftk::Action::create(
                 "Set In Point",
                 ftk::Key::I,
