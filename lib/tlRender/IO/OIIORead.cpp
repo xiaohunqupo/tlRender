@@ -14,6 +14,16 @@ namespace tl
 {
     namespace oiio
     {
+        namespace
+        {
+            void oiioDiscardError()
+            {
+                //! \bug If we don't get the error it will be autpmatically
+                //! printed to stderr?
+                OIIO::geterror();
+            }
+        }
+
         void Read::_init(
             const ftk::Path& path,
             const std::vector<ftk::MemFile>& memory,
@@ -125,8 +135,9 @@ namespace tl
                 oiioMemReader.get());
             if (!oiioInput)
             {
+                oiioDiscardError();
                 std::stringstream ss;
-                ss << "Cannot open file: " << fileName << ": " << OIIO::geterror();
+                ss << "Cannot open file: " << fileName;
                 throw std::runtime_error(ss.str());
             }
 
@@ -187,8 +198,9 @@ namespace tl
                 oiioMemReader.get());
             if (!oiioInput)
             {
+                oiioDiscardError();
                 std::stringstream ss;
-                ss << "Cannot open file: " << fileName << ": " << OIIO::geterror();
+                ss << "Cannot open file: " << fileName;
                 throw std::runtime_error(ss.str());
             }
 
@@ -201,8 +213,9 @@ namespace tl
             }
             if (!oiioInput->seek_subimage(layer, 0))
             {
+                oiioDiscardError();
                 std::stringstream ss;
-                ss << "Cannot open layer: " << layer << ": " << OIIO::geterror();
+                ss << "Cannot open layer: " << layer;
                 throw std::runtime_error(ss.str());
             }
 
@@ -238,8 +251,9 @@ namespace tl
                 oiioSpec.format,
                 out.image->getData()))
             {
+                oiioDiscardError();
                 std::stringstream ss;
-                ss << "Cannot read file: " << fileName << ": " << OIIO::geterror();
+                ss << "Cannot read file: " << fileName;
                 throw std::runtime_error(ss.str());
             }
             return out;
