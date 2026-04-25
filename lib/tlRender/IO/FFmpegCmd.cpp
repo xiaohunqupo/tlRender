@@ -16,13 +16,13 @@ namespace tl
     {
         Options::Options(const IOOptions& value)
         {
-            auto i = value.find("FFmpegCmd/FFmpegPath");
+            auto i = value.find("FFmpeg/FFmpegPath");
             if (i != value.end())
             {
                 std::stringstream ss(i->second);
                 ss >> ffmpegPath;
             }
-            i = value.find("FFmpegCmd/FFprobePath");
+            i = value.find("FFmpeg/FFprobePath");
             if (i != value.end())
             {
                 std::stringstream ss(i->second);
@@ -33,8 +33,8 @@ namespace tl
         IOOptions Options::getIOOptions() const
         {
             IOOptions out;
-            out["FFmpegCmd/FFmpegPath"] = ffmpegPath;
-            out["FFmpegCmd/FFprobePath"] = ffprobePath;
+            out["FFmpeg/FFmpegPath"] = ffmpegPath;
+            out["FFmpeg/FFprobePath"] = ffprobePath;
             return out;
         }
 
