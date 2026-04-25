@@ -671,6 +671,7 @@ namespace tl
                     if (!p.info.video.empty())
                     {
                         video.image = ftk::Image::create(p.info.video.front());
+                        video.image->zero();
                         if (p.thread.pipe)
                         {
                             try
@@ -681,10 +682,6 @@ namespace tl
                             {
                                 _logSystem.lock()->print("tl::Read::ffmpeg_cmd", e.what(), ftk::LogType::Error);
                             }
-                        }
-                        else
-                        {
-                            video.image->zero();
                         }
                     }
                     videoRequest->promise.set_value(video);
@@ -763,6 +760,7 @@ namespace tl
                     audio.audio = Audio::create(
                         p.info.audio,
                         request->timeRange.duration().rescaled_to(1.0).value() * p.info.audio.sampleRate);
+                    audio.audio->zero();
                     if (p.audioThread.pipe)
                     {
                         try
@@ -773,10 +771,6 @@ namespace tl
                         {
                             _logSystem.lock()->print("tl::Read::ffmpeg_cmd", e.what(), ftk::LogType::Error);
                         }
-                    }
-                    else
-                    {
-                        audio.audio->zero();
                     }
                     request->promise.set_value(audio);
                     p.audioThread.time += request->timeRange.duration();
