@@ -177,8 +177,9 @@ namespace tl
         Pipe::~Pipe()
         {
             FTK_P();
-            subprocess_terminate(&p.subprocess);
             subprocess_destroy(&p.subprocess);
+            //! \bug This is causing a SIGKILL on Linux when a read error occurs.
+            //subprocess_terminate(&p.subprocess);
         }
 
         size_t Pipe::read(uint8_t* data, size_t size)
