@@ -41,7 +41,7 @@ set(TLRENDER_FFMPEG_CMD OFF CACHE BOOL "Enable support for FFmpeg I/O with the c
 set(TLRENDER_OIIO ON CACHE BOOL "Enable support for OpenImageIO")
 set(TLRENDER_USD OFF CACHE BOOL "Enable support for USD")
 set(TLRENDER_WMF ${WIN32} CACHE BOOL "Enable support for Windows Media Foundation")
-set(TLRENDER_AVF ${APPLE} CACHE BOOL "Enable support for AVFoundation (macOS)")
+set(TLRENDER_AVF OFF CACHE BOOL "Enable support for AVFoundation (macOS)")
 set(TLRENDER_BMD OFF CACHE BOOL "Enable support for Blackmagic Design devices")
 set(TLRENDER_BMD_SDK "" CACHE PATH "Full path to the Blackmagic Design SDK")
 set(TLRENDER_QT6 OFF CACHE BOOL "Enable support for Qt6")
