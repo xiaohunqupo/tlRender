@@ -227,10 +227,12 @@ namespace tl
         {
             std::map<std::string, FileType> extensions;
             extensions[".avi"] = FileType::Media;
+            extensions[".avif"] = FileType::Media;
             extensions[".gif"] = FileType::Media;
             extensions[".mkv"] = FileType::Media;
             extensions[".mov"] = FileType::Media;
             extensions[".mp4"] = FileType::Media;
+            extensions[".mxf"] = FileType::Media;
             extensions[".m4v"] = FileType::Media;
             extensions[".y4m"] = FileType::Media;
 

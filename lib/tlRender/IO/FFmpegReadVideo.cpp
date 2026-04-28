@@ -66,7 +66,7 @@ namespace tl
             }
             for (unsigned int i = 0; i < _avFormatContext->nb_streams; ++i)
             {
-                //av_dump_format(_avFormatContext, 0, fileName.c_str(), 0);
+                //av_dump_format(_avFormatContext, i, fileName.c_str(), 0);
 
                 if (AVMEDIA_TYPE_VIDEO == _avFormatContext->streams[i]->codecpar->codec_type &&
                     AV_DISPOSITION_DEFAULT == _avFormatContext->streams[i]->disposition)
