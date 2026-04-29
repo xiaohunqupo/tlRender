@@ -234,6 +234,7 @@ namespace tl
             extensions[".mp4"] = FileType::Media;
             extensions[".mxf"] = FileType::Media;
             extensions[".m4v"] = FileType::Media;
+            extensions[".webm"] = FileType::Media;
             extensions[".y4m"] = FileType::Media;
 
             extensions[".aac"] = FileType::Media;
