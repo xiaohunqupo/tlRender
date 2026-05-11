@@ -17,9 +17,6 @@ namespace tl
 {
     namespace ffmpeg
     {
-        AVIOBufferData::AVIOBufferData()
-        {}
-
         AVIOBufferData::AVIOBufferData(const uint8_t* p, size_t size) :
             p(p),
             size(size)

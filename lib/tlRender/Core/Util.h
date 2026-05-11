@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright Contributors to the feather-tk project.
+// Copyright Contributors to the tlRender project.
 
 #pragma once
 

@@ -18,7 +18,7 @@ namespace tl
         {
             void oiioDiscardError()
             {
-                //! \bug If we don't get the error it will be autpmatically
+                //! \bug If we don't get the error it will be automatically
                 //! printed to stderr?
                 OIIO::geterror();
             }

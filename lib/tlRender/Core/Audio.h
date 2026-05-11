@@ -120,10 +120,10 @@ namespace tl
         TL_API void zero();
 
         //! Get the number of objects currenty instantiated.
-        FTK_API static size_t getObjectCount();
+        TL_API static size_t getObjectCount();
 
         //! Get the total number of bytes currently used.
-        FTK_API static size_t getTotalByteCount();
+        TL_API static size_t getTotalByteCount();
 
     private:
         AudioInfo _info;

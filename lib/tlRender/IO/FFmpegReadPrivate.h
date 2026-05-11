@@ -23,7 +23,7 @@ namespace tl
     {
         struct AVIOBufferData
         {
-            AVIOBufferData();
+            AVIOBufferData() = default;
             AVIOBufferData(const uint8_t* p, size_t size);
 
             const uint8_t* p = nullptr;
