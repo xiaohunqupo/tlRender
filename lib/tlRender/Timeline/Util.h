@@ -131,12 +131,6 @@ namespace tl
         Playback,
         int64_t frame,
         int64_t size);
-
-    //! Write a timeline to an .otioz file.
-    TL_API bool writeOTIOZ(
-        const std::string& fileName,
-        const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline>&,
-        const std::string& directory = std::string());
 }
 
 #include <tlRender/Timeline/UtilInline.h>

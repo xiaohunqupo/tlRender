@@ -87,71 +87,210 @@ namespace tl
         }
     }
 
+    uint16_t readLE16(const uint8_t* p)
+    {
+        return
+            static_cast<uint16_t>(p[0]) |
+            (static_cast<uint16_t>(p[1]) << 8);
+    }
+
+    uint32_t readLE32(const uint8_t* p)
+    {
+        return
+            static_cast<uint32_t>(p[0]) |
+            (static_cast<uint32_t>(p[1]) << 8) |
+            (static_cast<uint32_t>(p[2]) << 16) |
+            (static_cast<uint32_t>(p[3]) << 24);
+    }
+
+    constexpr uint32_t zipHeaderMagic = 0x04034b50u;
+    constexpr size_t zipHeaderNameOffset = 26;
+    constexpr size_t zipHeaderExtraLenOffset = 28;
+    constexpr size_t zipHeaderSize = 30;
+
     class ZipReader
     {
+        FTK_NON_COPYABLE(ZipReader);
+
+        struct MZReaderDeleter
+        {
+            void operator()(void* p) const { if (p) mz_zip_reader_delete(&p); }
+        };
+        using MZReaderPtr = std::unique_ptr<void, MZReaderDeleter>;
+
+        struct MZEntryScope
+        {
+            MZEntryScope(void* p) : p(p) {}
+            ~MZEntryScope() { if (p) mz_zip_reader_entry_close(p); }
+            void* p = nullptr;
+        };
+
     public:
-        ZipReader(const std::string& fileName)
-        {
-            reader = mz_zip_reader_create();
-            if (!reader)
-            {
-                throw std::runtime_error(ftk::Format(
-                    "Cannot create zip reader: \"{0}\"").arg(fileName));
-            }
-            int32_t err = mz_zip_reader_open_file(reader, fileName.c_str());
-            if (err != MZ_OK)
-            {
-                throw std::runtime_error(ftk::Format(
-                    "Cannot open zip reader: \"{0}\"").arg(fileName));
-            }
+        ZipReader(const std::shared_ptr<ftk::LogSystem>& logSystem) :
+            _logSystem(logSystem)
+        {}
 
-            err = mz_zip_reader_goto_first_entry(reader);
-            if (err != MZ_OK)
-            {
-                throw std::runtime_error(ftk::Format(
-                    "Cannot goto first zip entry: \"{0}\"").arg(fileName));
-            }
-            while (MZ_OK == err)
-            {
-                mz_zip_file* fileInfo = nullptr;
-                err = mz_zip_reader_entry_get_info(reader, &fileInfo);
-                if (err != MZ_OK || !fileInfo)
-                {
-                    throw std::runtime_error(ftk::Format(
-                        "Cannot get zip entry information: \"{0}\"").arg(fileName));
-                }
-                const int64_t headerSize =
-                    30 +
-                    fileInfo->filename_size +
-                    fileInfo->extrafield_size;
-                fileNameToMem[fileInfo->filename] = std::make_pair(
-                    fileInfo->disk_offset + headerSize,
-                    fileInfo->uncompressed_size);
-                //std::cout << fileInfo->filename << ": " <<
-                //    (fileInfo->disk_offset + headerSize) << " / " <<
-                //    fileInfo->uncompressed_size << std::endl;
-                err = mz_zip_reader_goto_next_entry(reader);
-                if (err != MZ_OK && err != MZ_END_OF_LIST)
-                {
-                    throw std::runtime_error(ftk::Format(
-                        "Cannot goto next zip entry: \"{0}\"").arg(fileName));
-                }
-            }
-        }
+        void open(
+            const std::string& fileName,
+            const uint8_t* fileMMap,
+            size_t fileSize);
 
-        ~ZipReader()
-        {
-            mz_zip_reader_delete(&reader);
-        }
+        struct Entry { int64_t offset; int64_t size; };
 
-        void* reader = nullptr;
+        std::optional<Entry> find(const std::string& name) const;
 
-        std::map<std::string, std::pair<int64_t, int64_t> > fileNameToMem;
+        std::string readText(const std::string& name);
+
+    private:
+        std::shared_ptr<ftk::LogSystem> _logSystem;
+        std::string _fileName;
+        const uint8_t* _fileMMap = nullptr;
+        size_t _fileSize = 0;
+        MZReaderPtr _reader;
+        std::map<std::string, Entry> _entries;
     };
+
+    void ZipReader::open(
+        const std::string& fileName,
+        const uint8_t* fileMMap,
+        size_t fileSize)
+    {
+        if (_reader)
+        {
+            _reader.reset();
+            _entries.clear();
+        }
+
+        _fileName = fileName;
+        _fileMMap = fileMMap;
+        _fileSize = fileSize;
+
+        _reader.reset(mz_zip_reader_create());
+        if (!_reader.get())
+        {
+            throw std::runtime_error(ftk::Format(
+                "Cannot create zip reader: \"{0}\"").arg(fileName));
+        }
+        int32_t err = mz_zip_reader_open_file(_reader.get(), fileName.c_str());
+        if (err != MZ_OK)
+        {
+            throw std::runtime_error(ftk::Format(
+                "Cannot open zip reader: \"{0}\"").arg(fileName));
+        }
+
+        err = mz_zip_reader_goto_first_entry(_reader.get());
+        if (err != MZ_OK)
+        {
+            throw std::runtime_error(ftk::Format(
+                "Cannot goto first zip entry: \"{0}\"").arg(fileName));
+        }
+        while (MZ_OK == err)
+        {
+            mz_zip_file* fileInfo = nullptr;
+            err = mz_zip_reader_entry_get_info(_reader.get(), &fileInfo);
+            if (err != MZ_OK || !fileInfo)
+            {
+                throw std::runtime_error(ftk::Format(
+                    "Cannot get zip entry information: \"{0}\"").arg(fileName));
+            }
+            if (mz_zip_reader_entry_is_dir(_reader.get()) != MZ_OK &&
+                0 == fileInfo->compression_method)
+            {
+                if (fileInfo->disk_offset < 0 ||
+                    static_cast<size_t>(fileInfo->disk_offset) + zipHeaderSize > _fileSize)
+                {
+                    throw std::runtime_error(ftk::Format(
+                        "Local zip header entry out of bounds: \"{0}\"").arg(fileName));
+                }
+                const uint8_t* hdr = _fileMMap + fileInfo->disk_offset;
+                if (readLE32(hdr) != zipHeaderMagic)
+                {
+                    throw std::runtime_error(ftk::Format(
+                        "Bad local zip header: \"{0}\"").arg(fileName));
+                }
+                const uint16_t nameLen  = readLE16(hdr + zipHeaderNameOffset);
+                const uint16_t extraLen = readLE16(hdr + zipHeaderExtraLenOffset);
+                const int64_t dataOffset =
+                    fileInfo->disk_offset + zipHeaderSize + nameLen + extraLen;
+
+                if (dataOffset < 0 ||
+                    static_cast<size_t>(dataOffset) > _fileSize ||
+                    fileInfo->uncompressed_size < 0 ||
+                    static_cast<size_t>(fileInfo->uncompressed_size) > _fileSize - dataOffset)
+                {
+                    throw std::runtime_error(ftk::Format(
+                        "Local zip entry out of bounds: \"{0}\"").arg(fileName));
+                }
+                Entry entry{ dataOffset, fileInfo->uncompressed_size };
+                if (!_entries.emplace(fileInfo->filename, entry).second)
+                {
+                    _logSystem->print("tl::ZipReader", ftk::Format(
+                        "Duplicate zip entry, ignoring subsequent: \"{0}\"").arg(fileInfo->filename),
+                        ftk::LogType::Warning);
+                }
+            }
+            err = mz_zip_reader_goto_next_entry(_reader.get());
+            if (err != MZ_OK && err != MZ_END_OF_LIST)
+            {
+                throw std::runtime_error(ftk::Format(
+                    "Cannot goto next zip entry: \"{0}\"").arg(fileName));
+            }
+        }
+    }
+
+    std::optional<ZipReader::Entry> ZipReader::find(const std::string& name) const
+    {
+        const auto i = _entries.find(name);
+        return i != _entries.end() ? std::optional<Entry>(i->second) : std::nullopt;
+    }
+
+    std::string ZipReader::readText(const std::string& name)
+    {
+        int32_t err = mz_zip_reader_locate_entry(
+            _reader.get(),
+            name.c_str(),
+            0);
+        if (err != MZ_OK)
+        {
+            throw std::runtime_error(ftk::Format(
+                "Cannot find zip entry: \"{0}\"").arg(name));
+        }
+        err = mz_zip_reader_entry_open(_reader.get());
+        if (err != MZ_OK)
+        {
+            throw std::runtime_error(ftk::Format(
+                "Cannot open zip entry: \"{0}\"").arg(name));
+        }
+        MZEntryScope entry(_reader.get());
+        mz_zip_file* fileInfo = nullptr;
+        err = mz_zip_reader_entry_get_info(_reader.get(), &fileInfo);
+        if (err != MZ_OK || !fileInfo)
+        {
+            throw std::runtime_error(ftk::Format(
+                "Cannot get zip entry information: \"{0}\"").arg(name));
+        }
+        if (fileInfo->uncompressed_size > INT32_MAX)
+        {
+            throw std::runtime_error(ftk::Format(
+                "Text zip entry exceeds max size: \"{0}\"").arg(name));
+        }
+        std::string out(fileInfo->uncompressed_size, 0);
+        err = mz_zip_reader_entry_read(
+            _reader.get(),
+            out.data(),
+            fileInfo->uncompressed_size);
+        if (err != fileInfo->uncompressed_size)
+        {
+            throw std::runtime_error(ftk::Format(
+                "Cannot read zip entry: \"{0}\"").arg(name));
+        }
+        return out;
+    }
 
     OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> readOTIO(
         const ftk::Path& path,
-        OTIO_NS::ErrorStatus* errorStatus)
+        OTIO_NS::ErrorStatus* errorStatus,
+        const std::shared_ptr<ftk::LogSystem>& logSystem)
     {
         OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> out;
         const std::string fileName = path.get();
@@ -163,43 +302,15 @@ namespace tl
         }
         else if (".otioz" == ext)
         {
-            ZipReader zipReader(fileName);
-
-            const std::string contentFileName = "content.otio";
-            auto i = zipReader.fileNameToMem.find(contentFileName);
-            int32_t err = mz_zip_reader_locate_entry(
-                zipReader.reader,
-                contentFileName.c_str(),
-                0);
-            if (i == zipReader.fileNameToMem.end() || err != MZ_OK)
-            {
-                throw std::runtime_error(ftk::Format(
-                    "Cannot find zip entry: \"{0}\"").arg(contentFileName));
-            }
-            err = mz_zip_reader_entry_open(zipReader.reader);
-            if (err != MZ_OK)
-            {
-                throw std::runtime_error(ftk::Format(
-                    "Cannot open zip entry: \"{0}\"").arg(contentFileName));
-            }
-            std::vector<char> buf;
-            buf.resize(i->second.second + 1);
-            err = mz_zip_reader_entry_read(
-                zipReader.reader,
-                buf.data(),
-                i->second.second);
-            if (err != i->second.second)
-            {
-                throw std::runtime_error(ftk::Format(
-                    "Cannot read zip entry: \"{0}\"").arg(contentFileName));
-            }
-            mz_zip_reader_entry_close(zipReader.reader);
-            buf[i->second.second] = 0;
-
-            out = dynamic_cast<OTIO_NS::Timeline*>(
-                OTIO_NS::Timeline::from_json_string(buf.data(), errorStatus));
-
             auto fileIO = ftk::FileIO::create(fileName, ftk::FileMode::Read);
+
+            ZipReader zipReader(logSystem);
+            zipReader.open(fileName, fileIO->getMemStart(), fileIO->getSize());
+
+            std::string json = zipReader.readText("content.otio");
+            out = dynamic_cast<OTIO_NS::Timeline*>(
+                OTIO_NS::Timeline::from_json_string(json, errorStatus));
+
             for (auto clip : out->find_children<OTIO_NS::Clip>())
             {
                 if (auto externalReference =
@@ -208,8 +319,8 @@ namespace tl
                     const std::string mediaFileName = ftk::Path(
                         decodeURL(externalReference->target_url())).get();
 
-                    i = zipReader.fileNameToMem.find(mediaFileName);
-                    if (i == zipReader.fileNameToMem.end())
+                    auto entry = zipReader.find(mediaFileName);
+                    if (!entry.has_value())
                     {
                         throw std::runtime_error(ftk::Format(
                             "Cannot find zip entry: \"{0}\"").arg(mediaFileName));
@@ -218,8 +329,8 @@ namespace tl
                     auto memReference = new ZipMemRef(
                         fileIO,
                         externalReference->target_url(),
-                        fileIO->getMemStart() + i->second.first,
-                        i->second.second,
+                        fileIO->getMemStart() + entry->offset,
+                        entry->size,
                         externalReference->available_range(),
                         externalReference->metadata());
                     clip->set_media_reference(memReference);
@@ -236,15 +347,15 @@ namespace tl
                         const std::string mediaFileName = ftk::Path(
                             decodeURL(imageSeqReference->target_url_for_image_number(number))).get();
 
-                        i = zipReader.fileNameToMem.find(mediaFileName);
-                        if (i == zipReader.fileNameToMem.end())
+                        auto entry = zipReader.find(mediaFileName);
+                        if (!entry.has_value())
                         {
                             throw std::runtime_error(ftk::Format(
                                 "Cannot find zip entry: \"{0}\"").arg(mediaFileName));
                         }
 
-                        memory.push_back(fileIO->getMemStart() + i->second.first);
-                        memory_sizes.push_back(i->second.second);
+                        memory.push_back(fileIO->getMemStart() + entry->offset);
+                        memory_sizes.push_back(entry->size);
                     }
                     auto memoryReference = new SeqZipMemRef(
                         fileIO,
@@ -442,7 +553,7 @@ namespace tl
         if (!out)
         {
             OTIO_NS::ErrorStatus errorStatus;
-            out = readOTIO(path, &errorStatus);
+            out = readOTIO(path, &errorStatus, logSystem);
             if (OTIO_NS::is_error(errorStatus))
             {
                 out = nullptr;

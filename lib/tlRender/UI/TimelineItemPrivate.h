@@ -3,8 +3,6 @@
 
 #include <tlRender/UI/TimelineItem.h>
 
-#include <tlRender/UI/ThumbnailSystem.h>
-
 #include <ftk/UI/ToolButton.h>
 #include <ftk/UI/Label.h>
 

@@ -26,7 +26,6 @@ namespace tl
             void _loop();
             void _util();
             void _audio();
-            void _otioz();
         };
     }
 }

@@ -31,7 +31,6 @@ namespace tl
             _loop();
             _util();
             _audio();
-            _otioz();
         }
 
         void UtilTest::_enums()
@@ -364,24 +363,6 @@ namespace tl
                 {
                     FTK_ASSERT(j == audioP[0]);
                     FTK_ASSERT((j + 1) == audioP[1]);
-                }
-            }
-        }
-        
-        void UtilTest::_otioz()
-        {
-            for (const auto& entry : ftk::dirList(TLRENDER_SAMPLE_DATA))
-            {
-                if (".otio" == entry.path.getExt())
-                {
-                    OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> timeline(
-                        dynamic_cast<OTIO_NS::Timeline*>(OTIO_NS::Timeline::from_json_file(entry.path.get())));
-                    ftk::Path outPath = entry.path;
-                    outPath.setExt(".otioz");
-                    writeOTIOZ(
-                        outPath.getFileName(),
-                        timeline,
-                        TLRENDER_SAMPLE_DATA);
                 }
             }
         }
