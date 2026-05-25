@@ -295,7 +295,7 @@ namespace tl
         const ftk::PathOptions& pathOptions)
     {
         ftk::Path out(decodeURL(url), pathOptions);
-        if (!out.hasProtocol() && !out.isAbs())
+        if (!directory.empty() && !out.hasProtocol() && !out.isAbs())
         {
             out.setDir(ftk::appendSeparator(directory) + out.getDir());
         }
