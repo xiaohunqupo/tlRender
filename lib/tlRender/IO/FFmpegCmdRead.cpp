@@ -363,6 +363,24 @@ namespace tl
                             {
                                 info.size.h = *k;
                             }
+                            k = j.find("sample_aspect_ratio");
+                            if (k != j.end())
+                            {
+                                const auto split = ftk::split(*k, ':');
+                                if (2 == split.size())
+                                {
+                                    const double num = std::atof(split[0].c_str());
+                                    const double den = std::atof(split[1].c_str());
+                                    if (den > 0.0)
+                                    {
+                                        info.pixelAspectRatio = static_cast<float>(num / den);
+                                    }
+                                }
+                                else
+                                {
+                                    info.pixelAspectRatio = std::atof(std::string(*k).c_str());
+                                }
+                            }
                             k = j.find("pix_fmt");
                             if (k != j.end())
                             {
