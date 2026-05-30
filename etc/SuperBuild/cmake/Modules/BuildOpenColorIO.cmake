@@ -25,7 +25,7 @@ list(APPEND OpenColorIO_ARGS -DOCIO_USE_SSE2=${HAS_SSE2})
 ExternalProject_Add(
     OpenColorIO
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/OpenColorIO
-    DEPENDS Imath yaml-cpp expat pystring minizip-ng ZLIB
+    DEPENDS Imath yaml-cpp expat pystring minizip-ng
     GIT_REPOSITORY ${OpenColorIO_GIT_REPOSITORY}
     GIT_TAG ${OpenColorIO_GIT_TAG}
     LIST_SEPARATOR |

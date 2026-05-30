@@ -4,7 +4,7 @@ set(OpenSSL_DEPENDS)
 if(TLRENDER_NASM)
     list(APPEND OpenSSL_DEPENDS NASM)
 endif()
-list(APPEND OpenSSL_DEPENDS ZLIB)
+list(APPEND OpenSSL_DEPENDS)
 
 set(OpenSSL_GIT_REPOSITORY "https://github.com/openssl/openssl.git")
 set(OpenSSL_GIT_TAG "openssl-3.5.2")

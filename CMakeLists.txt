@@ -30,11 +30,6 @@ set(ftk_API "GL_4_1" CACHE STRING "Graphics API (GL_4_1, GL_4_1_Debug, GLES_2)")
 
 set(TLRENDER_NET OFF CACHE BOOL "Enable network support")
 set(TLRENDER_OCIO ON CACHE BOOL "Enable support for OpenColorIO")
-set(TLRENDER_SDL2 ON CACHE BOOL "Enable support for SDL2")
-set(TLRENDER_SDL3 OFF CACHE BOOL "Enable support for SDL3")
-set(TLRENDER_JPEG ON CACHE BOOL "Enable support for JPEG I/O")
-set(TLRENDER_TIFF ON CACHE BOOL "Enable support for TIFF I/O")
-set(TLRENDER_PNG ON CACHE BOOL "Enable support for PNG I/O")
 set(TLRENDER_EXR ON CACHE BOOL "Enable support for EXR I/O")
 set(TLRENDER_FFMPEG ON CACHE BOOL "Enable support for FFmpeg (required for audio)")
 set(TLRENDER_FFMPEG_PLUGIN ON CACHE BOOL "Enable support for FFmpeg I/O")
@@ -157,35 +152,7 @@ if(TLRENDER_OCIO)
     add_definitions(-DTLRENDER_OCIO)
 endif()
 
-# SDL dependencies
-if(TLRENDER_SDL2)
-    find_package(SDL2 REQUIRED)
-    add_definitions(-DTLRENDER_SDL2)
-endif()
-if(TLRENDER_SDL3)
-    find_package(SDL3 REQUIRED)
-    add_definitions(-DTLRENDER_SDL3)
-endif()
-
 # I/O dependencies
-if(TLRENDER_JPEG)
-    find_package(libjpeg-turbo)
-    if(libjpeg-turbo_FOUND)
-        add_definitions(-DTLRENDER_JPEG)
-    endif()
-endif()
-if(TLRENDER_TIFF)
-    find_package(TIFF)
-    if(TIFF_FOUND)
-        add_definitions(-DTLRENDER_TIFF)
-    endif()
-endif()
-if(TLRENDER_PNG)
-    find_package(PNG)
-    if(PNG_FOUND)
-        add_definitions(-DTLRENDER_PNG)
-    endif()
-endif()
 if(TLRENDER_EXR)
     find_package(OpenEXR)
     if(OpenEXR_FOUND)
@@ -300,9 +267,6 @@ if(TLRENDER_AVF)
     add_definitions(-DTLRENDER_AVF)
 endif()
 
-# feather-tk dependencies
-find_package(ftk REQUIRED)
-
 # Qt dependencies
 if(TLRENDER_QT6)
     set(CMAKE_AUTOMOC ON)
@@ -320,6 +284,8 @@ endif()
 
 #-------------------------------------------------------------------------------
 # Sub-directories
+
+add_subdirectory(deps/ftk)
 
 add_subdirectory(lib/tlRender)
 if(TLRENDER_PROGRAMS)

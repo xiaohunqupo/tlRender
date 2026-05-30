@@ -3,7 +3,7 @@ include(ExternalProject)
 set(libjpeg-turbo_GIT_REPOSITORY "https://github.com/libjpeg-turbo/libjpeg-turbo.git")
 set(libjpeg-turbo_GIT_TAG "3.1.1")
 
-set(libjpeg-turbo_DEPS ZLIB)
+set(libjpeg-turbo_DEPS)
 if(TLRENDER_NASM)
     set(libjpeg-turbo_DEPS ${libjpeg-turbo_DEPS} NASM)
 endif()

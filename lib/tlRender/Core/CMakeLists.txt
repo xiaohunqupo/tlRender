@@ -19,16 +19,10 @@ set(SOURCE
     Time.cpp
     URL.cpp)
 
-set(LIBRARIES tlResource ftk::ftkCore OTIO::opentimelineio Imath::Imath nlohmann_json::nlohmann_json)
-set(LIBRARIES_PRIVATE Freetype::Freetype MINIZIP::minizip-ng ZLIB::ZLIB)
+set(LIBRARIES tlResource ftk::ftkCore OTIO::opentimelineio Imath::Imath)
+set(LIBRARIES_PRIVATE)
 if(TLRENDER_OCIO)
     list(APPEND LIBRARIES OpenColorIO::OpenColorIO)
-endif()
-if(TLRENDER_SDL2)
-    list(APPEND LIBRARIES_PRIVATE SDL2::SDL2)
-endif()
-if(TLRENDER_SDL3)
-    list(APPEND LIBRARIES_PRIVATE SDL3::SDL3)
 endif()
 if(TLRENDER_FFMPEG)
     list(APPEND LIBRARIES_PRIVATE FFmpeg::swresample FFmpeg::avutil)
