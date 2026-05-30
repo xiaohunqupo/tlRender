@@ -671,8 +671,12 @@ namespace tl
                         0.F,
                         -1.F,
                         1.F);
-                    const CompareOptions& compareOptions = p.compareOptions->get();
-                    const auto boxes = getBoxes(compareOptions.compare, p.videoFrame);
+                    const auto& compareOptions = p.compareOptions->get();
+                    const auto& displayOptions = p.displayOptions->get();
+                    const auto boxes = getBoxes(
+                        compareOptions.compare,
+                        p.videoFrame,
+                        !displayOptions.empty() ? displayOptions.front().aspectRatio : 0.F);
                     const ftk::V2I& viewPos = p.viewPos->get();
                     const double zoom = p.zoom->get();
                     const ftk::M44F vm =
@@ -967,7 +971,11 @@ namespace tl
         ftk::Size2I Viewport::_getRenderSize() const
         {
             FTK_P();
-            return getRenderSize(p.compareOptions->get().compare, p.videoFrame);
+            const auto& displayOptions = p.displayOptions->get();
+            return getRenderSize(
+                p.compareOptions->get().compare,
+                p.videoFrame,
+                !displayOptions.empty() ? displayOptions.front().aspectRatio : 0.F);
         }
 
         ftk::V2I Viewport::_getViewportCenter() const

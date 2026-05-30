@@ -44,7 +44,10 @@ namespace tl
         return !(*this == other);
     }
 
-    std::vector<ftk::Box2I> getBoxes(Compare compare, const std::vector<ftk::ImageInfo>& infos)
+    std::vector<ftk::Box2I> getBoxes(
+        Compare compare,
+        const std::vector<ftk::ImageInfo>& infos,
+        float aspectRatio)
     {
         std::vector<ftk::Box2I> out;
         const size_t count = infos.size();
@@ -53,50 +56,42 @@ namespace tl
         case Compare::Horizontal:
         {
             ftk::ImageInfo info;
+            int w = 0;
             if (count > 0)
             {
                 info = infos[0];
+                w = aspectRatio > 0.F ?
+                    (info.size.h * aspectRatio) :
+                    (info.size.w * info.pixelAspectRatio);
             }
             if (count > 0)
             {
-                out.push_back(ftk::Box2I(
-                    0,
-                    0,
-                    info.size.w * info.pixelAspectRatio,
-                    info.size.h));
+                out.push_back(ftk::Box2I(0, 0, w, info.size.h));
             }
             if (count > 1)
             {
-                out.push_back(ftk::Box2I(
-                    info.size.w * info.pixelAspectRatio,
-                    0,
-                    info.size.w * info.pixelAspectRatio,
-                    info.size.h));
+                out.push_back(ftk::Box2I(w, 0, w, info.size.h));
             }
             break;
         }
         case Compare::Vertical:
         {
             ftk::ImageInfo info;
+            int w = 0;
             if (count > 0)
             {
                 info = infos[0];
+                w = aspectRatio > 0.F ?
+                    (info.size.h * aspectRatio) :
+                    (info.size.w * info.pixelAspectRatio);
             }
             if (count > 0)
             {
-                out.push_back(ftk::Box2I(
-                    0,
-                    0,
-                    info.size.w * info.pixelAspectRatio,
-                    info.size.h));
+                out.push_back(ftk::Box2I(0, 0, w, info.size.h));
             }
             if (count > 1)
             {
-                out.push_back(ftk::Box2I(
-                    0,
-                    info.size.h,
-                    info.size.w * info.pixelAspectRatio,
-                    info.size.h));
+                out.push_back(ftk::Box2I(0, info.size.h, w, info.size.h));
             }
             break;
         }
@@ -130,6 +125,9 @@ namespace tl
                 }
                 }
 
+                const int w = aspectRatio > 0.F ?
+                    (tileSize.h * aspectRatio) :
+                    (tileSize.w * pixelAspectRatio);
                 int i = 0;
                 for (int r = 0, y = 0; r < rows; ++r)
                 {
@@ -137,35 +135,38 @@ namespace tl
                     {
                         if (i < count)
                         {
-                            const auto& info = infos[i];
-                            const ftk::Box2I box(
-                                x,
-                                y,
-                                tileSize.w * pixelAspectRatio,
-                                tileSize.h);
+                            const ftk::Box2I box(x, y, w, tileSize.h);
                             out.push_back(box);
                         }
-                        x += tileSize.w * pixelAspectRatio;
+                        x += w;
                     }
                     y += tileSize.h;
                 }
             }
             break;
         default:
-            for (size_t i = 0; i < std::min(count, static_cast<size_t>(2)); ++i)
+        {
+            if (count > 0)
             {
-                out.push_back(ftk::Box2I(
-                    0,
-                    0,
-                    infos[0].size.w * infos[0].pixelAspectRatio,
-                    infos[0].size.h));
+                const int w = aspectRatio > 0.F ?
+                    (infos[0].size.h * aspectRatio) :
+                    (infos[0].size.w * infos[0].pixelAspectRatio);
+                for (size_t i = 0; i < std::min(count, static_cast<size_t>(2)); ++i)
+                {
+                    const ftk::Box2I box(0, 0, w, infos[0].size.h);
+                    out.push_back(box);
+                }
             }
             break;
+        }
         }
         return out;
     }
 
-    std::vector<ftk::Box2I> getBoxes(Compare compare, const std::vector<VideoFrame>& videoFrame)
+    std::vector<ftk::Box2I> getBoxes(
+        Compare compare,
+        const std::vector<VideoFrame>& videoFrame,
+        float aspectRatio)
     {
         std::vector<ftk::ImageInfo> infos;
         for (const auto& i : videoFrame)
@@ -186,14 +187,17 @@ namespace tl
             }
             infos.push_back(info);
         }
-        return getBoxes(compare, infos);
+        return getBoxes(compare, infos, aspectRatio);
     }
 
-    ftk::Size2I getRenderSize(Compare compare, const std::vector<ftk::ImageInfo>& infos)
+    ftk::Size2I getRenderSize(
+        Compare compare,
+        const std::vector<ftk::ImageInfo>& infos,
+        float aspectRatio)
     {
         ftk::Size2I out;
         ftk::Box2I box;
-        const auto boxes = getBoxes(compare, infos);
+        const auto boxes = getBoxes(compare, infos, aspectRatio);
         if (!boxes.empty())
         {
             box = boxes[0];
@@ -207,7 +211,10 @@ namespace tl
         return out;
     }
 
-    ftk::Size2I getRenderSize(Compare compare, const std::vector<VideoFrame>& videoFrame)
+    ftk::Size2I getRenderSize(
+        Compare compare,
+        const std::vector<VideoFrame>& videoFrame,
+        float aspectRatio)
     {
         std::vector<ftk::ImageInfo> infos;
         for (const auto& i : videoFrame)
@@ -228,7 +235,7 @@ namespace tl
             }
             infos.push_back(info);
         }
-        return getRenderSize(compare, infos);
+        return getRenderSize(compare, infos, aspectRatio);
     }
 
     OTIO_NS::RationalTime getCompareTime(

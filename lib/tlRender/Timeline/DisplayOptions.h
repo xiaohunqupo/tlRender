@@ -73,6 +73,7 @@ namespace tl
     {
         ftk::ChannelDisplay channels     = ftk::ChannelDisplay::Color;
         ftk::ImageMirror    mirror;
+        float               aspectRatio  = 0.F;
         Color               color;
         Levels              levels;
         Exposure            exposure;

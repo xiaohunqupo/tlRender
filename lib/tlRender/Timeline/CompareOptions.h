@@ -50,16 +50,28 @@ namespace tl
     };
 
     //! Get the boxes for the given compare mode.
-    TL_API std::vector<ftk::Box2I> getBoxes(Compare, const std::vector<ftk::ImageInfo>&);
+    TL_API std::vector<ftk::Box2I> getBoxes(
+        Compare,
+        const std::vector<ftk::ImageInfo>&,
+        float aspectRatio = 0.F);
 
     //! Get the boxes for the given compare mode.
-    TL_API std::vector<ftk::Box2I> getBoxes(Compare, const std::vector<VideoFrame>&);
+    TL_API std::vector<ftk::Box2I> getBoxes(
+        Compare,
+        const std::vector<VideoFrame>&,
+        float aspectRatio = 0.F);
 
     //! Get the render size for the given compare mode.
-    TL_API ftk::Size2I getRenderSize(Compare, const std::vector<ftk::ImageInfo>&);
+    TL_API ftk::Size2I getRenderSize(
+        Compare,
+        const std::vector<ftk::ImageInfo>&,
+        float aspectRatio = 0.F);
 
     //! Get the render size for the given compare mode.
-    TL_API ftk::Size2I getRenderSize(Compare, const std::vector<VideoFrame>&);
+    TL_API ftk::Size2I getRenderSize(
+        Compare,
+        const std::vector<VideoFrame>&,
+        float aspectRatio= 0.F);
 
     //! Get a compare time.
     TL_API OTIO_NS::RationalTime getCompareTime(

@@ -377,7 +377,7 @@ namespace tl
 
                     _drawVideo(
                         videoFrame[0],
-                        ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h),
+                        ftk::Box2I(ftk::V2I(), offscreenBufferSize),
                         !imageOptions.empty() ? std::make_shared<ftk::ImageOptions>(imageOptions[0]) : nullptr,
                         !displayOptions.empty() ? displayOptions[0] : DisplayOptions(),
                         colorBuffer);
@@ -477,7 +477,7 @@ namespace tl
 
                     _drawVideo(
                         videoFrame[0],
-                        ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h),
+                        ftk::Box2I(ftk::V2I(), offscreenBufferSize),
                         !imageOptions.empty() ? std::make_shared<ftk::ImageOptions>(imageOptions[0]) : nullptr,
                         !displayOptions.empty() ? displayOptions[0] : DisplayOptions(),
                         colorBuffer);
@@ -531,7 +531,7 @@ namespace tl
 
                         _drawVideo(
                             videoFrame[1],
-                            ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h),
+                            ftk::Box2I(ftk::V2I(), offscreenBufferSize),
                             imageOptions.size() > 1 ? std::make_shared<ftk::ImageOptions>(imageOptions[1]) : nullptr,
                             displayOptions.size() > 1 ? displayOptions[1] : DisplayOptions(),
                             colorBuffer);
@@ -719,8 +719,10 @@ namespace tl
                                     IRender::drawImage(
                                         layer.image,
                                         getBox(
-                                            layer.image->getAspect(),
-                                            ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
+                                            displayOptions.aspectRatio > 0.F ?
+                                                displayOptions.aspectRatio :
+                                                layer.image->getAspect(),
+                                            ftk::Box2I(ftk::V2I(), offscreenBufferSize)),
                                         ftk::Color4F(1.F, 1.F, 1.F),
                                         imageOptionsTmp);
                                     glEnable(GL_BLEND);
@@ -737,8 +739,10 @@ namespace tl
                                     IRender::drawImage(
                                         layer.imageB,
                                         getBox(
-                                            layer.imageB->getAspect(),
-                                            ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
+                                            displayOptions.aspectRatio > 0.F ?
+                                                displayOptions.aspectRatio :
+                                                layer.imageB->getAspect(),
+                                            ftk::Box2I(ftk::V2I(), offscreenBufferSize)),
                                         ftk::Color4F(1.F, 1.F, 1.F),
                                         imageOptionsTmp);
                                     glEnable(GL_BLEND);
@@ -760,7 +764,7 @@ namespace tl
                                     if (p.vbos["video"])
                                     {
                                         p.vbos["video"]->copy(convert(
-                                            ftk::mesh(ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h), true),
+                                            ftk::mesh(ftk::Box2I(ftk::V2I(), offscreenBufferSize), true),
                                             p.vbos["video"]->getType()));
                                     }
                                     if (p.vaos["video"])
@@ -777,8 +781,10 @@ namespace tl
                                 IRender::drawImage(
                                     layer.image,
                                     getBox(
-                                        layer.image->getAspect(),
-                                        ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
+                                        displayOptions.aspectRatio > 0.F ?
+                                            displayOptions.aspectRatio :
+                                            layer.image->getAspect(),
+                                        ftk::Box2I(ftk::V2I(), offscreenBufferSize)),
                                     ftk::Color4F(1.F, 1.F, 1.F, 1.F - layer.transitionValue),
                                     imageOptionsTmp);
                             }
@@ -789,8 +795,10 @@ namespace tl
                                 IRender::drawImage(
                                     layer.imageB,
                                     getBox(
-                                        layer.imageB->getAspect(),
-                                        ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
+                                        displayOptions.aspectRatio > 0.F ?
+                                            displayOptions.aspectRatio :
+                                            layer.imageB->getAspect(),
+                                        ftk::Box2I(ftk::V2I(), offscreenBufferSize)),
                                     ftk::Color4F(1.F, 1.F, 1.F, layer.transitionValue),
                                     imageOptionsTmp);
                             }
@@ -804,8 +812,10 @@ namespace tl
                             IRender::drawImage(
                                 layer.image,
                                 getBox(
-                                    layer.image->getAspect(),
-                                    ftk::Box2I(0, 0, offscreenBufferSize.w, offscreenBufferSize.h)),
+                                    displayOptions.aspectRatio > 0.F ?
+                                        displayOptions.aspectRatio :
+                                        layer.image->getAspect(),
+                                    ftk::Box2I(ftk::V2I(), offscreenBufferSize)),
                                 ftk::Color4F(1.F, 1.F, 1.F),
                                 imageOptionsTmp);
                         }

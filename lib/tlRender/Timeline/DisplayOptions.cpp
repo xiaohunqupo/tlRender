@@ -86,6 +86,7 @@ namespace tl
         return
             channels == other.channels &&
             mirror == other.mirror &&
+            aspectRatio == other.aspectRatio &&
             color == other.color &&
             levels == other.levels &&
             exposure == other.exposure &&
@@ -138,6 +139,7 @@ namespace tl
     void to_json(nlohmann::json& json, const DisplayOptions& in)
     {
         json["Channels"] = to_string(in.channels);
+        json["AspectRatio"] = in.aspectRatio;
         json["Mirror"] = in.mirror;
         json["Color"] = in.color;
         json["Levels"] = in.levels;
@@ -187,6 +189,7 @@ namespace tl
     {
         from_string(json.at("Channels").get<std::string>(), out.channels);
         json.at("Mirror").get_to(out.mirror);
+        json.at("AspectRatio").get_to(out.aspectRatio);
         json.at("Color").get_to(out.color);
         json.at("Levels").get_to(out.levels);
         json.at("Exposure").get_to(out.exposure);
