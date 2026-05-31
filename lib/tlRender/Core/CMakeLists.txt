@@ -27,7 +27,6 @@ endif()
 if(TLRENDER_FFMPEG)
     list(APPEND LIBRARIES_PRIVATE FFmpeg::swresample FFmpeg::avutil)
 endif()
-list(APPEND LIBRARIES_PRIVATE Threads::Threads)
 
 add_library(tlCore ${HEADERS} ${SOURCE})
 target_link_libraries(tlCore PUBLIC ${LIBRARIES} PRIVATE ${LIBRARIES_PRIVATE})
