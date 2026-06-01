@@ -96,7 +96,6 @@ if(WIN32)
             ${CMAKE_INSTALL_PREFIX}/bin/usd_usdProcImaging.dll
             ${CMAKE_INSTALL_PREFIX}/bin/usd_usdRender.dll
             ${CMAKE_INSTALL_PREFIX}/bin/usd_usdRi.dll
-            ${CMAKE_INSTALL_PREFIX}/bin/usd_usdRiPxrImaging.dll
             ${CMAKE_INSTALL_PREFIX}/bin/usd_usdSemantics.dll
             ${CMAKE_INSTALL_PREFIX}/bin/usd_usdShade.dll
             ${CMAKE_INSTALL_PREFIX}/bin/usd_usdShadeValidators.dll
@@ -258,7 +257,6 @@ elseif(APPLE)
             ${CMAKE_INSTALL_PREFIX}/lib/libusd_usdProcImaging.dylib
             ${CMAKE_INSTALL_PREFIX}/lib/libusd_usdRender.dylib
             ${CMAKE_INSTALL_PREFIX}/lib/libusd_usdRi.dylib
-            ${CMAKE_INSTALL_PREFIX}/lib/libusd_usdRiPxrImaging.dylib
             ${CMAKE_INSTALL_PREFIX}/lib/libusd_usdSemantics.dylib
             ${CMAKE_INSTALL_PREFIX}/lib/libusd_usdShade.dylib
             ${CMAKE_INSTALL_PREFIX}/lib/libusd_usdShadeValidators.dylib
@@ -418,7 +416,6 @@ else()
             ${CMAKE_INSTALL_PREFIX}/lib/libusd_usdProcImaging.so
             ${CMAKE_INSTALL_PREFIX}/lib/libusd_usdProc.so
             ${CMAKE_INSTALL_PREFIX}/lib/libusd_usdRender.so
-            ${CMAKE_INSTALL_PREFIX}/lib/libusd_usdRiPxrImaging.so
             ${CMAKE_INSTALL_PREFIX}/lib/libusd_usdRi.so
             ${CMAKE_INSTALL_PREFIX}/lib/libusd_usdSemantics.so
             ${CMAKE_INSTALL_PREFIX}/lib/libusd_usdShade.so
