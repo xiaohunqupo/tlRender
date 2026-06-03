@@ -14,14 +14,19 @@ set(SOURCE
     TimeObject.cpp
     ToolTipsFilter.cpp)
 
-set(LIBRARIES)
-if(TLRENDER_QT6)
-    list(APPEND LIBRARIES Qt6::Gui Qt6::OpenGL)
-endif()
-list(APPEND LIBRARIES tlGL)
-
 add_library(tlQt ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
-target_link_libraries(tlQt ${LIBRARIES})
+
+if(TLRENDER_QT6)
+    target_compile_definitions(tlQt PUBLIC TLRENDER_QT6)
+endif()
+
+target_include_directories(tlQt
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<INSTALL_INTERFACE:include>)
+
+target_link_libraries(tlQt Qt6::Gui Qt6::OpenGL tlGL)
+
 set_target_properties(tlQt PROPERTIES FOLDER lib)
 set_target_properties(tlQt PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

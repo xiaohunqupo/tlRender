@@ -11,5 +11,13 @@ set(SOURCE
     URLTest.cpp)
 
 add_library(tlCoreTest ${SOURCE} ${HEADERS})
+
+target_include_directories(tlCoreTest
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/tests>
+        $<INSTALL_INTERFACE:include>)
+
 target_link_libraries(tlCoreTest tlTestLib)
+
 set_target_properties(tlCoreTest PROPERTIES FOLDER tests)

@@ -10,6 +10,7 @@
 #include <tlRender/IO/System.h>
 
 #include <tlRender/Core/AudioSystem.h>
+#include <tlRender/Core/Version.h>
 
 #include <ftk/GL/Init.h>
 #include <ftk/Core/Context.h>

@@ -7,7 +7,14 @@ set(SOURCE
     Time.cpp)
 
 add_library(tlCorePy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
+
+target_include_directories(tlCorePy
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<INSTALL_INTERFACE:include>)
+
 target_link_libraries(tlCorePy tlCore Python3::Python)
+
 set_target_properties(tlCorePy PROPERTIES FOLDER lib)
 set_target_properties(tlCorePy PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

@@ -35,7 +35,14 @@ set(SOURCE
 set(LIBRARIES tlUI tlDevice)
 
 add_library(tlPlayApp ${HEADERS} ${SOURCE})
+
+target_include_directories(tlPlayApp
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<INSTALL_INTERFACE:include>)
+
 target_link_libraries(tlPlayApp ${LIBRARIES})
+
 set_target_properties(tlPlayApp PROPERTIES FOLDER lib)
 set_target_properties(tlPlayApp PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

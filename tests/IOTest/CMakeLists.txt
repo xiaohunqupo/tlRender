@@ -18,5 +18,13 @@ if(TLRENDER_OIIO)
 endif()
 
 add_library(tlIOTest ${SOURCE} ${HEADERS})
+
+target_include_directories(tlIOTest
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/tests>
+        $<INSTALL_INTERFACE:include>)
+
 target_link_libraries(tlIOTest tlTestLib tlIO)
+
 set_target_properties(tlIOTest PROPERTIES FOLDER tests)

@@ -9,7 +9,8 @@ set(HEADERS
     Time.h
     TimeInline.h
     URL.h
-    Util.h)
+    Util.h
+    Version.h)
 
 set(SOURCE
     Audio.cpp
@@ -19,24 +20,34 @@ set(SOURCE
     Time.cpp
     URL.cpp)
 
-set(LIBRARIES tlResource ftk::ftkCore OTIO::opentimelineio Imath::Imath)
-set(LIBRARIES_PRIVATE)
-if(TLRENDER_OCIO)
-    list(APPEND LIBRARIES OpenColorIO::OpenColorIO)
-endif()
-if(TLRENDER_FFMPEG)
-    list(APPEND LIBRARIES_PRIVATE FFmpeg::swresample FFmpeg::avutil)
-endif()
-
 add_library(tlCore ${HEADERS} ${SOURCE})
-target_link_libraries(tlCore PUBLIC ${LIBRARIES} PRIVATE ${LIBRARIES_PRIVATE})
-set_target_properties(tlCore PROPERTIES FOLDER lib)
-set_target_properties(tlCore PROPERTIES PUBLIC_HEADER "${HEADERS}")
+
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(tlCore PUBLIC TL_EXPORTS)
 else()
     target_compile_definitions(tlCore PUBLIC TL_STATIC)
 endif()
+target_compile_definitions(tlCore PUBLIC $<$<CONFIG:Debug>:FTK_ASSERT>)
+
+target_include_directories(tlCore
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<INSTALL_INTERFACE:include>)
+
+target_link_libraries(tlCore
+    PUBLIC tlResource ftk::ftkCore OTIO::opentimelineio Imath::Imath)
+
+if(TLRENDER_OCIO)
+    target_compile_definitions(tlCore PUBLIC TLRENDER_OCIO)
+    target_link_libraries(tlCore PRIVATE OpenColorIO::OpenColorIO)
+endif()
+if(TLRENDER_FFMPEG)
+    target_compile_definitions(tlCore PUBLIC TLRENDER_FFMPEG)
+    target_link_libraries(tlCore PRIVATE FFmpeg::swresample FFmpeg::avutil)
+endif()
+
+set_target_properties(tlCore PROPERTIES FOLDER lib)
+set_target_properties(tlCore PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
 install(
     TARGETS tlCore

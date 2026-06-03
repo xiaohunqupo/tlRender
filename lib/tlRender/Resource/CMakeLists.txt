@@ -36,7 +36,9 @@ foreach(RESOURCE ${RESOURCES})
 endforeach()
 
 add_library(tlResource ${HEADERS} ${SOURCE})
+
 target_link_libraries(tlResource)
+
 set_target_properties(tlResource PROPERTIES FOLDER lib)
 set_target_properties(tlResource PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

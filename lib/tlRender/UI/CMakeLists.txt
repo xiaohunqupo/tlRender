@@ -39,7 +39,14 @@ set(SOURCE
     Viewport.cpp)
 
 add_library(tlUI ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
+
+target_include_directories(tlUI
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<INSTALL_INTERFACE:include>)
+
 target_link_libraries(tlUI PUBLIC tlGL ftk::ftkUI)
+
 set_target_properties(tlUI PROPERTIES FOLDER lib)
 set_target_properties(tlUI PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
