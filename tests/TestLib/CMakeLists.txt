@@ -7,7 +7,7 @@ set(SOURCE
 
 add_library(tlTestLib ${SOURCE} ${HEADERS})
 
-target_compile_definitions(tlTestLib PUBLIC TLRENDER_SAMPLE_DATA="${CMAKE_CURRENT_SOURCE_DIR}/etc/SampleData")
+target_compile_definitions(tlTestLib PUBLIC TLRENDER_SAMPLE_DATA="${PROJECT_SOURCE_DIR}/etc/SampleData")
 
 target_include_directories(tlTestLib
     PUBLIC
