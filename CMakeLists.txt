@@ -53,6 +53,20 @@ set(TLRENDER_GCOV OFF CACHE BOOL "Enable gcov code coverage")
 set(TLRENDER_GPROF OFF CACHE BOOL "Enable gprof code profiling")
 
 #-------------------------------------------------------------------------------
+# Git submodules
+
+find_package(Git REQUIRED)
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/deps/ftk/CMakeLists.txt")
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        RESULT_VARIABLE GIT_SUBMODULE_RESULT)
+    if(NOT GIT_SUBMODULE_RESULT EQUAL 0)
+        message(FATAL_ERROR "git submodule update failed with ${GIT_SUBMODULE_RESULT}")
+    endif()
+endif()
+
+#-------------------------------------------------------------------------------
 # Internal configuration
 
 list(PREPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
