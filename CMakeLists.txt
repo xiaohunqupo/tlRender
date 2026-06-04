@@ -53,20 +53,6 @@ set(TLRENDER_GCOV OFF CACHE BOOL "Enable gcov code coverage")
 set(TLRENDER_GPROF OFF CACHE BOOL "Enable gprof code profiling")
 
 #-------------------------------------------------------------------------------
-# Git submodules
-
-find_package(Git REQUIRED)
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/deps/ftk/CMakeLists.txt")
-    execute_process(
-        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        RESULT_VARIABLE GIT_SUBMODULE_RESULT)
-    if(NOT GIT_SUBMODULE_RESULT EQUAL 0)
-        message(FATAL_ERROR "git submodule update failed with ${GIT_SUBMODULE_RESULT}")
-    endif()
-endif()
-
-#-------------------------------------------------------------------------------
 # Internal configuration
 
 list(PREPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
@@ -252,9 +238,32 @@ if(TLRENDER_PYTHON)
 endif()
 
 #-------------------------------------------------------------------------------
+# Git submodules
+
+find_package(Git REQUIRED)
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/deps/ftk/CMakeLists.txt")
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        RESULT_VARIABLE GIT_SUBMODULE_RESULT)
+    if(NOT GIT_SUBMODULE_RESULT EQUAL 0)
+        message(FATAL_ERROR "git submodule update failed with ${GIT_SUBMODULE_RESULT}")
+    endif()
+endif()
+
+#-------------------------------------------------------------------------------
 # Sub-directories
 
 add_subdirectory(deps/ftk)
+add_library(ftk::ftkResource ALIAS ftkResource)
+add_library(ftk::ftkCore ALIAS ftkCore)
+add_library(ftk::ftkGL ALIAS ftkGL)
+add_library(ftk::ftkUI ALIAS ftkUI)
+add_library(ftk::ftkTestLib ALIAS ftkTestLib)
+if(TLRENDER_PYTHON)
+    add_library(ftk::ftkCorePy ALIAS ftkCorePy)
+    add_library(ftk::ftkUIPy ALIAS ftkUIPy)
+endif()
 
 add_subdirectory(lib/tlRender)
 if(TLRENDER_PROGRAMS)
