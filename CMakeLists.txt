@@ -55,7 +55,7 @@ set(TLRENDER_GPROF OFF CACHE BOOL "Enable gprof code profiling")
 #-------------------------------------------------------------------------------
 # Internal configuration
 
-list(PREPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
 if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 17)
