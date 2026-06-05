@@ -29,4 +29,4 @@ set TLRENDER_GCOV=OFF
 set BUILD_SHARED_LIBS=OFF
 set FTK_API=GL_4_1
 
-%SOURCE_DIR%\etc\Windows\windows-build-gha.bat %SOURCE_DIR% %BUILD_TYPE%
+%SOURCE_DIR%\etc\Windows\sbuild.bat %SOURCE_DIR% %BUILD_TYPE%
