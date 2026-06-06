@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <QtTest/TimeObjectTest.h>
+#include <tlRender/QtTest/TimeObjectTest.h>
 
 namespace tl
 {

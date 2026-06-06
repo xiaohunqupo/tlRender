@@ -1,7 +1,1 @@
-add_subdirectory(CoreTest)
-add_subdirectory(IOTest)
-add_subdirectory(TimelineTest)
 add_subdirectory(tltest)
-if(TLRENDER_QT6)
-    add_subdirectory(QtTest)
-endif()

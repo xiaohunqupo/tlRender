@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <CoreTest/AudioTest.h>
+#include <tlRender/CoreTest/AudioTest.h>
 
 #include <tlRender/Core/AudioResample.h>
 #include <tlRender/Core/AudioSystem.h>

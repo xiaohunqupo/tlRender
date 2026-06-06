@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <TimelineTest/ColorOptionsTest.h>
+#include <tlRender/TimelineTest/ColorOptionsTest.h>
 
 #include <tlRender/Timeline/ColorOptions.h>
 

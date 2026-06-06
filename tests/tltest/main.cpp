@@ -2,34 +2,34 @@
 // Copyright Contributors to the tlRender project.
 
 #if defined(TLRENDER_QT6)
-#include <QtTest/TimeObjectTest.h>
+#include <tlRender/QtTest/TimeObjectTest.h>
 #include <tlRender/Qt/Init.h>
 #endif // TLRENDER_QT6
 
-#include <TimelineTest/ColorOptionsTest.h>
-#include <TimelineTest/CompareOptionsTest.h>
-#include <TimelineTest/DisplayOptionsTest.h>
-#include <TimelineTest/MemRefTest.h>
-#include <TimelineTest/PlayerOptionsTest.h>
-#include <TimelineTest/PlayerTest.h>
-#include <TimelineTest/TimelineTest.h>
-#include <TimelineTest/UtilTest.h>
+#include <tlRender/TimelineTest/ColorOptionsTest.h>
+#include <tlRender/TimelineTest/CompareOptionsTest.h>
+#include <tlRender/TimelineTest/DisplayOptionsTest.h>
+#include <tlRender/TimelineTest/MemRefTest.h>
+#include <tlRender/TimelineTest/PlayerOptionsTest.h>
+#include <tlRender/TimelineTest/PlayerTest.h>
+#include <tlRender/TimelineTest/TimelineTest.h>
+#include <tlRender/TimelineTest/UtilTest.h>
 
-#include <IOTest/IOTest.h>
+#include <tlRender/IOTest/IOTest.h>
 #if defined(TLRENDER_FFMPEG_PLUGIN)
-#include <IOTest/FFmpegTest.h>
+#include <tlRender/IOTest/FFmpegTest.h>
 #endif // TLRENDER_FFMPEG_PLUGIN
 #if defined(TLRENDER_EXR)
-#include <IOTest/EXRTest.h>
+#include <tlRender/IOTest/EXRTest.h>
 #endif // TLRENDER_EXR
 #if defined(TLRENDER_OIIO)
-#include <IOTest/OIIOTest.h>
+#include <tlRender/IOTest/OIIOTest.h>
 #endif // TLRENDER_OIIO
 
-#include <CoreTest/AudioTest.h>
-#include <CoreTest/HDRTest.h>
-#include <CoreTest/TimeTest.h>
-#include <CoreTest/URLTest.h>
+#include <tlRender/CoreTest/AudioTest.h>
+#include <tlRender/CoreTest/HDRTest.h>
+#include <tlRender/CoreTest/TimeTest.h>
+#include <tlRender/CoreTest/URLTest.h>
 
 #include <tlRender/Timeline/Init.h>
 

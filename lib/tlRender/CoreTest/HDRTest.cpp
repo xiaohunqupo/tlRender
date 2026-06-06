@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <CoreTest/HDRTest.h>
+#include <tlRender/CoreTest/HDRTest.h>
 
 #include <tlRender/Core/HDR.h>
 

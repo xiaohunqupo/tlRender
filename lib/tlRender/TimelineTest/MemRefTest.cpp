@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <TimelineTest/MemRefTest.h>
+#include <tlRender/TimelineTest/MemRefTest.h>
 
 #include <tlRender/Timeline/MemRef.h>
 
