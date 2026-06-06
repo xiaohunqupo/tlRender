@@ -1,1 +1,1 @@
-add_subdirectory(tltest)
+add_subdirectory(tl-test)
