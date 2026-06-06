@@ -5,9 +5,10 @@
 
 #include <tlRender/Core/URL.h>
 
-#include <ftk/Core/Format.h>
+#include <ftk/Core/Assert.h>
 
 #include <sstream>
+#include <vector>
 
 namespace tl
 {

@@ -25,6 +25,6 @@ target_include_directories(tlIOTest
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/tests>
         $<INSTALL_INTERFACE:include>)
 
-target_link_libraries(tlIOTest tlTestLib tlIO)
+target_link_libraries(tlIOTest tlIO ftkTestLib)
 
 set_target_properties(tlIOTest PROPERTIES FOLDER tests)

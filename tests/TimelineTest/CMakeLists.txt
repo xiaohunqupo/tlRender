@@ -20,12 +20,14 @@ set(SOURCE
 
 add_library(tlTimelineTest ${SOURCE} ${HEADERS})
 
+target_compile_definitions(tlTimelineTest PUBLIC TLRENDER_SAMPLE_DATA="${PROJECT_SOURCE_DIR}/etc/SampleData")
+
 target_include_directories(tlTimelineTest
     PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/tests>
         $<INSTALL_INTERFACE:include>)
 
-target_link_libraries(tlTimelineTest tlTestLib tlTimeline)
+target_link_libraries(tlTimelineTest tlTimeline ftkTestLib)
 
 set_target_properties(tlTimelineTest PROPERTIES FOLDER tests)

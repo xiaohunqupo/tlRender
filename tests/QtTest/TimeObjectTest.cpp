@@ -5,7 +5,7 @@
 
 namespace tl
 {
-namespace qt_tests
+    namespace qt_tests
     {
         TimeObjectTest::TimeObjectTest(const std::shared_ptr<ftk::Context>& context) :
             ITest(context, "qt_tests::TimeObjectTest")

@@ -90,7 +90,7 @@ namespace tl
 
 namespace opentime
 {
-    namespace OPENTIME_VERSION
+    namespace OPENTIME_VERSION_NS
     {
         TL_API std::string to_string(const RationalTime&);
         TL_API std::string to_string(const TimeRange&);

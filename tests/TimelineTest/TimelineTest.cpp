@@ -8,6 +8,7 @@
 
 #include <tlRender/IO/System.h>
 
+#include <ftk/Core/Assert.h>
 #include <ftk/Core/Format.h>
 
 #include <opentimelineio/clip.h>
@@ -41,8 +42,8 @@ namespace tl
 
         void TimelineTest::_enums()
         {
-            _enum<ImageSeqAudio>("ImageSeqAudio", getImageSeqAudioEnums);
-            _enum<Transition>("Transition", getTransitionEnums);
+            FTK_TEST_ENUM(ImageSeqAudio);
+            FTK_TEST_ENUM(Transition);
         }
 
         void TimelineTest::_options()
@@ -107,7 +108,7 @@ namespace tl
                 }
                 catch (const std::exception& e)
                 {
-                    _printError(e.what());
+                    _error(e.what());
                 }
             }
             for (const auto& path : paths)
@@ -122,7 +123,7 @@ namespace tl
                 }
                 catch (const std::exception& e)
                 {
-                    _printError(e.what());
+                    _error(e.what());
                 }
             }
         }
@@ -228,7 +229,7 @@ namespace tl
             }
             catch (const std::exception& e)
             {
-                _printError(e.what());
+                _error(e.what());
             }
             try
             {
@@ -238,7 +239,7 @@ namespace tl
             }
             catch (const std::exception& e)
             {
-                _printError(e.what());
+                _error(e.what());
             }
             try
             {
@@ -253,7 +254,7 @@ namespace tl
             }
             catch (const std::exception& e)
             {
-                _printError(e.what());
+                _error(e.what());
             }
             try
             {
@@ -268,7 +269,7 @@ namespace tl
             }
             catch (const std::exception& e)
             {
-                _printError(e.what());
+                _error(e.what());
             }
             try
             {
@@ -285,7 +286,7 @@ namespace tl
             }
             catch (const std::exception& e)
             {
-                _printError(e.what());
+                _error(e.what());
             }
 #endif // TLRENDER_FFMPEGPLUGIN or TLRENDER_FFMPEG_CMD
         }

@@ -6,6 +6,7 @@
 #include <tlRender/Timeline/CompareOptions.h>
 
 #include <ftk/Core/Assert.h>
+#include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
 
 namespace tl
@@ -24,8 +25,8 @@ namespace tl
         void CompareOptionsTest::run()
         {
             {
-                _enum<Compare>("Compare", getCompareEnums);
-                _enum<CompareTime>("CompareTime", getCompareTimeEnums);
+                FTK_TEST_ENUM(Compare);
+                FTK_TEST_ENUM(CompareTime);
             }
             {
                 CompareOptions options;

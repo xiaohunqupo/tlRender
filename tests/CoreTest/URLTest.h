@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include <TestLib/ITest.h>
+#include <ftk/TestLib/ITest.h>
 
 namespace tl
 {
     namespace core_tests
     {
-        class URLTest : public tests::ITest
+        class URLTest : public ftk::test::ITest
         {
         protected:
             URLTest(const std::shared_ptr<ftk::Context>&);

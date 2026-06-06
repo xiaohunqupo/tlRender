@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include <TestLib/ITest.h>
+#include <ftk/TestLib/ITest.h>
 
 namespace tl
 {
     namespace qt_tests
     {
-        class TimeObjectTest : public tests::ITest
+        class TimeObjectTest : public ftk::test::ITest
         {
         protected:
             TimeObjectTest(const std::shared_ptr<ftk::Context>&);

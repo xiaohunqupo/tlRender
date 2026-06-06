@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include <TestLib/ITest.h>
+#include <ftk/TestLib/ITest.h>
 
 namespace tl
 {
     namespace core_tests
     {
-        class AudioTest : public tests::ITest
+        class AudioTest : public ftk::test::ITest
         {
         protected:
             AudioTest(const std::shared_ptr<ftk::Context>&);

@@ -12,6 +12,6 @@ target_include_directories(tlQtTest
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/tests>
         $<INSTALL_INTERFACE:include>)
 
-target_link_libraries(tlQtTest tlTestLib tlQt)
+target_link_libraries(tlQtTest tlQt ftkTestLib)
 
 set_target_properties(tlQtTest PROPERTIES FOLDER tests)

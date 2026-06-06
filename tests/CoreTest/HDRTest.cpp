@@ -5,6 +5,9 @@
 
 #include <tlRender/Core/HDR.h>
 
+#include <ftk/Core/Assert.h>
+#include <ftk/Core/Format.h>
+
 namespace tl
 {
     namespace core_tests
@@ -27,8 +30,8 @@ namespace tl
 
         void HDRTest::_enums()
         {
-            _enum<HDR_EOTF>("HDR_EOTF", getHDR_EOTFEnums);
-            _enum<HDRPrimaries>("HDRPrimaries", getHDRPrimariesEnums);
+            FTK_TEST_ENUM(HDR_EOTF);
+            FTK_TEST_ENUM(HDRPrimaries);
         }
 
         void HDRTest::_operators()

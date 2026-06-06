@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include <TestLib/ITest.h>
+#include <ftk/TestLib/ITest.h>
 
 namespace tl
 {
     namespace timeline_tests
     {
-        class ColorOptionsTest : public tests::ITest
+        class ColorOptionsTest : public ftk::test::ITest
         {
         protected:
             ColorOptionsTest(const std::shared_ptr<ftk::Context>&);

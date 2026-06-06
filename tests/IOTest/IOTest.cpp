@@ -5,6 +5,8 @@
 
 #include <tlRender/IO/System.h>
 
+#include <ftk/Core/Assert.h>
+#include <ftk/Core/Context.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
 

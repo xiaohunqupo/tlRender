@@ -39,10 +39,9 @@
 #include <vector>
 
 using namespace tl;
-using namespace tl::tests;
 
 void coreTests(
-    std::vector<std::shared_ptr<tests::ITest> >& tests,
+    std::vector<std::shared_ptr<ftk::test::ITest> >& tests,
     const std::shared_ptr<ftk::Context>& context)
 {
     tests.push_back(core_tests::AudioTest::create(context));
@@ -52,7 +51,7 @@ void coreTests(
 }
 
 void ioTests(
-    std::vector<std::shared_ptr<tests::ITest> >& tests,
+    std::vector<std::shared_ptr<ftk::test::ITest> >& tests,
     const std::shared_ptr<ftk::Context>& context)
 {
     tests.push_back(io_tests::IOTest::create(context));
@@ -68,7 +67,7 @@ void ioTests(
 }
 
 void timelineTests(
-    std::vector<std::shared_ptr<tests::ITest> >& tests,
+    std::vector<std::shared_ptr<ftk::test::ITest> >& tests,
     const std::shared_ptr<ftk::Context>& context)
 {
     tests.push_back(timeline_tests::ColorOptionsTest::create(context));
@@ -82,7 +81,7 @@ void timelineTests(
 }
 
 void qtTests(
-    std::vector<std::shared_ptr<tests::ITest> >& tests,
+    std::vector<std::shared_ptr<ftk::test::ITest> >& tests,
     const std::shared_ptr<ftk::Context>& context)
 {
 #if defined(TLRENDER_QT6)
@@ -114,7 +113,7 @@ int main(int argc, char* argv[])
 
     context->tick();
 
-    std::vector<std::shared_ptr<tests::ITest> > tests;
+    std::vector<std::shared_ptr<ftk::test::ITest> > tests;
     coreTests(tests, context);
     ioTests(tests, context);
     timelineTests(tests, context);

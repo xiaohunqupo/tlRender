@@ -6,7 +6,12 @@
 #include <tlRender/Core/AudioResample.h>
 #include <tlRender/Core/AudioSystem.h>
 
+#include <ftk/Core/Assert.h>
+#include <ftk/Core/Context.h>
+#include <ftk/Core/Format.h>
+
 #include <cstring>
+#include <strstream>
 
 namespace tl
 {
@@ -37,7 +42,7 @@ namespace tl
 
         void AudioTest::_enums()
         {
-            _enum<AudioType>("AudioType", getAudioTypeEnums);
+            FTK_TEST_ENUM(AudioType);
         }
 
         void AudioTest::_types()

@@ -8,6 +8,7 @@
 
 #include <tlRender/IO/System.h>
 
+#include <ftk/Core/Assert.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Time.h>
 
@@ -39,9 +40,9 @@ namespace tl
 
         void PlayerTest::_enums()
         {
-            ITest::_enum<Playback>("Playback", getPlaybackEnums);
-            ITest::_enum<Loop>("Loop", getLoopEnums);
-            ITest::_enum<TimeAction>("TimeAction", getTimeActionEnums);
+            FTK_TEST_ENUM(Playback);
+            FTK_TEST_ENUM(Loop);
+            FTK_TEST_ENUM(TimeAction);
         }
 
         void PlayerTest::_player()
@@ -72,7 +73,7 @@ namespace tl
                 }
                 catch (const std::exception& e)
                 {
-                    _printError(e.what());
+                    _error(e.what());
                 }
             }
             for (const auto& path : paths)
@@ -88,7 +89,7 @@ namespace tl
                 }
                 catch (const std::exception& e)
                 {
-                    _printError(e.what());
+                    _error(e.what());
                 }
             }
         }

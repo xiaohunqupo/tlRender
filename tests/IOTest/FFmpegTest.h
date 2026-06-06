@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include <TestLib/ITest.h>
+#include <ftk/TestLib/ITest.h>
 
 namespace tl
 {
     namespace io_tests
     {
-        class FFmpegTest : public tests::ITest
+        class FFmpegTest : public ftk::test::ITest
         {
         protected:
             FFmpegTest(const std::shared_ptr<ftk::Context>&);

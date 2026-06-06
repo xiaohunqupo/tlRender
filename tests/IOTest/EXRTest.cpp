@@ -7,7 +7,9 @@
 #include <tlRender/IO/System.h>
 
 #include <ftk/Core/Assert.h>
+#include <ftk/Core/Context.h>
 #include <ftk/Core/FileIO.h>
+#include <ftk/Core/Format.h>
 
 #include <sstream>
 
@@ -33,7 +35,8 @@ namespace tl
 
         void EXRTest::_enums()
         {
-            _enum<exr::Compression>("Compression", exr::getCompressionEnums);
+            using namespace exr;
+            FTK_TEST_ENUM(Compression);
         }
 
         void EXRTest::_util()
@@ -314,7 +317,7 @@ namespace tl
                                     }
                                     catch (const std::exception& e)
                                     {
-                                        _printError(e.what());
+                                        _error(e.what());
                                     }
                                 }
                             }

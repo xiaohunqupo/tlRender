@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include <TestLib/ITest.h>
+#include <ftk/TestLib/ITest.h>
 
 namespace tl
 {
     namespace io_tests
     {
-        class OIIOTest : public tests::ITest
+        class OIIOTest : public ftk::test::ITest
         {
         protected:
             OIIOTest(const std::shared_ptr<ftk::Context>&);

@@ -5,6 +5,7 @@
 
 #include <tlRender/Timeline/Util.h>
 
+#include <ftk/Core/Assert.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Path.h>
 
@@ -35,8 +36,8 @@ namespace tl
 
         void UtilTest::_enums()
         {
-            _enum<CacheDir>("CacheDir", getCacheDirEnums);
-            _enum<ToMemRef>("ToMemRef", getToMemRefEnums);
+            FTK_TEST_ENUM(CacheDir);
+            FTK_TEST_ENUM(ToMemRef);
         }
 
         void UtilTest::_exts()

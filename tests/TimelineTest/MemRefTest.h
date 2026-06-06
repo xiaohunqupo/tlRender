@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include <TestLib/ITest.h>
+#include <ftk/TestLib/ITest.h>
 
 namespace tl
 {
     namespace timeline_tests
     {
-        class MemRefTest : public tests::ITest
+        class MemRefTest : public ftk::test::ITest
         {
         protected:
             MemRefTest(const std::shared_ptr<ftk::Context>&);

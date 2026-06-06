@@ -6,6 +6,7 @@
 #include <tlRender/Timeline/ColorOptions.h>
 
 #include <ftk/Core/Assert.h>
+#include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
 
 namespace tl
@@ -24,8 +25,8 @@ namespace tl
         void ColorOptionsTest::run()
         {
             {
-                _enum<OCIOConfig>("OCIOConfig", getOCIOConfigEnums);
-                _enum<LUTOrder>("LUTOrder", getLUTOrderEnums);
+                FTK_TEST_ENUM(OCIOConfig);
+                FTK_TEST_ENUM(LUTOrder);
             }
             {
                 _print("LUT formats: " + ftk::join(getLUTFormatNames(), ", "));

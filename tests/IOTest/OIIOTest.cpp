@@ -6,6 +6,9 @@
 #include <tlRender/IO/OIIO.h>
 #include <tlRender/IO/System.h>
 
+#include <ftk/Core/Assert.h>
+#include <ftk/Core/Context.h>
+
 #include <sstream>
 
 namespace tl
@@ -173,7 +176,7 @@ namespace tl
                                         }
                                         catch (const std::exception& e)
                                         {
-                                            _printError(e.what());
+                                            _error(e.what());
                                         }
 
                                         ++count;

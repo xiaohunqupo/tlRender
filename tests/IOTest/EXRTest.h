@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include <TestLib/ITest.h>
+#include <ftk/TestLib/ITest.h>
 
 namespace tl
 {
     namespace io_tests
     {
-        class EXRTest : public tests::ITest
+        class EXRTest : public ftk::test::ITest
         {
         protected:
             EXRTest(const std::shared_ptr<ftk::Context>&);

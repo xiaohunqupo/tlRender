@@ -7,6 +7,7 @@
 #include <tlRender/IO/System.h>
 
 #include <ftk/Core/Assert.h>
+#include <ftk/Core/Context.h>
 #include <ftk/Core/FileIO.h>
 
 #include <array>
@@ -200,7 +201,7 @@ namespace tl
                                     }
                                     catch (const std::exception& e)
                                     {
-                                        _printError(e.what());
+                                        _error(e.what());
                                     }
                                 }
                             }

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <TestLib/ITest.h>
+#include <ftk/TestLib/ITest.h>
 
 #include <tlRender/Timeline/Timeline.h>
 
@@ -11,7 +11,7 @@ namespace tl
 {
     namespace timeline_tests
     {
-        class TimelineTest : public tests::ITest
+        class TimelineTest : public ftk::test::ITest
         {
         protected:
             TimelineTest(const std::shared_ptr<ftk::Context>&);

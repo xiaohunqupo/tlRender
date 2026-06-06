@@ -18,6 +18,6 @@ target_include_directories(tlCoreTest
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/tests>
         $<INSTALL_INTERFACE:include>)
 
-target_link_libraries(tlCoreTest tlTestLib)
+target_link_libraries(tlCoreTest tlCore ftkTestLib)
 
 set_target_properties(tlCoreTest PROPERTIES FOLDER tests)

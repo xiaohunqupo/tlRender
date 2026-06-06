@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include <TestLib/ITest.h>
+#include <ftk/TestLib/ITest.h>
 
 namespace tl
 {
     namespace core_tests
     {
-        class HDRTest : public tests::ITest
+        class HDRTest : public ftk::test::ITest
         {
         protected:
             HDRTest(const std::shared_ptr<ftk::Context>&);
