@@ -5,6 +5,8 @@ set -x
 SOURCE_DIR=$1
 BUILD_TYPE=$2
 
+git -C $SOURCE_DIR submodule update --init --recursive
+
 cmake \
     -S $SOURCE_DIR/deps/ftk/etc/SuperBuild \
     -B sbuild-ftk-$BUILD_TYPE \
