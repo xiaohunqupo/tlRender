@@ -53,8 +53,9 @@ namespace tl
 
             p.scrub = ftk::Observable<bool>::create(false);
             p.timeScrub = ftk::Observable<OTIO_NS::RationalTime>::create(invalidTime);
-
-            const auto otioTimeline = p.player->getTimeline()->getTimeline();
+            
+            auto timeline = p.player->getTimeline();
+            const auto otioTimeline = timeline->getTimeline();
             int stackIndex = 0;
             for (const auto& child : otioTimeline->tracks()->children())
             {
@@ -110,6 +111,7 @@ namespace tl
                             case TrackType::Video:
                                 item = VideoClipItem::create(
                                     context,
+                                    timeline,
                                     clip,
                                     scale,
                                     options,
@@ -120,6 +122,7 @@ namespace tl
                             case TrackType::Audio:
                                 item = AudioClipItem::create(
                                     context,
+                                    timeline,
                                     clip,
                                     scale,
                                     options,

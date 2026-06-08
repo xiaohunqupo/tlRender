@@ -35,6 +35,7 @@ namespace tl
 
         void AudioClipItem::_init(
             const std::shared_ptr<ftk::Context>& context,
+            const std::shared_ptr<Timeline>& timeline,
             const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Clip>& clip,
             double scale,
             const ItemOptions& options,
@@ -60,7 +61,7 @@ namespace tl
             FTK_P();
 
             p.path = path;
-            p.memRead = getMemRead(clip->media_reference());
+            p.memRead = timeline->getMem(clip->media_reference());
             p.thumbnailSystem = context->getSystem<ThumbnailSystem>();
         }
 
@@ -76,6 +77,7 @@ namespace tl
 
         std::shared_ptr<AudioClipItem> AudioClipItem::create(
             const std::shared_ptr<ftk::Context>& context,
+            const std::shared_ptr<Timeline>& timeline,
             const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Clip>& clip,
             double scale,
             const ItemOptions& options,
@@ -86,6 +88,7 @@ namespace tl
             auto out = std::shared_ptr<AudioClipItem>(new AudioClipItem);
             out->_init(
                 context,
+                timeline,
                 clip,
                 scale,
                 options,

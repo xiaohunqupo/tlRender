@@ -5,8 +5,6 @@
 
 #include <tlRender/Timeline/Timeline.h>
 
-#include <tlRender/IO/Read.h>
-
 #include <ftk/Core/LRUCache.h>
 
 #include <opentimelineio/clip.h>
@@ -20,32 +18,6 @@ namespace tl
 {
     struct Timeline::Private
     {
-        bool getVideoInfo(const OTIO_NS::Composable*);
-        bool getAudioInfo(const OTIO_NS::Composable*);
-
-        float transitionValue(double frame, double in, double out) const;
-
-        void tick();
-        void requests();
-        void finishRequests();
-
-        std::shared_ptr<IRead> getRead(
-            const OTIO_NS::Clip*,
-            const IOOptions&);
-        std::future<VideoData> readVideo(
-            const OTIO_NS::Clip*,
-            const OTIO_NS::RationalTime&,
-            const IOOptions&);
-        std::future<AudioData> readAudio(
-            const OTIO_NS::Clip*,
-            const OTIO_NS::TimeRange&,
-            const IOOptions&);
-
-        std::shared_ptr<Audio> padAudioToOneSecond(
-            const std::shared_ptr<Audio>&,
-            double seconds,
-            const OTIO_NS::TimeRange&);
-
         std::weak_ptr<ftk::Context> context;
         std::weak_ptr<ftk::LogSystem> logSystem;
         OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> otioTimeline;

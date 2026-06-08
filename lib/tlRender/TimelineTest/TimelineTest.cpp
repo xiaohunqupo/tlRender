@@ -111,21 +111,6 @@ namespace tl
                     _error(e.what());
                 }
             }
-            for (const auto& path : paths)
-            {
-                try
-                {
-                    _print(ftk::Format("Memory timeline: {0}").arg(path.get()));
-                    auto otioTimeline = tl::create(_context, path);
-                    toMemRefs(otioTimeline, path.getDir(), ToMemRef::Shared);
-                    auto timeline = Timeline::create(_context, otioTimeline);
-                    _timeline(timeline);
-                }
-                catch (const std::exception& e)
-                {
-                    _error(e.what());
-                }
-            }
         }
 
         void TimelineTest::_timeline(const std::shared_ptr<Timeline>& timeline)

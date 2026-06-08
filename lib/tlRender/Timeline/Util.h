@@ -88,28 +88,6 @@ namespace tl
         const std::string& directory,
         ftk::PathOptions);
 
-    //! Get a memory read for a media reference.
-    TL_API std::vector<ftk::MemFile> getMemRead(
-        const OTIO_NS::MediaReference*);
-
-    //! Convert to memory references.
-    enum class TL_API_TYPE ToMemRef
-    {
-        Shared,
-        Raw,
-
-        Count,
-        First = Shared
-    };
-    TL_ENUM(ToMemRef);
-
-    //! Convert media references to memory references for testing.
-    TL_API void toMemRefs(
-        OTIO_NS::Timeline*,
-        const std::string& directory,
-        ToMemRef,
-        const ftk::PathOptions& = ftk::PathOptions());
-
     //! Transform track time to video media time.
     TL_API OTIO_NS::RationalTime toVideoMediaTime(
         const OTIO_NS::RationalTime&,

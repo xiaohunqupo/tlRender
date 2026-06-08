@@ -2,7 +2,6 @@ set(HEADERS
     ColorOptionsTest.h
     CompareOptionsTest.h
     DisplayOptionsTest.h
-    MemRefTest.h
     PlayerOptionsTest.h
     PlayerTest.h
     TimelineTest.h
@@ -12,7 +11,6 @@ set(SOURCE
     ColorOptionsTest.cpp
     CompareOptionsTest.cpp
     DisplayOptionsTest.cpp
-    MemRefTest.cpp
     PlayerOptionsTest.cpp
     PlayerTest.cpp
     TimelineTest.cpp

@@ -7,7 +7,6 @@ set(HEADERS
     ForegroundOptions.h
     IRender.h
     Init.h
-    MemRef.h
     Player.h
     PlayerOptions.h
     RenderUtil.h
@@ -32,7 +31,6 @@ set(SOURCE
     ForegroundOptions.cpp
     IRender.cpp
     Init.cpp
-    MemRef.cpp
     Player.cpp
     PlayerAudio.cpp
     PlayerOptions.cpp
@@ -41,9 +39,7 @@ set(SOURCE
     System.cpp
     TimeUnits.cpp
     Timeline.cpp
-    TimelineCreate.cpp
     TimelineOptions.cpp
-    TimelinePrivate.cpp
     Transition.cpp
     Util.cpp
     Video.cpp)

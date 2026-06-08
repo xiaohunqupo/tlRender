@@ -3,7 +3,6 @@
 
 #include <tlRender/Timeline/Init.h>
 
-#include <tlRender/Timeline/MemRef.h>
 #include <tlRender/Timeline/Player.h>
 #include <tlRender/Timeline/System.h>
 
@@ -50,42 +49,6 @@ namespace tl
         AudioSystem::create(context);
         ReadSystem::create(context);
         WriteSystem::create(context);
-
-        const std::vector<std::pair<std::string, bool> > registerTypes
-        {
-            {
-                "RawMemRef",
-                OTIO_NS::TypeRegistry::instance().register_type<tl::RawMemRef>()
-            },
-            {
-                "SharedMemRef",
-                OTIO_NS::TypeRegistry::instance().register_type<tl::SharedMemRef>()
-            },
-            {
-                "SeqRawMemRef",
-                OTIO_NS::TypeRegistry::instance().register_type<tl::SeqRawMemRef>()
-            },
-            {
-                "SeqSharedMemRef",
-                OTIO_NS::TypeRegistry::instance().register_type<tl::SeqSharedMemRef>()
-            },
-            {
-                "ZipMemRef",
-                OTIO_NS::TypeRegistry::instance().register_type<tl::ZipMemRef>()
-            },
-            {
-                "SeqZipMemRef",
-                OTIO_NS::TypeRegistry::instance().register_type<tl::SeqZipMemRef>()
-            }
-        };
-        for (const auto& t : registerTypes)
-        {
-            logSystem->print(
-                "tl::init",
-                ftk::Format("Register type {0}: {1}").
-                arg(t.first).
-                arg(t.second));
-        }
 
         System::create(context);
     }

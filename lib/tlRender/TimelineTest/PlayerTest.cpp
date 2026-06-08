@@ -76,22 +76,6 @@ namespace tl
                     _error(e.what());
                 }
             }
-            for (const auto& path : paths)
-            {
-                try
-                {
-                    _print(ftk::Format("Memory timeline: {0}").arg(path.get()));
-                    auto otioTimeline = tl::create(_context, path);
-                    toMemRefs(otioTimeline, path.getDir(), ToMemRef::Shared);
-                    auto timeline = Timeline::create(_context, otioTimeline);
-                    auto player = Player::create(_context, timeline);
-                    _player(player);
-                }
-                catch (const std::exception& e)
-                {
-                    _error(e.what());
-                }
-            }
         }
 
         void PlayerTest::_player(const std::shared_ptr<Player>& player)

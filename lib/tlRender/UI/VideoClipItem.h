@@ -17,6 +17,7 @@ namespace tl
         protected:
             void _init(
                 const std::shared_ptr<ftk::Context>&,
+                const std::shared_ptr<Timeline>&,
                 const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Clip>&,
                 double scale,
                 const ItemOptions&,
@@ -32,6 +33,7 @@ namespace tl
             //! Create a new item.
             TL_API static std::shared_ptr<VideoClipItem> create(
                 const std::shared_ptr<ftk::Context>&,
+                const std::shared_ptr<Timeline>&,
                 const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Clip>&,
                 double scale,
                 const ItemOptions&,

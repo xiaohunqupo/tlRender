@@ -7,9 +7,13 @@
 #include <tlRender/Timeline/TimelineOptions.h>
 #include <tlRender/Timeline/Video.h>
 
+#include <tlRender/IO/Read.h>
+
+#include <ftk/Core/FileIO.h>
 #include <ftk/Core/Path.h>
 
 #include <opentimelineio/timeline.h>
+#include <opentimelineio/mediaReference.h>
 
 #include <future>
 
@@ -20,41 +24,11 @@ namespace ftk
 
 namespace tl
 {
-    //! Create an OTIO timeline from a path. The path can point to an .otio
-    //! file, .otioz file, movie file, or image sequence.
-    TL_API OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
-        const std::shared_ptr<ftk::Context>&,
-        const ftk::Path&,
-        const Options& = Options());
-
-    //! Create an OTIO timeline from a path and audio path. The file name
-    //! can point to an .otio file, .otioz file, movie file, or image
-    //! sequence.
-    TL_API OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> create(
-        const std::shared_ptr<ftk::Context>&,
-        const ftk::Path& path,
-        const ftk::Path& audioPath,
-        const Options& = Options());
-
-    //! Video size request.
-    struct TL_API_TYPE VideoSizeRequest
-    {
-        uint64_t id = 0;
-        std::future<size_t> future;
-    };
-
     //! Video request.
     struct TL_API_TYPE VideoRequest
     {
         uint64_t id = 0;
         std::future<VideoFrame> future;
-    };
-
-    //! Audio size request.
-    struct TL_API_TYPE AudioSizeRequest
-    {
-        uint64_t id = 0;
-        std::future<size_t> future;
     };
 
     //! Audio request.
@@ -70,6 +44,11 @@ namespace tl
         FTK_NON_COPYABLE(Timeline);
 
     protected:
+        void _init(
+            const std::shared_ptr<ftk::Context>&,
+            const ftk::Path& inputPath,
+            const ftk::Path& inputAudioPath,
+            const Options&);
         void _init(
             const std::shared_ptr<ftk::Context>&,
             const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline>&,
@@ -132,6 +111,10 @@ namespace tl
         //! Get the timeline options.
         TL_API const Options& getOptions() const;
 
+        //! Get the memory for the given media reference.
+        TL_API std::vector<ftk::MemFile> getMem(
+            const OTIO_NS::MediaReference*);
+
         //! \name Information
         ///@{
 
@@ -169,6 +152,32 @@ namespace tl
         TL_API static size_t getObjectCount();
 
     private:
+        std::shared_ptr<IRead> _getRead(
+            const OTIO_NS::Clip*,
+            const IOOptions&);
+        std::future<VideoData> _readVideo(
+            const OTIO_NS::Clip*,
+            const OTIO_NS::RationalTime&,
+            const IOOptions&);
+        std::future<AudioData> _readAudio(
+            const OTIO_NS::Clip*,
+            const OTIO_NS::TimeRange&,
+            const IOOptions&);
+
+        bool _getVideoInfo(const OTIO_NS::Composable*);
+        bool _getAudioInfo(const OTIO_NS::Composable*);
+
+        float _transitionValue(double frame, double in, double out) const;
+
+        void _tick();
+        void _requests();
+        void _finishRequests();
+
+        std::shared_ptr<Audio> _padAudioToOneSecond(
+            const std::shared_ptr<Audio>&,
+            double seconds,
+            const OTIO_NS::TimeRange&);
+
         FTK_PRIVATE();
     };
 }

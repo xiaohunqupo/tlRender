@@ -9,7 +9,6 @@
 #include <tlRender/TimelineTest/ColorOptionsTest.h>
 #include <tlRender/TimelineTest/CompareOptionsTest.h>
 #include <tlRender/TimelineTest/DisplayOptionsTest.h>
-#include <tlRender/TimelineTest/MemRefTest.h>
 #include <tlRender/TimelineTest/PlayerOptionsTest.h>
 #include <tlRender/TimelineTest/PlayerTest.h>
 #include <tlRender/TimelineTest/TimelineTest.h>
@@ -73,7 +72,6 @@ void timelineTests(
     tests.push_back(timeline_tests::ColorOptionsTest::create(context));
     tests.push_back(timeline_tests::CompareOptionsTest::create(context));
     tests.push_back(timeline_tests::DisplayOptionsTest::create(context));
-    tests.push_back(timeline_tests::MemRefTest::create(context));
     tests.push_back(timeline_tests::PlayerOptionsTest::create(context));
     tests.push_back(timeline_tests::PlayerTest::create(context));
     tests.push_back(timeline_tests::TimelineTest::create(context));

@@ -37,7 +37,6 @@ namespace tl
         void UtilTest::_enums()
         {
             FTK_TEST_ENUM(CacheDir);
-            FTK_TEST_ENUM(ToMemRef);
         }
 
         void UtilTest::_exts()
