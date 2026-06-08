@@ -1,0 +1,30 @@
+set(HEADERS
+    IOTest.h)
+
+set(SOURCE
+    IOTest.cpp)
+
+if(TLRENDER_FFMPEG_PLUGIN)
+    list(APPEND HEADERS FFmpegTest.h)
+    list(APPEND SOURCE FFmpegTest.cpp)
+endif()
+if(TLRENDER_EXR)
+    list(APPEND HEADERS EXRTest.h)
+    list(APPEND SOURCE EXRTest.cpp)
+endif()
+if(TLRENDER_OIIO)
+    list(APPEND HEADERS OIIOTest.h)
+    list(APPEND SOURCE OIIOTest.cpp)
+endif()
+
+add_library(tlIOTest ${SOURCE} ${HEADERS})
+
+target_include_directories(tlIOTest
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/tests>
+        $<INSTALL_INTERFACE:include>)
+
+target_link_libraries(tlIOTest tlIO ftkTestLib)
+
+set_target_properties(tlIOTest PROPERTIES FOLDER tests)

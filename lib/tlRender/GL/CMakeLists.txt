@@ -14,7 +14,14 @@ elseif("${ftk_API}" STREQUAL "GLES_2")
 endif()
 
 add_library(tlGL ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+
+target_include_directories(tlGL
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<INSTALL_INTERFACE:include>)
+
 target_link_libraries(tlGL tlTimeline)
+
 set_target_properties(tlGL PROPERTIES FOLDER lib)
 set_target_properties(tlGL PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

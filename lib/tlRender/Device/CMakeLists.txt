@@ -5,10 +5,6 @@ set(HEADERS_PRIVATE)
 set(SOURCE
     Init.cpp)
 
-set(INCLUDE_DIRS)
-set(LIBRARIES tlGL)
-set(LIBRARIES_PRIVATE)
-
 if(TLRENDER_BMD)
 
     list(APPEND HEADERS
@@ -35,10 +31,6 @@ if(TLRENDER_BMD)
         list(APPEND SOURCE
             ${CMAKE_CURRENT_BINARY_DIR}/DeckLinkAPI_i.c
             ${CMAKE_CURRENT_SOURCE_DIR}/BMD/Win/platform.cpp)
-        list(APPEND INCLUDE_DIRS
-            ${CMAKE_CURRENT_SOURCE_DIR}/BMD/Win
-            ${CMAKE_CURRENT_BINARY_DIR})
-        list(APPEND LIBRARIES_PRIVATE comsuppw.lib)
 
         set(MIDL_OUTPUT_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/DeckLinkAPI_i.c")
         set(MIDL_OUTPUT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/DeckLinkAPI.h")
@@ -63,9 +55,6 @@ if(TLRENDER_BMD)
         list(APPEND SOURCE
             ${TLRENDER_BMD_SDK}/Mac/include/DeckLinkAPIDispatch.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/BMD/macOS/platform.cpp)
-        list(APPEND INCLUDE_DIRS
-            ${CMAKE_CURRENT_SOURCE_DIR}/BMD/macOS
-            ${TLRENDER_BMD_SDK}/Mac/include)
     elseif(UNIX)
         list(APPEND HEADERS_PRIVATE
             ${TLRENDER_BMD_SDK}/Linux/include/DeckLinkAPI.h
@@ -73,23 +62,40 @@ if(TLRENDER_BMD)
         list(APPEND SOURCE
             ${TLRENDER_BMD_SDK}/Linux/include/DeckLinkAPIDispatch.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/BMD/Linux/platform.cpp)
-        list(APPEND INCLUDE_DIRS
-            ${CMAKE_CURRENT_SOURCE_DIR}/BMD/Linux
-            ${TLRENDER_BMD_SDK}/Linux/include)
     endif()
 endif()
 
 add_library(tlDevice ${HEADERS})
 target_sources(tlDevice PRIVATE ${HEADERS_PRIVATE} ${SOURCE})
-target_include_directories(tlDevice PRIVATE ${INCLUDE_DIRS})
-target_link_libraries(tlDevice PUBLIC ${LIBRARIES} PRIVATE ${LIBRARIES_PRIVATE})
-set_target_properties(tlDevice PROPERTIES FOLDER lib)
-set_target_properties(tlDevice PROPERTIES PUBLIC_HEADER "${HEADERS}")
+
+target_include_directories(tlDevice
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<INSTALL_INTERFACE:include>)
+
+target_link_libraries(tlDevice PUBLIC tlGL)
+
 if(TLRENDER_BMD)
+    target_compile_definitions(tlDevice PUBLIC TLRENDER_BMD)
     if(WIN32)
+        target_include_directories(tlDevice PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/BMD/Win
+            ${CMAKE_CURRENT_BINARY_DIR})
+        target_link_libraries(tlDevice PRIVATE comsuppw.lib)
         add_dependencies(tlDevice MIDL_Target)
+    elseif(APPLE)
+        target_include_directories(tlDevice PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/BMD/macOS
+            ${TLRENDER_BMD_SDK}/Mac/include)
+    elseif(UNIX)
+        target_include_directories(tlDevice PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/BMD/Linux
+            ${TLRENDER_BMD_SDK}/Linux/include)
     endif()
 endif()
+
+set_target_properties(tlDevice PROPERTIES FOLDER lib)
+set_target_properties(tlDevice PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
 install(
     TARGETS tlDevice

@@ -6,14 +6,15 @@ set(SOURCE
     GLFramebufferObject.cpp
     Init.cpp)
 
-set(LIBRARIES)
-if(TLRENDER_QT6)
-    list(APPEND LIBRARIES Qt6::Quick)
-endif()
-list(APPEND LIBRARIES tlQt)
-
 add_library(tlQtQuick ${HEADERS} ${SOURCE})
-target_link_libraries(tlQtQuick ${LIBRARIES})
+
+target_include_directories(tlQtQuick
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<INSTALL_INTERFACE:include>)
+
+target_link_libraries(tlQtQuick tlQt Qt6::Quick)
+
 set_target_properties(tlQtQuick PROPERTIES FOLDER lib)
 set_target_properties(tlQtQuick PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

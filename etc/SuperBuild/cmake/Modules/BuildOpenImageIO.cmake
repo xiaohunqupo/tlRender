@@ -3,10 +3,7 @@ include(ExternalProject)
 set(OpenImageIO_GIT_REPOSITORY "https://github.com/AcademySoftwareFoundation/OpenImageIO.git")
 set(OpenImageIO_GIT_TAG "v3.1.7.0")
 
-set(OpenImageIO_DEPS ftk)
-if(TLRENDER_PNG)
-    list(APPEND OpenImageIO_DEPS PNG)
-endif()
+set(OpenImageIO_DEPS)
 if(TLRENDER_JPEG)
     list(APPEND OpenImageIO_DEPS libjpeg-turbo)
 endif()
@@ -28,7 +25,7 @@ set(OpenImageIO_ARGS
     -DOIIO_INSTALL_DOCS=OFF
     -DOIIO_INSTALL_FONTS=ON
     -DUSE_FREETYPE=ON
-    -DUSE_PNG=${TLRENDER_PNG}
+    -DUSE_PNG=ON
     -DUSE_JPEG=${TLRENDER_JPEG}
     -DUSE_TIFF=${TLRENDER_TIFF}
     -DUSE_OPENEXR=${TLRENDER_EXR}

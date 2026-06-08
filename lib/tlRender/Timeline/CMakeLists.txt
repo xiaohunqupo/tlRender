@@ -49,7 +49,14 @@ set(SOURCE
     Video.cpp)
 
 add_library(tlTimeline ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
+
+target_include_directories(tlTimeline
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<INSTALL_INTERFACE:include>)
+
 target_link_libraries(tlTimeline tlIO MINIZIP::minizip-ng)
+
 set_target_properties(tlTimeline PROPERTIES FOLDER lib)
 set_target_properties(tlTimeline PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

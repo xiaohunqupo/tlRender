@@ -6,7 +6,14 @@ set(SOURCE
     IO.cpp)
 
 add_library(tlIOPy ${HEADERS} ${HEADERS_PRIVATE} ${SOURCE})
+
+target_include_directories(tlIOPy
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<INSTALL_INTERFACE:include>)
+
 target_link_libraries(tlIOPy tlIO Python3::Python)
+
 set_target_properties(tlIOPy PROPERTIES FOLDER lib)
 set_target_properties(tlIOPy PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

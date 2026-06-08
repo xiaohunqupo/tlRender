@@ -1,0 +1,3 @@
+[submodule "deps/ftk"]
+	path = deps/ftk
+	url = https://github.com/grizzlypeak3d/feather-tk.git

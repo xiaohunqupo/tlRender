@@ -7,7 +7,7 @@ endif()
 
 set(FFmpeg_URL https://ffmpeg.org/releases/ffmpeg-8.1.tar.xz)
 
-set(FFmpeg_DEPS ZLIB)
+set(FFmpeg_DEPS)
 if(TLRENDER_NET)
     list(APPEND FFmpeg_DEPS OpenSSL)
 endif()

@@ -10,8 +10,6 @@ project(tlRender-SuperBuild)
 #-------------------------------------------------------------------------------
 # Build options
 
-set(ftk_API "GL_4_1" CACHE STRING "Graphics API (GL_4_1, GL_4_1_Debug, GLES_2)")
-
 set(TLRENDER_NET OFF CACHE BOOL "Build network libraries")
 set(TLRENDER_OCIO ON CACHE BOOL "Build OpenColorIO")
 set(TLRENDER_JPEG ON CACHE BOOL "Build JPEG")
@@ -100,9 +98,7 @@ message("TLRENDER_EXTERNAL_ARGS: " ${TLRENDER_EXTERNAL_ARGS_TMP})
 # Dependencies
 
 find_package(Threads REQUIRED)
-include(BuildZLIB)
-include(BuildPNG)
-include(Buildftk)
+
 include(Buildminizip-ng)
 include(BuildImath)
 include(BuildOTIO)

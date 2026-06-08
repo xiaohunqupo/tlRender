@@ -5,16 +5,17 @@ if(POLICY CMP0135)
     cmake_policy(SET CMP0135 NEW)
 endif()
 
-set(TLRENDER_VERSION_MAJOR "0")
-set(TLRENDER_VERSION_MINOR "19")
-set(TLRENDER_VERSION_PATCH "0")
-set(TLRENDER_VERSION_DEV "-dev")
-set(TLRENDER_VERSION_FULL ${TLRENDER_VERSION_MAJOR}.${TLRENDER_VERSION_MINOR}.${TLRENDER_VERSION_PATCH}${TLRENDER_VERSION_DEV})
-add_definitions(-DTLRENDER_VERSION_MAJOR=${TLRENDER_VERSION_MAJOR})
-add_definitions(-DTLRENDER_VERSION_MINOR=${TLRENDER_VERSION_MINOR})
-add_definitions(-DTLRENDER_VERSION_PATCH=${TLRENDER_VERSION_PATCH})
-add_definitions(-DTLRENDER_VERSION_DEV="${TLRENDER_VERSION_DEV}")
-add_definitions(-DTLRENDER_VERSION_FULL="${TLRENDER_VERSION_FULL}")
+file(READ "lib/tlRender/Core/Version.h" VERSION_H)
+string(REGEX MATCH "VERSION_MAJOR ([0-9]*)" _ ${VERSION_H})
+set(TLRENDER_VERSION_MAJOR ${CMAKE_MATCH_1})
+string(REGEX MATCH "VERSION_MINOR ([0-9]*)" _ ${VERSION_H})
+set(TLRENDER_VERSION_MINOR ${CMAKE_MATCH_1})
+string(REGEX MATCH "VERSION_PATCH ([0-9]*)" _ ${VERSION_H})
+set(TLRENDER_VERSION_PATCH ${CMAKE_MATCH_1})
+string(REGEX MATCH "VERSION_DEV \"([0-9a-z\.\-]*)\"" _ ${VERSION_H})
+set(TLRENDER_VERSION_DEV ${CMAKE_MATCH_1})
+string(REGEX MATCH "VERSION_FULL \"([0-9a-z\.\-]*)\"" _ ${VERSION_H})
+set(TLRENDER_VERSION_FULL ${CMAKE_MATCH_1})
 
 project(
     tlRender
@@ -28,13 +29,7 @@ project(
 
 set(ftk_API "GL_4_1" CACHE STRING "Graphics API (GL_4_1, GL_4_1_Debug, GLES_2)")
 
-set(TLRENDER_NET OFF CACHE BOOL "Enable network support")
 set(TLRENDER_OCIO ON CACHE BOOL "Enable support for OpenColorIO")
-set(TLRENDER_SDL2 ON CACHE BOOL "Enable support for SDL2")
-set(TLRENDER_SDL3 OFF CACHE BOOL "Enable support for SDL3")
-set(TLRENDER_JPEG ON CACHE BOOL "Enable support for JPEG I/O")
-set(TLRENDER_TIFF ON CACHE BOOL "Enable support for TIFF I/O")
-set(TLRENDER_PNG ON CACHE BOOL "Enable support for PNG I/O")
 set(TLRENDER_EXR ON CACHE BOOL "Enable support for EXR I/O")
 set(TLRENDER_FFMPEG ON CACHE BOOL "Enable support for FFmpeg (required for audio)")
 set(TLRENDER_FFMPEG_PLUGIN ON CACHE BOOL "Enable support for FFmpeg I/O")
@@ -60,7 +55,7 @@ set(TLRENDER_GPROF OFF CACHE BOOL "Enable gprof code profiling")
 #-------------------------------------------------------------------------------
 # Internal configuration
 
-list(PREPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
 if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 17)
@@ -74,33 +69,14 @@ if(NOT CMAKE_POSITION_INDEPENDENT_CODE)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
-if(TLRENDER_BMD)
-    add_definitions(-DTLRENDER_BMD)
-endif()
-
-if(TLRENDER_QT6)
-    add_definitions(-DTLRENDER_QT6)
-endif()
-
 if(TLRENDER_IGNORE_PREFIX_PATH)
     set(CMAKE_IGNORE_PREFIX_PATH ${TLRENDER_IGNORE_PREFIX_PATH})
 endif()
 
-if(CMAKE_BUILD_TYPE MATCHES "^Debug$")
-    add_definitions(-DFTK_ASSERT)
-endif()
-
 if(TLRENDER_TESTS)
-    add_definitions(-DTLRENDER_SAMPLE_DATA="${CMAKE_CURRENT_SOURCE_DIR}/etc/SampleData")
     set(CTEST_OUTPUT_ON_FAILURE ON)
     enable_testing()
 endif()
-
-include_directories(
-    ${PROJECT_SOURCE_DIR}/deps
-    ${PROJECT_SOURCE_DIR}/lib
-    ${PROJECT_SOURCE_DIR}/etc
-    ${PROJECT_SOURCE_DIR}/tests)
 
 if(TLRENDER_GPROF)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
@@ -147,50 +123,17 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Base dependencies
 find_package(Imath REQUIRED)
 find_package(nlohmann_json REQUIRED)
-find_package(ZLIB REQUIRED)
 find_package(minizip-ng REQUIRED)
 find_package(OpenTimelineIO REQUIRED)
 
 # OpenColorIO dependencies
 if(TLRENDER_OCIO)
     find_package(OpenColorIO REQUIRED)
-    add_definitions(-DTLRENDER_OCIO)
-endif()
-
-# SDL dependencies
-if(TLRENDER_SDL2)
-    find_package(SDL2 REQUIRED)
-    add_definitions(-DTLRENDER_SDL2)
-endif()
-if(TLRENDER_SDL3)
-    find_package(SDL3 REQUIRED)
-    add_definitions(-DTLRENDER_SDL3)
 endif()
 
 # I/O dependencies
-if(TLRENDER_JPEG)
-    find_package(libjpeg-turbo)
-    if(libjpeg-turbo_FOUND)
-        add_definitions(-DTLRENDER_JPEG)
-    endif()
-endif()
-if(TLRENDER_TIFF)
-    find_package(TIFF)
-    if(TIFF_FOUND)
-        add_definitions(-DTLRENDER_TIFF)
-    endif()
-endif()
-if(TLRENDER_PNG)
-    find_package(PNG)
-    if(PNG_FOUND)
-        add_definitions(-DTLRENDER_PNG)
-    endif()
-endif()
 if(TLRENDER_EXR)
-    find_package(OpenEXR)
-    if(OpenEXR_FOUND)
-        add_definitions(-DTLRENDER_EXR)
-    endif()
+    find_package(OpenEXR REQUIRED)
 endif()
 if(TLRENDER_FFMPEG)
     if(WIN32)
@@ -271,37 +214,14 @@ if(TLRENDER_FFMPEG)
         add_library(FFmpeg::swresample ALIAS PkgConfig::swresample)
         add_library(FFmpeg::avutil ALIAS PkgConfig::avutil)
     endif()
-    if(FFmpeg_FOUND)
-        add_definitions(-DTLRENDER_FFMPEG)
-        if(TLRENDER_FFMPEG_PLUGIN)
-            add_definitions(-DTLRENDER_FFMPEG_PLUGIN)
-        endif()
-        if(TLRENDER_FFMPEG_CMD)
-            add_definitions(-DTLRENDER_FFMPEG_CMD)
-        endif()
-    endif()
 endif()
 if(TLRENDER_OIIO)
     find_package(OpenImageIO)
-    if(OpenImageIO_FOUND)
-        add_definitions(-DTLRENDER_OIIO)
-    endif()
 endif()
 if(TLRENDER_USD)
-    find_package(pxr)
-    if(pxr_FOUND)
-        add_definitions(-DTLRENDER_USD)
-    endif()
+    find_package(OpenGL REQUIRED)
+    find_package(pxr REQUIRED)
 endif()
-if(TLRENDER_WMF)
-    add_definitions(-DTLRENDER_WMF)
-endif()
-if(TLRENDER_AVF)
-    add_definitions(-DTLRENDER_AVF)
-endif()
-
-# feather-tk dependencies
-find_package(ftk REQUIRED)
 
 # Qt dependencies
 if(TLRENDER_QT6)
@@ -313,13 +233,33 @@ endif()
 
 # Python dependencies
 if(TLRENDER_PYTHON)
-    add_definitions(-DTLRENDER_PYTHON)
     find_package(Python3 REQUIRED Interpreter Development)
     find_package(pybind11 REQUIRED)
 endif()
 
 #-------------------------------------------------------------------------------
+# Git submodules
+
+find_package(Git REQUIRED)
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/deps/ftk/CMakeLists.txt")
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        RESULT_VARIABLE GIT_SUBMODULE_RESULT)
+    if(NOT GIT_SUBMODULE_RESULT EQUAL 0)
+        message(FATAL_ERROR "git submodule update failed with ${GIT_SUBMODULE_RESULT}")
+    endif()
+endif()
+
+#-------------------------------------------------------------------------------
 # Sub-directories
+
+add_subdirectory(deps/ftk)
+add_library(ftk::ftkResource ALIAS ftkResource)
+add_library(ftk::ftkCore ALIAS ftkCore)
+add_library(ftk::ftkGL ALIAS ftkGL)
+add_library(ftk::ftkUI ALIAS ftkUI)
+add_library(ftk::ftkTestLib ALIAS ftkTestLib)
 
 add_subdirectory(lib/tlRender)
 if(TLRENDER_PROGRAMS)

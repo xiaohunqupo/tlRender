@@ -20,20 +20,16 @@ set(SOURCE
     System.cpp
     Write.cpp)
 
-set(LIBRARIES)
-set(LIBRARIES_PRIVATE)
 if(TLRENDER_EXR)
     list(APPEND HEADERS EXR.h)
     list(APPEND HEADERS_PRIVATE EXRPrivate.h)
     list(APPEND SOURCE EXR.cpp EXRRead.cpp EXRWrite.cpp)
-    list(APPEND LIBRARIES_PRIVATE OpenEXR::OpenEXR)
 endif()
 if(TLRENDER_FFMPEG_PLUGIN)
     list(APPEND HEADERS FFmpeg.h)
     list(APPEND HEADERS_PRIVATE FFmpegPrivate.h FFmpegReadPrivate.h)
     list(APPEND SOURCE FFmpeg.cpp FFmpegRead.cpp FFmpegReadAudio.cpp
         FFmpegReadVideo.cpp FFmpegWrite.cpp)
-    list(APPEND LIBRARIES_PRIVATE FFmpeg::FFmpeg)
 endif()
 if(TLRENDER_FFMPEG_CMD)
     list(APPEND HEADERS FFmpegCmd.h)
@@ -43,38 +39,68 @@ endif()
 if(TLRENDER_OIIO)
     list(APPEND HEADERS OIIO.h)
     list(APPEND SOURCE OIIO.cpp OIIORead.cpp OIIOWrite.cpp)
-    list(APPEND LIBRARIES_PRIVATE OpenImageIO::OpenImageIO)
-    if(TLRENDER_TIFF AND BUILD_SHARED_LIBS)
-        # \bug OIIO link bug?
-        list(APPEND LIBRARIES_PRIVATE TIFF::TIFF)
-    endif()
 endif()
 if(TLRENDER_USD)
     list(APPEND HEADERS USD.h)
     list(APPEND HEADERS_PRIVATE USDPrivate.h)
     list(APPEND SOURCE USD.cpp USDRead.cpp USDRender.cpp)
-    list(APPEND LIBRARIES_PRIVATE tf usd usdGeom usdImagingGL usdAppUtils hd)
 endif()
 if(TLRENDER_WMF)
     list(APPEND HEADERS WMF.h)
     list(APPEND SOURCE WMF.cpp WMFRead.cpp)
-    list(APPEND LIBRARIES_PRIVATE mf mfplat mfreadwrite mfuuid propsys wmcodecdspuuid)
 endif()
 if(TLRENDER_AVF)
     list(APPEND HEADERS AVF.h)
     list(APPEND SOURCE AVF.cpp AVFRead.mm)
     set_source_files_properties(AVFRead.mm PROPERTIES COMPILE_FLAGS "-fobjc-arc")
-    list(APPEND LIBRARIES_PRIVATE
+endif()
+
+add_library(tlIO ${HEADERS})
+target_sources(tlIO PRIVATE ${HEADERS_PRIVATE} ${SOURCE})
+
+target_include_directories(tlIO
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
+        $<INSTALL_INTERFACE:include>)
+
+target_link_libraries(tlIO PUBLIC tlCore ftk::ftkGL)
+
+if(TLRENDER_EXR)
+    target_compile_definitions(tlIO PUBLIC TLRENDER_EXR)
+    target_link_libraries(tlIO PRIVATE OpenEXR::OpenEXR)
+endif()
+if(TLRENDER_FFMPEG_PLUGIN)
+    target_compile_definitions(tlIO PUBLIC TLRENDER_FFMPEG_PLUGIN)
+    target_link_libraries(tlIO PRIVATE FFmpeg::FFmpeg)
+endif()
+if(TLRENDER_FFMPEG_CMD)
+    target_compile_definitions(tlIO PUBLIC TLRENDER_FFMPEG_CMD)
+endif()
+if(TLRENDER_OIIO)
+    target_compile_definitions(tlIO PUBLIC TLRENDER_OIIO)
+    target_link_libraries(tlIO PRIVATE OpenImageIO::OpenImageIO)
+    if(TLRENDER_TIFF AND BUILD_SHARED_LIBS)
+        # \bug OIIO link bug?
+        target_link_libraries(tlIO PRIVATE TIFF::TIFF)
+    endif()
+endif()
+if(TLRENDER_USD)
+    target_compile_definitions(tlIO PUBLIC TLRENDER_USD)
+    target_link_libraries(tlIO PRIVATE tf usd usdGeom usdImagingGL usdAppUtils hd)
+endif()
+if(TLRENDER_WMF)
+    target_compile_definitions(tlIO PUBLIC TLRENDER_WMF)
+    target_link_libraries(tlIO PRIVATE mf mfplat mfreadwrite mfuuid propsys wmcodecdspuuid)
+endif()
+if(TLRENDER_AVF)
+    target_compile_definitions(tlIO PUBLIC TLRENDER_AVF)
+    target_link_libraries(tlIO PRIVATE
         "-framework AVFoundation"
         "-framework CoreMedia"
         "-framework CoreVideo"
         "-framework Foundation")
 endif()
-list(APPEND LIBRARIES tlCore ftk::ftkGL)
 
-add_library(tlIO ${HEADERS})
-target_sources(tlIO PRIVATE ${HEADERS_PRIVATE} ${SOURCE})
-target_link_libraries(tlIO PUBLIC ${LIBRARIES} PRIVATE ${LIBRARIES_PRIVATE})
 set_target_properties(tlIO PROPERTIES FOLDER lib)
 set_target_properties(tlIO PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
