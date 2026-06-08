@@ -58,7 +58,7 @@ jobs:
 
     - name: Run tests
       run: |
-        xvfb-run build-Debug/tests/tltest/tltest
+        xvfb-run build-Debug/tests/tl-test/tl-test
     
     - name: Code coverage
       if: env.TLRENDER_GCOV == 'ON'
@@ -118,7 +118,7 @@ jobs:
 
     - name: Run tests
       run: |
-        xvfb-run build-Debug/tests/tltest/tltest
+        xvfb-run build-Debug/tests/tl-test/tl-test
 
   linux-gles2-minimal-build:
     runs-on: ubuntu-latest
@@ -172,7 +172,7 @@ jobs:
 
     - name: Run tests
       run: |
-        xvfb-run build-Debug/tests/tltest/tltest
+        xvfb-run build-Debug/tests/tl-test/tl-test
 
   linux-package:
     runs-on: ubuntu-latest
@@ -295,7 +295,7 @@ jobs:
     - name: Run tests
       run: |
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
-        build-Debug/tests/tltest/tltest
+        build-Debug/tests/tl-test/tl-test
 
   macos-package:
     runs-on: macos-latest
@@ -424,7 +424,7 @@ jobs:
     - name: Run tests
       shell: cmd
       run: |
-        build-Debug\tests\tltest\Debug\tltest
+        build-Debug\tests\tl-test\Debug\tl-test
 
   windows-package:
     runs-on: windows-latest
