@@ -6,7 +6,7 @@
 #include <tlRender/Qt/MetaTypes.h>
 #include <tlRender/Qt/TimeObject.h>
 
-#include <tlRender/Timeline/Init.h>
+#include <tlRender/UI/Init.h>
 
 #include <ftk/Core/Context.h>
 
@@ -20,7 +20,7 @@ namespace tl
             const std::shared_ptr<ftk::Context>& context,
             DefaultSurfaceFormat defaultSurfaceFormat)
         {
-            tl::init(context);
+            ui::init(context);
             System::create(context, defaultSurfaceFormat);
         }
 

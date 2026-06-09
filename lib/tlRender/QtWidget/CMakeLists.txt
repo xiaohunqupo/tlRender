@@ -26,7 +26,7 @@ target_include_directories(tlQtWidget
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
         $<INSTALL_INTERFACE:include>)
 
-target_link_libraries(tlQtWidget tlQt tlUI Qt6::Widgets Qt6::OpenGLWidgets Qt6::Svg)
+target_link_libraries(tlQtWidget tlQt Qt6::Widgets Qt6::OpenGLWidgets Qt6::Svg)
 
 set_target_properties(tlQtWidget PROPERTIES FOLDER lib)
 set_target_properties(tlQtWidget PROPERTIES PUBLIC_HEADER "${HEADERS}")
