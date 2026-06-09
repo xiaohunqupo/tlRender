@@ -716,33 +716,37 @@ namespace tl
                                 request->time != invalidTime ?
                                 request->time :
                                 info.videoTime.start_time();
-                            const auto videoData = read->readVideo(time, request->options).get();
-                            if (p.thumbnailThread.render &&
-                                p.thumbnailThread.buffer &&
-                                videoData.image &&
-                                p.thumbnailThread.running)
+                            auto videoRequest = read->readVideo(time, request->options);
+                            if (videoRequest.valid())
                             {
-                                ftk::gl::OffscreenBufferBinding binding(p.thumbnailThread.buffer);
-                                p.thumbnailThread.render->begin(size);
-                                ftk::ImageOptions imageOptions;
-                                imageOptions.cache = false;
-                                p.thumbnailThread.render->IRender::drawImage(
-                                    videoData.image,
-                                    ftk::Box2I(0, 0, size.w, size.h),
-                                    ftk::Color4F(1.F, 1.F, 1.F),
-                                    imageOptions);
-                                p.thumbnailThread.render->end();
-                                image = ftk::Image::create(
-                                    ftk::ImageInfo(size.w, size.h, ftk::ImageType::RGBA_U8));
-                                glPixelStorei(GL_PACK_ALIGNMENT, 1);
-                                glReadPixels(
-                                    0,
-                                    0,
-                                    size.w,
-                                    size.h,
-                                    GL_RGBA,
-                                    GL_UNSIGNED_BYTE,
-                                    image->getData());
+                                const auto videoData = videoRequest.get();
+                                if (p.thumbnailThread.render &&
+                                    p.thumbnailThread.buffer &&
+                                    videoData.image &&
+                                    p.thumbnailThread.running)
+                                {
+                                    ftk::gl::OffscreenBufferBinding binding(p.thumbnailThread.buffer);
+                                    p.thumbnailThread.render->begin(size);
+                                    ftk::ImageOptions imageOptions;
+                                    imageOptions.cache = false;
+                                    p.thumbnailThread.render->IRender::drawImage(
+                                        videoData.image,
+                                        ftk::Box2I(0, 0, size.w, size.h),
+                                        ftk::Color4F(1.F, 1.F, 1.F),
+                                        imageOptions);
+                                    p.thumbnailThread.render->end();
+                                    image = ftk::Image::create(
+                                        ftk::ImageInfo(size.w, size.h, ftk::ImageType::RGBA_U8));
+                                    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+                                    glReadPixels(
+                                        0,
+                                        0,
+                                        size.w,
+                                        size.h,
+                                        GL_RGBA,
+                                        GL_UNSIGNED_BYTE,
+                                        image->getData());
+                                }
                             }
                         }
                         else if (
@@ -994,15 +998,19 @@ namespace tl
                                 OTIO_NS::TimeRange(
                                     OTIO_NS::RationalTime(0.0, 1.0),
                                     OTIO_NS::RationalTime(1.0, 1.0));
-                            const auto audioData = read->readAudio(timeRange, request->options).get();
-                            if (audioData.audio && p.waveformThread.running)
+                            auto audioRequest = read->readAudio(timeRange, request->options);
+                            if (audioRequest.valid())
                             {
-                                auto resample = AudioResample::create(
-                                    audioData.audio->getInfo(),
-                                    AudioInfo(1, AudioType::F32, audioData.audio->getSampleRate()));
-                                if (auto resampledAudio = resample->process(audioData.audio))
+                                const auto audioData = audioRequest.get();
+                                if (audioData.audio && p.waveformThread.running)
                                 {
-                                    mesh = audioMesh(resampledAudio, request->size);
+                                    auto resample = AudioResample::create(
+                                        audioData.audio->getInfo(),
+                                        AudioInfo(1, AudioType::F32, audioData.audio->getSampleRate()));
+                                    if (auto resampledAudio = resample->process(audioData.audio))
+                                    {
+                                        mesh = audioMesh(resampledAudio, request->size);
+                                    }
                                 }
                             }
                         }
