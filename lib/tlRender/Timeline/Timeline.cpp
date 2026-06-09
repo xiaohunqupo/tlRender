@@ -292,6 +292,7 @@ namespace tl
                         }
 
                         p.memFiles[externalReference].push_back(ftk::MemFile(
+                            p.fileIO,
                             p.fileIO->getMemStart() + entry->offset,
                             entry->size));
                     }
@@ -314,6 +315,7 @@ namespace tl
                             }
 
                             mem.push_back(ftk::MemFile(
+                                p.fileIO,
                                 p.fileIO->getMemStart() + entry->offset,
                                 entry->size));
                         }

@@ -46,9 +46,9 @@ namespace tl
             };
             for (const auto& path : paths)
             {
-                ui::InfoRequest infoRequest;
-                ui::ThumbnailRequest thumbnailRequest;
-                ui::WaveformRequest waveformRequest;
+                std::vector<ui::InfoRequest> infoRequests;
+                std::vector<ui::ThumbnailRequest> thumbnailRequests;
+                std::vector<ui::WaveformRequest> waveformRequests;
                 try
                 {
                     auto timeline = Timeline::create(_context, path);
@@ -59,26 +59,35 @@ namespace tl
                             timeline->getPath().getDir(),
                             ftk::PathOptions());
                         const auto mem = timeline->getMem(clip->media_reference());
-                        infoRequest  = thumbnailSystem->getInfo(
+                        infoRequests.push_back(thumbnailSystem->getInfo(
                             mediaPath,
-                            mem);
-                        thumbnailRequest = thumbnailSystem->getThumbnail(
-                            mediaPath,
-                            mem,
-                            100);
-                        waveformRequest = thumbnailSystem->getWaveform(
+                            mem));
+                        thumbnailRequests.push_back(thumbnailSystem->getThumbnail(
                             mediaPath,
                             mem,
-                            ftk::Size2I(200, 100));
+                            100));
+                        waveformRequests.push_back(thumbnailSystem->getWaveform(
+                            mediaPath,
+                            mem,
+                            ftk::Size2I(200, 100)));
                     }
                 }
                 catch (const std::exception& e)
                 {
                     _error(e.what());
                 }
-                const auto info = infoRequest.future.get();
-                const auto thumbnail = thumbnailRequest.future.get();
-                const auto waveform = waveformRequest.future.get();
+                for (auto& request : infoRequests)
+                {
+                    const auto info = request.future.get();
+                }
+                for (auto& request : thumbnailRequests)
+                {
+                    const auto thumbnail = request.future.get();
+                }
+                for (auto& request : waveformRequests)
+                {
+                    const auto waveform = request.future.get();
+                }
             }
         }
     }

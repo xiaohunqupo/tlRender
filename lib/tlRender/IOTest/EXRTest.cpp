@@ -109,7 +109,7 @@ namespace tl
                     auto fileIO = ftk::FileIO::create(path.get(), ftk::FileMode::Read);
                     memoryData.resize(fileIO->getSize());
                     fileIO->read(memoryData.data(), memoryData.size());
-                    memory.push_back(ftk::MemFile(memoryData.data(), memoryData.size()));
+                    memory.push_back(ftk::MemFile(nullptr, memoryData.data(), memoryData.size()));
                     read = plugin->read(path, memory, options);
                 }
                 else
@@ -157,7 +157,7 @@ namespace tl
                     auto fileIO = ftk::FileIO::create(path.get(), ftk::FileMode::Read);
                     memoryData.resize(fileIO->getSize());
                     fileIO->read(memoryData.data(), memoryData.size());
-                    memory.push_back(ftk::MemFile(memoryData.data(), memoryData.size()));
+                    memory.push_back(ftk::MemFile(nullptr, memoryData.data(), memoryData.size()));
                 }
                 auto read = plugin->read(path, memory, options);
                 const auto videoData = read->readVideo(OTIO_NS::RationalTime(0.0, 24.0)).get();
