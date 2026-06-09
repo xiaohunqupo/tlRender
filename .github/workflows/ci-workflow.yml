@@ -58,7 +58,8 @@ jobs:
 
     - name: Run tests
       run: |
-        xvfb-run build-Debug/tests/tl-test/tl-test
+        cd build-Debug
+        xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
     
     - name: Code coverage
       if: env.TLRENDER_GCOV == 'ON'
@@ -118,7 +119,8 @@ jobs:
 
     - name: Run tests
       run: |
-        xvfb-run build-Debug/tests/tl-test/tl-test
+        cd build-Debug
+        xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
 
   linux-gles2-minimal-build:
     runs-on: ubuntu-latest
@@ -172,7 +174,8 @@ jobs:
 
     - name: Run tests
       run: |
-        xvfb-run build-Debug/tests/tl-test/tl-test
+        cd build-Debug
+        xvfb-run ctest --verbose --rerun-failed --output-on-failure -C Debug
 
   linux-package:
     runs-on: ubuntu-latest
@@ -295,7 +298,8 @@ jobs:
     - name: Run tests
       run: |
         export DYLD_LIBRARY_PATH=$PWD/install-Debug/lib:$DYLD_LIBRARY_PATH
-        build-Debug/tests/tl-test/tl-test
+        cd build-Debug
+        ctest --verbose --rerun-failed --output-on-failure -C Debug
 
   macos-package:
     runs-on: macos-latest
@@ -424,7 +428,8 @@ jobs:
     - name: Run tests
       shell: cmd
       run: |
-        build-Debug\tests\tl-test\Debug\tl-test
+        cd build-Debug
+        ctest --verbose --rerun-failed --output-on-failure -C Debug
 
   windows-package:
     runs-on: windows-latest
