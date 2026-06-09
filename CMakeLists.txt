@@ -27,8 +27,6 @@ project(
 #-------------------------------------------------------------------------------
 # Build options
 
-set(ftk_API "GL_4_1" CACHE STRING "Graphics API (GL_4_1, GL_4_1_Debug, GLES_2)")
-
 set(TLRENDER_OCIO ON CACHE BOOL "Enable support for OpenColorIO")
 set(TLRENDER_EXR ON CACHE BOOL "Enable support for EXR I/O")
 set(TLRENDER_FFMPEG ON CACHE BOOL "Enable support for FFmpeg (required for audio)")

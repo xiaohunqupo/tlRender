@@ -98,42 +98,50 @@ void qtTests(
 
 int main(int argc, char* argv[])
 {
-    auto context = ftk::Context::create();
+    try
+    {
+        auto context = ftk::Context::create();
 #if defined(TLRENDER_QT6)
-    qt::init(
-        context,
-        qt::DefaultSurfaceFormat::OpenGL_4_1_CoreProfile);
+        qt::init(
+            context,
+            qt::DefaultSurfaceFormat::OpenGL_4_1_CoreProfile);
 #else // TLRENDER_QT6
-    ui::init(context);
+        ui::init(context);
 #endif // TLRENDER_QT6
 
-    auto logObserver = ftk::ListObserver<ftk::LogItem>::create(
-        context->getSystem<ftk::LogSystem>()->observeLogItems(),
-        [](const std::vector<ftk::LogItem>& value)
-        {
-            for (const auto& i : value)
+        auto logObserver = ftk::ListObserver<ftk::LogItem>::create(
+            context->getSystem<ftk::LogSystem>()->observeLogItems(),
+            [](const std::vector<ftk::LogItem>& value)
             {
-                std::cout << "[LOG] " << ftk::getLabel(i) << std::endl;
-            }
-        },
-        ftk::ObserverAction::Suppress);
+                for (const auto& i : value)
+                {
+                    std::cout << "[LOG] " << ftk::getLabel(i) << std::endl;
+                }
+            },
+            ftk::ObserverAction::Suppress);
 
-    context->tick();
-
-    std::vector<std::shared_ptr<ftk::test::ITest> > tests;
-    coreTests(tests, context);
-    ioTests(tests, context);
-    timelineTests(tests, context);
-    uiTests(tests, context);
-    qtTests(tests, context);
-
-    for (const auto& test : tests)
-    {
-        std::cout << "Running test: " << test->getName() << std::endl;
-        test->run();
         context->tick();
-    }
 
-    std::cout << "Finished tests" << std::endl;
+        std::vector<std::shared_ptr<ftk::test::ITest> > tests;
+        coreTests(tests, context);
+        ioTests(tests, context);
+        timelineTests(tests, context);
+        uiTests(tests, context);
+        qtTests(tests, context);
+
+        for (const auto& test : tests)
+        {
+            std::cout << "Running test: " << test->getName() << std::endl;
+            test->run();
+            context->tick();
+        }
+
+        std::cout << "Finished tests" << std::endl;
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "ERROR: " << e.what() << std::endl;
+        return 1;
+    }
     return 0;
 }

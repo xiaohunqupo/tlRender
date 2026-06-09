@@ -88,7 +88,7 @@ namespace tl
                 std::vector<std::string>&);
 
             //! Run the application.
-            void run() override;
+            void run();
 
         private:
             IOOptions _getIOOptions() const;

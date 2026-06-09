@@ -27,6 +27,7 @@ namespace tl
                 void _init(
                     const std::shared_ptr<ftk::Context>&,
                     std::vector<std::string>&);
+
                 App();
 
             public:
@@ -37,7 +38,8 @@ namespace tl
                     const std::shared_ptr<ftk::Context>&,
                     std::vector<std::string>&);
 
-                void run() override;
+                //! Run the application.
+                void run();
 
             private:
                 std::shared_ptr<ftk::gl::Window> _window;

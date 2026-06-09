@@ -11,22 +11,19 @@
 
 FTK_MAIN()
 {
-    int r = 1;
     try
     {
         auto context = ftk::Context::create();
         tl::init(context);
-        auto args = ftk::convert(argc, argv);
-        auto app = tl::bake::App::create(context, args);
-        r = app->getExit();
-        if (0 == r)
-        {
-            app->run();
-        }
+        auto app = tl::bake::App::create(context, ftk::convert(argc, argv));
+        if (app->hasCmdLineHelp())
+            return 0;
+        app->run();
     }
     catch(const std::exception& e)
     {
         std::cerr << "ERROR: " << e.what() << std::endl;
+        return 1;
     }
-    return r;
+    return 0;
 }

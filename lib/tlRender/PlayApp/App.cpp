@@ -21,13 +21,11 @@ namespace tl
             const std::shared_ptr<ftk::Context>& context,
             std::vector<std::string>& argv)
         {
-            // Command line arguments.
             _cmdLine.inputs = ftk::CmdLineListArg<std::string>::create(
                 "input",
                 "One or more timelines, movies, or image sequences.",
                 true);
 
-            // Command line options.
             _cmdLine.debugLoop = ftk::CmdLineOption<int>::create(
                 { "-debugLoop" },
                 "Load the command line inputs in a loop. This value is the number of seconds for each cycle.",

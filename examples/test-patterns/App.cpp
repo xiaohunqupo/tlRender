@@ -37,12 +37,6 @@ namespace tl
                     argv,
                     "test-patterns",
                     "Example test patterns application.");
-
-                _window = ftk::gl::Window::create(
-                    context,
-                    "test-patterns",
-                    ftk::Size2I(1, 1),
-                    static_cast<int>(ftk::gl::WindowOptions::MakeCurrent));
             }
 
             App::App()
@@ -62,6 +56,12 @@ namespace tl
 
             void App::run()
             {
+                _window = ftk::gl::Window::create(
+                    _context,
+                    "test-patterns",
+                    ftk::Size2I(1, 1),
+                    static_cast<int>(ftk::gl::WindowOptions::MakeCurrent));
+
                 for (const auto& size : {
                     ftk::Size2I(1920, 1080),
                     ftk::Size2I(3840, 2160),
