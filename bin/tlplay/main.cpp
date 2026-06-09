@@ -14,7 +14,8 @@ int main(int argc, char* argv[])
         auto context = ftk::Context::create();
         tl::ui::init(context);
         tl::device::init(context);
-        auto app = tl::play::App::create(context, ftk::convert(argc, argv));
+        auto args = ftk::convert(argc, argv);
+        auto app = tl::play::App::create(context, args);
         if (app->hasCmdLineHelp())
             return 0;
         app->run();

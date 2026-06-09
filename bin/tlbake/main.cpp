@@ -15,7 +15,8 @@ FTK_MAIN()
     {
         auto context = ftk::Context::create();
         tl::init(context);
-        auto app = tl::bake::App::create(context, ftk::convert(argc, argv));
+        auto args = ftk::convert(argc, argv);
+        auto app = tl::bake::App::create(context, args);
         if (app->hasCmdLineHelp())
             return 0;
         app->run();
