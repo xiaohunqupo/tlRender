@@ -325,6 +325,13 @@ namespace tl
             }
         }
 
+        if (!otioTimeline)
+        {
+            throw std::runtime_error(
+                ftk::Format("Unknown timeline: \"{0}\"").
+                arg(path.get()));
+        }
+
         OTIO_NS::AnyDictionary dict;
         dict["path"] = path.get();
         dict["audioPath"] = audioPath.get();
