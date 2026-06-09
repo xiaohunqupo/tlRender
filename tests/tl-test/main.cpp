@@ -121,11 +121,11 @@ int main(int argc, char* argv[])
     context->tick();
 
     std::vector<std::shared_ptr<ftk::test::ITest> > tests;
-    //coreTests(tests, context);
-    //ioTests(tests, context);
-    //timelineTests(tests, context);
+    coreTests(tests, context);
+    ioTests(tests, context);
+    timelineTests(tests, context);
     uiTests(tests, context);
-    //qtTests(tests, context);
+    qtTests(tests, context);
 
     for (const auto& test : tests)
     {
