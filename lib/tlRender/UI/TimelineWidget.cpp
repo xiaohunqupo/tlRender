@@ -6,8 +6,6 @@
 #include <tlRender/Timeline/TimeUnits.h>
 
 #include <ftk/UI/ScrollWidget.h>
-#include <ftk/GL/GL.h>
-#include <ftk/GL/Window.h>
 
 namespace tl
 {
@@ -42,8 +40,6 @@ namespace tl
             double scale = 500.0;
             bool sizeInit = true;
             float displayScale = 0.F;
-
-            std::shared_ptr<ftk::gl::Window> window;
 
             std::shared_ptr<ftk::ScrollWidget> scrollWidget;
             std::shared_ptr<TimelineItem> timelineItem;
@@ -90,12 +86,6 @@ namespace tl
             p.timeScrub = ftk::Observable<OTIO_NS::RationalTime>::create(invalidTime);
             p.itemOptions = ftk::Observable<ItemOptions>::create();
             p.displayOptions = ftk::Observable<DisplayOptions>::create();
-
-            p.window = ftk::gl::Window::create(
-                context,
-                "tl::ui::TimelineWidget",
-                ftk::Size2I(1, 1),
-                static_cast<int>(ftk::gl::WindowOptions::None));
 
             p.scrollWidget = ftk::ScrollWidget::create(
                 context,
@@ -688,8 +678,7 @@ namespace tl
                         p.scale,
                         p.itemOptions->get(),
                         p.displayOptions->get(),
-                        p.itemData,
-                        p.window);
+                        p.itemData);
                     p.timelineItem->setStopOnScrub(p.stopOnScrub->get());
                     p.timelineItem->setFrameMarkers(p.frameMarkers);
                     p.scrollWidget->setScrollPos(scrollPos);

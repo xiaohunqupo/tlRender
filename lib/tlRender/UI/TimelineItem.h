@@ -7,14 +7,6 @@
 
 #include <tlRender/Timeline/Player.h>
 
-namespace ftk
-{
-    namespace gl
-    {
-        class Window;
-    }
-}
-
 namespace tl
 {
     namespace ui
@@ -45,7 +37,6 @@ namespace tl
                 const ItemOptions&,
                 const DisplayOptions&,
                 const std::shared_ptr<ItemData>&,
-                const std::shared_ptr<ftk::gl::Window>&,
                 const std::shared_ptr<IWidget>& parent);
 
             TimelineItem();
@@ -62,7 +53,6 @@ namespace tl
                 const ItemOptions&,
                 const DisplayOptions&,
                 const std::shared_ptr<ItemData>&,
-                const std::shared_ptr<ftk::gl::Window>&,
                 const std::shared_ptr<IWidget>& parent = nullptr);
 
             //! Set whether playback stops when scrubbing.

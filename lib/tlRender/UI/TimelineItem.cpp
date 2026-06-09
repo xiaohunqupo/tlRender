@@ -26,7 +26,6 @@ namespace tl
             const ItemOptions& options,
             const DisplayOptions& displayOptions,
             const std::shared_ptr<ItemData>& itemData,
-            const std::shared_ptr<ftk::gl::Window>& window,
             const std::shared_ptr<IWidget>& parent)
         {
             const OTIO_NS::TimeRange timeRange = player->getTimeRange();
@@ -202,7 +201,6 @@ namespace tl
             const ItemOptions& options,
             const DisplayOptions& displayOptions,
             const std::shared_ptr<ItemData>& itemData,
-            const std::shared_ptr<ftk::gl::Window>& window,
             const std::shared_ptr<IWidget>& parent)
         {
             auto out = std::shared_ptr<TimelineItem>(new TimelineItem);
@@ -214,7 +212,6 @@ namespace tl
                 options,
                 displayOptions,
                 itemData,
-                window,
                 parent);
             return out;
         }
