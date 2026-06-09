@@ -14,7 +14,8 @@ target_include_directories(tl-test
 target_link_libraries(tl-test
     tlCoreTest
     tlIOTest
-    tlTimelineTest)
+    tlTimelineTest
+    tlUITest)
 if(TLRENDER_QT6)
     target_link_libraries(tl-test tlQtTest)
 endif()

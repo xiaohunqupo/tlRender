@@ -8,6 +8,7 @@ add_subdirectory(Resource)
 add_subdirectory(Timeline)
 add_subdirectory(TimelineTest)
 add_subdirectory(UI)
+add_subdirectory(UITest)
 
 if(TLRENDER_PROGRAMS)
     add_subdirectory(BakeApp)

@@ -4,8 +4,11 @@
 #include <tlRender/Timeline/TimelinePrivate.h>
 
 #include <tlRender/Timeline/Util.h>
+#include <tlRender/Timeline/ZipPrivate.h>
 
 #include <tlRender/IO/System.h>
+
+#include <tlRender/Core/URL.h>
 
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Context.h>
@@ -89,6 +92,8 @@ namespace tl
         const ftk::Path& inputAudioPath,
         const Options& options)
     {
+        FTK_P();
+
         ftk::Path path = inputPath;
         ftk::Path audioPath = inputAudioPath;
 
@@ -226,21 +231,95 @@ namespace tl
         // Is the input an OTIO file?
         if (!otioTimeline)
         {
+            const std::string fileName = path.get();
+            const std::string ext = ftk::toLower(path.getExt());
             OTIO_NS::ErrorStatus otioError;
-            otioTimeline = dynamic_cast<OTIO_NS::Timeline*>(
-                OTIO_NS::Timeline::from_json_file(path.get(), &otioError));
-            if (!otioTimeline)
+            if (".otio" == ext)
             {
-                throw std::runtime_error(
-                    ftk::Format("Cannot read timeline: \"{0}\"").
-                    arg(path.get()));
+                otioTimeline = dynamic_cast<OTIO_NS::Timeline*>(
+                    OTIO_NS::Timeline::from_json_file(fileName, &otioError));
+                if (!otioTimeline)
+                {
+                    throw std::runtime_error(
+                        ftk::Format("Cannot read timeline: \"{0}\"").
+                        arg(path.get()));
+                }
+                else if (OTIO_NS::is_error(otioError))
+                {
+                    throw std::runtime_error(
+                        ftk::Format("Cannot read timeline: \"{0}\": {1}").
+                        arg(path.get()).
+                        arg(otioError.details));
+                }
             }
-            else if (OTIO_NS::is_error(otioError))
+            else if (".otioz" == ext)
             {
-                throw std::runtime_error(
-                    ftk::Format("Cannot read timeline: \"{0}\": {1}").
-                    arg(path.get()).
-                    arg(otioError.details));
+                p.fileIO = ftk::FileIO::create(fileName, ftk::FileMode::Read);
+
+                ZipReader zipReader(logSystem);
+                zipReader.open(fileName, p.fileIO->getMemStart(), p.fileIO->getSize());
+
+                std::string json = zipReader.readText("content.otio");
+                otioTimeline = dynamic_cast<OTIO_NS::Timeline*>(
+                    OTIO_NS::Timeline::from_json_string(json, &otioError));
+                if (!otioTimeline)
+                {
+                    throw std::runtime_error(
+                        ftk::Format("Cannot read timeline: \"{0}\"").
+                        arg(path.get()));
+                }
+                else if (OTIO_NS::is_error(otioError))
+                {
+                    throw std::runtime_error(
+                        ftk::Format("Cannot read timeline: \"{0}\": {1}").
+                        arg(path.get()).
+                        arg(otioError.details));
+                }
+
+                for (auto clip : otioTimeline->find_children<OTIO_NS::Clip>())
+                {
+                    if (auto externalReference =
+                        dynamic_cast<OTIO_NS::ExternalReference*>(clip->media_reference()))
+                    {
+                        const std::string mediaFileName = ftk::Path(
+                            decodeURL(externalReference->target_url())).get();
+
+                        auto entry = zipReader.find(mediaFileName);
+                        if (!entry.has_value())
+                        {
+                            throw std::runtime_error(ftk::Format(
+                                "Cannot find zip entry: \"{0}\"").arg(mediaFileName));
+                        }
+
+                        p.memFiles[externalReference].push_back(ftk::MemFile(
+                            p.fileIO->getMemStart() + entry->offset,
+                            entry->size));
+                    }
+                    else if (auto imageSeqReference =
+                        dynamic_cast<OTIO_NS::ImageSequenceReference*>(clip->media_reference()))
+                    {
+                        std::vector<ftk::MemFile> mem;
+                        for (int number = 0;
+                            number < imageSeqReference->number_of_images_in_sequence();
+                            ++number)
+                        {
+                            const std::string mediaFileName = ftk::Path(
+                                decodeURL(imageSeqReference->target_url_for_image_number(number))).get();
+
+                            auto entry = zipReader.find(mediaFileName);
+                            if (!entry.has_value())
+                            {
+                                throw std::runtime_error(ftk::Format(
+                                    "Cannot find zip entry: \"{0}\"").arg(mediaFileName));
+                            }
+
+                            mem.push_back(ftk::MemFile(
+                                p.fileIO->getMemStart() + entry->offset,
+                                entry->size));
+                        }
+                        p.memFiles[imageSeqReference] = mem;
+                    }
+                }
             }
         }
 
@@ -509,7 +588,9 @@ namespace tl
     
     std::vector<ftk::MemFile> Timeline::getMem(const OTIO_NS::MediaReference* otioRef)
     {
-        return {};
+        FTK_P();
+        const auto i = p.memFiles.find(otioRef);
+        return i != p.memFiles.end() ? i->second : std::vector<ftk::MemFile>{};
     }
 
     const OTIO_NS::TimeRange& Timeline::getTimeRange() const

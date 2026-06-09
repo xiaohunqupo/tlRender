@@ -20,7 +20,8 @@ set(HEADERS
     Video.h)
 set(PRIVATE_HEADERS
     PlayerPrivate.h
-    TimelinePrivate.h)
+    TimelinePrivate.h
+    ZipPrivate.h)
 
 set(SOURCE
     Audio.cpp
@@ -42,7 +43,8 @@ set(SOURCE
     TimelineOptions.cpp
     Transition.cpp
     Util.cpp
-    Video.cpp)
+    Video.cpp
+    Zip.cpp)
 
 add_library(tlTimeline ${HEADERS} ${PRIVATE_HEADERS} ${SOURCE})
 

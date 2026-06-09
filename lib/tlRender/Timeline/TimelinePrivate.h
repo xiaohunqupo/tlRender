@@ -20,7 +20,9 @@ namespace tl
     {
         std::weak_ptr<ftk::Context> context;
         std::weak_ptr<ftk::LogSystem> logSystem;
+        std::shared_ptr<ftk::FileIO> fileIO;
         OTIO_NS::SerializableObject::Retainer<OTIO_NS::Timeline> otioTimeline;
+        std::map<const OTIO_NS::MediaReference*, std::vector<ftk::MemFile> > memFiles;
         ftk::Path path;
         ftk::Path audioPath;
         Options options;

@@ -6,6 +6,8 @@
 #include <tlRender/Qt/Init.h>
 #endif // TLRENDER_QT6
 
+#include <tlRender/UITest/ThumbnailSystemTest.h>
+
 #include <tlRender/TimelineTest/ColorOptionsTest.h>
 #include <tlRender/TimelineTest/CompareOptionsTest.h>
 #include <tlRender/TimelineTest/DisplayOptionsTest.h>
@@ -30,7 +32,7 @@
 #include <tlRender/CoreTest/TimeTest.h>
 #include <tlRender/CoreTest/URLTest.h>
 
-#include <tlRender/Timeline/Init.h>
+#include <tlRender/UI/Init.h>
 
 #include <ftk/Core/Context.h>
 
@@ -78,6 +80,13 @@ void timelineTests(
     tests.push_back(timeline_tests::UtilTest::create(context));
 }
 
+void uiTests(
+    std::vector<std::shared_ptr<ftk::test::ITest> >& tests,
+    const std::shared_ptr<ftk::Context>& context)
+{
+    tests.push_back(ui_tests::ThumbnailSystemTest::create(context));
+}
+
 void qtTests(
     std::vector<std::shared_ptr<ftk::test::ITest> >& tests,
     const std::shared_ptr<ftk::Context>& context)
@@ -95,7 +104,7 @@ int main(int argc, char* argv[])
         context,
         qt::DefaultSurfaceFormat::OpenGL_4_1_CoreProfile);
 #else // TLRENDER_QT6
-    tl::init(context);
+    ui::init(context);
 #endif // TLRENDER_QT6
 
     auto logObserver = ftk::ListObserver<ftk::LogItem>::create(
@@ -112,10 +121,11 @@ int main(int argc, char* argv[])
     context->tick();
 
     std::vector<std::shared_ptr<ftk::test::ITest> > tests;
-    coreTests(tests, context);
-    ioTests(tests, context);
-    timelineTests(tests, context);
-    qtTests(tests, context);
+    //coreTests(tests, context);
+    //ioTests(tests, context);
+    //timelineTests(tests, context);
+    uiTests(tests, context);
+    //qtTests(tests, context);
 
     for (const auto& test : tests)
     {
