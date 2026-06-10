@@ -48,8 +48,8 @@ namespace tl
     {
         void init(const std::shared_ptr<ftk::Context>& context)
         {
-            tl::init(context);
             ftk::uiInit(context);
+            tl::init(context);
             context->getSystem<ftk::gl::System>()->setRenderFactory(std::make_shared<gl::RenderFactory>());
             ThumbnailSystem::create(context);
 
