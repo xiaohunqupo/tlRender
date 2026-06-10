@@ -36,10 +36,9 @@ namespace tl
                     "player-qtquick",
                     "Example Qt Quick player application.",
                     { input });
-                const int exitCode = getExit();
-                if (exitCode != 0)
+                if (hasCmdLineHelp())
                 {
-                    exit(exitCode);
+                    exit(0);
                     return;
                 }
 

@@ -11,7 +11,6 @@
 
 int main(int argc, char* argv[])
 {
-    int r = 1;
     try
     {
         auto context = ftk::Context::create();
@@ -22,14 +21,11 @@ int main(int argc, char* argv[])
         QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
         tl::examples::player_qtquick::App app(context, argc, argv);
-        if (0 == app.getExit())
-        {
-            r = app.exec();
-        }
+        return app.exec();
     }
     catch(const std::exception& e)
     {
         std::cerr << "ERROR: " << e.what() << std::endl;
     }
-    return r;
+    return 1;
 }
