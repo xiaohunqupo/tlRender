@@ -16,6 +16,45 @@ namespace tl
         "Pixels",
         "Alphanumeric");
 
+    namespace
+    {
+        std::string alpha(int value)
+        {
+            std::string out;
+            if (0 == value)
+            {
+                out = "A";
+            }
+            else
+            {
+                while (value > 0)
+                {
+                    const int remainder = value % 26;
+                    out += 'A' + remainder;
+                    value /= 26;
+                }
+                std::reverse(out.begin(), out.end());
+            }
+            return out;
+        }
+    }
+
+    std::string getLabel(GridLabels labels, int x, int y)
+    {
+        std::stringstream ss;
+        switch (labels)
+        {
+        case GridLabels::Pixels:
+            ss << x << " " << y;
+            break;
+        case GridLabels::Alphanumeric:
+            ss << alpha(x) << " " << y;
+            break;
+        default: break;
+        }
+        return ss.str();
+    }
+
     bool Grid::operator == (const Grid& other) const
     {
         return

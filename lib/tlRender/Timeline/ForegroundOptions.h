@@ -22,6 +22,9 @@ namespace tl
     };
     TL_ENUM(GridLabels);
 
+    //! Get a grid label.
+    TL_API std::string getLabel(GridLabels, int x, int y);
+
     //! Grid.
     struct TL_API_TYPE Grid
     {
