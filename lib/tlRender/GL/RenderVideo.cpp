@@ -3,8 +3,6 @@
 
 #include <tlRender/GL/RenderPrivate.h>
 
-#include <tlRender/Timeline/RenderUtil.h>
-
 #include <ftk/GL/GL.h>
 #include <ftk/GL/Mesh.h>
 #include <ftk/GL/Util.h>
