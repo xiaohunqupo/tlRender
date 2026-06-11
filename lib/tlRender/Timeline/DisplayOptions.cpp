@@ -4,6 +4,7 @@
 #include <tlRender/Timeline/DisplayOptions.h>
 
 #include <ftk/Core/Error.h>
+#include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
 
 #include <algorithm>
@@ -81,6 +82,62 @@ namespace tl
         return !(*this == other);
     }
 
+    AspectRatio::AspectRatio(float num, float den) :
+        num(num),
+        den(den)
+    {}
+    
+    bool AspectRatio::isValid() const
+    {
+        return num > 0.F && den > 0.F;
+    }
+
+    AspectRatio::operator float() const
+    {
+        return den > 0.F ? (num / den) : 0.F;
+    }
+
+    bool AspectRatio::operator == (const AspectRatio& other) const
+    {
+        return
+            num == other.num &&
+            den == other.den;
+    }
+
+    bool AspectRatio::operator != (const AspectRatio& other) const
+    {
+        return !(*this == other);
+    }
+
+    TL_ENUM_IMPL(
+        AspectRatioType,
+        "Pixel",
+        "Display");
+
+    std::string getLabel(const AspectRatio& value)
+    {
+        return ftk::Format("{0}:{1}").
+            arg(value.num).
+            arg(value.den);
+    }
+
+    AspectRatioOptions::AspectRatioOptions(const AspectRatio& value, AspectRatioType type) :
+        value(value),
+        type(type)
+    {}
+
+    bool AspectRatioOptions::operator == (const AspectRatioOptions& other) const
+    {
+        return
+            value == other.value &&
+            type == other.type;
+    }
+
+    bool AspectRatioOptions::operator != (const AspectRatioOptions& other) const
+    {
+        return !(*this == other);
+    }
+
     bool DisplayOptions::operator == (const DisplayOptions& other) const
     {
         return
@@ -97,6 +154,92 @@ namespace tl
     bool DisplayOptions::operator != (const DisplayOptions& other) const
     {
         return !(*this == other);
+    }
+
+    float getAspectRatio(
+        const ftk::ImageInfo& info,
+        const AspectRatioOptions& options)
+    {
+        float out = 0.F;
+        if (options.value.isValid())
+        {
+            switch (options.type)
+            {
+            case AspectRatioType::Pixel:
+                out = ftk::aspectRatio(info.size) * options.value;
+                break;
+            case AspectRatioType::Display:
+                out = options.value;
+                break;
+            }
+        }
+        else
+        {
+            out = info.getAspect();
+        }
+        return out;
+    }
+
+    ftk::Size2I getRenderSize(
+        const ftk::ImageInfo& info,
+        const AspectRatioOptions& options)
+    {
+        ftk::Size2I out;
+        if (options.value.isValid())
+        {
+            switch (options.type)
+            {
+            case AspectRatioType::Pixel:
+                out.w = info.size.w * options.value;
+                out.h = info.size.h;
+                break;
+            case AspectRatioType::Display:
+                out.w = info.size.h * options.value;
+                out.h = info.size.h;
+                break;
+            }
+        }
+        else
+        {
+            out.w = info.size.w * info.pixelAspectRatio;
+            out.h = info.size.h;
+        }
+        return out;
+    }
+
+    ftk::Box2I getBox(
+        const ftk::Box2I& box,
+        const ftk::ImageInfo& info,
+        const AspectRatioOptions& options)
+    {
+        ftk::Box2I out;
+        const ftk::Size2I boxSize = box.size();
+        const float boxAspect = ftk::aspectRatio(boxSize);
+        const float aspect = getAspectRatio(info, options);
+        if (boxAspect > aspect)
+        {
+            out = ftk::Box2I(
+                box.min.x + boxSize.w / 2.F - (boxSize.h * aspect) / 2.F,
+                box.min.y,
+                boxSize.h * aspect,
+                boxSize.h);
+        }
+        else
+        {
+            out = ftk::Box2I(
+                box.min.x,
+                box.min.y + boxSize.h / 2.F - (boxSize.w / aspect) / 2.F,
+                boxSize.w,
+                boxSize.w / aspect);
+        }
+        return out;
+    }
+
+    std::string getLabel(const AspectRatioOptions& value)
+    {
+        return ftk::Format("{0} {1}").
+            arg(getLabel(value.value)).
+            arg(value.type);
     }
 
     void to_json(nlohmann::json& json, const Color& in)
@@ -134,6 +277,18 @@ namespace tl
     {
         json["Enabled"] = in.enabled;
         json["Value"] = in.value;
+    }
+
+    void to_json(nlohmann::json& json, const AspectRatio& in)
+    {
+        json["Num"] = in.num;
+        json["Den"] = in.den;
+    }
+
+    void to_json(nlohmann::json& json, const AspectRatioOptions& in)
+    {
+        json["Value"] = in.value;
+        json["Type"] = to_string(in.type);
     }
 
     void to_json(nlohmann::json& json, const DisplayOptions& in)
@@ -183,6 +338,18 @@ namespace tl
     {
         json.at("Enabled").get_to(out.enabled);
         json.at("Value").get_to(out.value);
+    }
+
+    void from_json(const nlohmann::json& json, AspectRatio& out)
+    {
+        json.at("Num").get_to(out.num);
+        json.at("Den").get_to(out.den);
+    }
+
+    void from_json(const nlohmann::json& json, AspectRatioOptions& out)
+    {
+        json.at("Value").get_to(out.value);
+        from_string(json.at("Type").get<std::string>(), out.type);
     }
 
     void from_json(const nlohmann::json& json, DisplayOptions& out)

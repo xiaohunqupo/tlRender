@@ -9,7 +9,6 @@ set(HEADERS
     Init.h
     Player.h
     PlayerOptions.h
-    RenderUtil.h
     System.h
     TimeUnits.h
     Timeline.h
@@ -36,7 +35,6 @@ set(SOURCE
     PlayerAudio.cpp
     PlayerOptions.cpp
     PlayerPrivate.cpp
-    RenderUtil.cpp
     System.cpp
     TimeUnits.cpp
     Timeline.cpp

@@ -675,8 +675,8 @@ namespace tl
                     const auto& displayOptions = p.displayOptions->get();
                     const auto boxes = getBoxes(
                         compareOptions.compare,
-                        p.videoFrame,
-                        !displayOptions.empty() ? displayOptions.front().aspectRatio : 0.F);
+                        !displayOptions.empty() ? displayOptions.front().aspectRatio : AspectRatioOptions(),
+                        p.videoFrame);
                     const ftk::V2I& viewPos = p.viewPos->get();
                     const double zoom = p.zoom->get();
                     const ftk::M44F vm =
@@ -974,8 +974,8 @@ namespace tl
             const auto& displayOptions = p.displayOptions->get();
             return getRenderSize(
                 p.compareOptions->get().compare,
-                p.videoFrame,
-                !displayOptions.empty() ? displayOptions.front().aspectRatio : 0.F);
+                !displayOptions.empty() ? displayOptions.front().aspectRatio : AspectRatioOptions(),
+                p.videoFrame);
         }
 
         ftk::V2I Viewport::_getViewportCenter() const

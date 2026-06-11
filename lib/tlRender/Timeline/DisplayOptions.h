@@ -3,8 +3,9 @@
 
 #pragma once
 
-#include <tlRender/Core/Export.h>
+#include <tlRender/Core/Util.h>
 
+#include <ftk/Core/Box.h>
 #include <ftk/Core/Image.h>
 #include <ftk/Core/Matrix.h>
 #include <ftk/Core/RenderOptions.h>
@@ -68,12 +69,75 @@ namespace tl
         TL_API bool operator != (const SoftClip&) const;
     };
 
+    //! Aspect ratio.
+    TL_API_TYPE struct AspectRatio
+    {
+        AspectRatio() = default;
+        explicit AspectRatio(float num, float den = 1.F);
+
+        float num = 1.F;
+        float den = 1.F;
+
+        bool isValid() const;
+
+        operator float () const;
+
+        TL_API bool operator == (const AspectRatio&) const;
+        TL_API bool operator != (const AspectRatio&) const;
+    };
+
+    //! Get a label.
+    TL_API std::string getLabel(const AspectRatio&);
+
+    //! Aspect ratio types.
+    enum class TL_API_TYPE AspectRatioType
+    {
+        Pixel,
+        Display,
+
+        Count,
+        First = Pixel
+    };
+    TL_ENUM(AspectRatioType);
+
+    //! Aspect ratio options.
+    struct TL_API_TYPE AspectRatioOptions
+    {
+        AspectRatioOptions() = default;
+        AspectRatioOptions(const AspectRatio&, AspectRatioType);
+
+        AspectRatio     value = AspectRatio(0.F, 0.F);
+        AspectRatioType type  = AspectRatioType::Pixel;
+
+        TL_API bool operator == (const AspectRatioOptions&) const;
+        TL_API bool operator != (const AspectRatioOptions&) const;
+    };
+
+    //! Get the aspect ratio.
+    TL_API float getAspectRatio(
+        const ftk::ImageInfo&,
+        const AspectRatioOptions&);
+
+    //! Get the render size.
+    TL_API ftk::Size2I getRenderSize(
+        const ftk::ImageInfo&,
+        const AspectRatioOptions&);
+
+    //! Get a box that fits within the given box.
+    TL_API ftk::Box2I getBox(
+        const ftk::Box2I&,
+        const ftk::ImageInfo&,
+        const AspectRatioOptions&);
+
+    //! Get a label.
+    TL_API std::string getLabel(const AspectRatioOptions&);
+
     //! Display options.
     struct TL_API_TYPE DisplayOptions
     {
-        ftk::ChannelDisplay channels     = ftk::ChannelDisplay::Color;
+        ftk::ChannelDisplay channels    = ftk::ChannelDisplay::Color;
         ftk::ImageMirror    mirror;
-        float               aspectRatio  = 0.F;
+        AspectRatioOptions  aspectRatio;
         Color               color;
         Levels              levels;
         Exposure            exposure;
@@ -91,12 +155,16 @@ namespace tl
     TL_API void to_json(nlohmann::json&, const Levels&);
     TL_API void to_json(nlohmann::json&, const Exposure&);
     TL_API void to_json(nlohmann::json&, const SoftClip&);
+    TL_API void to_json(nlohmann::json&, const AspectRatio&);
+    TL_API void to_json(nlohmann::json&, const AspectRatioOptions&);
     TL_API void to_json(nlohmann::json&, const DisplayOptions&);
 
     TL_API void from_json(const nlohmann::json&, Color&);
     TL_API void from_json(const nlohmann::json&, Levels&);
     TL_API void from_json(const nlohmann::json&, Exposure&);
     TL_API void from_json(const nlohmann::json&, SoftClip&);
+    TL_API void from_json(const nlohmann::json&, AspectRatio&);
+    TL_API void from_json(const nlohmann::json&, AspectRatioOptions&);
     TL_API void from_json(const nlohmann::json&, DisplayOptions&);
 
     ///@}
