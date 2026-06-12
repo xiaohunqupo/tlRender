@@ -10,6 +10,18 @@
 
 namespace tl
 {
+    //! Grid cell modes.
+    enum class TL_API_TYPE GridCellMode
+    {
+        CellSize,
+        CellCount,
+        Alphanumeric,
+
+        Count,
+        First = CellSize
+    };
+    TL_ENUM(GridCellMode);
+
     //! Grid labels.
     enum class TL_API_TYPE GridLabels
     {
@@ -29,7 +41,8 @@ namespace tl
     struct TL_API_TYPE Grid
     {
         bool          enabled      = false;
-        int           size         = 100;
+        GridCellMode  cellMode     = GridCellMode::CellSize;
+        ftk::Size2I   cellSize     = ftk::Size2I(100, 100);
         int           lineWidth    = 2;
         ftk::Color4F  color        = ftk::Color4F(0.F, 0.F, 0.F);
         GridLabels    labels       = GridLabels::None;

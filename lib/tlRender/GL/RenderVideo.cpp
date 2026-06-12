@@ -929,29 +929,55 @@ namespace tl
             {
                 glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
-                const ftk::V3F v0 = m * ftk::V3F(0.F, 0.F, 0.F);
-                const ftk::V3F v1 = m * ftk::V3F(options.grid.size, 0.F, 0.F);
-                const float l = ftk::length(v1 - v0);
-                if (l > options.grid.lineWidth + 10.F)
+                const ftk::Box2I bounds = ftk::bbox(boxes);
+                ftk::Size2I cellSize;
+                switch (options.grid.cellMode)
                 {
-                    const ftk::Box2I bounds = ftk::bbox(boxes);
-                    const ftk::Size2I& renderSize = getRenderSize();
+                case GridCellMode::CellSize:
+                    cellSize = options.grid.cellSize;
+                    break;
+                case GridCellMode::CellCount:
+                    cellSize.w = options.grid.cellSize.w > 0 ?
+                        static_cast<int>(std::round(bounds.w() /
+                            static_cast<float>(options.grid.cellSize.w))) :
+                        bounds.w();
+                    cellSize.h = options.grid.cellSize.h > 0 ?
+                        static_cast<int>(std::round(bounds.h() /
+                            static_cast<float>(options.grid.cellSize.h))) :
+                        bounds.h();
+                    break;
+                }
 
+                ftk::Size2I cellSizeT;
+                cellSizeT.w = ftk::length(
+                    m * ftk::V3F(0.F, 0.F, 0.F) - 
+                    m * ftk::V3F(cellSize.w, 0.F, 0.F));
+                cellSizeT.h = ftk::length(
+                    m * ftk::V3F(0.F, 0.F, 0.F) -
+                    m * ftk::V3F(0.F, cellSize.h, 0.F));
+                if (cellSizeT.w > options.grid.lineWidth + 10.F &&
+                    cellSizeT.h > options.grid.lineWidth + 10.F)
+                {
+                    const ftk::Size2I& renderSize = getRenderSize();
                     ftk::M44F mi;
                     ftk::invert(m, mi);
                     const ftk::V3F v0 = mi * ftk::V3F(0.F, 0.F, 0.F);
                     const ftk::V3F v1 = mi * ftk::V3F(renderSize.w, renderSize.h, 0.F);
                     const ftk::V2F v2(
-                        std::max(static_cast<int>(v0.x) / options.grid.size * options.grid.size, bounds.min.x),
-                        std::max(static_cast<int>(v0.y) / options.grid.size * options.grid.size, bounds.min.y));
+                        std::max(static_cast<int>(v0.x) / cellSize.w * cellSize.w, bounds.min.x),
+                        std::max(static_cast<int>(v0.y) / cellSize.h * cellSize.h, bounds.min.y));
                     const ftk::V2F v3(
-                        std::min(static_cast<int>(v1.x) / options.grid.size * options.grid.size, bounds.max.x),
-                        std::min(static_cast<int>(v1.y) / options.grid.size * options.grid.size, bounds.max.y));
+                        std::min(static_cast<int>(v1.x) / cellSize.w * cellSize.w, bounds.max.x),
+                        std::min(static_cast<int>(v1.y) / cellSize.h * cellSize.h, bounds.max.y));
 
                     std::vector<std::pair<ftk::V2F, ftk::V2F> > lines;
                     ftk::LineOptions lineOptions;
                     lineOptions.width = options.grid.lineWidth;
-                    for (int y = v2.y; y <= v3.y + 1; y += options.grid.size)
+                    for (int y = v2.y, i = v2.y / cellSize.h;
+                        y <= v3.y + 1 && (GridCellMode::CellCount == options.grid.cellMode ?
+                            i < options.grid.cellSize.h :
+                            true);
+                        y += cellSize.h, ++i)
                     {
                         const ftk::V3F v0 = m * ftk::V3F(bounds.min.x, y, 0.F);
                         const ftk::V3F v1 = m * ftk::V3F(bounds.max.x + 1, y, 0.F);
@@ -959,7 +985,11 @@ namespace tl
                         const ftk::V2F v3(std::round(v1.x), std::round(v1.y));
                         lines.push_back(std::make_pair(v2, v3));
                     }
-                    for (int x = v2.x; x <= v3.x + 1; x += options.grid.size)
+                    for (int x = v2.x, j = v2.x / cellSize.w;
+                        x <= v3.x + 1 && (GridCellMode::CellCount == options.grid.cellMode ?
+                            j < options.grid.cellSize.w :
+                            true);
+                        x += cellSize.w, ++j)
                     {
                         const ftk::V3F v0 = m * ftk::V3F(x, bounds.min.y, 0.F);
                         const ftk::V3F v1 = m * ftk::V3F(x, bounds.max.y + 1, 0.F);
@@ -975,16 +1005,25 @@ namespace tl
                         const ftk::FontMetrics fontMetrics = fontSystem->getMetrics(options.grid.fontInfo);
                         std::string text = getLabel(
                             options.grid.labels,
-                            GridLabels::Pixels == options.grid.labels ? v3.x : v3.x / options.grid.size,
-                            GridLabels::Pixels == options.grid.labels ? v3.y : v3.y / options.grid.size);
+                            GridLabels::Pixels == options.grid.labels ? v3.x : v3.x / cellSize.w,
+                            GridLabels::Pixels == options.grid.labels ? v3.y : v3.y / cellSize.h);
                         ftk::Size2I size =
                             fontSystem->getSize(text, options.grid.fontInfo) +
                             options.grid.textMargin * 2;
-                        if (size.w <= l - options.grid.lineWidth)
+                        if (size.w <= cellSizeT.w - options.grid.lineWidth &&
+                            size.h <= cellSizeT.h - options.grid.lineWidth)
                         {
-                            for (int y = v2.y, i = v2.y / options.grid.size; y <= v3.y; y += options.grid.size, ++i)
+                            for (int y = v2.y, i = v2.y / cellSize.h;
+                                y <= v3.y + 1 && (GridCellMode::CellCount == options.grid.cellMode ?
+                                    i < options.grid.cellSize.h :
+                                    true);
+                                y += cellSize.h, ++i)
                             {
-                                for (int x = v2.x, j = v2.x / options.grid.size; x <= v3.x; x += options.grid.size, ++j)
+                                for (int x = v2.x, j = v2.x / cellSize.w;
+                                    x <= v3.x + 1 && (GridCellMode::CellCount == options.grid.cellMode ?
+                                        j < options.grid.cellSize.w :
+                                        true);
+                                    x += cellSize.w, ++j)
                                 {
                                     text = getLabel(
                                         options.grid.labels,

@@ -11,6 +11,11 @@
 namespace tl
 {
     TL_ENUM_IMPL(
+        GridCellMode,
+        "Cell Size",
+        "Cell Count");
+
+    TL_ENUM_IMPL(
         GridLabels,
         "None",
         "Pixels",
@@ -59,7 +64,8 @@ namespace tl
     {
         return
             enabled == other.enabled &&
-            size == other.size &&
+            cellMode == other.cellMode &&
+            cellSize == other.cellSize &&
             lineWidth == other.lineWidth &&
             color == other.color &&
             labels == other.labels &&
@@ -102,7 +108,8 @@ namespace tl
     void to_json(nlohmann::json& json, const Grid& in)
     {
         json["Enabled"] = in.enabled;
-        json["Size"] = in.size;
+        json["CellMode"] = to_string(in.cellMode);
+        json["CellSize"] = in.cellSize;
         json["LineWidth"] = in.lineWidth;
         json["Color"] = in.color;
         json["Labels"] = to_string(in.labels);
@@ -128,7 +135,8 @@ namespace tl
     void from_json(const nlohmann::json& json, Grid& out)
     {
         json.at("Enabled").get_to(out.enabled);
-        json.at("Size").get_to(out.size);
+        from_string(json.at("CellMode").get<std::string>(), out.cellMode);
+        json.at("CellSize").get_to(out.cellSize);
         json.at("LineWidth").get_to(out.lineWidth);
         json.at("Color").get_to(out.color);
         from_string(json.at("Labels").get<std::string>(), out.labels);
