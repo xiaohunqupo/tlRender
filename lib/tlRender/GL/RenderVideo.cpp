@@ -934,16 +934,17 @@ namespace tl
                 switch (options.grid.cellMode)
                 {
                 case GridCellMode::CellSize:
-                    cellSize = options.grid.cellSize;
+                    cellSize.w = options.grid.cellSize;
+                    cellSize.h = options.grid.cellSize;
                     break;
                 case GridCellMode::CellCount:
-                    cellSize.w = options.grid.cellSize.w > 0 ?
+                    cellSize.w = options.grid.cellCount.x > 0 ?
                         static_cast<int>(std::round(bounds.w() /
-                            static_cast<float>(options.grid.cellSize.w))) :
+                            static_cast<float>(options.grid.cellCount.x))) :
                         bounds.w();
-                    cellSize.h = options.grid.cellSize.h > 0 ?
+                    cellSize.h = options.grid.cellCount.y > 0 ?
                         static_cast<int>(std::round(bounds.h() /
-                            static_cast<float>(options.grid.cellSize.h))) :
+                            static_cast<float>(options.grid.cellCount.y))) :
                         bounds.h();
                     break;
                 }
@@ -975,7 +976,7 @@ namespace tl
                     lineOptions.width = options.grid.lineWidth;
                     for (int y = v2.y, i = v2.y / cellSize.h;
                         y <= v3.y + 1 && (GridCellMode::CellCount == options.grid.cellMode ?
-                            i < options.grid.cellSize.h :
+                            i < options.grid.cellCount.y :
                             true);
                         y += cellSize.h, ++i)
                     {
@@ -987,7 +988,7 @@ namespace tl
                     }
                     for (int x = v2.x, j = v2.x / cellSize.w;
                         x <= v3.x + 1 && (GridCellMode::CellCount == options.grid.cellMode ?
-                            j < options.grid.cellSize.w :
+                            j < options.grid.cellCount.x :
                             true);
                         x += cellSize.w, ++j)
                     {
@@ -1015,13 +1016,13 @@ namespace tl
                         {
                             for (int y = v2.y, i = v2.y / cellSize.h;
                                 y <= v3.y + 1 && (GridCellMode::CellCount == options.grid.cellMode ?
-                                    i < options.grid.cellSize.h :
+                                    i < options.grid.cellCount.y :
                                     true);
                                 y += cellSize.h, ++i)
                             {
                                 for (int x = v2.x, j = v2.x / cellSize.w;
                                     x <= v3.x + 1 && (GridCellMode::CellCount == options.grid.cellMode ?
-                                        j < options.grid.cellSize.w :
+                                        j < options.grid.cellCount.x :
                                         true);
                                     x += cellSize.w, ++j)
                                 {

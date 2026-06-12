@@ -42,7 +42,8 @@ namespace tl
     {
         bool          enabled      = false;
         GridCellMode  cellMode     = GridCellMode::CellSize;
-        ftk::Size2I   cellSize     = ftk::Size2I(100, 100);
+        int           cellSize     = 100;
+        ftk::V2I      cellCount    = ftk::V2I(5, 3);
         int           lineWidth    = 2;
         ftk::Color4F  color        = ftk::Color4F(0.F, 0.F, 0.F);
         GridLabels    labels       = GridLabels::None;

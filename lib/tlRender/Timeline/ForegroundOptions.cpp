@@ -66,6 +66,7 @@ namespace tl
             enabled == other.enabled &&
             cellMode == other.cellMode &&
             cellSize == other.cellSize &&
+            cellCount == other.cellCount &&
             lineWidth == other.lineWidth &&
             color == other.color &&
             labels == other.labels &&
@@ -110,6 +111,7 @@ namespace tl
         json["Enabled"] = in.enabled;
         json["CellMode"] = to_string(in.cellMode);
         json["CellSize"] = in.cellSize;
+        json["CellCount"] = in.cellCount;
         json["LineWidth"] = in.lineWidth;
         json["Color"] = in.color;
         json["Labels"] = to_string(in.labels);
@@ -137,6 +139,7 @@ namespace tl
         json.at("Enabled").get_to(out.enabled);
         from_string(json.at("CellMode").get<std::string>(), out.cellMode);
         json.at("CellSize").get_to(out.cellSize);
+        json.at("CellCount").get_to(out.cellCount);
         json.at("LineWidth").get_to(out.lineWidth);
         json.at("Color").get_to(out.color);
         from_string(json.at("Labels").get<std::string>(), out.labels);
