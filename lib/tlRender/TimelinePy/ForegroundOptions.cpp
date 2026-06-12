@@ -16,10 +16,16 @@ namespace tl
     {
         void foregroundOptions(py::module_& m)
         {
+            py::enum_<GridCellMode>(m, "GridCellMode")
+                .value("CellSize", GridCellMode::CellSize)
+                .value("CellCount", GridCellMode::CellCount);
+
             py::class_<Grid>(m, "Grid")
                 .def(py::init())
                 .def_readwrite("enabled", &Grid::enabled)
-                .def_readwrite("size", &Grid::size)
+                .def_readwrite("cellMode", &Grid::cellMode)
+                .def_readwrite("cellSize", &Grid::cellSize)
+                .def_readwrite("cellCount", &Grid::cellCount)
                 .def_readwrite("lineWidth", &Grid::lineWidth)
                 .def_readwrite("color", &Grid::color)
                 .def(pybind11::self == pybind11::self)

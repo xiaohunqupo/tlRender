@@ -15,7 +15,6 @@ namespace tl
     {
         CellSize,
         CellCount,
-        Alphanumeric,
 
         Count,
         First = CellSize
