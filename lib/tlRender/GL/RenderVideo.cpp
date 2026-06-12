@@ -947,6 +947,7 @@ namespace tl
                             static_cast<float>(options.grid.cellCount.y))) :
                         bounds.h();
                     break;
+                default: break;
                 }
 
                 ftk::Size2I cellSizeT;
