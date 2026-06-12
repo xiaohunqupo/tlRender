@@ -1102,6 +1102,41 @@ namespace tl
 
                 drawMesh(mesh, options.outline.color);
             }
+
+            if (options.centerMarker.enabled && !boxes.empty())
+            {
+                glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+
+                const ftk::Size2I& renderSize = getRenderSize();
+                const ftk::V2I c(
+                    std::round(renderSize.w / 2.F),
+                    std::round(renderSize.h / 2.F));
+
+                std::vector<ftk::Box2F> centerMarker;
+                const float a = 1.F / 3.F;
+                const float b = 2.F / 3.F;
+                centerMarker.push_back(ftk::Box2F(
+                    c.x - options.centerMarker.width / 2,
+                    c.y - options.centerMarker.size,
+                    options.centerMarker.width,
+                    options.centerMarker.size * b));
+                centerMarker.push_back(ftk::Box2F(
+                    c.x - options.centerMarker.width / 2,
+                    c.y + options.centerMarker.size * a,
+                    options.centerMarker.width,
+                    options.centerMarker.size * b));
+                centerMarker.push_back(ftk::Box2F(
+                    c.x - options.centerMarker.size,
+                    c.y - options.centerMarker.width / 2,
+                    options.centerMarker.size * b,
+                    options.centerMarker.width));
+                centerMarker.push_back(ftk::Box2F(
+                    c.x + options.centerMarker.size * a,
+                    c.y - options.centerMarker.width / 2,
+                    options.centerMarker.size * b,
+                    options.centerMarker.width));
+                drawRects(centerMarker, options.centerMarker.color);
+            }
         }
     }
 }
