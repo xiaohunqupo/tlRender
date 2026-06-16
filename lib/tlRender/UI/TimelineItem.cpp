@@ -10,6 +10,7 @@
 #include <tlRender/Timeline/Util.h>
 
 #include <ftk/UI/DrawUtil.h>
+#include <ftk/UI/ScreenshotTag.h>
 #include <ftk/UI/ScrollArea.h>
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Format.h>
@@ -63,6 +64,7 @@ namespace tl
                     Private::Track track;
                     track.index = static_cast<int>(p.tracks.size());
                     std::string trackLabel = otioTrack->name();
+                    std::string screenshotTag;
                     if (OTIO_NS::Track::Kind::video == otioTrack->kind())
                     {
                         track.type = TrackType::Video;
@@ -73,6 +75,7 @@ namespace tl
                         if (-1 == p.firstVideoTrack)
                         {
                             p.firstVideoTrack = track.index;
+                            screenshotTag = "Timeline.VideoTrack";
                         }
                     }
                     else if (OTIO_NS::Track::Kind::audio == otioTrack->kind())
@@ -85,6 +88,7 @@ namespace tl
                         if (-1 == p.firstAudioTrack)
                         {
                             p.firstAudioTrack = track.index;
+                            screenshotTag = "Timeline.AudioTrack";
                         }
                     }
                     track.timeRange = otioTrack->trimmed_range();
@@ -94,6 +98,10 @@ namespace tl
                         shared_from_this());
                     track.label->setMarginRole(ftk::SizeRole::MarginInside);
                     track.label->setEnabled(otioTrack->enabled());
+                    if (!screenshotTag.empty())
+                    {
+                        ftk::setScreenshotTag(track.label, screenshotTag);
+                    }
                     track.durationLabel = ftk::Label::create(
                         context,
                         shared_from_this());
@@ -117,6 +125,7 @@ namespace tl
                                     displayOptions,
                                     itemData,
                                     shared_from_this());
+                                ftk::setScreenshotTag(item, "Timeline.VideoClip");
                                 break;
                             case TrackType::Audio:
                                 item = AudioClipItem::create(
@@ -128,6 +137,7 @@ namespace tl
                                     displayOptions,
                                     itemData,
                                     shared_from_this());
+                                ftk::setScreenshotTag(item, "Timeline.AudioClip");
                                 break;
                             default: break;
                             }
@@ -145,6 +155,7 @@ namespace tl
                                 displayOptions,
                                 itemData,
                                 shared_from_this());
+                            ftk::setScreenshotTag(item, "Timeline.Gap");
                         }
                         if (item)
                         {
