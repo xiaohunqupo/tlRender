@@ -2,7 +2,6 @@ set(HEADERS
     Audio.h
     AudioInline.h
     AudioResample.h
-    AudioSystem.h
     Export.h
     HDR.h
     HDRInline.h
@@ -15,7 +14,6 @@ set(HEADERS
 set(SOURCE
     Audio.cpp
     AudioResample.cpp
-    AudioSystem.cpp
     HDR.cpp
     Time.cpp
     URL.cpp)

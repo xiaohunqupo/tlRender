@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright Contributors to the tlRender project.
 
-#include <tlRender/Core/AudioSystem.h>
+#include <tlRender/Timeline/AudioSystem.h>
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
 #include <ftk/Core/Time.h>
 
-#if defined(TLRENDER_SDL2)
+#if defined(FTK_SDL2)
 #include <SDL2/SDL.h>
-#endif // TLRENDER_SDL2
-#if defined(TLRENDER_SDL3)
+#endif // FTK_SDL2
+#if defined(FTK_SDL3)
 #include <SDL3/SDL.h>
-#endif // TLRENDER_SDL3
+#endif // FTK_SDL3
 
 #include <array>
 #include <atomic>
@@ -83,12 +83,12 @@ namespace tl
     {
         FTK_P();
 
-#if defined(TLRENDER_SDL2) || defined(TLRENDER_SDL3)
-#if defined(TLRENDER_SDL2)
+#if defined(FTK_SDL2) || defined(FTK_SDL3)
+#if defined(FTK_SDL2)
         p.init = SDL_Init(SDL_INIT_AUDIO) >= 0;
-#elif defined(TLRENDER_SDL3)
+#elif defined(FTK_SDL3)
         p.init = SDL_Init(SDL_INIT_AUDIO);
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
         if (!p.init)
         {
             std::stringstream ss;
@@ -114,7 +114,7 @@ namespace tl
                 _log(ss.str());
             }
         }
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
 
         const std::vector<AudioDeviceInfo> devices = _getDevices();
         const AudioDeviceInfo defaultDevice = _getDefaultDevice();
@@ -125,7 +125,7 @@ namespace tl
         p.mutex.devices = devices;
         p.mutex.defaultDevice = defaultDevice;
 
-#if defined(TLRENDER_SDL2) || defined(TLRENDER_SDL3)
+#if defined(FTK_SDL2) || defined(FTK_SDL3)
         if (p.init)
         {
             p.thread.running = true;
@@ -141,7 +141,7 @@ namespace tl
                     }
                 });
         }
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
     }
 
     AudioSystem::~AudioSystem()
@@ -216,7 +216,7 @@ namespace tl
 
     namespace
     {
-#if defined(TLRENDER_SDL2) || defined(TLRENDER_SDL3)
+#if defined(FTK_SDL2) || defined(FTK_SDL3)
         //! \todo This is duplicated in AudioSystem.cpp and PlayerAudio.cpp
         AudioType fromSDL(SDL_AudioFormat value)
         {
@@ -247,14 +247,14 @@ namespace tl
             }
             return out;
         }
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
     }
 
     std::vector<AudioDeviceInfo> AudioSystem::_getDevices()
     {
         FTK_P();
         std::vector<AudioDeviceInfo> out;
-#if defined(TLRENDER_SDL2)
+#if defined(FTK_SDL2)
         const int count = SDL_GetNumAudioDevices(0);
         for (int i = 0; i < count; ++i)
         {
@@ -266,7 +266,7 @@ namespace tl
             device.info.sampleRate = 48000;
             out.push_back(device);
         }
-#elif defined(TLRENDER_SDL3)
+#elif defined(FTK_SDL3)
         int count = 0;
         SDL_AudioDeviceID* ids = SDL_GetAudioPlaybackDevices(&count);
         for (int i = 0; i < count; ++i)
@@ -283,18 +283,18 @@ namespace tl
             out.push_back(device);
         }
         SDL_free(ids);
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
         return out;
     }
 
     AudioDeviceInfo AudioSystem::_getDefaultDevice()
     {
         AudioDeviceInfo out;
-#if defined(TLRENDER_SDL2)
+#if defined(FTK_SDL2)
         out.info.channelCount = 2;
         out.info.type = AudioType::F32;
         out.info.sampleRate = 48000;
-#elif defined(TLRENDER_SDL3)
+#elif defined(FTK_SDL3)
         out.id.name = "Default";
         SDL_AudioSpec spec;
         int sampleFrames = 0;
@@ -302,14 +302,14 @@ namespace tl
         out.info.channelCount = spec.channels;
         out.info.type = fromSDL(spec.format);
         out.info.sampleRate = spec.freq;
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
         return out;
     }
 
     void AudioSystem::_run()
     {
         FTK_P();
-#if defined(TLRENDER_SDL2) || defined(TLRENDER_SDL3)
+#if defined(FTK_SDL2) || defined(FTK_SDL3)
 
         const std::vector<AudioDeviceInfo> devices = _getDevices();
         const AudioDeviceInfo defaultDevice = _getDefaultDevice();
@@ -351,6 +351,6 @@ namespace tl
             p.mutex.devices = p.thread.devices;
             p.mutex.defaultDevice = p.thread.defaultDevice;
         }
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
     }
 }

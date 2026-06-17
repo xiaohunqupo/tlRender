@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <tlRender/Core/AudioSystem.h>
+#include <tlRender/Timeline/AudioSystem.h>
 #include <tlRender/Core/Time.h>
 
 #include <ftk/Core/Memory.h>

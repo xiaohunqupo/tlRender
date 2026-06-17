@@ -198,19 +198,19 @@ namespace tl
             p.thread.thread.join();
         }
 
-#if defined(TLRENDER_SDL2)
+#if defined(FTK_SDL2)
         if (p.sdlID > 0)
         {
             SDL_CloseAudioDevice(p.sdlID);
             p.sdlID = 0;
         }
-#elif defined(TLRENDER_SDL3)
+#elif defined(FTK_SDL3)
         if (p.sdlStream)
         {
             SDL_DestroyAudioStream(p.sdlStream);
             p.sdlStream = nullptr;
         }
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
 
         --objectCount;
     }

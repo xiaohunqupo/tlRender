@@ -9,12 +9,12 @@
 
 #include <tlRender/Core/AudioResample.h>
 
-#if defined(TLRENDER_SDL2)
+#if defined(FTK_SDL2)
 #include <SDL2/SDL.h>
-#endif // TLRENDER_SDL2
-#if defined(TLRENDER_SDL3)
+#endif // FTK_SDL2
+#if defined(FTK_SDL3)
 #include <SDL3/SDL.h>
-#endif // TLRENDER_SDL3
+#endif // FTK_SDL3
 
 #include <atomic>
 #include <mutex>
@@ -38,14 +38,14 @@ namespace tl
         void playbackReset(const OTIO_NS::RationalTime&);
         void audioInit(const std::shared_ptr<ftk::Context>&);
         void audioReset(const OTIO_NS::RationalTime&);
-#if defined(TLRENDER_SDL2) || defined(TLRENDER_SDL3)
+#if defined(FTK_SDL2) || defined(FTK_SDL3)
         void sdlCallback(uint8_t* stream, int len);
-#if defined(TLRENDER_SDL2)
+#if defined(FTK_SDL2)
         static void sdl2Callback(void* user, Uint8* stream, int len);
-#elif defined(TLRENDER_SDL3)
+#elif defined(FTK_SDL3)
         static void sdl3Callback(void* user, SDL_AudioStream *stream, int additional_amount, int total_amount);
-#endif // TLRENDER_SDL2
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
+#endif // FTK_SDL2 || FTK_SDL3
 
         void log();
 
@@ -85,11 +85,11 @@ namespace tl
 
         bool audioDevices = false;
         AudioInfo audioInfo;
-#if defined(TLRENDER_SDL2)
+#if defined(FTK_SDL2)
         int sdlID = 0;
-#elif defined(TLRENDER_SDL3)
+#elif defined(FTK_SDL3)
         SDL_AudioStream* sdlStream = nullptr;
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
 
         std::atomic<bool> running;
 

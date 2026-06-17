@@ -131,15 +131,15 @@ namespace tl
     bool Player::Private::hasAudio() const
     {
         bool out = false;
-#if defined(TLRENDER_SDL2) || defined(TLRENDER_SDL3)
+#if defined(FTK_SDL2) || defined(FTK_SDL3)
         out = audioDevices && ioInfo.audio.isValid();
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
         return out;
     }
 
     namespace
     {
-#if defined(TLRENDER_SDL2)
+#if defined(FTK_SDL2)
         SDL_AudioFormat toSDL(AudioType value)
         {
             SDL_AudioFormat out = 0;
@@ -153,7 +153,7 @@ namespace tl
             }
             return out;
         }
-#elif defined(TLRENDER_SDL3)
+#elif defined(FTK_SDL3)
         SDL_AudioFormat toSDL(AudioType value)
         {
             SDL_AudioFormat out = SDL_AUDIO_UNKNOWN;
@@ -167,9 +167,9 @@ namespace tl
             }
             return out;
         }
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
 
-#if defined(TLRENDER_SDL2) || defined(TLRENDER_SDL3)
+#if defined(FTK_SDL2) || defined(FTK_SDL3)
         //! \todo This is duplicated in AudioSystem.cpp and PlayerAudio.cpp
         AudioType fromSDL(SDL_AudioFormat value)
         {
@@ -200,26 +200,26 @@ namespace tl
             }
             return out;
         }
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
     }
 
     void Player::Private::audioInit(const std::shared_ptr<ftk::Context>& context)
     {
-#if defined(TLRENDER_SDL2) || defined(TLRENDER_SDL3)
+#if defined(FTK_SDL2) || defined(FTK_SDL3)
 
-#if defined(TLRENDER_SDL2)
+#if defined(FTK_SDL2)
         if (sdlID > 0)
         {
             SDL_CloseAudioDevice(sdlID);
             sdlID = 0;
         }
-#elif defined(TLRENDER_SDL3)
+#elif defined(FTK_SDL3)
         if (sdlStream)
         {
             SDL_DestroyAudioStream(sdlStream);
             sdlStream = nullptr;
         }
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
 
         AudioDeviceID id = audioDevice->get();
         auto audioSystem = context->getSystem<AudioSystem>();
@@ -256,7 +256,7 @@ namespace tl
             spec.freq = audioInfo.sampleRate;
             spec.format = toSDL(audioInfo.type);
             spec.channels = audioInfo.channelCount;
-#if defined(TLRENDER_SDL2)
+#if defined(FTK_SDL2)
             spec.samples = playerOptions.audioBufferFrameCount;
             spec.padding = 0;
             spec.callback = sdl2Callback;
@@ -273,7 +273,7 @@ namespace tl
                 audioInfo.channelCount = outSpec.channels;
                 audioInfo.type = fromSDL(outSpec.format);
                 audioInfo.sampleRate = outSpec.freq;
-#elif defined(TLRENDER_SDL3)
+#elif defined(FTK_SDL3)
             sdlStream = SDL_OpenAudioDeviceStream(
                 -1 == id.number ? SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK : id.number,
                 &spec,
@@ -281,7 +281,7 @@ namespace tl
                 this);
             if (sdlStream)
             {
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
                 {
                     std::stringstream ss;
                     ss << "Audio device " << id.number << ": " << id.name << "\n" <<
@@ -291,11 +291,11 @@ namespace tl
                     context->log("tl::Player", ss.str());
                 }
 
-#if defined(TLRENDER_SDL2)
+#if defined(FTK_SDL2)
                 SDL_PauseAudioDevice(sdlID, 0);
-#elif defined(TLRENDER_SDL3)
+#elif defined(FTK_SDL3)
                 SDL_ResumeAudioStreamDevice(sdlStream);
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
             }
             else
             {
@@ -304,7 +304,7 @@ namespace tl
                 context->log("tl::Player", ss.str(), ftk::LogType::Error);
             }
         }
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
     }
 
     void Player::Private::audioReset(const OTIO_NS::RationalTime& time)
@@ -314,7 +314,7 @@ namespace tl
         audioMutex.frame = 0;
     }
 
-#if defined(TLRENDER_SDL2) || defined(TLRENDER_SDL3)
+#if defined(FTK_SDL2) || defined(FTK_SDL3)
     void Player::Private::sdlCallback(
         uint8_t* outputBuffer,
         int len)
@@ -465,7 +465,7 @@ namespace tl
         }
     }
 
-#if defined(TLRENDER_SDL2)
+#if defined(FTK_SDL2)
     void Player::Private::sdl2Callback(
         void* userData,
         Uint8* outputBuffer,
@@ -477,7 +477,7 @@ namespace tl
             p->sdlCallback(outputBuffer, len);
         }
     }
-#elif defined(TLRENDER_SDL3)
+#elif defined(FTK_SDL3)
     void Player::Private::sdl3Callback(
         void* userData,
         SDL_AudioStream *stream,
@@ -492,6 +492,6 @@ namespace tl
             SDL_PutAudioStreamData(stream, buf.data(), buf.size());
         }
     }
-#endif // TLRENDER_SDL2
-#endif // TLRENDER_SDL2
+#endif // FTK_SDL2
+#endif // FTK_SDL2 || FTK_SDL3
 }

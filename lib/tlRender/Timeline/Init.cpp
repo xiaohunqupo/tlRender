@@ -3,12 +3,12 @@
 
 #include <tlRender/Timeline/Init.h>
 
+#include <tlRender/Timeline/AudioSystem.h>
 #include <tlRender/Timeline/Player.h>
 #include <tlRender/Timeline/System.h>
 
 #include <tlRender/IO/System.h>
 
-#include <tlRender/Core/AudioSystem.h>
 #include <tlRender/Core/Version.h>
 
 #include <ftk/GL/Init.h>

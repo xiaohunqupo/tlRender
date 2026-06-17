@@ -4,7 +4,6 @@
 #include <tlRender/CoreTest/AudioTest.h>
 
 #include <tlRender/Core/AudioResample.h>
-#include <tlRender/Core/AudioSystem.h>
 
 #include <ftk/Core/Assert.h>
 #include <ftk/Core/Context.h>
@@ -31,7 +30,6 @@ namespace tl
             _enums();
             _types();
             _audio();
-            _audioSystem();
             _combine();
             _mix();
             _reverse();
@@ -83,29 +81,6 @@ namespace tl
                 FTK_ASSERT(audio->isValid());
                 FTK_ASSERT(audio->getData());
                 FTK_ASSERT(static_cast<const Audio*>(audio.get())->getData());
-            }
-        }
-
-        void AudioTest::_audioSystem()
-        {
-            auto system = _context->getSystem<AudioSystem>();
-            for (const auto& i : system->getDrivers())
-            {
-                std::stringstream ss;
-                ss << "api: " << i;
-                _print(ss.str());
-            }
-            for (const auto& i : system->getDevices())
-            {
-                std::stringstream ss;
-                ss << "device: " << i.id.number << " " << i.id.name;
-                _print(ss.str());
-            }
-            {
-                std::stringstream ss;
-                const AudioDeviceInfo device = system->getDefaultDevice();
-                ss << "default device: " << device.id.number << " " << device.id.name;
-                _print(ss.str());
             }
         }
 

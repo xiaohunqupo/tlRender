@@ -8,6 +8,7 @@
 
 #include <tlRender/UITest/ThumbnailSystemTest.h>
 
+#include <tlRender/TimelineTest/AudioSystemTest.h>
 #include <tlRender/TimelineTest/ColorOptionsTest.h>
 #include <tlRender/TimelineTest/CompareOptionsTest.h>
 #include <tlRender/TimelineTest/DisplayOptionsTest.h>
@@ -71,6 +72,7 @@ void timelineTests(
     std::vector<std::shared_ptr<ftk::test::ITest> >& tests,
     const std::shared_ptr<ftk::Context>& context)
 {
+    tests.push_back(timeline_tests::AudioSystemTest::create(context));
     tests.push_back(timeline_tests::ColorOptionsTest::create(context));
     tests.push_back(timeline_tests::CompareOptionsTest::create(context));
     tests.push_back(timeline_tests::DisplayOptionsTest::create(context));

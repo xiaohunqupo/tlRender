@@ -23,7 +23,6 @@ namespace tl
             void _enums();
             void _types();
             void _audio();
-            void _audioSystem();
             void _combine();
             void _mix();
             void _reverse();

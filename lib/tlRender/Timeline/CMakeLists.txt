@@ -1,5 +1,6 @@
 set(HEADERS
     Audio.h
+    AudioSystem.h
     BackgroundOptions.h
     ColorOptions.h
     CompareOptions.h
@@ -24,6 +25,7 @@ set(PRIVATE_HEADERS
 
 set(SOURCE
     Audio.cpp
+    AudioSystem.cpp
     BackgroundOptions.cpp
     ColorOptions.cpp
     CompareOptions.cpp
