@@ -7,7 +7,7 @@
 #include <tlRender/Timeline/Player.h>
 #include <tlRender/Timeline/TimeUnits.h>
 
-#include <tlRender/Core/AudioSystem.h>
+#include <tlRender/Core/Audio.h>
 
 #include <ftk/Core/RenderOptions.h>
 
