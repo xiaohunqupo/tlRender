@@ -119,6 +119,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Dependencies
 
 # Base dependencies
+find_package(ZLIB REQUIRED)
 find_package(Imath REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(minizip-ng REQUIRED)
