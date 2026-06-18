@@ -15,7 +15,8 @@ namespace tl
     {
         void Render::drawBackground(
             const std::vector<ftk::Box2I>& boxes,
-            const ftk::M44F& m,
+            const ftk::M44F& pm,
+            const ftk::M44F& vm,
             const BackgroundOptions& options)
         {
             glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
@@ -922,7 +923,8 @@ namespace tl
 
         void Render::drawForeground(
             const std::vector<ftk::Box2I>& boxes,
-            const ftk::M44F& m,
+            const ftk::M44F& pm,
+            const ftk::M44F& vm,
             const ForegroundOptions& options)
         {
             if (options.grid.enabled && !boxes.empty())
@@ -952,17 +954,17 @@ namespace tl
 
                 ftk::Size2I cellSizeT;
                 cellSizeT.w = ftk::length(
-                    m * ftk::V3F(0.F, 0.F, 0.F) - 
-                    m * ftk::V3F(cellSize.w, 0.F, 0.F));
+                    vm * ftk::V3F(0.F, 0.F, 0.F) -
+                    vm * ftk::V3F(cellSize.w, 0.F, 0.F));
                 cellSizeT.h = ftk::length(
-                    m * ftk::V3F(0.F, 0.F, 0.F) -
-                    m * ftk::V3F(0.F, cellSize.h, 0.F));
+                    vm * ftk::V3F(0.F, 0.F, 0.F) -
+                    vm * ftk::V3F(0.F, cellSize.h, 0.F));
                 if (cellSizeT.w > options.grid.lineWidth + 10.F &&
                     cellSizeT.h > options.grid.lineWidth + 10.F)
                 {
                     const ftk::Size2I& renderSize = getRenderSize();
                     ftk::M44F mi;
-                    ftk::invert(m, mi);
+                    ftk::invert(vm, mi);
                     const ftk::V3F v0 = mi * ftk::V3F(0.F, 0.F, 0.F);
                     const ftk::V3F v1 = mi * ftk::V3F(renderSize.w, renderSize.h, 0.F);
                     const ftk::V2F v2(
@@ -981,8 +983,8 @@ namespace tl
                             true);
                         y += cellSize.h, ++i)
                     {
-                        const ftk::V3F v0 = m * ftk::V3F(bounds.min.x, y, 0.F);
-                        const ftk::V3F v1 = m * ftk::V3F(bounds.max.x + 1, y, 0.F);
+                        const ftk::V3F v0 = vm * ftk::V3F(bounds.min.x, y, 0.F);
+                        const ftk::V3F v1 = vm * ftk::V3F(bounds.max.x + 1, y, 0.F);
                         const ftk::V2F v2(std::round(v0.x), std::round(v0.y));
                         const ftk::V2F v3(std::round(v1.x), std::round(v1.y));
                         lines.push_back(std::make_pair(v2, v3));
@@ -993,8 +995,8 @@ namespace tl
                             true);
                         x += cellSize.w, ++j)
                     {
-                        const ftk::V3F v0 = m * ftk::V3F(x, bounds.min.y, 0.F);
-                        const ftk::V3F v1 = m * ftk::V3F(x, bounds.max.y + 1, 0.F);
+                        const ftk::V3F v0 = vm * ftk::V3F(x, bounds.min.y, 0.F);
+                        const ftk::V3F v1 = vm * ftk::V3F(x, bounds.max.y + 1, 0.F);
                         const ftk::V2F v2(std::round(v0.x), std::round(v0.y));
                         const ftk::V2F v3(std::round(v1.x), std::round(v1.y));
                         lines.push_back(std::make_pair(v2, v3));
@@ -1034,7 +1036,7 @@ namespace tl
                                     size =
                                         fontSystem->getSize(text, options.grid.fontInfo) +
                                         options.grid.textMargin * 2;
-                                    const ftk::V3F v4 = m * ftk::V3F(x, y, 0.F);
+                                    const ftk::V3F v4 = vm * ftk::V3F(x, y, 0.F);
                                     const ftk::V2F v5(std::round(v4.x), std::round(v4.y));
                                     drawRect(
                                         ftk::Box2F(
@@ -1070,7 +1072,7 @@ namespace tl
                 mesh.v.push_back(ftk::V2F(bounds.min.x, bounds.max.y + 1));
                 for (auto& v : mesh.v)
                 {
-                    const ftk::V3F v3 = m * ftk::V3F(v.x, v.y, 0.F);
+                    const ftk::V3F v3 = vm * ftk::V3F(v.x, v.y, 0.F);
                     v.x = v3.x;
                     v.y = v3.y;
                 }
@@ -1108,10 +1110,11 @@ namespace tl
             {
                 glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
-                const ftk::Size2I& renderSize = getRenderSize();
-                const ftk::V2I c(
-                    std::round(renderSize.w / 2.F),
-                    std::round(renderSize.h / 2.F));
+                const auto prev = getTransform();
+                setTransform(pm * vm);
+
+                const ftk::Box2I bounds = ftk::bbox(boxes);
+                const ftk::V2I c = center(bounds);
 
                 std::vector<ftk::Box2F> centerMarker;
                 const float a = 1.F / 3.F;
@@ -1137,6 +1140,8 @@ namespace tl
                     options.centerMarker.size * b,
                     options.centerMarker.width));
                 drawRects(centerMarker, options.centerMarker.color);
+
+                setTransform(prev);
             }
         }
     }

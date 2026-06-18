@@ -721,7 +721,7 @@ namespace tl
                         ftk::gl::OffscreenBufferBinding binding(p.bgBuffer);
                         render->clearViewport(ftk::Color4F(0.F, 0.F, 0.F, 0.F));
                         render->setTransform(pm);
-                        render->drawBackground(boxes, vm, p.bgOptions->get());
+                        render->drawBackground(boxes, pm, vm, p.bgOptions->get());
                     }
 
                     // Draw the foreground buffer.
@@ -733,7 +733,7 @@ namespace tl
                         ForegroundOptions options = p.fgOptions->get();
                         options.grid.fontInfo.size *= p.size.displayScale;
                         options.grid.textMargin *= p.size.displayScale;
-                        render->drawForeground(boxes, vm, options);
+                        render->drawForeground(boxes, pm, vm, options);
                     }
                 }
                 catch (const std::exception& e)

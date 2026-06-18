@@ -1096,7 +1096,7 @@ namespace tl
                 ftk::M44F vm;
                 vm = vm * ftk::translate(ftk::V3F(viewPosTmp.x, viewPosTmp.y, 0.F));
                 vm = vm * ftk::scale(ftk::V3F(viewZoomTmp, viewZoomTmp, 1.F));
-                p.thread.render->drawBackground(boxes, vm, bgOptions);
+                p.thread.render->drawBackground(boxes, pm, vm, bgOptions);
 
                 p.thread.render->setTransform(pm * vm);
                 p.thread.render->drawVideo(
@@ -1108,7 +1108,7 @@ namespace tl
                     getColorBuffer(p.thread.outputPixelType));
 
                 p.thread.render->setTransform(pm);
-                p.thread.render->drawForeground(boxes, vm, fgOptions);
+                p.thread.render->drawForeground(boxes, pm, vm, fgOptions);
 
                 if (p.thread.state.overlay)
                 {

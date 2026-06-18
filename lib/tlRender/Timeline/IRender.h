@@ -30,7 +30,8 @@ namespace tl
         //! Draw the background.
         TL_API virtual void drawBackground(
             const std::vector<ftk::Box2I>&,
-            const ftk::M44F&,
+            const ftk::M44F& pm,
+            const ftk::M44F& vm,
             const BackgroundOptions&) = 0;
 
         //! Draw timeline video data.
@@ -45,7 +46,8 @@ namespace tl
         //! Draw the foreground.
         TL_API virtual void drawForeground(
             const std::vector<ftk::Box2I>&,
-            const ftk::M44F&,
+            const ftk::M44F& pm,
+            const ftk::M44F& vm,
             const ForegroundOptions&) = 0;
     };
 }

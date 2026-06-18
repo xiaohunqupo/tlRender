@@ -44,7 +44,8 @@ namespace tl
                 ftk::AlphaBlend = ftk::AlphaBlend::Straight) override;
             TL_API void drawBackground(
                 const std::vector<ftk::Box2I>&,
-                const ftk::M44F&,
+                const ftk::M44F& pm,
+                const ftk::M44F& vm,
                 const BackgroundOptions&) override;
             TL_API void drawVideo(
                 const std::vector<VideoFrame>&,
@@ -55,7 +56,8 @@ namespace tl
                 ftk::gl::TextureType colorBuffer = ftk::gl::TextureType::RGBA_F32) override;
             TL_API void drawForeground(
                 const std::vector<ftk::Box2I>&,
-                const ftk::M44F&,
+                const ftk::M44F& pm,
+                const ftk::M44F& vm,
                 const ForegroundOptions&) override;
 
             TL_API void begin(
