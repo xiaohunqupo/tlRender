@@ -136,7 +136,6 @@ namespace tl
             void _createDevice(
                 const DeviceConfig&,
                 bool& active,
-                ftk::Size2I& size,
                 FrameRate& frameRate,
                 int videoFrameDelay);
             void _render(

@@ -73,7 +73,7 @@ namespace tl
                 nullptr);*/
             _dlOutput->EndAudioPreroll();
 
-            for (size_t i = 0; i < videoFrameDelay; ++i)
+            for (int i = 0; i < videoFrameDelay; ++i)
             {
                 DLVideoFrameWrapper dlVideoFrame;
                 if (_dlOutput->CreateVideoFrame(
@@ -134,7 +134,6 @@ namespace tl
 
         void DLOutputCallback::setVideo(const std::shared_ptr<DLVideoFrameWrapper>& value)
         {
-            bool reset = false;
             {
                 std::unique_lock<std::mutex> lock(_videoMutex.mutex);
                 _videoMutex.videoFrames.push_back(value);

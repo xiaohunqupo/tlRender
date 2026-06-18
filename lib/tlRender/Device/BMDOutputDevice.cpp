@@ -35,7 +35,7 @@ namespace tl
     {
         namespace
         {
-            const size_t videoFrameDelay = 3;
+            const int videoFrameDelay = 3;
             const std::chrono::milliseconds timeout(5);
         }
 
@@ -715,9 +715,10 @@ namespace tl
                     }
                     p.thread.offscreenBuffer.reset();
                     p.thread.dl.reset();
+                    p.thread.size = ftk::Size2I();
+                    p.thread.outputPixelType = PixelType::None;
 
                     bool active = false;
-                    ftk::Size2I size;
                     FrameRate frameRate;
                     if (enabled)
                     {
@@ -727,7 +728,6 @@ namespace tl
                             _createDevice(
                                 config,
                                 active,
-                                size,
                                 frameRate,
                                 videoFrameDelay);
                         }
@@ -746,16 +746,20 @@ namespace tl
                         p.mutex.frameRate = frameRate;
                     }
 
-                    glGenBuffers(1, &p.thread.pbo);
-                    glBindBuffer(GL_PIXEL_PACK_BUFFER, p.thread.pbo);
-                    glBufferData(
-                        GL_PIXEL_PACK_BUFFER,
-                        getPackPixelsSize(p.thread.size, p.thread.outputPixelType),
-                        NULL,
-                        GL_STREAM_READ);
+                    if (active)
+                    {
+                        glGenBuffers(1, &p.thread.pbo);
+                        glBindBuffer(GL_PIXEL_PACK_BUFFER, p.thread.pbo);
+                        glBufferData(
+                            GL_PIXEL_PACK_BUFFER,
+                            getPackPixelsSize(p.thread.size, p.thread.outputPixelType),
+                            NULL,
+                            GL_STREAM_READ);
+                    }
                 }
 
-                if (doRender && p.thread.render)
+                if (doRender && p.thread.render &&
+                    p.thread.dl && p.thread.dl->output)
                 {
                     try
                     {
@@ -821,7 +825,6 @@ namespace tl
         void OutputDevice::_createDevice(
             const DeviceConfig& config,
             bool& active,
-            ftk::Size2I& size,
             FrameRate& frameRate,
             int videoFrameDelay)
         {
@@ -930,6 +933,13 @@ namespace tl
                     BMDTimeValue frameDuration;
                     BMDTimeScale frameTimescale;
                     dlDisplayMode->GetFrameRate(&frameDuration, &frameTimescale);
+                    // Note: BMD's GetFrameRate() returns the frame duration and
+                    // timescale, where the actual frame rate is timescale /
+                    // duration (e.g. 1001 and 30000 for 29.97). The values are
+                    // stored here as num = duration, den = timescale, which is
+                    // NOT a frame-rate fraction. They are used consistently with
+                    // ScheduleVideoFrame() and StartScheduledPlayback() below;
+                    // do not treat num/den as a frame rate.
                     frameRate.num = static_cast<int>(frameDuration);
                     frameRate.den = static_cast<int>(frameTimescale);
 

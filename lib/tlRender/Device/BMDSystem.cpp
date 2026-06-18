@@ -132,7 +132,8 @@ namespace tl
                                 }
 
                                 IDeckLinkProfileAttributes* dlProfileAttributes = nullptr;
-                                if (dl->QueryInterface(IID_IDeckLinkProfileAttributes, (void**)&dlProfileAttributes) == S_OK)
+                                if (dl->QueryInterface(IID_IDeckLinkProfileAttributes, (void**)&dlProfileAttributes) == S_OK &&
+                                    dlProfileAttributes)
                                 {
                                     LONGLONG minVideoPreroll = 0;
                                     if (dlProfileAttributes->GetInt(BMDDeckLinkMinimumPrerollFrames, &minVideoPreroll) == S_OK)
@@ -150,7 +151,10 @@ namespace tl
                                         deviceInfo.maxAudioChannels = maxAudioChannels;
                                     }
                                 }
-                                dlProfileAttributes->Release();
+                                if (dlProfileAttributes)
+                                {
+                                    dlProfileAttributes->Release();
+                                }
 
                                 dl->Release();
 
