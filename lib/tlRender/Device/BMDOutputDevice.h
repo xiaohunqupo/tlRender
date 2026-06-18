@@ -82,6 +82,13 @@ namespace tl
             //! Observe the video frame delay.
             TL_API std::shared_ptr<ftk::IObservable<int> > observeVideoFrameDelay() const;
 
+            //! Set the video frame delay.
+            //!
+            //! \note Changing this re-creates the output device, which briefly
+            //! interrupts output. The value is the number of pre-rolled frames
+            //! and should be >= 1.
+            TL_API void setVideoFrameDelay(int);
+
             //! Set the view.
             TL_API void setView(
                 const ftk::V2I& position,

@@ -37,6 +37,95 @@ namespace tl
         {
             const int videoFrameDelay = 3;
             const std::chrono::milliseconds timeout(5);
+
+            //! Flags for which inputs have changed since the last update.
+            enum class Update : uint32_t
+            {
+                None        = 0,
+                Config      = 1 << 0,
+                Enabled     = 1 << 1,
+                FrameDelay  = 1 << 2,
+                OCIO        = 1 << 3,
+                LUT         = 1 << 4,
+                Image       = 1 << 5,
+                Display     = 1 << 6,
+                HDR         = 1 << 7,
+                Compare     = 1 << 8,
+                Background  = 1 << 9,
+                Foreground  = 1 << 10,
+                View        = 1 << 11,
+                TimeRange   = 1 << 12,
+                Playback    = 1 << 13,
+                Seek        = 1 << 14,
+                Video       = 1 << 15,
+                Overlay     = 1 << 16,
+                Audio       = 1 << 17,
+                AudioCtl    = 1 << 18
+            };
+
+            constexpr Update operator | (Update a, Update b)
+            {
+                return static_cast<Update>(
+                    static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
+            }
+            constexpr Update operator & (Update a, Update b)
+            {
+                return static_cast<Update>(
+                    static_cast<uint32_t>(a) & static_cast<uint32_t>(b));
+            }
+            inline Update& operator |= (Update& a, Update b)
+            {
+                a = a | b;
+                return a;
+            }
+            constexpr bool any(Update a)
+            {
+                return a != Update::None;
+            }
+
+            //! Inputs that require re-creating the output device.
+            constexpr Update deviceMask =
+                Update::Config | Update::Enabled | Update::FrameDelay;
+
+            //! Inputs that require re-rendering the video.
+            constexpr Update renderMask =
+                Update::OCIO | Update::LUT | Update::Image | Update::Display |
+                Update::HDR | Update::Compare | Update::Background |
+                Update::Foreground | Update::View | Update::Video |
+                Update::Overlay;
+
+            //! The output device input state: a single snapshot of everything
+            //! the public setters and the player observers write.
+            struct State
+            {
+                DeviceConfig config;
+                bool enabled = false;
+                int videoFrameDelay = bmd::videoFrameDelay;
+                OCIOOptions ocioOptions;
+                LUTOptions lutOptions;
+                std::vector<ftk::ImageOptions> imageOptions;
+                std::vector<DisplayOptions> displayOptions;
+                std::vector<AspectRatioOptions> aspectRatioOptions;
+                HDRMode hdrMode = HDRMode::FromFile;
+                HDRData hdrData;
+                CompareOptions compareOptions;
+                BackgroundOptions bgOptions;
+                ForegroundOptions fgOptions;
+                ftk::V2I viewPos;
+                double viewZoom = 1.0;
+                bool frameView = true;
+                OTIO_NS::TimeRange timeRange = invalidTimeRange;
+                Playback playback = Playback::Stop;
+                double speed = 0.0;
+                OTIO_NS::RationalTime currentTime = invalidTime;
+                std::vector<VideoFrame> videoFrames;
+                std::shared_ptr<ftk::Image> overlay;
+                float volume = 1.F;
+                bool mute = false;
+                std::vector<bool> channelMute;
+                double audioOffset = 0.0;
+                std::vector<AudioFrame> audioFrames;
+            };
         }
 
         bool FrameRate::operator == (const FrameRate& other) const
@@ -72,36 +161,14 @@ namespace tl
 
             struct Mutex
             {
-                DeviceConfig config;
-                bool enabled = false;
+                State state;
+                Update pending = Update::None;
+
+                // Outputs written by the thread and read by _tick().
                 bool active = false;
                 ftk::Size2I size;
                 FrameRate frameRate;
-                int videoFrameDelay = bmd::videoFrameDelay;
-                OCIOOptions ocioOptions;
-                LUTOptions lutOptions;
-                std::vector<ftk::ImageOptions> imageOptions;
-                std::vector<DisplayOptions> displayOptions;
-                HDRMode hdrMode = HDRMode::FromFile;
-                HDRData hdrData;
-                CompareOptions compareOptions;
-                BackgroundOptions bgOptions;
-                ForegroundOptions fgOptions;
-                ftk::V2I viewPos;
-                double viewZoom = 1.0;
-                bool frameView = true;
-                OTIO_NS::TimeRange timeRange = invalidTimeRange;
-                Playback playback = Playback::Stop;
-                double speed = 0.0;
-                OTIO_NS::RationalTime currentTime = invalidTime;
-                bool seek = false;
-                std::vector<VideoFrame> videoFrames;
-                std::shared_ptr<ftk::Image> overlay;
-                float volume = 1.F;
-                bool mute = false;
-                std::vector<bool> channelMute;
-                double audioOffset = 0.0;
-                std::vector<AudioFrame> audioFrames;
+
                 std::mutex mutex;
             };
             Mutex mutex;
@@ -110,16 +177,9 @@ namespace tl
             {
                 std::unique_ptr<DLWrapper> dl;
 
+                State state;
                 ftk::Size2I size;
                 PixelType outputPixelType = PixelType::None;
-                HDRMode hdrMode = HDRMode::FromFile;
-                HDRData hdrData;
-                ftk::V2I viewPos;
-                double viewZoom = 1.0;
-                bool frameView = true;
-                OTIO_NS::TimeRange timeRange = invalidTimeRange;
-                std::vector<VideoFrame> videoFrames;
-                std::shared_ptr<ftk::Image> overlay;
 
                 std::shared_ptr<IRender> render;
                 std::shared_ptr<ftk::gl::OffscreenBuffer> offscreenBuffer;
@@ -211,7 +271,8 @@ namespace tl
             {
                 {
                     std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                    p.mutex.config = value;
+                    p.mutex.state.config = value;
+                    p.mutex.pending |= Update::Config;
                 }
                 p.thread.cv.notify_one();
             }
@@ -234,7 +295,8 @@ namespace tl
             {
                 {
                     std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                    p.mutex.enabled = value;
+                    p.mutex.state.enabled = value;
+                    p.mutex.pending |= Update::Enabled;
                 }
                 p.thread.cv.notify_one();
             }
@@ -280,6 +342,24 @@ namespace tl
             return _p->videoFrameDelay;
         }
 
+        void OutputDevice::setVideoFrameDelay(int value)
+        {
+            FTK_P();
+            // The pre-roll loop in DLOutputCallback schedules this many frames
+            // before starting playback; a value below 1 leaves nothing
+            // pre-rolled and underruns immediately.
+            const int delay = std::max(value, 1);
+            if (p.videoFrameDelay->setIfChanged(delay))
+            {
+                {
+                    std::unique_lock<std::mutex> lock(p.mutex.mutex);
+                    p.mutex.state.videoFrameDelay = delay;
+                    p.mutex.pending |= Update::FrameDelay;
+                }
+                p.thread.cv.notify_one();
+            }
+        }
+
         void OutputDevice::setView(
             const ftk::V2I& position,
             double          zoom,
@@ -288,9 +368,10 @@ namespace tl
             FTK_P();
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                p.mutex.viewPos = position;
-                p.mutex.viewZoom = zoom;
-                p.mutex.frameView = frame;
+                p.mutex.state.viewPos = position;
+                p.mutex.state.viewZoom = zoom;
+                p.mutex.state.frameView = frame;
+                p.mutex.pending |= Update::View;
             }
             p.thread.cv.notify_one();
         }
@@ -300,7 +381,8 @@ namespace tl
             FTK_P();
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                p.mutex.ocioOptions = value;
+                p.mutex.state.ocioOptions = value;
+                p.mutex.pending |= Update::OCIO;
             }
             p.thread.cv.notify_one();
         }
@@ -310,7 +392,8 @@ namespace tl
             FTK_P();
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                p.mutex.lutOptions = value;
+                p.mutex.state.lutOptions = value;
+                p.mutex.pending |= Update::LUT;
             }
             p.thread.cv.notify_one();
         }
@@ -320,7 +403,8 @@ namespace tl
             FTK_P();
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                p.mutex.imageOptions = value;
+                p.mutex.state.imageOptions = value;
+                p.mutex.pending |= Update::Image;
             }
             p.thread.cv.notify_one();
         }
@@ -330,7 +414,8 @@ namespace tl
             FTK_P();
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                p.mutex.displayOptions = value;
+                p.mutex.state.displayOptions = value;
+                p.mutex.pending |= Update::Display;
             }
             p.thread.cv.notify_one();
         }
@@ -340,8 +425,9 @@ namespace tl
             FTK_P();
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                p.mutex.hdrMode = hdrMode;
-                p.mutex.hdrData = hdrData;
+                p.mutex.state.hdrMode = hdrMode;
+                p.mutex.state.hdrData = hdrData;
+                p.mutex.pending |= Update::HDR;
             }
             p.thread.cv.notify_one();
         }
@@ -351,7 +437,8 @@ namespace tl
             FTK_P();
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                p.mutex.compareOptions = value;
+                p.mutex.state.compareOptions = value;
+                p.mutex.pending |= Update::Compare;
             }
             p.thread.cv.notify_one();
         }
@@ -361,7 +448,8 @@ namespace tl
             FTK_P();
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                p.mutex.bgOptions = value;
+                p.mutex.state.bgOptions = value;
+                p.mutex.pending |= Update::Background;
             }
             p.thread.cv.notify_one();
         }
@@ -371,7 +459,8 @@ namespace tl
             FTK_P();
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                p.mutex.fgOptions = value;
+                p.mutex.state.fgOptions = value;
+                p.mutex.pending |= Update::Foreground;
             }
             p.thread.cv.notify_one();
         }
@@ -381,7 +470,8 @@ namespace tl
             FTK_P();
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                p.mutex.overlay = value;
+                p.mutex.state.overlay = value;
+                p.mutex.pending |= Update::Overlay;
             }
             p.thread.cv.notify_one();
         }
@@ -391,7 +481,8 @@ namespace tl
             FTK_P();
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                p.mutex.volume = value;
+                p.mutex.state.volume = value;
+                p.mutex.pending |= Update::AudioCtl;
             }
             p.thread.cv.notify_one();
         }
@@ -401,7 +492,8 @@ namespace tl
             FTK_P();
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                p.mutex.mute = value;
+                p.mutex.state.mute = value;
+                p.mutex.pending |= Update::AudioCtl;
             }
             p.thread.cv.notify_one();
         }
@@ -411,7 +503,8 @@ namespace tl
             FTK_P();
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                p.mutex.channelMute = value;
+                p.mutex.state.channelMute = value;
+                p.mutex.pending |= Update::AudioCtl;
             }
             p.thread.cv.notify_one();
         }
@@ -421,7 +514,8 @@ namespace tl
             FTK_P();
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
-                p.mutex.audioOffset = value;
+                p.mutex.state.audioOffset = value;
+                p.mutex.pending |= Update::AudioCtl;
             }
             p.thread.cv.notify_one();
         }
@@ -452,7 +546,8 @@ namespace tl
                         {
                             {
                                 std::unique_lock<std::mutex> lock(device->_p->mutex.mutex);
-                                device->_p->mutex.playback = value;
+                                device->_p->mutex.state.playback = value;
+                                device->_p->mutex.pending |= Update::Playback;
                             }
                             device->_p->thread.cv.notify_one();
                         }
@@ -466,7 +561,8 @@ namespace tl
                         {
                             {
                                 std::unique_lock<std::mutex> lock(device->_p->mutex.mutex);
-                                device->_p->mutex.speed = value;
+                                device->_p->mutex.state.speed = value;
+                                device->_p->mutex.pending |= Update::Playback;
                             }
                             device->_p->thread.cv.notify_one();
                         }
@@ -480,7 +576,8 @@ namespace tl
                         {
                             {
                                 std::unique_lock<std::mutex> lock(device->_p->mutex.mutex);
-                                device->_p->mutex.currentTime = value;
+                                device->_p->mutex.state.currentTime = value;
+                                device->_p->mutex.pending |= Update::Playback;
                             }
                             device->_p->thread.cv.notify_one();
                         }
@@ -494,7 +591,7 @@ namespace tl
                         {
                             {
                                 std::unique_lock<std::mutex> lock(device->_p->mutex.mutex);
-                                device->_p->mutex.seek = true;
+                                device->_p->mutex.pending |= Update::Seek;
                             }
                             device->_p->thread.cv.notify_one();
                         }
@@ -508,7 +605,8 @@ namespace tl
                         {
                             {
                                 std::unique_lock<std::mutex> lock(device->_p->mutex.mutex);
-                                device->_p->mutex.videoFrames = value;
+                                device->_p->mutex.state.videoFrames = value;
+                                device->_p->mutex.pending |= Update::Video;
                             }
                             device->_p->thread.cv.notify_one();
                         }
@@ -522,7 +620,8 @@ namespace tl
                         {
                             {
                                 std::unique_lock<std::mutex> lock(device->_p->mutex.mutex);
-                                device->_p->mutex.audioFrames = value;
+                                device->_p->mutex.state.audioFrames = value;
+                                device->_p->mutex.pending |= Update::Audio;
                             }
                             device->_p->thread.cv.notify_one();
                         }
@@ -534,26 +633,30 @@ namespace tl
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 if (p.player)
                 {
-                    p.mutex.timeRange = p.player->getTimeRange();
-                    p.mutex.playback = p.player->getPlayback();
-                    p.mutex.speed = p.player->getSpeed();
-                    p.mutex.currentTime = p.player->getCurrentTime();
+                    p.mutex.state.timeRange = p.player->getTimeRange();
+                    p.mutex.state.playback = p.player->getPlayback();
+                    p.mutex.state.speed = p.player->getSpeed();
+                    p.mutex.state.currentTime = p.player->getCurrentTime();
                 }
                 else
                 {
-                    p.mutex.timeRange = invalidTimeRange;
-                    p.mutex.playback = Playback::Stop;
-                    p.mutex.speed = 0.0;
-                    p.mutex.currentTime = invalidTime;
+                    p.mutex.state.timeRange = invalidTimeRange;
+                    p.mutex.state.playback = Playback::Stop;
+                    p.mutex.state.speed = 0.0;
+                    p.mutex.state.currentTime = invalidTime;
                 }
-                p.mutex.videoFrames.clear();
-                p.mutex.audioFrames.clear();
+                p.mutex.state.videoFrames.clear();
+                p.mutex.state.audioFrames.clear();
                 if (p.player)
                 {
-                    p.mutex.videoFrames = p.player->getCurrentVideo();
-                    p.mutex.audioFrames = p.player->getCurrentAudio();
+                    p.mutex.state.videoFrames = p.player->getCurrentVideo();
+                    p.mutex.state.audioFrames = p.player->getCurrentAudio();
                 }
+                p.mutex.pending |=
+                    Update::TimeRange | Update::Playback |
+                    Update::Video | Update::Audio;
             }
+            p.thread.cv.notify_one();
         }
 
         void OutputDevice::_tick()
@@ -577,27 +680,6 @@ namespace tl
         {
             FTK_P();
 
-            DeviceConfig config;
-            bool enabled = false;
-            int videoFrameDelay = bmd::videoFrameDelay;
-            OCIOOptions ocioOptions;
-            LUTOptions lutOptions;
-            std::vector<ftk::ImageOptions> imageOptions;
-            std::vector<DisplayOptions> displayOptions;
-            CompareOptions compareOptions;
-            BackgroundOptions bgOptions;
-            ForegroundOptions fgOptions;
-            Playback playback = Playback::Stop;
-            double speed = 0.0;
-            OTIO_NS::RationalTime currentTime = invalidTime;
-            bool seek = false;
-            float volume = 1.F;
-            bool mute = false;
-            std::vector<bool> channelMute;
-            double audioOffset = 0.0;
-            std::vector<AudioFrame> audioFrames;
-            std::shared_ptr<ftk::Image> overlay;
-
             p.thread.render = gl::Render::create(
                 p.context.lock()->getLogSystem(),
                 p.context.lock()->getSystem<ftk::FontSystem>());
@@ -608,101 +690,25 @@ namespace tl
                 bool createDevice = false;
                 bool doRender = false;
                 bool audioChanged = false;
+                bool seek = false;
                 {
                     std::unique_lock<std::mutex> lock(p.mutex.mutex);
                     if (p.thread.cv.wait_for(
                         lock,
                         timeout,
-                        [this, config, enabled, videoFrameDelay,
-                        ocioOptions, lutOptions, imageOptions,
-                        displayOptions, compareOptions, bgOptions, fgOptions,
-                        playback, speed, currentTime, seek,
-                        volume, mute, channelMute, audioOffset, audioFrames]
-                        {
-                            return
-                                config != _p->mutex.config ||
-                                enabled != _p->mutex.enabled ||
-                                videoFrameDelay != _p->mutex.videoFrameDelay ||
-                                ocioOptions != _p->mutex.ocioOptions ||
-                                lutOptions != _p->mutex.lutOptions ||
-                                imageOptions != _p->mutex.imageOptions ||
-                                displayOptions != _p->mutex.displayOptions ||
-                                _p->thread.hdrMode != _p->mutex.hdrMode ||
-                                _p->thread.hdrData != _p->mutex.hdrData ||
-                                compareOptions != _p->mutex.compareOptions ||
-                                bgOptions != _p->mutex.bgOptions ||
-                                fgOptions != _p->mutex.fgOptions ||
-                                _p->thread.viewPos != _p->mutex.viewPos ||
-                                _p->thread.viewZoom != _p->mutex.viewZoom ||
-                                _p->thread.frameView != _p->mutex.frameView ||
-                                _p->thread.timeRange != _p->mutex.timeRange ||
-                                playback != _p->mutex.playback ||
-                                speed != _p->mutex.speed ||
-                                currentTime != _p->mutex.currentTime ||
-                                _p->mutex.seek ||
-                                _p->thread.videoFrames != _p->mutex.videoFrames ||
-                                _p->thread.overlay != _p->mutex.overlay ||
-                                volume != _p->mutex.volume ||
-                                mute != _p->mutex.mute ||
-                                channelMute != _p->mutex.channelMute ||
-                                audioOffset != _p->mutex.audioOffset ||
-                                audioFrames != _p->mutex.audioFrames;
-                        }))
+                        [this] { return any(_p->mutex.pending); }))
                     {
-                        createDevice =
-                            p.mutex.config != config ||
-                            p.mutex.enabled != enabled ||
-                            p.mutex.videoFrameDelay != videoFrameDelay;
-                        config = p.mutex.config;
-                        enabled = p.mutex.enabled;
-                        videoFrameDelay = p.mutex.videoFrameDelay;
+                        const Update u = p.mutex.pending;
+                        p.mutex.pending = Update::None;
 
-                        p.thread.timeRange = p.mutex.timeRange;
-                        playback = p.mutex.playback;
-                        speed = p.mutex.speed;
-                        currentTime = p.mutex.currentTime;
-                        seek = p.mutex.seek;
-                        p.mutex.seek = false;
+                        // Snapshot every input in one assignment, then let the
+                        // change flags decide what work to do this pass.
+                        p.thread.state = p.mutex.state;
 
-                        doRender =
-                            createDevice ||
-                            ocioOptions != p.mutex.ocioOptions ||
-                            lutOptions != p.mutex.lutOptions ||
-                            imageOptions != p.mutex.imageOptions ||
-                            displayOptions != p.mutex.displayOptions ||
-                            p.thread.hdrMode != p.mutex.hdrMode ||
-                            p.thread.hdrData != p.mutex.hdrData ||
-                            compareOptions != p.mutex.compareOptions ||
-                            bgOptions != p.mutex.bgOptions ||
-                            fgOptions != p.mutex.fgOptions ||
-                            p.thread.viewPos != p.mutex.viewPos ||
-                            p.thread.viewZoom != p.mutex.viewZoom ||
-                            p.thread.frameView != p.mutex.frameView ||
-                            p.thread.videoFrames != p.mutex.videoFrames ||
-                            p.thread.overlay != p.mutex.overlay;
-                        ocioOptions = p.mutex.ocioOptions;
-                        lutOptions = p.mutex.lutOptions;
-                        imageOptions = p.mutex.imageOptions;
-                        displayOptions = p.mutex.displayOptions;
-                        p.thread.hdrMode = p.mutex.hdrMode;
-                        p.thread.hdrData = p.mutex.hdrData;
-                        compareOptions = p.mutex.compareOptions;
-                        bgOptions = p.mutex.bgOptions;
-                        fgOptions = p.mutex.fgOptions;
-                        p.thread.viewPos = p.mutex.viewPos;
-                        p.thread.viewZoom = p.mutex.viewZoom;
-                        p.thread.frameView = p.mutex.frameView;
-                        p.thread.videoFrames = p.mutex.videoFrames;
-                        p.thread.overlay = p.mutex.overlay;
-
-                        audioChanged =
-                            createDevice ||
-                            audioFrames != p.mutex.audioFrames;
-                        volume = p.mutex.volume;
-                        mute = p.mutex.mute;
-                        channelMute = p.mutex.channelMute;
-                        audioOffset = p.mutex.audioOffset;
-                        audioFrames = p.mutex.audioFrames;
+                        createDevice = any(u & deviceMask);
+                        doRender = createDevice || any(u & renderMask);
+                        audioChanged = createDevice || any(u & Update::Audio);
+                        seek = any(u & Update::Seek);
                     }
                 }
 
@@ -720,16 +726,16 @@ namespace tl
 
                     bool active = false;
                     FrameRate frameRate;
-                    if (enabled)
+                    if (p.thread.state.enabled)
                     {
                         try
                         {
                             p.thread.dl.reset(new DLWrapper);
                             _createDevice(
-                                config,
+                                p.thread.state.config,
                                 active,
                                 frameRate,
-                                videoFrameDelay);
+                                p.thread.state.videoFrameDelay);
                         }
                         catch (const std::exception& e)
                         {
@@ -764,14 +770,14 @@ namespace tl
                     try
                     {
                         _render(
-                            config,
-                            ocioOptions,
-                            lutOptions,
-                            imageOptions,
-                            displayOptions,
-                            compareOptions,
-                            bgOptions,
-                            fgOptions);
+                            p.thread.state.config,
+                            p.thread.state.ocioOptions,
+                            p.thread.state.lutOptions,
+                            p.thread.state.imageOptions,
+                            p.thread.state.displayOptions,
+                            p.thread.state.compareOptions,
+                            p.thread.state.bgOptions,
+                            p.thread.state.fgOptions);
                     }
                     catch (const std::exception& e)
                     {
@@ -785,19 +791,19 @@ namespace tl
                 if (p.thread.dl && p.thread.dl->outputCallback)
                 {
                     DLOutputCallbackData data;
-                    data.playback = playback;
-                    data.speed = speed;
-                    data.currentTime = currentTime;
+                    data.playback = p.thread.state.playback;
+                    data.speed = p.thread.state.speed;
+                    data.currentTime = p.thread.state.currentTime;
                     data.seek = seek;
-                    data.volume = volume;
-                    data.mute = mute;
-                    data.channelMute = channelMute;
-                    data.audioOffset = audioOffset;
+                    data.volume = p.thread.state.volume;
+                    data.mute = p.thread.state.mute;
+                    data.channelMute = p.thread.state.channelMute;
+                    data.audioOffset = p.thread.state.audioOffset;
                     p.thread.dl->outputCallback->setData(data);
                 }
                 if (p.thread.dl && p.thread.dl->outputCallback && audioChanged)
                 {
-                    p.thread.dl->outputCallback->setAudio(audioFrames);
+                    p.thread.dl->outputCallback->setAudio(p.thread.state.audioFrames);
                 }
 
                 if (p.thread.dl && p.thread.dl->output && p.thread.dl->outputCallback &&
@@ -1025,16 +1031,22 @@ namespace tl
             FTK_P();
 
             // Create the offscreen buffer.
+            AspectRatioOptions aspectRatioOptions;
+            if (!displayOptions.empty())
+            {
+                aspectRatioOptions = displayOptions[0].aspectRatio;
+            }
             const ftk::Size2I renderSize = getRenderSize(
                 compareOptions.compare,
-                p.thread.videoFrames);
+                aspectRatioOptions,
+                p.thread.state.videoFrames);
             ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
+            offscreenBufferOptions.depth = ftk::gl::OffscreenDepth::_24;
+            offscreenBufferOptions.stencil = ftk::gl::OffscreenStencil::_8;
             if (!displayOptions.empty())
             {
                 offscreenBufferOptions.colorFilters = displayOptions[0].imageFilters;
             }
-            offscreenBufferOptions.depth = ftk::gl::OffscreenDepth::_24;
-            offscreenBufferOptions.stencil = ftk::gl::OffscreenStencil::_8;
             if (ftk::gl::doCreate(
                 p.thread.offscreenBuffer,
                 p.thread.size,
@@ -1065,10 +1077,13 @@ namespace tl
                     1.F);
                 p.thread.render->setTransform(pm);
 
-                const auto boxes = getBoxes(compareOptions.compare, p.thread.videoFrames);
-                ftk::V2I viewPosTmp = p.thread.viewPos;
-                double viewZoomTmp = p.thread.viewZoom;
-                if (p.thread.frameView)
+                const auto boxes = getBoxes(
+                    compareOptions.compare,
+                    aspectRatioOptions,
+                    p.thread.state.videoFrames);
+                ftk::V2I viewPosTmp = p.thread.state.viewPos;
+                double viewZoomTmp = p.thread.state.viewZoom;
+                if (p.thread.state.frameView)
                 {
                     double zoom = p.thread.size.w / static_cast<double>(renderSize.w);
                     if (zoom * renderSize.h > p.thread.size.h)
@@ -1087,7 +1102,7 @@ namespace tl
 
                 p.thread.render->setTransform(pm * vm);
                 p.thread.render->drawVideo(
-                    p.thread.videoFrames,
+                    p.thread.state.videoFrames,
                     boxes,
                     imageOptions,
                     displayOptions,
@@ -1097,18 +1112,18 @@ namespace tl
                 p.thread.render->setTransform(pm);
                 p.thread.render->drawForeground(boxes, vm, fgOptions);
 
-                if (p.thread.overlay)
+                if (p.thread.state.overlay)
                 {
                     ftk::ImageOptions imageOptions;
                     imageOptions.alphaBlend = ftk::AlphaBlend::Premultiplied;
                     imageOptions.cache = false;
                     p.thread.render->drawImage(
-                        p.thread.overlay,
+                        p.thread.state.overlay,
                         ftk::Box2I(
                             0,
                             0,
-                            p.thread.overlay->getWidth(),
-                            p.thread.overlay->getHeight()),
+                            p.thread.state.overlay->getWidth(),
+                            p.thread.state.overlay->getHeight()),
                         ftk::Color4F(1.F, 1.F, 1.F),
                         imageOptions);
                 }
