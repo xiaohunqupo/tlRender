@@ -372,10 +372,10 @@ jobs:
         archive: false
 
   windows-build:
-    runs-on: windows-2025
+    runs-on: windows-latest
 
     env:
-      JOBS: 4
+      JOBS: 2
       TLRENDER_NET: OFF
       TLRENDER_OCIO: ON
       TLRENDER_JPEG: ON
@@ -434,11 +434,10 @@ jobs:
     #    ctest --verbose --rerun-failed --output-on-failure -C Debug
 
   windows-package:
-    runs-on: windows-2025
-    #runs-on: windows-2019
+    runs-on: windows-latest
 
     env:
-      JOBS: 4
+      JOBS: 2
       TLRENDER_NET: OFF
       TLRENDER_OCIO: ON
       TLRENDER_JPEG: ON
