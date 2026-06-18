@@ -146,7 +146,6 @@ namespace tl
                 FrameRate& frameRate,
                 int videoFrameDelay);
             void _render(
-                const DeviceConfig&,
                 const OCIOOptions&,
                 const LUTOptions&,
                 const std::vector<ftk::ImageOptions>&,

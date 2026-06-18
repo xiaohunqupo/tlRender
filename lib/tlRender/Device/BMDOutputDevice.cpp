@@ -770,7 +770,6 @@ namespace tl
                     try
                     {
                         _render(
-                            p.thread.state.config,
                             p.thread.state.ocioOptions,
                             p.thread.state.lutOptions,
                             p.thread.state.imageOptions,
@@ -1019,7 +1018,6 @@ namespace tl
         }
 
         void OutputDevice::_render(
-            const DeviceConfig& config,
             const OCIOOptions& ocioOptions,
             const LUTOptions& lutOptions,
             const std::vector<ftk::ImageOptions>& imageOptions,
