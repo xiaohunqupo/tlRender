@@ -5,8 +5,6 @@
 
 #include <tlRender/QtQuick/GLFramebufferObject.h>
 
-#include <tlRender/Core/AudioSystem.h>
-
 #include <ftk/Core/CmdLine.h>
 #include <ftk/Core/Format.h>
 #include <ftk/Core/Path.h>
