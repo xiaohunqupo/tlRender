@@ -44,7 +44,7 @@ namespace tl
 
     struct IIOPlugin::Private
     {
-        std::string name;
+        std::string pluginName;
         std::map<std::string, FileType> exts;
     };
 
@@ -55,7 +55,7 @@ namespace tl
     {
         FTK_P();
         _logSystem = logSystem;
-        p.name = name;
+        p.pluginName = name;
         p.exts = exts;
     }
 
@@ -66,9 +66,14 @@ namespace tl
     IIOPlugin::~IIOPlugin()
     {}
 
-    const std::string& IIOPlugin::getName() const
+    const std::string& IIOPlugin::getPluginName() const
     {
-        return _p->name;
+        return _p->pluginName;
+    }
+
+    std::string IIOPlugin::getPluginInfo(const IOOptions&) const
+    {
+        return std::string();
     }
 
     std::set<std::string> IIOPlugin::getExts(int types) const

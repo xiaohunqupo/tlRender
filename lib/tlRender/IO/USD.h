@@ -104,6 +104,9 @@ namespace tl
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
                 const IOOptions& = IOOptions()) override;
+
+            TL_API std::string getPluginInfo(
+                const IOOptions& = IOOptions()) const override;
                 
         private:
             FTK_PRIVATE();

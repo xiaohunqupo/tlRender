@@ -101,7 +101,7 @@ namespace tl
                 {
                     const auto& exts = plugin->getExts();
                     std::stringstream ss;
-                    ss << plugin->getName() << ": " <<
+                    ss << plugin->getPluginName() << ": " <<
                         ftk::join(std::vector<std::string>(exts.begin(), exts.end()), ", ");
                     _print(ss.str());
                 }

@@ -128,6 +128,9 @@ namespace tl
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
                 const IOOptions& = IOOptions()) override;
+
+            TL_API std::string getPluginInfo(
+                const IOOptions& = IOOptions()) const override;
         };
 
         //! OpenEXR write plugin.
@@ -145,11 +148,14 @@ namespace tl
 
             TL_API ftk::ImageInfo getInfo(
                 const ftk::ImageInfo&,
-                const IOOptions & = IOOptions()) const override;
+                const IOOptions& = IOOptions()) const override;
             TL_API std::shared_ptr<IWrite> write(
                 const ftk::Path&,
                 const IOInfo&,
-                const IOOptions & = IOOptions()) override;
+                const IOOptions& = IOOptions()) override;
+
+            TL_API std::string getPluginInfo(
+                const IOOptions& = IOOptions()) const override;
         };
     }
 }

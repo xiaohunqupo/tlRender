@@ -99,6 +99,9 @@ namespace tl
                 const ftk::Path&,
                 const std::vector<ftk::MemFile>&,
                 const IOOptions & = IOOptions()) override;
+
+            TL_API std::string getPluginInfo(
+                const IOOptions& = IOOptions()) const override;
         };
 
         //! OpenImageIO write plugin.
@@ -121,6 +124,9 @@ namespace tl
                 const ftk::Path&,
                 const IOInfo&,
                 const IOOptions & = IOOptions()) override;
+
+            TL_API std::string getPluginInfo(
+                const IOOptions& = IOOptions()) const override;
         };
     }
 }

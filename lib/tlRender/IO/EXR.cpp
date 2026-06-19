@@ -615,6 +615,14 @@ namespace tl
             return Read::create(path, memory, options, _logSystem.lock());
         }
 
+        std::string ReadPlugin::getPluginInfo(const IOOptions&) const
+        {
+            return ftk::Format("{0}.{1}.{2}").
+                arg(OPENEXR_VERSION_MAJOR).
+                arg(OPENEXR_VERSION_MINOR).
+                arg(OPENEXR_VERSION_PATCH);
+        }
+
         void WritePlugin::_init(
             const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
@@ -659,6 +667,14 @@ namespace tl
                     arg(path.get()));
             }
             return Write::create(path, info, options, _logSystem.lock());
+        }
+
+        std::string WritePlugin::getPluginInfo(const IOOptions&) const
+        {
+            return ftk::Format("{0}.{1}.{2}").
+                arg(OPENEXR_VERSION_MAJOR).
+                arg(OPENEXR_VERSION_MINOR).
+                arg(OPENEXR_VERSION_PATCH);
         }
     }
 }

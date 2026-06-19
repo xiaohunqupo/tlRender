@@ -11,6 +11,7 @@ extern "C"
 {
 #include <libavutil/channel_layout.h>
 #include <libavutil/dict.h>
+#include <libavutil/ffversion.h>
 #include <libavutil/hdr_dynamic_metadata.h>
 #include <libavutil/imgutils.h>
 #include <libavutil/mastering_display_metadata.h>
@@ -265,6 +266,11 @@ namespace tl
             return Read::create(path, memory, options, _logSystem.lock());
         }
 
+        std::string ReadPlugin::getPluginInfo(const IOOptions&) const
+        {
+            return FFMPEG_VERSION;
+        }
+
         void ReadPlugin::_logCallback(void*, int level, const char* fmt, va_list vl)
         {
             switch (level)
@@ -400,6 +406,11 @@ namespace tl
                 throw std::runtime_error(ftk::Format("Unsupported video: \"{0}\"").
                     arg(path.get()));
             return Write::create(path, info, options, _logSystem.lock());
+        }
+
+        std::string WritePlugin::getPluginInfo(const IOOptions&) const
+        {
+            return FFMPEG_VERSION;
         }
 
         void WritePlugin::_logCallback(void*, int level, const char* fmt, va_list vl)

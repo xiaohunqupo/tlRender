@@ -4,6 +4,7 @@
 #include <tlRender/IO/FFmpegCmdPrivate.h>
 
 #include <ftk/Core/Format.h>
+#include <ftk/Core/LogSystem.h>
 #include <ftk/Core/String.h>
 
 #include <subprocess.h>
@@ -268,6 +269,35 @@ namespace tl
             const IOOptions& options)
         {
             return Read::create(path, memory, options, _logSystem.lock());
+        }
+
+        std::string ReadPlugin::getPluginInfo(const IOOptions& ioOptions) const
+        {
+            std::string out;
+            try
+            {
+                const Options options(ioOptions);
+                std::vector<std::string> cmd;
+                cmd.push_back(options.ffmpegPath);
+                cmd.push_back("-v");
+                cmd.push_back("quiet");
+                cmd.push_back("-version");
+                //std::cout << ftk::join(cmd, ' ') << std::endl;
+                const auto text = ftk::split(Pipe(cmd).readAll(), '\n');
+                if (!text.empty())
+                {
+                    const auto words = ftk::split(text[0], ' ');
+                    if (words.size() >= 3)
+                    {
+                        out = words[2];
+                    }
+                }
+            }
+            catch (const std::exception& e)
+            {
+                _logSystem.lock()->print("tl::ffmpeg_cmd::ReadPlugin", e.what(), ftk::LogType::Error);
+            }
+            return out;
         }
 
         void to_json(nlohmann::json& json, const Options& value)

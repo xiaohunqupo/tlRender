@@ -63,7 +63,11 @@ namespace tl
         TL_API virtual ~IIOPlugin() = 0;
 
         //! Get the plugin name.
-        TL_API const std::string& getName() const;
+        TL_API const std::string& getPluginName() const;
+
+        //! Get the plugin information.
+        TL_API virtual std::string getPluginInfo(
+            const IOOptions& = IOOptions()) const;
 
         //! Get the supported file extensions.
         TL_API std::set<std::string> getExts(int types =

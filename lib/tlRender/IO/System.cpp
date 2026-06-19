@@ -73,7 +73,7 @@ namespace tl
 
         for (const auto& plugin : _plugins)
         {
-            p.names.push_back(plugin->getName());
+            p.names.push_back(plugin->getPluginName());
         }
         logSystem->print("tl::ReadSystem", "Plugins: " + ftk::join(p.names, ", "));
     }
@@ -240,7 +240,7 @@ namespace tl
 
         for (const auto& plugin : _plugins)
         {
-            p.names.push_back(plugin->getName());
+            p.names.push_back(plugin->getPluginName());
         }
         logSystem->print("tl::WriteSystem", "Plugins: " + ftk::join(p.names, ", "));
     }

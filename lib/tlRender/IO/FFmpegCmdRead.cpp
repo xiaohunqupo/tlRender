@@ -605,7 +605,7 @@ namespace tl
             }
             catch (const std::exception& e)
             {
-                _logSystem.lock()->print("tl::Read::ffmpeg_cmd", e.what(), ftk::LogType::Error);
+                _logSystem.lock()->print("tl::ffmpeg_cmd::Read", e.what(), ftk::LogType::Error);
             }
         }
 
@@ -678,7 +678,7 @@ namespace tl
                     }
                     catch (const std::exception& e)
                     {
-                        _logSystem.lock()->print("tl::Read::ffmpeg_cmd", e.what(), ftk::LogType::Error);
+                        _logSystem.lock()->print("tl::ffmpeg_cmd::Read", e.what(), ftk::LogType::Error);
                     }
                 }
 
@@ -698,7 +698,7 @@ namespace tl
                             }
                             catch (const std::exception& e)
                             {
-                                _logSystem.lock()->print("tl::Read::ffmpeg_cmd", e.what(), ftk::LogType::Error);
+                                _logSystem.lock()->print("tl::ffmpeg_cmd::Read", e.what(), ftk::LogType::Error);
                             }
                         }
                     }
@@ -767,7 +767,7 @@ namespace tl
                     }
                     catch (const std::exception& e)
                     {
-                        _logSystem.lock()->print("tl::Read::ffmpeg_cmd", e.what(), ftk::LogType::Error);
+                        _logSystem.lock()->print("tl::ffmpeg_cmd::Read", e.what(), ftk::LogType::Error);
                     }
                 }
 
@@ -787,7 +787,7 @@ namespace tl
                         }
                         catch (const std::exception& e)
                         {
-                            _logSystem.lock()->print("tl::Read::ffmpeg_cmd", e.what(), ftk::LogType::Error);
+                            _logSystem.lock()->print("tl::ffmpeg_cmd::Read", e.what(), ftk::LogType::Error);
                         }
                     }
                     request->promise.set_value(audio);

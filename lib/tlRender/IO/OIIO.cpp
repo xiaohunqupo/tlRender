@@ -51,6 +51,11 @@ namespace tl
             return Read::create(path, memory, options, _logSystem.lock());
         }
 
+        std::string ReadPlugin::getPluginInfo(const IOOptions&) const
+        {
+            return OIIO_VERSION_STRING;
+        }
+
         void WritePlugin::_init(const std::shared_ptr<ftk::LogSystem>& logSystem)
         {
             std::map<std::string, FileType> exts;
@@ -120,6 +125,11 @@ namespace tl
                     arg(path.get()));
             }
             return Write::create(path, info, options, _logSystem.lock());
+        }
+
+        std::string WritePlugin::getPluginInfo(const IOOptions&) const
+        {
+            return OIIO_VERSION_STRING;
         }
     }
 }

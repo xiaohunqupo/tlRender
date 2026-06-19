@@ -117,6 +117,11 @@ namespace tl
             return Read::create(id, p.render, path, options, _logSystem.lock());
         }
 
+        std::string ReadPlugin::getPluginInfo(const IOOptions&) const
+        {
+            return std::string();
+        }
+
         void to_json(nlohmann::json& json, const Options& value)
         {
             json["RenderWidth"] = value.renderWidth;
