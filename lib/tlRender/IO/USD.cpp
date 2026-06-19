@@ -119,7 +119,10 @@ namespace tl
 
         std::string ReadPlugin::getPluginInfo(const IOOptions&) const
         {
-            return std::string();
+            return ftk::Format("{0}.{1}.{2}").
+                arg(PXR_MAJOR_VERSION).
+                arg(PXR_MINOR_VERSION).
+                arg(PXR_PATCH_VERSION);
         }
 
         void to_json(nlohmann::json& json, const Options& value)
