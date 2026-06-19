@@ -43,6 +43,7 @@ namespace tl
             Mutex mutex;
             std::thread thread;
             std::atomic<bool> running;
+            std::chrono::steady_clock::time_point t;
 
             std::vector<std::weak_ptr<OutputDevice> > devices;
         };
@@ -55,6 +56,7 @@ namespace tl
 
             p.deviceInfo = ftk::ObservableList<DeviceInfo>::create();
 
+            p.t = std::chrono::steady_clock::now();
             p.running = true;
             p.thread = std::thread(
                 [this]
@@ -68,7 +70,13 @@ namespace tl
                     bool log = true;
                     while (p.running)
                     {
-                        const auto t0 = std::chrono::steady_clock::now();
+                        const auto t = std::chrono::steady_clock::now();
+                        if (t - p.t < timeout)
+                        {
+                            ftk::sleep(std::chrono::milliseconds(100));
+                            continue;
+                        }
+                        p.t = t;
 
                         std::vector<DeviceInfo> deviceInfoList;
 
@@ -210,9 +218,6 @@ namespace tl
                                 }
                             }
                         }
-
-                        const auto t1 = std::chrono::steady_clock::now();
-                        ftk::sleep(timeout, t0, t1);
                     }
 
 #if defined(_WINDOWS)
