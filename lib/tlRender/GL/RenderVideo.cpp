@@ -1110,34 +1110,40 @@ namespace tl
             {
                 glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
-                const ftk::Box2I bounds = ftk::bbox(boxes);
-                const ftk::V2I c = center(bounds);
-                const ftk::V3F v = vm * ftk::V3F(c.x, c.y, 0.F);
-
                 std::vector<ftk::Box2F> centerMarker;
-                const float a = 1.F / 3.F;
-                const float b = 2.F / 3.F;
-                centerMarker.push_back(ftk::Box2F(
-                    v.x - options.centerMarker.width / 2,
-                    v.y - options.centerMarker.size,
-                    options.centerMarker.width,
-                    options.centerMarker.size * b));
-                centerMarker.push_back(ftk::Box2F(
-                    v.x - options.centerMarker.width / 2,
-                    v.y + options.centerMarker.size * a,
-                    options.centerMarker.width,
-                    options.centerMarker.size * b));
-                centerMarker.push_back(ftk::Box2F(
-                    v.x - options.centerMarker.size,
-                    v.y - options.centerMarker.width / 2,
-                    options.centerMarker.size * b,
-                    options.centerMarker.width));
-                centerMarker.push_back(ftk::Box2F(
-                    v.x + options.centerMarker.size * a,
-                    v.y - options.centerMarker.width / 2,
-                    options.centerMarker.size * b,
-                    options.centerMarker.width));
-                drawRects(centerMarker, options.centerMarker.color);
+                for (const auto& box : boxes)
+                {
+                    const ftk::V2F c(
+                        box.x() + box.w() / 2.F,
+                        box.y() + box.h() / 2.F);
+                    const ftk::V3F v = vm * ftk::V3F(c.x, c.y, 0.F);
+                    const float a = 1.F / 3.F;
+                    const float b = 2.F / 3.F;
+                    centerMarker.push_back(ftk::Box2F(
+                        v.x - options.centerMarker.width / 2,
+                        v.y - options.centerMarker.size,
+                        options.centerMarker.width,
+                        options.centerMarker.size * b));
+                    centerMarker.push_back(ftk::Box2F(
+                        v.x - options.centerMarker.width / 2,
+                        v.y + options.centerMarker.size * a,
+                        options.centerMarker.width,
+                        options.centerMarker.size * b));
+                    centerMarker.push_back(ftk::Box2F(
+                        v.x - options.centerMarker.size,
+                        v.y - options.centerMarker.width / 2,
+                        options.centerMarker.size * b,
+                        options.centerMarker.width));
+                    centerMarker.push_back(ftk::Box2F(
+                        v.x + options.centerMarker.size * a,
+                        v.y - options.centerMarker.width / 2,
+                        options.centerMarker.size * b,
+                        options.centerMarker.width));
+                }
+                if (!centerMarker.empty())
+                {
+                    drawRects(centerMarker, options.centerMarker.color);
+                }
             }
         }
     }
