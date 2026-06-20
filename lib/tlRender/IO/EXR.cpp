@@ -7,14 +7,24 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
 
+#include <ImfBoxAttribute.h>
 #include <ImfChannelList.h>
+#include <ImfChromaticitiesAttribute.h>
 #include <ImfDoubleAttribute.h>
+#include <ImfFloatAttribute.h>
 #include <ImfFloatVectorAttribute.h>
 #include <ImfFramesPerSecond.h>
 #include <ImfIntAttribute.h>
+#include <ImfKeyCodeAttribute.h>
+#include <ImfMatrixAttribute.h>
+#include <ImfRationalAttribute.h>
 #include <ImfStandardAttributes.h>
 #include <ImfStdIO.h>
+#include <ImfStringAttribute.h>
+#include <ImfStringVectorAttribute.h>
 #include <ImfThreading.h>
+#include <ImfTimeCodeAttribute.h>
+#include <ImfVecAttribute.h>
 
 #include <array>
 
@@ -374,10 +384,14 @@ namespace tl
             }
 
 #define TLRENDER_SERIALIZE_STD_ATTR(NAME, NAME_LOWER) \
-    if (has##NAME(header)) \
+    do \
     { \
-        tags[#NAME] = serialize(NAME_LOWER##Attribute(header).value()); \
-    }
+        if (has##NAME(header)) \
+        { \
+            tags[#NAME] = serialize(NAME_LOWER##Attribute(header).value()); \
+        } \
+        handled.insert(#NAME_LOWER); \
+    } while (0)
 
 #define TLRENDER_DESERIALIZE_STD_ATTR(NAME, TYPE) \
     { \
@@ -394,6 +408,27 @@ namespace tl
 
         void readTags(const Imf::Header& header, ftk::ImageTags& tags)
         {
+            // Track the raw OpenEXR attribute names that are captured below
+            // under friendlier keys, so the generic pass at the end does not
+            // duplicate them.
+            std::set<std::string> handled =
+            {
+                "displayWindow",
+                "dataWindow",
+                "pixelAspectRatio",
+                "screenWindowCenter",
+                "screenWindowWidth",
+                "channels",
+                "lineOrder",
+                "compression",
+                "name",
+                "type",
+                "version",
+                "chunkCount",
+                "view",
+                "tiles"
+            };
+
             // Predefined attributes.
             tags["Display Window"] = serialize(header.displayWindow());
             tags["Data Window"] = serialize(header.dataWindow());
@@ -473,13 +508,16 @@ namespace tl
             TLRENDER_SERIALIZE_STD_ATTR(LensModel, lensModel);
             TLRENDER_SERIALIZE_STD_ATTR(LensSerialNumber, lensSerialNumber);
             TLRENDER_SERIALIZE_STD_ATTR(Longitude, longitude);
+            TLRENDER_SERIALIZE_STD_ATTR(LookModTransform, lookModTransform);
             TLRENDER_SERIALIZE_STD_ATTR(MultiView, multiView);
             TLRENDER_SERIALIZE_STD_ATTR(NominalFocalLength, nominalFocalLength);
             TLRENDER_SERIALIZE_STD_ATTR(OriginalDataWindow, originalDataWindow);
             TLRENDER_SERIALIZE_STD_ATTR(Owner, owner);
             TLRENDER_SERIALIZE_STD_ATTR(PinholeFocalLength, pinholeFocalLength);
             TLRENDER_SERIALIZE_STD_ATTR(ReelName, reelName);
+            TLRENDER_SERIALIZE_STD_ATTR(RenderingTransform, renderingTransform);
             TLRENDER_SERIALIZE_STD_ATTR(SensorAcquisitionRectangle, sensorAcquisitionRectangle);
+            TLRENDER_SERIALIZE_STD_ATTR(SensorCenterOffset, sensorCenterOffset);
             TLRENDER_SERIALIZE_STD_ATTR(SensorOverallDimensions, sensorOverallDimensions);
             TLRENDER_SERIALIZE_STD_ATTR(SensorPhotositePitch, sensorPhotositePitch);
             TLRENDER_SERIALIZE_STD_ATTR(ShutterAngle, shutterAngle);
@@ -491,6 +529,91 @@ namespace tl
             TLRENDER_SERIALIZE_STD_ATTR(WorldToNDC, worldToNDC);
             TLRENDER_SERIALIZE_STD_ATTR(Wrapmodes, wrapmodes);
             TLRENDER_SERIALIZE_STD_ATTR(XDensity, xDensity);
+
+            // Capture any remaining attributes, including custom/non-standard
+            // ones written by renderers and compositing applications. Known
+            // types are decoded to a readable string; for unknown types the
+            // attribute type name is recorded so its presence is still visible.
+            for (auto i = header.begin(); i != header.end(); ++i)
+            {
+                const std::string name = i.name();
+                if (handled.find(name) != handled.end() ||
+                    tags.find(name) != tags.end())
+                {
+                    continue;
+                }
+                const Imf::Attribute& attr = i.attribute();
+                const std::string type = attr.typeName();
+                if (type == Imf::StringAttribute::staticTypeName())
+                {
+                    tags[name] = static_cast<const Imf::StringAttribute&>(attr).value();
+                }
+                else if (type == Imf::IntAttribute::staticTypeName())
+                {
+                    tags[name] = serialize(static_cast<const Imf::IntAttribute&>(attr).value());
+                }
+                else if (type == Imf::FloatAttribute::staticTypeName())
+                {
+                    tags[name] = serialize(static_cast<const Imf::FloatAttribute&>(attr).value());
+                }
+                else if (type == Imf::DoubleAttribute::staticTypeName())
+                {
+                    tags[name] = serialize(static_cast<const Imf::DoubleAttribute&>(attr).value());
+                }
+                else if (type == Imf::V2iAttribute::staticTypeName())
+                {
+                    tags[name] = serialize(static_cast<const Imf::V2iAttribute&>(attr).value());
+                }
+                else if (type == Imf::V2fAttribute::staticTypeName())
+                {
+                    tags[name] = serialize(static_cast<const Imf::V2fAttribute&>(attr).value());
+                }
+                else if (type == Imf::V3iAttribute::staticTypeName())
+                {
+                    tags[name] = serialize(static_cast<const Imf::V3iAttribute&>(attr).value());
+                }
+                else if (type == Imf::V3fAttribute::staticTypeName())
+                {
+                    tags[name] = serialize(static_cast<const Imf::V3fAttribute&>(attr).value());
+                }
+                else if (type == Imf::Box2iAttribute::staticTypeName())
+                {
+                    tags[name] = serialize(static_cast<const Imf::Box2iAttribute&>(attr).value());
+                }
+                else if (type == Imf::M33fAttribute::staticTypeName())
+                {
+                    tags[name] = serialize(static_cast<const Imf::M33fAttribute&>(attr).value());
+                }
+                else if (type == Imf::M44fAttribute::staticTypeName())
+                {
+                    tags[name] = serialize(static_cast<const Imf::M44fAttribute&>(attr).value());
+                }
+                else if (type == Imf::ChromaticitiesAttribute::staticTypeName())
+                {
+                    tags[name] = serialize(static_cast<const Imf::ChromaticitiesAttribute&>(attr).value());
+                }
+                else if (type == Imf::RationalAttribute::staticTypeName())
+                {
+                    tags[name] = serialize(static_cast<const Imf::RationalAttribute&>(attr).value());
+                }
+                else if (type == Imf::KeyCodeAttribute::staticTypeName())
+                {
+                    tags[name] = serialize(static_cast<const Imf::KeyCodeAttribute&>(attr).value());
+                }
+                else if (type == Imf::TimeCodeAttribute::staticTypeName())
+                {
+                    tags[name] = serialize(static_cast<const Imf::TimeCodeAttribute&>(attr).value());
+                }
+                else if (type == Imf::StringVectorAttribute::staticTypeName())
+                {
+                    tags[name] = serialize(static_cast<const Imf::StringVectorAttribute&>(attr).value());
+                }
+                else
+                {
+                    // Unknown type: record at least its presence and type.
+                    tags[name] = type;
+                }
+            }
         }
 
         void writeTags(const ftk::ImageTags& tags, double speed, Imf::Header& header)

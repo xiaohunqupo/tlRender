@@ -13,6 +13,7 @@
 
 #include <array>
 #include <cstring>
+#include <sstream>
 
 namespace tl
 {
@@ -550,10 +551,19 @@ namespace tl
         {
             IOInfo out = File(fileName, mem).getInfo();
             float speed = _defaultSpeed;
-            const auto i = out.tags.find("Frame Per Second");
+            const auto i = out.tags.find("FramesPerSecond");
             if (i != out.tags.end())
             {
-                speed = std::stof(i->second);
+                // The frames per second attribute is stored as a rational
+                // value: "numerator denominator".
+                std::stringstream ss(i->second);
+                double n = 0.0;
+                double d = 0.0;
+                ss >> n >> d;
+                if (d != 0.0)
+                {
+                    speed = static_cast<float>(n / d);
+                }
             }
             out.videoTime = OTIO_NS::TimeRange::range_from_start_end_time_inclusive(
                 OTIO_NS::RationalTime(_startFrame, speed),
