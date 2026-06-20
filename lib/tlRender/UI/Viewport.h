@@ -159,6 +159,9 @@ namespace tl
             //! Set whether the view is framed automatically.
             TL_API void setFrameView(bool);
 
+            //! Center the view.
+            TL_API void center();
+
             //! Reset the view zoom to 1:1.
             TL_API void resetZoom();
 

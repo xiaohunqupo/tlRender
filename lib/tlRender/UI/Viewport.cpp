@@ -461,6 +461,22 @@ namespace tl
             }
         }
 
+        void Viewport::center()
+        {
+            FTK_P();
+            const ftk::Size2I renderSize = _getRenderSize();
+            if (renderSize.isValid())
+            {
+                const ftk::Box2I& g = getGeometry();
+                const ftk::Size2I viewportSize = g.size();
+                const float zoom = p.zoom->get();
+                const ftk::V2I pos = ftk::V2I(
+                    viewportSize.w / 2.F - renderSize.w / 2 * zoom,
+                    viewportSize.h / 2.F - renderSize.h / 2 * zoom);
+                setViewPosAndZoom(pos, p.zoom->get());
+            }
+        }
+
         void Viewport::resetZoom()
         {
             FTK_P();
@@ -989,20 +1005,19 @@ namespace tl
             FTK_P();
             ftk::V2I viewPos;
             double zoom = 1.0;
-            const ftk::Box2I& g = getGeometry();
-            const ftk::Size2I viewportSize = g.size();
             const ftk::Size2I renderSize = _getRenderSize();
-            if (renderSize.w > 0 && renderSize.h > 0)
+            if (renderSize.isValid())
             {
+                const ftk::Box2I& g = getGeometry();
+                const ftk::Size2I viewportSize = g.size();
                 zoom = viewportSize.w / static_cast<double>(renderSize.w);
                 if (zoom * renderSize.h > viewportSize.h)
                 {
                     zoom = viewportSize.h / static_cast<double>(renderSize.h);
                 }
-                const ftk::V2I c(renderSize.w / 2, renderSize.h / 2);
                 viewPos = ftk::V2I(
-                    viewportSize.w / 2.F - c.x * zoom,
-                    viewportSize.h / 2.F - c.y * zoom);
+                    viewportSize.w / 2.F - renderSize.w / 2 * zoom,
+                    viewportSize.h / 2.F - renderSize.h / 2 * zoom);
             }
             if (p.viewPosZoom->setIfChanged(std::make_pair(viewPos, zoom)))
             {
