@@ -67,9 +67,6 @@ namespace tl
             //! Set the frame markers.
             TL_API void setFrameMarkers(const std::vector<int>&);
 
-            //! Get the track geometry.
-            TL_API std::vector<ftk::Box2I> getTrackGeom() const;
-
             TL_API void setDisplayOptions(const DisplayOptions&) override;
 
             TL_API ftk::Size2I getSizeHint() const override;

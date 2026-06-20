@@ -251,17 +251,6 @@ namespace tl
             setDrawUpdate();
         }
 
-        std::vector<ftk::Box2I> TimelineItem::getTrackGeom() const
-        {
-            FTK_P();
-            std::vector<ftk::Box2I> out;
-            for (const auto& track : p.tracks)
-            {
-                out.push_back(track.geom);
-            }
-            return out;
-        }
-
         void TimelineItem::setDisplayOptions(const DisplayOptions& value)
         {
             const bool changed = value != _displayOptions;

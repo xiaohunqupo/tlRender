@@ -148,9 +148,6 @@ namespace tl
 
             ///@}
 
-            //! Get the track geometry.
-            TL_API std::vector<ftk::Box2I> getTrackGeom() const;
-
             TL_API ftk::Size2I getSizeHint() const override;
             TL_API void setGeometry(const ftk::Box2I&) override;
             TL_API void tickEvent(

@@ -366,11 +366,6 @@ namespace tl
                 _scrollUpdate();
             }
         }
-
-        std::vector<ftk::Box2I> TimelineWidget::getTrackGeom() const
-        {
-            return _p->timelineItem->getTrackGeom();
-        }
         
         ftk::Size2I TimelineWidget::getSizeHint() const
         {
