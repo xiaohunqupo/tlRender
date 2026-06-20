@@ -404,6 +404,29 @@ namespace tl
         } \
     }
 
+// Some OpenEXR standard attributes are deprecated but still commonly present
+// in real-world files (e.g. the ACES rendering/look transforms). We still
+// want to read and write them, so locally silence the deprecation warnings
+// rather than break a -Werror build.
+#if defined(_MSC_VER)
+#  define TLRENDER_PUSH_IGNORE_DEPRECATED \
+    __pragma(warning(push)) __pragma(warning(disable : 4996))
+#  define TLRENDER_POP_IGNORE_DEPRECATED __pragma(warning(pop))
+#elif defined(__clang__)
+#  define TLRENDER_PUSH_IGNORE_DEPRECATED \
+    _Pragma("clang diagnostic push") \
+    _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+#  define TLRENDER_POP_IGNORE_DEPRECATED _Pragma("clang diagnostic pop")
+#elif defined(__GNUC__)
+#  define TLRENDER_PUSH_IGNORE_DEPRECATED \
+    _Pragma("GCC diagnostic push") \
+    _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+#  define TLRENDER_POP_IGNORE_DEPRECATED _Pragma("GCC diagnostic pop")
+#else
+#  define TLRENDER_PUSH_IGNORE_DEPRECATED
+#  define TLRENDER_POP_IGNORE_DEPRECATED
+#endif
+
         } // namespace
 
         void readTags(const Imf::Header& header, ftk::ImageTags& tags)
@@ -508,14 +531,18 @@ namespace tl
             TLRENDER_SERIALIZE_STD_ATTR(LensModel, lensModel);
             TLRENDER_SERIALIZE_STD_ATTR(LensSerialNumber, lensSerialNumber);
             TLRENDER_SERIALIZE_STD_ATTR(Longitude, longitude);
+            TLRENDER_PUSH_IGNORE_DEPRECATED
             TLRENDER_SERIALIZE_STD_ATTR(LookModTransform, lookModTransform);
+            TLRENDER_POP_IGNORE_DEPRECATED
             TLRENDER_SERIALIZE_STD_ATTR(MultiView, multiView);
             TLRENDER_SERIALIZE_STD_ATTR(NominalFocalLength, nominalFocalLength);
             TLRENDER_SERIALIZE_STD_ATTR(OriginalDataWindow, originalDataWindow);
             TLRENDER_SERIALIZE_STD_ATTR(Owner, owner);
             TLRENDER_SERIALIZE_STD_ATTR(PinholeFocalLength, pinholeFocalLength);
             TLRENDER_SERIALIZE_STD_ATTR(ReelName, reelName);
+            TLRENDER_PUSH_IGNORE_DEPRECATED
             TLRENDER_SERIALIZE_STD_ATTR(RenderingTransform, renderingTransform);
+            TLRENDER_POP_IGNORE_DEPRECATED
             TLRENDER_SERIALIZE_STD_ATTR(SensorAcquisitionRectangle, sensorAcquisitionRectangle);
             TLRENDER_SERIALIZE_STD_ATTR(SensorCenterOffset, sensorCenterOffset);
             TLRENDER_SERIALIZE_STD_ATTR(SensorOverallDimensions, sensorOverallDimensions);
@@ -652,14 +679,21 @@ namespace tl
             TLRENDER_DESERIALIZE_STD_ATTR(LensModel, std::string);
             TLRENDER_DESERIALIZE_STD_ATTR(LensSerialNumber, std::string);
             TLRENDER_DESERIALIZE_STD_ATTR(Longitude, float);
+            TLRENDER_PUSH_IGNORE_DEPRECATED
+            TLRENDER_DESERIALIZE_STD_ATTR(LookModTransform, std::string);
+            TLRENDER_POP_IGNORE_DEPRECATED
             TLRENDER_DESERIALIZE_STD_ATTR(MultiView, Imf::StringVector);
             TLRENDER_DESERIALIZE_STD_ATTR(NominalFocalLength, float);
             TLRENDER_DESERIALIZE_STD_ATTR(OriginalDataWindow, Imath::Box2i);
             TLRENDER_DESERIALIZE_STD_ATTR(Owner, std::string);
             TLRENDER_DESERIALIZE_STD_ATTR(PinholeFocalLength, float);
             TLRENDER_DESERIALIZE_STD_ATTR(ReelName, std::string);
+            TLRENDER_PUSH_IGNORE_DEPRECATED
+            TLRENDER_DESERIALIZE_STD_ATTR(RenderingTransform, std::string);
+            TLRENDER_POP_IGNORE_DEPRECATED
             TLRENDER_DESERIALIZE_STD_ATTR(SensorAcquisitionRectangle, Imath::Box2i);
             TLRENDER_DESERIALIZE_STD_ATTR(SensorCenterOffset, Imath::V2f);
+            TLRENDER_DESERIALIZE_STD_ATTR(SensorOverallDimensions, Imath::V2f);
             TLRENDER_DESERIALIZE_STD_ATTR(SensorPhotositePitch, float);
             TLRENDER_DESERIALIZE_STD_ATTR(ShutterAngle, float);
             TLRENDER_DESERIALIZE_STD_ATTR(TStop, float);

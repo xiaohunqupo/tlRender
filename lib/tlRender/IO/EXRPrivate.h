@@ -19,8 +19,6 @@ namespace tl
         void readTags(const Imf::Header&, ftk::ImageTags&);
 
         //! Write tags to an Imf header.
-        //!
-        //! \todo Write all the tags that are handled by readTags().
         void writeTags(const ftk::ImageTags&, double speed, Imf::Header&);
 
         //! Convert to Imf.
