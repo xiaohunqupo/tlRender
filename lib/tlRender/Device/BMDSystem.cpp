@@ -56,7 +56,7 @@ namespace tl
 
             p.deviceInfo = ftk::ObservableList<DeviceInfo>::create();
 
-            p.t = std::chrono::steady_clock::now();
+            p.t = std::chrono::steady_clock::now() - timeout;
             p.running = true;
             p.thread = std::thread(
                 [this]

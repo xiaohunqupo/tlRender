@@ -41,26 +41,12 @@ namespace tl
             //! Flags for which inputs have changed since the last update.
             enum class Update : uint32_t
             {
-                None        = 0,
-                Config      = 1 << 0,
-                Enabled     = 1 << 1,
-                FrameDelay  = 1 << 2,
-                OCIO        = 1 << 3,
-                LUT         = 1 << 4,
-                Image       = 1 << 5,
-                Display     = 1 << 6,
-                HDR         = 1 << 7,
-                Compare     = 1 << 8,
-                Background  = 1 << 9,
-                Foreground  = 1 << 10,
-                View        = 1 << 11,
-                TimeRange   = 1 << 12,
-                Playback    = 1 << 13,
-                Seek        = 1 << 14,
-                Video       = 1 << 15,
-                Overlay     = 1 << 16,
-                Audio       = 1 << 17,
-                AudioCtl    = 1 << 18
+                None    = 0,
+                Device  = 1 << 0,  // Config / Enabled / FrameDelay: re-create device
+                Render  = 1 << 1,  // any draw input: redraw + read back
+                Audio   = 1 << 2,  // new audio frames: setAudio
+                Seek    = 1 << 3,  // one-shot, passed to setData
+                Control = 1 << 4   // playback / volume / etc.: wake to refresh setData
             };
 
             constexpr Update operator | (Update a, Update b)
@@ -83,17 +69,6 @@ namespace tl
                 return a != Update::None;
             }
 
-            //! Inputs that require re-creating the output device.
-            constexpr Update deviceMask =
-                Update::Config | Update::Enabled | Update::FrameDelay;
-
-            //! Inputs that require re-rendering the video.
-            constexpr Update renderMask =
-                Update::OCIO | Update::LUT | Update::Image | Update::Display |
-                Update::HDR | Update::Compare | Update::Background |
-                Update::Foreground | Update::View | Update::Video |
-                Update::Overlay;
-
             //! The output device input state: a single snapshot of everything
             //! the public setters and the player observers write.
             struct State
@@ -114,7 +89,6 @@ namespace tl
                 ftk::V2I viewPos;
                 double viewZoom = 1.0;
                 bool frameView = true;
-                OTIO_NS::TimeRange timeRange = invalidTimeRange;
                 Playback playback = Playback::Stop;
                 double speed = 0.0;
                 OTIO_NS::RationalTime currentTime = invalidTime;
@@ -272,7 +246,7 @@ namespace tl
                 {
                     std::unique_lock<std::mutex> lock(p.mutex.mutex);
                     p.mutex.state.config = value;
-                    p.mutex.pending |= Update::Config;
+                    p.mutex.pending |= Update::Device;
                 }
                 p.thread.cv.notify_one();
             }
@@ -296,7 +270,7 @@ namespace tl
                 {
                     std::unique_lock<std::mutex> lock(p.mutex.mutex);
                     p.mutex.state.enabled = value;
-                    p.mutex.pending |= Update::Enabled;
+                    p.mutex.pending |= Update::Device;
                 }
                 p.thread.cv.notify_one();
             }
@@ -354,7 +328,7 @@ namespace tl
                 {
                     std::unique_lock<std::mutex> lock(p.mutex.mutex);
                     p.mutex.state.videoFrameDelay = delay;
-                    p.mutex.pending |= Update::FrameDelay;
+                    p.mutex.pending |= Update::Device;
                 }
                 p.thread.cv.notify_one();
             }
@@ -371,7 +345,7 @@ namespace tl
                 p.mutex.state.viewPos = position;
                 p.mutex.state.viewZoom = zoom;
                 p.mutex.state.frameView = frame;
-                p.mutex.pending |= Update::View;
+                p.mutex.pending |= Update::Render;
             }
             p.thread.cv.notify_one();
         }
@@ -382,7 +356,7 @@ namespace tl
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.state.ocioOptions = value;
-                p.mutex.pending |= Update::OCIO;
+                p.mutex.pending |= Update::Render;
             }
             p.thread.cv.notify_one();
         }
@@ -393,7 +367,7 @@ namespace tl
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.state.lutOptions = value;
-                p.mutex.pending |= Update::LUT;
+                p.mutex.pending |= Update::Render;
             }
             p.thread.cv.notify_one();
         }
@@ -404,7 +378,7 @@ namespace tl
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.state.imageOptions = value;
-                p.mutex.pending |= Update::Image;
+                p.mutex.pending |= Update::Render;
             }
             p.thread.cv.notify_one();
         }
@@ -415,7 +389,7 @@ namespace tl
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.state.displayOptions = value;
-                p.mutex.pending |= Update::Display;
+                p.mutex.pending |= Update::Render;
             }
             p.thread.cv.notify_one();
         }
@@ -427,7 +401,7 @@ namespace tl
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.state.hdrMode = hdrMode;
                 p.mutex.state.hdrData = hdrData;
-                p.mutex.pending |= Update::HDR;
+                p.mutex.pending |= Update::Render;
             }
             p.thread.cv.notify_one();
         }
@@ -438,7 +412,7 @@ namespace tl
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.state.compareOptions = value;
-                p.mutex.pending |= Update::Compare;
+                p.mutex.pending |= Update::Render;
             }
             p.thread.cv.notify_one();
         }
@@ -449,7 +423,7 @@ namespace tl
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.state.bgOptions = value;
-                p.mutex.pending |= Update::Background;
+                p.mutex.pending |= Update::Render;
             }
             p.thread.cv.notify_one();
         }
@@ -460,7 +434,7 @@ namespace tl
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.state.fgOptions = value;
-                p.mutex.pending |= Update::Foreground;
+                p.mutex.pending |= Update::Render;
             }
             p.thread.cv.notify_one();
         }
@@ -471,7 +445,7 @@ namespace tl
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.state.overlay = value;
-                p.mutex.pending |= Update::Overlay;
+                p.mutex.pending |= Update::Render;
             }
             p.thread.cv.notify_one();
         }
@@ -482,7 +456,7 @@ namespace tl
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.state.volume = value;
-                p.mutex.pending |= Update::AudioCtl;
+                p.mutex.pending |= Update::Control;
             }
             p.thread.cv.notify_one();
         }
@@ -493,7 +467,7 @@ namespace tl
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.state.mute = value;
-                p.mutex.pending |= Update::AudioCtl;
+                p.mutex.pending |= Update::Control;
             }
             p.thread.cv.notify_one();
         }
@@ -504,7 +478,7 @@ namespace tl
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.state.channelMute = value;
-                p.mutex.pending |= Update::AudioCtl;
+                p.mutex.pending |= Update::Control;
             }
             p.thread.cv.notify_one();
         }
@@ -515,7 +489,7 @@ namespace tl
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.state.audioOffset = value;
-                p.mutex.pending |= Update::AudioCtl;
+                p.mutex.pending |= Update::Control;
             }
             p.thread.cv.notify_one();
         }
@@ -547,7 +521,7 @@ namespace tl
                             {
                                 std::unique_lock<std::mutex> lock(device->_p->mutex.mutex);
                                 device->_p->mutex.state.playback = value;
-                                device->_p->mutex.pending |= Update::Playback;
+                                device->_p->mutex.pending |= Update::Control;
                             }
                             device->_p->thread.cv.notify_one();
                         }
@@ -562,7 +536,7 @@ namespace tl
                             {
                                 std::unique_lock<std::mutex> lock(device->_p->mutex.mutex);
                                 device->_p->mutex.state.speed = value;
-                                device->_p->mutex.pending |= Update::Playback;
+                                device->_p->mutex.pending |= Update::Control;
                             }
                             device->_p->thread.cv.notify_one();
                         }
@@ -577,7 +551,7 @@ namespace tl
                             {
                                 std::unique_lock<std::mutex> lock(device->_p->mutex.mutex);
                                 device->_p->mutex.state.currentTime = value;
-                                device->_p->mutex.pending |= Update::Playback;
+                                device->_p->mutex.pending |= Update::Control;
                             }
                             device->_p->thread.cv.notify_one();
                         }
@@ -606,7 +580,7 @@ namespace tl
                             {
                                 std::unique_lock<std::mutex> lock(device->_p->mutex.mutex);
                                 device->_p->mutex.state.videoFrames = value;
-                                device->_p->mutex.pending |= Update::Video;
+                                device->_p->mutex.pending |= Update::Render;
                             }
                             device->_p->thread.cv.notify_one();
                         }
@@ -633,14 +607,12 @@ namespace tl
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 if (p.player)
                 {
-                    p.mutex.state.timeRange = p.player->getTimeRange();
                     p.mutex.state.playback = p.player->getPlayback();
                     p.mutex.state.speed = p.player->getSpeed();
                     p.mutex.state.currentTime = p.player->getCurrentTime();
                 }
                 else
                 {
-                    p.mutex.state.timeRange = invalidTimeRange;
                     p.mutex.state.playback = Playback::Stop;
                     p.mutex.state.speed = 0.0;
                     p.mutex.state.currentTime = invalidTime;
@@ -653,8 +625,7 @@ namespace tl
                     p.mutex.state.audioFrames = p.player->getCurrentAudio();
                 }
                 p.mutex.pending |=
-                    Update::TimeRange | Update::Playback |
-                    Update::Video | Update::Audio;
+                    Update::Control | Update::Render | Update::Audio;
             }
             p.thread.cv.notify_one();
         }
@@ -705,8 +676,8 @@ namespace tl
                         // change flags decide what work to do this pass.
                         p.thread.state = p.mutex.state;
 
-                        createDevice = any(u & deviceMask);
-                        doRender = createDevice || any(u & renderMask);
+                        createDevice = any(u & Update::Device);
+                        doRender = createDevice || any(u & Update::Render);
                         audioChanged = createDevice || any(u & Update::Audio);
                         seek = any(u & Update::Seek);
                     }
