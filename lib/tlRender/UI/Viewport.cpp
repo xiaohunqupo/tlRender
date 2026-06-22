@@ -690,7 +690,7 @@ namespace tl
                     const auto& compareOptions = p.compareOptions->get();
                     const auto& displayOptions = p.displayOptions->get();
                     const auto boxes = getBoxes(
-                        compareOptions.compare,
+                        compareOptions,
                         !displayOptions.empty() ? displayOptions.front().aspectRatio : AspectRatioOptions(),
                         p.videoFrame);
                     const ftk::V2I& viewPos = p.viewPos->get();
@@ -737,7 +737,7 @@ namespace tl
                         ftk::gl::OffscreenBufferBinding binding(p.bgBuffer);
                         render->clearViewport(ftk::Color4F(0.F, 0.F, 0.F, 0.F));
                         render->setTransform(pm);
-                        render->drawBackground(boxes, pm, vm, p.bgOptions->get());
+                        render->drawBackground(boxes, vm, p.bgOptions->get(), compareOptions);
                     }
 
                     // Draw the foreground buffer.
@@ -749,7 +749,7 @@ namespace tl
                         ForegroundOptions options = p.fgOptions->get();
                         options.grid.fontInfo.size *= p.size.displayScale;
                         options.grid.textMargin *= p.size.displayScale;
-                        render->drawForeground(boxes, pm, vm, options);
+                        render->drawForeground(boxes, vm, options, compareOptions);
                     }
                 }
                 catch (const std::exception& e)
@@ -989,7 +989,7 @@ namespace tl
             FTK_P();
             const auto& displayOptions = p.displayOptions->get();
             return getRenderSize(
-                p.compareOptions->get().compare,
+                p.compareOptions->get(),
                 !displayOptions.empty() ? displayOptions.front().aspectRatio : AspectRatioOptions(),
                 p.videoFrame);
         }

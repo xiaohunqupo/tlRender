@@ -38,7 +38,8 @@ namespace tl
             compare == other.compare &&
             wipeCenter == other.wipeCenter &&
             wipeRotation == other.wipeRotation &&
-            overlay == other.overlay;
+            overlay == other.overlay &&
+            fitToA == other.fitToA;
     }
 
     bool CompareOptions::operator != (const CompareOptions& other) const
@@ -47,135 +48,178 @@ namespace tl
     }
 
     std::vector<ftk::Box2I> getBoxes(
-        Compare compare,
+        const CompareOptions& options,
         const AspectRatioOptions& aspectRatioOptions,
         const std::vector<ftk::ImageInfo>& infos)
     {
         std::vector<ftk::Box2I> out;
         const size_t count = infos.size();
-        switch (compare)
+        switch (options.compare)
         {
         case Compare::Horizontal:
         {
-            ftk::ImageInfo info;
-            int w = 0;
-            if (count > 0)
+            if (options.fitToA)
             {
-                info = infos[0];
-                w = getRenderSize(info, aspectRatioOptions).w;
+                ftk::Size2I size;
+                if (count > 0)
+                {
+                    size = getRenderSize(infos[0], aspectRatioOptions);
+                    out.push_back(ftk::Box2I(0, 0, size.w, size.h));
+                }
+                if (count > 1)
+                {
+                    out.push_back(getBox(
+                        ftk::Box2I(size.w, 0, size.w, size.h),
+                        infos[1],
+                        aspectRatioOptions,
+                        BoxHAlign::Left));
+                }
             }
-            if (count > 0)
+            else
             {
-                out.push_back(ftk::Box2I(0, 0, w, info.size.h));
-            }
-            if (count > 1)
-            {
-                out.push_back(ftk::Box2I(w, 0, w, info.size.h));
+                ftk::Size2I size;
+                if (count > 0)
+                {
+                    size = getRenderSize(infos[0], aspectRatioOptions);
+                    out.push_back(ftk::Box2I(0, 0, size.w, size.h));
+                }
+                if (count > 1)
+                {
+                    const ftk::Size2I sizeB = getRenderSize(infos[1], aspectRatioOptions);
+                    out.push_back(ftk::Box2I(size.w, 0, sizeB.w, sizeB.h));
+                }
             }
             break;
         }
         case Compare::Vertical:
         {
-            ftk::ImageInfo info;
-            int w = 0;
-            if (count > 0)
+            if (options.fitToA)
             {
-                info = infos[0];
-                w = getRenderSize(info, aspectRatioOptions).w;
+                ftk::Size2I size;
+                if (count > 0)
+                {
+                    size = getRenderSize(infos[0], aspectRatioOptions);
+                    out.push_back(ftk::Box2I(0, 0, size.w, size.h));
+                }
+                if (count > 1)
+                {
+                    out.push_back(getBox(
+                        ftk::Box2I(0, size.h, size.w, size.h),
+                        infos[1],
+                        aspectRatioOptions,
+                        BoxHAlign::Center,
+                        BoxVAlign::Top));
+                }
             }
-            if (count > 0)
+            else
             {
-                out.push_back(ftk::Box2I(0, 0, w, info.size.h));
-            }
-            if (count > 1)
-            {
-                out.push_back(ftk::Box2I(0, info.size.h, w, info.size.h));
+                ftk::Size2I size;
+                if (count > 0)
+                {
+                    size = getRenderSize(infos[0], aspectRatioOptions);
+                    out.push_back(ftk::Box2I(0, 0, size.w, size.h));
+                }
+                if (count > 1)
+                {
+                    const ftk::Size2I sizeB = getRenderSize(infos[1], aspectRatioOptions);
+                    out.push_back(ftk::Box2I(0, size.h, sizeB.w, sizeB.h));
+                }
             }
             break;
         }
         case Compare::Tile:
             if (count > 0)
             {
-                ftk::Size2I tileSize;
-                float pixelAspectRatioMax = 1.F;
-                for (const auto& info : infos)
+                const int cols = std::max(1, static_cast<int>(std::sqrt(count)));
+                if (options.fitToA)
                 {
-                    if (ftk::area(info.size) > ftk::area(tileSize))
+                    const ftk::Size2I size = getRenderSize(infos[0], aspectRatioOptions);
+                    int c = 0;
+                    int x = 0;
+                    int y = 0;
+                    for (size_t i = 0; i < count; ++i, ++c)
                     {
-                        tileSize = info.size;
-                    }
-                    pixelAspectRatioMax = std::max(pixelAspectRatioMax, info.pixelAspectRatio);
-                }
-
-                int columns = 0;
-                int rows = 0;
-                switch (count)
-                {
-                case 1: columns = 1; rows = 1; break;
-                case 2: columns = 1; rows = 2; break;
-                default:
-                {
-                    const float sqrt = std::sqrt(count);
-                    columns = std::ceil(sqrt);
-                    const std::div_t d = std::div(count, columns);
-                    rows = d.quot + (d.rem > 0 ? 1 : 0);
-                    break;
-                }
-                }
-
-                int w = 0;
-                if (aspectRatioOptions.value.isValid())
-                {
-                    switch (aspectRatioOptions.type)
-                    {
-                    case AspectRatioType::Pixel:
-                        w = tileSize.w * aspectRatioOptions.value;
-                        break;
-                    case AspectRatioType::Display:
-                        w = tileSize.h * aspectRatioOptions.value;
-                        break;
-                    default: break;
+                        out.push_back(getBox(
+                            ftk::Box2I(x, y, size.w, size.h),
+                            infos[i],
+                            aspectRatioOptions));
+                        if (c == cols)
+                        {
+                            c = 0;
+                            x = 0;
+                            y += size.h;
+                        }
+                        else
+                        {
+                            x += size.w;
+                        }
                     }
                 }
                 else
                 {
-                    w = tileSize.w * pixelAspectRatioMax;
-                }
-                int i = 0;
-                for (int r = 0, y = 0; r < rows; ++r)
-                {
-                    for (int c = 0, x = 0; c < columns; ++c, ++i)
+                    ftk::Size2I size;
+                    for (size_t i = 0; i < count; ++i)
                     {
-                        if (i < count)
-                        {
-                            const ftk::Box2I box(x, y, w, tileSize.h);
-                            out.push_back(box);
-                        }
-                        x += w;
+                        const ftk::Size2I size2 = getRenderSize(infos[i], aspectRatioOptions);
+                        size.w = std::max(size.w, size2.w);
+                        size.h = std::max(size.h, size2.h);
                     }
-                    y += tileSize.h;
+                    int c = 0;
+                    int x = 0;
+                    int y = 0;
+                    for (size_t i = 0; i < count; ++i, ++c)
+                    {
+                        const ftk::Size2I size2 = getRenderSize(infos[i], aspectRatioOptions);
+                        out.push_back(ftk::Box2I(
+                            x + size.w / 2 - size2.w / 2,
+                            y + size.h / 2 - size2.h / 2,
+                            size2.w,
+                            size2.h));
+                        if (c == cols)
+                        {
+                            c = 0;
+                            x = 0;
+                            y += size.h;
+                        }
+                        else
+                        {
+                            x += size.w;
+                        }
+                    }
                 }
             }
             break;
         default:
-        {
             if (count > 0)
             {
-                const int w = getRenderSize(infos[0], aspectRatioOptions).w;
-                for (size_t i = 0; i < std::min(count, static_cast<size_t>(2)); ++i)
+                if (options.fitToA)
                 {
-                    const ftk::Box2I box(0, 0, w, infos[0].size.h);
-                    out.push_back(box);
+                    const ftk::Size2I size = getRenderSize(infos[0], aspectRatioOptions);
+                    out.push_back(ftk::Box2I(0, 0, size.w, size.h));
+                    for (size_t i = 1; i < count; ++i)
+                    {
+                        out.push_back(getBox(
+                            ftk::Box2I(0, 0, size.w, size.h),
+                            infos[i],
+                            aspectRatioOptions));
+                    }
+                }
+                else
+                {
+                    for (size_t i = 0; i < count; ++i)
+                    {
+                        const ftk::Size2I size = getRenderSize(infos[i], aspectRatioOptions);
+                        out.push_back(ftk::Box2I(0, 0, size.w, size.h));
+                    }
                 }
             }
             break;
-        }
         }
         return out;
     }
 
     std::vector<ftk::Box2I> getBoxes(
-        Compare compare,
+        const CompareOptions& options,
         const AspectRatioOptions& aspectRatioOptions,
         const std::vector<VideoFrame>& videoFrame)
     {
@@ -198,17 +242,17 @@ namespace tl
             }
             infos.push_back(info);
         }
-        return getBoxes(compare, aspectRatioOptions, infos);
+        return getBoxes(options, aspectRatioOptions, infos);
     }
 
     ftk::Size2I getRenderSize(
-        Compare compare,
+        const CompareOptions& options,
         const AspectRatioOptions& aspectRatioOptions,
         const std::vector<ftk::ImageInfo>& infos)
     {
         ftk::Size2I out;
         ftk::Box2I box;
-        const auto boxes = getBoxes(compare, aspectRatioOptions, infos);
+        const auto boxes = getBoxes(options, aspectRatioOptions, infos);
         if (!boxes.empty())
         {
             box = boxes[0];
@@ -223,7 +267,7 @@ namespace tl
     }
 
     ftk::Size2I getRenderSize(
-        Compare compare,
+        const CompareOptions& options,
         const AspectRatioOptions& aspectRatioOptions,
         const std::vector<VideoFrame>& videoFrame)
     {
@@ -246,7 +290,7 @@ namespace tl
             }
             infos.push_back(info);
         }
-        return getRenderSize(compare, aspectRatioOptions, infos);
+        return getRenderSize(options, aspectRatioOptions, infos);
     }
 
     OTIO_NS::RationalTime getCompareTime(
@@ -284,6 +328,7 @@ namespace tl
         json["WipeCenter"] = in.wipeCenter;
         json["WipeRotation"] = in.wipeRotation;
         json["Overlay"] = in.overlay;
+        json["FitToA"] = in.fitToA;
     }
 
     void from_json(const nlohmann::json& json, CompareOptions& out)
@@ -292,5 +337,6 @@ namespace tl
         json.at("WipeCenter").get_to(out.wipeCenter);
         json.at("WipeRotation").get_to(out.wipeRotation);
         json.at("Overlay").get_to(out.overlay);
+        json.at("FitToA").get_to(out.fitToA);
     }
 }

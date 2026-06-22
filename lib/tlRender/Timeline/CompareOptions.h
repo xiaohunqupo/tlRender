@@ -45,6 +45,7 @@ namespace tl
         ftk::V2F wipeCenter   = ftk::V2F(.5F, .5F);
         float    wipeRotation = 0.F;
         float    overlay      = .5F;
+        bool     fitToA       = true;
 
         TL_API bool operator == (const CompareOptions&) const;
         TL_API bool operator != (const CompareOptions&) const;
@@ -52,25 +53,25 @@ namespace tl
 
     //! Get the boxes for the given compare mode.
     TL_API std::vector<ftk::Box2I> getBoxes(
-        Compare,
+        const CompareOptions&,
         const AspectRatioOptions&,
         const std::vector<ftk::ImageInfo>&);
 
     //! Get the boxes for the given compare mode.
     TL_API std::vector<ftk::Box2I> getBoxes(
-        Compare,
+        const CompareOptions&,
         const AspectRatioOptions&,
         const std::vector<VideoFrame>&);
 
     //! Get the render size for the given compare mode.
     TL_API ftk::Size2I getRenderSize(
-        Compare,
+        const CompareOptions&,
         const AspectRatioOptions&,
         const std::vector<ftk::ImageInfo>&);
 
     //! Get the render size for the given compare mode.
     TL_API ftk::Size2I getRenderSize(
-        Compare,
+        const CompareOptions&,
         const AspectRatioOptions&,
         const std::vector<VideoFrame>&);
 

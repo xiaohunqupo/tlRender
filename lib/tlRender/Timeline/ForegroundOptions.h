@@ -55,17 +55,6 @@ namespace tl
         TL_API bool operator != (const Grid&) const;
     };
 
-    //! Outline.
-    struct TL_API_TYPE Outline
-    {
-        bool         enabled = false;
-        int          width   = 2;
-        ftk::Color4F color   = ftk::Color4F(1.F, 0.F, 0.F);
-
-        TL_API bool operator == (const Outline&) const;
-        TL_API bool operator != (const Outline&) const;
-    };
-
     //! Center marker.
     struct TL_API_TYPE CenterMarker
     {
@@ -82,7 +71,6 @@ namespace tl
     struct TL_API_TYPE ForegroundOptions
     {
         Grid         grid;
-        Outline      outline;
         CenterMarker centerMarker;
 
         TL_API bool operator == (const ForegroundOptions&) const;
@@ -93,12 +81,10 @@ namespace tl
     ///@{
 
     TL_API void to_json(nlohmann::json&, const Grid&);
-    TL_API void to_json(nlohmann::json&, const Outline&);
     TL_API void to_json(nlohmann::json&, const CenterMarker&);
     TL_API void to_json(nlohmann::json&, const ForegroundOptions&);
 
     TL_API void from_json(const nlohmann::json&, Grid&);
-    TL_API void from_json(const nlohmann::json&, Outline&);
     TL_API void from_json(const nlohmann::json&, CenterMarker&);
     TL_API void from_json(const nlohmann::json&, ForegroundOptions&);
 

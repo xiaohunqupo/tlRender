@@ -1006,7 +1006,7 @@ namespace tl
                 aspectRatioOptions = displayOptions[0].aspectRatio;
             }
             const ftk::Size2I renderSize = getRenderSize(
-                compareOptions.compare,
+                compareOptions,
                 aspectRatioOptions,
                 p.thread.state.videoFrames);
             ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
@@ -1047,7 +1047,7 @@ namespace tl
                 p.thread.render->setTransform(pm);
 
                 const auto boxes = getBoxes(
-                    compareOptions.compare,
+                    compareOptions,
                     aspectRatioOptions,
                     p.thread.state.videoFrames);
                 ftk::V2I viewPosTmp = p.thread.state.viewPos;
@@ -1067,7 +1067,7 @@ namespace tl
                 ftk::M44F vm;
                 vm = vm * ftk::translate(ftk::V3F(viewPosTmp.x, viewPosTmp.y, 0.F));
                 vm = vm * ftk::scale(ftk::V3F(viewZoomTmp, viewZoomTmp, 1.F));
-                p.thread.render->drawBackground(boxes, pm, vm, bgOptions);
+                p.thread.render->drawBackground(boxes, vm, bgOptions, compareOptions);
 
                 p.thread.render->setTransform(pm * vm);
                 p.thread.render->drawVideo(
@@ -1079,7 +1079,7 @@ namespace tl
                     getColorBuffer(p.thread.outputPixelType));
 
                 p.thread.render->setTransform(pm);
-                p.thread.render->drawForeground(boxes, pm, vm, fgOptions);
+                p.thread.render->drawForeground(boxes, vm, fgOptions, compareOptions);
 
                 if (p.thread.state.overlay)
                 {

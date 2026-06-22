@@ -36,17 +36,11 @@ namespace tl
             TL_API void setOCIOOptions(const OCIOOptions&) override;
             TL_API void setLUTOptions(const LUTOptions&) override;
 
-            TL_API void drawTexture(
-                unsigned int,
-                const ftk::Box2I&,
-                bool flipV = false,
-                const ftk::Color4F& = ftk::Color4F(1.F, 1.F, 1.F),
-                ftk::AlphaBlend = ftk::AlphaBlend::Straight) override;
             TL_API void drawBackground(
                 const std::vector<ftk::Box2I>&,
-                const ftk::M44F& pm,
                 const ftk::M44F& vm,
-                const BackgroundOptions&) override;
+                const BackgroundOptions&,
+                const CompareOptions&) override;
             TL_API void drawVideo(
                 const std::vector<VideoFrame>&,
                 const std::vector<ftk::Box2I>&,
@@ -56,9 +50,9 @@ namespace tl
                 ftk::gl::TextureType colorBuffer = ftk::gl::TextureType::RGBA_F32) override;
             TL_API void drawForeground(
                 const std::vector<ftk::Box2I>&,
-                const ftk::M44F& pm,
                 const ftk::M44F& vm,
-                const ForegroundOptions&) override;
+                const ForegroundOptions&,
+                const CompareOptions&) override;
 
             TL_API void begin(
                 const ftk::Size2I&,
@@ -99,6 +93,12 @@ namespace tl
                 const ftk::TriMesh2F&,
                 const ftk::Color4F& = ftk::Color4F(1.F, 1.F, 1.F, 1.F),
                 const ftk::V2F& pos = ftk::V2F()) override;
+            TL_API void drawTexture(
+                unsigned int,
+                const ftk::Box2I&,
+                bool flipV = false,
+                const ftk::Color4F& = ftk::Color4F(1.F, 1.F, 1.F),
+                ftk::AlphaBlend = ftk::AlphaBlend::Straight) override;
             TL_API void drawText(
                 const std::vector<std::shared_ptr<ftk::Glyph> >&,
                 const ftk::FontMetrics&,

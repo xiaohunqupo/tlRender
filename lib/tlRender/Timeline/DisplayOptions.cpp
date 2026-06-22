@@ -171,6 +171,7 @@ namespace tl
             case AspectRatioType::Display:
                 out = options.value;
                 break;
+            default: break;
             }
         }
         else
@@ -197,6 +198,7 @@ namespace tl
                 out.w = info.size.h * options.value;
                 out.h = info.size.h;
                 break;
+            default: break;
             }
         }
         else
@@ -210,7 +212,9 @@ namespace tl
     ftk::Box2I getBox(
         const ftk::Box2I& box,
         const ftk::ImageInfo& info,
-        const AspectRatioOptions& options)
+        const AspectRatioOptions& options,
+        BoxHAlign hAlign,
+        BoxVAlign vAlign)
     {
         ftk::Box2I out;
         const ftk::Size2I boxSize = box.size();
@@ -218,19 +222,37 @@ namespace tl
         const float aspect = getAspectRatio(info, options);
         if (boxAspect > aspect)
         {
-            out = ftk::Box2I(
-                box.min.x + boxSize.w / 2.F - (boxSize.h * aspect) / 2.F,
-                box.min.y,
-                boxSize.h * aspect,
-                boxSize.h);
+            const int w = boxSize.h * aspect;
+            const int h = boxSize.h;
+            int x = box.min.x;
+            switch (hAlign)
+            {
+                case BoxHAlign::Center:
+                    x += boxSize.w / 2.F - (boxSize.h * aspect) / 2.F;
+                    break;
+                case BoxHAlign::Right:
+                    x += boxSize.w - w;
+                    break;
+                default: break;
+            }
+            out = ftk::Box2I(x, box.min.y, w, h);
         }
         else
         {
-            out = ftk::Box2I(
-                box.min.x,
-                box.min.y + boxSize.h / 2.F - (boxSize.w / aspect) / 2.F,
-                boxSize.w,
-                boxSize.w / aspect);
+            const int w = boxSize.w;
+            const int h = boxSize.w / aspect;
+            int y = box.min.y;
+            switch (vAlign)
+            {
+                case BoxVAlign::Center:
+                    y += boxSize.h / 2.F - (boxSize.w / aspect) / 2.F;
+                    break;
+                case BoxVAlign::Bottom:
+                    y += boxSize.h - h;
+                    break;
+                default: break;
+            }
+            out = ftk::Box2I(box.min.x, y, w, h);
         }
         return out;
     }

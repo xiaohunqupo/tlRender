@@ -123,11 +123,29 @@ namespace tl
         const ftk::ImageInfo&,
         const AspectRatioOptions&);
 
+    //! Horizontal box alignment.
+    enum class BoxHAlign
+    {
+        Center,
+        Left,
+        Right
+    };
+
+    //! Vertical box alignment.
+    enum class BoxVAlign
+    {
+        Center,
+        Top,
+        Bottom
+    };
+
     //! Get a box that fits within the given box.
     TL_API ftk::Box2I getBox(
         const ftk::Box2I&,
         const ftk::ImageInfo&,
-        const AspectRatioOptions&);
+        const AspectRatioOptions&,
+        BoxHAlign = BoxHAlign::Center,
+        BoxVAlign = BoxVAlign::Center);
 
     //! Get a label.
     TL_API std::string getLabel(const AspectRatioOptions&);

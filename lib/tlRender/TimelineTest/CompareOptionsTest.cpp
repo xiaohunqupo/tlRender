@@ -52,35 +52,35 @@ namespace tl
                         Compare::Difference
                     })
                 {
-                    auto boxes = getBoxes(compare, AspectRatioOptions(), infos);
+                    auto boxes = getBoxes({ compare }, AspectRatioOptions(), infos);
                     FTK_ASSERT(2 == boxes.size());
                     FTK_ASSERT(ftk::Box2I(0, 0, 1920, 1080) == boxes[0]);
                     FTK_ASSERT(ftk::Box2I(0, 0, 1920, 1080) == boxes[1]);
-                    auto renderSize = getRenderSize(compare, AspectRatioOptions(), infos);
+                    auto renderSize = getRenderSize({ compare }, AspectRatioOptions(), infos);
                     FTK_ASSERT(ftk::Size2I(1920, 1080) == renderSize);
                 }
 
-                auto boxes = getBoxes(Compare::Horizontal, AspectRatioOptions(), infos);
+                auto boxes = getBoxes({ Compare::Horizontal }, AspectRatioOptions(), infos);
                 FTK_ASSERT(2 == boxes.size());
                 FTK_ASSERT(ftk::Box2I(0, 0, 1920, 1080) == boxes[0]);
                 FTK_ASSERT(ftk::Box2I(1920, 0, 1920, 1080) == boxes[1]);
-                auto renderSize = getRenderSize(Compare::Horizontal, AspectRatioOptions(), infos);
+                auto renderSize = getRenderSize({ Compare::Horizontal }, AspectRatioOptions(), infos);
                 FTK_ASSERT(ftk::Size2I(1920 * 2, 1080) == renderSize);
 
-                boxes = getBoxes(Compare::Vertical, AspectRatioOptions(), infos);
+                boxes = getBoxes({ Compare::Vertical }, AspectRatioOptions(), infos);
                 FTK_ASSERT(2 == boxes.size());
                 FTK_ASSERT(ftk::Box2I(0, 0, 1920, 1080) == boxes[0]);
                 FTK_ASSERT(ftk::Box2I(0, 1080, 1920, 1080) == boxes[1]);
-                renderSize = getRenderSize(Compare::Vertical, AspectRatioOptions(), infos);
+                renderSize = getRenderSize({ Compare::Vertical }, AspectRatioOptions(), infos);
                 FTK_ASSERT(ftk::Size2I(1920, 1080 * 2) == renderSize);
 
-                boxes = getBoxes(Compare::Tile, AspectRatioOptions(), infos);
+                boxes = getBoxes({ Compare::Tile }, AspectRatioOptions(), infos);
                 FTK_ASSERT(4 == boxes.size());
                 FTK_ASSERT(ftk::Box2I(0, 0, 1920, 1080) == boxes[0]);
                 FTK_ASSERT(ftk::Box2I(1920, 0, 1920, 1080) == boxes[1]);
                 FTK_ASSERT(ftk::Box2I(0, 1080, 1920, 1080) == boxes[2]);
                 FTK_ASSERT(ftk::Box2I(1920, 1080, 1920, 1080) == boxes[3]);
-                renderSize = getRenderSize(Compare::Tile, AspectRatioOptions(), infos);
+                renderSize = getRenderSize({ Compare::Tile }, AspectRatioOptions(), infos);
                 FTK_ASSERT(ftk::Size2I(1920 * 2, 1080 * 2) == renderSize);
             }
             {

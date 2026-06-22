@@ -23,6 +23,17 @@ namespace tl
     };
     TL_ENUM(Background);
 
+    //! Outline.
+    struct TL_API_TYPE Outline
+    {
+        bool         enabled = false;
+        int          width   = 2;
+        ftk::Color4F color   = ftk::Color4F(1.F, 0.F, 0.F);
+
+        TL_API bool operator == (const Outline&) const;
+        TL_API bool operator != (const Outline&) const;
+    };
+
     //! Background options.
     struct TL_API_TYPE BackgroundOptions
     {
@@ -43,6 +54,8 @@ namespace tl
             ftk::Color4F(1.F, 1.F, 1.F)
         };
 
+        Outline outline;
+
         TL_API bool operator == (const BackgroundOptions&) const;
         TL_API bool operator != (const BackgroundOptions&) const;
     };
@@ -50,8 +63,10 @@ namespace tl
     //! \name Serialize
     ///@{
 
+    TL_API void to_json(nlohmann::json&, const Outline&);
     TL_API void to_json(nlohmann::json&, const BackgroundOptions&);
 
+    TL_API void from_json(const nlohmann::json&, Outline&);
     TL_API void from_json(const nlohmann::json&, BackgroundOptions&);
 
     ///@}
