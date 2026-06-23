@@ -51,6 +51,12 @@ namespace tl
         TL_API bool operator != (const CompareOptions&) const;
     };
 
+    //! Get the bounds for the given compare mode.
+    TL_API std::vector<ftk::Box2I> getBounds(
+        const CompareOptions&,
+        const AspectRatioOptions&,
+        const std::vector<ftk::ImageInfo>&);
+
     //! Get the boxes for the given compare mode.
     TL_API std::vector<ftk::Box2I> getBoxes(
         const CompareOptions&,

@@ -89,20 +89,27 @@ namespace tl
             if (options.outline.enabled && !boxes.empty())
             {
                 glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
-                size_t count = boxes.size();
-                if (!boxes.empty())
+
+                size_t start = 0;
+                size_t end = boxes.size();
+                switch (compareOptions.compare)
                 {
-                    switch (compareOptions.compare)
-                    {
-                        case Compare::A:
-                        case Compare::B:
-                        case Compare::Wipe:
-                        case Compare::Overlay:
-                        case Compare::Difference: count = 1; break;
-                        default: break;
-                    }
+                    case Compare::A:
+                        if (!boxes.empty())
+                        {
+                            end = 1;
+                        }
+                        break;
+                    case Compare::B:
+                        if (boxes.size() > 1)
+                        {
+                            start = 1;
+                            end = 2;
+                        }
+                        break;
+                    default: break;
                 }
-                for (size_t i = 0; i < count; ++i)
+                for (size_t i = start; i < end; ++i)
                 {
                     const ftk::Box2I box = xform(boxes[i], vm);
 
@@ -988,20 +995,29 @@ namespace tl
             const ForegroundOptions& options,
             const CompareOptions& compareOptions)
         {
-            size_t count = boxes.size();
-            if (!boxes.empty())
+            size_t start = 0;
+            size_t end = boxes.size();
+            switch (compareOptions.compare)
             {
-                switch (compareOptions.compare)
-                {
-                    case Compare::A:
-                    case Compare::B:
-                    case Compare::Wipe:
-                    case Compare::Overlay:
-                    case Compare::Difference: count = 1; break;
-                    default: break;
-                }
+                case Compare::A:
+                case Compare::Wipe:
+                case Compare::Overlay:
+                case Compare::Difference:
+                    if (!boxes.empty())
+                    {
+                        end = 1;
+                    }
+                    break;
+                case Compare::B:
+                    if (boxes.size() > 1)
+                    {
+                        start = 1;
+                        end = 2;
+                    }
+                    break;
+                default: break;
             }
-            for (size_t i = 0; i < count; ++i)
+            for (size_t i = start; i < end; ++i)
             {
                 const ftk::Box2I& box = boxes[i];
                 const ftk::Box2I boxT = xform(box, vm);
