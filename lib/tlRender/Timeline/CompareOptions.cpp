@@ -66,7 +66,11 @@ namespace tl
             }
             if (options.fitToA && count > 1)
             {
-                out.push_back(ftk::Box2I(size.w, 0, size.w, size.h));
+                out.push_back(getBox(
+                    ftk::Box2I(size.w, 0, size.w, size.h),
+                    infos[1],
+                    aspectRatioOptions,
+                    BoxHAlign::Left));
             }
             else if (count > 1)
             {
@@ -85,7 +89,12 @@ namespace tl
             }
             if (options.fitToA && count > 1)
             {
-                out.push_back(ftk::Box2I(0, size.h, size.w, size.h));
+                out.push_back(getBox(
+                    ftk::Box2I(0, size.h, size.w, size.h),
+                    infos[1],
+                    aspectRatioOptions,
+                    BoxHAlign::Center,
+                    BoxVAlign::Top));
             }
             else if (count > 1)
             {
