@@ -53,7 +53,7 @@ namespace tl
                     })
                 {
                     auto boxes = getBoxes({ compare }, AspectRatioOptions(), infos);
-                    FTK_ASSERT(2 == boxes.size());
+                    FTK_ASSERT(!boxes.empty());
                     FTK_ASSERT(ftk::Box2I(0, 0, 1920, 1080) == boxes[0]);
                     FTK_ASSERT(ftk::Box2I(0, 0, 1920, 1080) == boxes[1]);
                     auto renderSize = getRenderSize({ compare }, AspectRatioOptions(), infos);

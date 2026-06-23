@@ -169,8 +169,7 @@ namespace tl
     {
         std::vector<ftk::Box2I> out;
         const std::vector<ftk::Box2I> bounds = getBounds(options, aspectRatioOptions, infos);
-        const size_t count = infos.size();
-        for (size_t i = 0; i < count; ++i)
+        for (size_t i = 0; i < bounds.size() && i < infos.size(); ++i)
         {
             out.push_back(getBox(bounds[i], infos[i], aspectRatioOptions));
         }

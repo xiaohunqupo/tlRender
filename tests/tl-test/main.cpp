@@ -125,6 +125,7 @@ int main(int argc, char* argv[])
         context->tick();
 
         std::vector<std::shared_ptr<ftk::test::ITest> > tests;
+        //tests.push_back(timeline_tests::CompareOptionsTest::create(context));
         coreTests(tests, context);
         ioTests(tests, context);
         timelineTests(tests, context);
