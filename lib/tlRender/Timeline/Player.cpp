@@ -509,9 +509,15 @@ namespace tl
         FTK_P();
 
         // Loop the time.
-        const auto tmp = loop(
-            time.rescaled_to(p.timeRange.duration()).floor(),
-            p.timeRange);
+        OTIO_NS::RationalTime tmp = time.rescaled_to(p.timeRange.duration()).floor();
+        if (tmp > p.timeRange.end_time_inclusive())
+        {
+            tmp = p.timeRange.start_time();
+        }
+        else if (tmp < p.timeRange.start_time())
+        {
+            tmp = p.timeRange.end_time_inclusive();
+        }
 
         if (p.currentTime->setIfChanged(tmp))
         {
