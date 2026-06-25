@@ -178,18 +178,40 @@ namespace tl
         Pipe::~Pipe()
         {
             FTK_P();
+            // Reap the child without risking a hang or a stray signal.
+            //
+            // subprocess_destroy() never waitpid()s on POSIX, so on its own it
+            // leaks a zombie. subprocess_join() reaps, but its waitpid() blocks
+            // until the child exits -- and a child does not reliably exit just
+            // because we closed its stdout (a stalled input, a slow flush), so
+            // joining unconditionally can hang teardown.
+            //
+            // So: if the child is still running, kill it first, which makes the
+            // join immediate. The subprocess_alive() check both reaps a child
+            // that already exited and guards the terminate: once a child has
+            // been reaped its pid is 0, and subprocess_terminate() would then
+            // become kill(0, SIGKILL), signalling our entire process group. We
+            // only terminate while the child is genuinely alive (a valid pid).
+            // This is a read-only decode, so killing ffmpeg cannot corrupt any
+            // output.
+            if (0 != subprocess_alive(&p.subprocess))
+            {
+                subprocess_terminate(&p.subprocess);
+            }
+            subprocess_join(&p.subprocess, nullptr);
             subprocess_destroy(&p.subprocess);
-            //! \bug This is causing a SIGKILL on Linux when a read error occurs.
-            //subprocess_terminate(&p.subprocess);
         }
 
         size_t Pipe::read(uint8_t* data, size_t size)
         {
             FTK_P();
-            if (0 == subprocess_alive(&p.subprocess))
-            {
-                throw std::runtime_error("Cannot read from process");
-            }
+            // Read until the buffer is full or the process closes its stdout.
+            // With subprocess_option_enable_async a return of 0 means the
+            // process has finished (true EOF), so a short result here signals
+            // end-of-stream or a decode error -- the caller checks for it. Note
+            // we do NOT precheck subprocess_alive: the process can exit with its
+            // output still buffered in the pipe, and refusing to read it would
+            // discard valid data.
             size_t out = 0;
             size_t r = 0;
             do
@@ -206,10 +228,9 @@ namespace tl
         std::string Pipe::readAll()
         {
             FTK_P();
-            if (0 == subprocess_alive(&p.subprocess))
-            {
-                throw std::runtime_error("Cannot read from process");
-            }
+            // Read until EOF; see the note in read() on why we do not precheck
+            // subprocess_alive (a fast process can exit with its output still
+            // buffered, and the precheck would throw it away).
             std::string out;
             size_t size = 0;
             do

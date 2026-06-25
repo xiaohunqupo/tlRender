@@ -692,13 +692,24 @@ namespace tl
                         video.image->zero();
                         if (p.thread.pipe)
                         {
+                            const size_t byteCount = video.image->getByteCount();
+                            size_t r = 0;
                             try
                             {
-                                p.thread.pipe->read(video.image->getData(), video.image->getByteCount());
+                                r = p.thread.pipe->read(video.image->getData(), byteCount);
                             }
                             catch (const std::exception& e)
                             {
                                 _logSystem.lock()->print("tl::ffmpeg_cmd::Read", e.what(), ftk::LogType::Error);
+                            }
+                            if (r < byteCount)
+                            {
+                                // End of stream or a read failure: ffmpeg has
+                                // stopped producing frames. Drop the pipe so the
+                                // next request re-spawns it at the right time
+                                // instead of repeatedly reading a dead process.
+                                // The frame stays zero-filled (black).
+                                p.thread.pipe.reset();
                             }
                         }
                     }
@@ -781,13 +792,22 @@ namespace tl
                     audio.audio->zero();
                     if (p.audioThread.pipe)
                     {
+                        const size_t byteCount = audio.audio->getByteCount();
+                        size_t r = 0;
                         try
                         {
-                            p.audioThread.pipe->read(audio.audio->getData(), audio.audio->getByteCount());
+                            r = p.audioThread.pipe->read(audio.audio->getData(), byteCount);
                         }
                         catch (const std::exception& e)
                         {
                             _logSystem.lock()->print("tl::ffmpeg_cmd::Read", e.what(), ftk::LogType::Error);
+                        }
+                        if (r < byteCount)
+                        {
+                            // End of stream or a read failure: drop the pipe so
+                            // the next request re-spawns ffmpeg at the right
+                            // time. The remainder stays zero-filled (silence).
+                            p.audioThread.pipe.reset();
                         }
                     }
                     request->promise.set_value(audio);
