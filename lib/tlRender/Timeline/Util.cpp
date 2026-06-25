@@ -397,13 +397,23 @@ namespace tl
 
         if (secondsIt != audioFrame.end())
         {
-            // Adjust the size if necessary.
             const int64_t offset = frame - seconds * info.sampleRate;
-            int64_t outSize = size;
-            if ((offset + outSize) > info.sampleRate && secondsPlusOneIt == audioFrame.end())
-            {
-                outSize = info.sampleRate - offset;
-            }
+
+            // Bound the copy by the samples actually available: what remains in
+            // the first chunk after `offset`, plus the second chunk if present.
+            // This keeps us from reading past either source buffer (a short
+            // final second of a clip, or a request larger than two chunks can
+            // satisfy at high playback speed) while still advancing the caller's
+            // frame counter by exactly the number of samples copied.
+            const int64_t firstCount =
+                (!secondsIt->layers.empty() && secondsIt->layers[0].audio) ?
+                static_cast<int64_t>(secondsIt->layers[0].audio->getSampleCount()) : 0;
+            const int64_t avail0 = std::max<int64_t>(0, firstCount - offset);
+            const int64_t avail1 =
+                (secondsPlusOneIt != audioFrame.end() &&
+                    !secondsPlusOneIt->layers.empty() && secondsPlusOneIt->layers[0].audio) ?
+                static_cast<int64_t>(secondsPlusOneIt->layers[0].audio->getSampleCount()) : 0;
+            const int64_t outSize = std::min(size, avail0 + avail1);
 
             // Create the output audio.
             for (size_t i = 0; i < secondsIt->layers.size(); ++i)
@@ -414,16 +424,22 @@ namespace tl
             }
 
             // Copy audio from the first chunk.
-            const int64_t sizeTmp = std::min(outSize, static_cast<int64_t>(info.sampleRate) - offset);
+            const int64_t sizeTmp = std::min(outSize, avail0);
             for (size_t i = 0; i < secondsIt->layers.size(); ++i)
             {
                 if (secondsIt->layers[i].audio &&
                     secondsIt->layers[i].audio->getInfo() == info)
                 {
-                    memcpy(
-                        out[i]->getData(),
-                        secondsIt->layers[i].audio->getData() + offset * info.getByteCount(),
-                        sizeTmp * info.getByteCount());
+                    const int64_t n = std::min(
+                        sizeTmp,
+                        static_cast<int64_t>(secondsIt->layers[i].audio->getSampleCount()) - offset);
+                    if (n > 0)
+                    {
+                        memcpy(
+                            out[i]->getData(),
+                            secondsIt->layers[i].audio->getData() + offset * info.getByteCount(),
+                            n * info.getByteCount());
+                    }
                 }
             }
 
@@ -435,10 +451,16 @@ namespace tl
                     if (secondsPlusOneIt->layers[i].audio &&
                         secondsPlusOneIt->layers[i].audio->getInfo() == info)
                     {
-                        memcpy(
-                            out[i]->getData() + sizeTmp * info.getByteCount(),
-                            secondsPlusOneIt->layers[i].audio->getData(),
-                            (outSize - sizeTmp) * info.getByteCount());
+                        const int64_t n = std::min(
+                            outSize - sizeTmp,
+                            static_cast<int64_t>(secondsPlusOneIt->layers[i].audio->getSampleCount()));
+                        if (n > 0)
+                        {
+                            memcpy(
+                                out[i]->getData() + sizeTmp * info.getByteCount(),
+                                secondsPlusOneIt->layers[i].audio->getData(),
+                                n * info.getByteCount());
+                        }
                     }
                 }
             }

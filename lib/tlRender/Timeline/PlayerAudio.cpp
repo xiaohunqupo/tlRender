@@ -386,9 +386,15 @@ namespace tl
                 {
                     const int64_t seconds = std::floor(t / static_cast<double>(inputInfo.sampleRate));
                     std::unique_lock<std::mutex> lock(audioMutex.mutex);
-                    for (int64_t i = seconds - 1; i < seconds + 1; ++i)
+                    // Gather the buckets audioCopy may read from. Forward
+                    // playback reads { seconds, seconds + 1 }; reverse reads
+                    // { seconds - 1, seconds }. Supplying all three covers
+                    // either direction (audioCopy ignores buckets it doesn't
+                    // need), and matches the window used when filling the
+                    // current-audio-frame display.
+                    for (int64_t s : { seconds - 1, seconds, seconds + 1 })
                     {
-                        const auto j = audioMutex.cache.find(i);
+                        const auto j = audioMutex.cache.find(s);
                         if (j != audioMutex.cache.end())
                         {
                             audioFrameList.push_back(j->second);
