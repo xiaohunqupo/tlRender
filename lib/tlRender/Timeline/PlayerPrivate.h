@@ -36,6 +36,7 @@ namespace tl
 
         bool hasAudio() const;
         void playbackReset(const OTIO_NS::RationalTime&);
+        void resetPlaybackTime(const OTIO_NS::RationalTime&);
         void audioInit(const std::shared_ptr<ftk::Context>&);
         void audioReset(const OTIO_NS::RationalTime&);
 #if defined(FTK_SDL2) || defined(FTK_SDL3)
@@ -105,9 +106,6 @@ namespace tl
             std::vector<int> compareVideoLayers;
             double audioOffset = 0.0;
             PlayerCacheOptions cacheOptions;
-
-            bool operator == (const PlaybackState&) const;
-            bool operator != (const PlaybackState&) const;
         };
 
         struct Mutex
@@ -145,9 +143,6 @@ namespace tl
             std::vector<bool> channelMute;
             std::chrono::steady_clock::time_point muteTimeout;
             double audioOffset = 0.0;
-
-            bool operator == (const AudioState&) const;
-            bool operator != (const AudioState&) const;
         };
 
         struct AudioMutex

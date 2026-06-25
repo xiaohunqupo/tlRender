@@ -297,10 +297,7 @@ namespace tl
                 p.audioMutex.state.speed = actualSpeed;
                 p.audioReset(p.currentTime->get());
             }
-            if (!p.hasAudio())
-            {
-                p.playbackReset(p.currentTime->get());
-            }
+            p.playbackReset(p.currentTime->get());
         }
     }
 
@@ -416,10 +413,7 @@ namespace tl
                     p.audioMutex.state.playback = value;
                     p.audioReset(p.currentTime->get());
                 }
-                if (!p.hasAudio())
-                {
-                    p.playbackReset(p.currentTime->get());
-                }
+                p.playbackReset(p.currentTime->get());
             }
             else
             {
@@ -528,14 +522,7 @@ namespace tl
                 p.mutex.state.currentTime = tmp;
                 p.mutex.clearRequests = true;
             }
-            {
-                std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
-                p.audioReset(tmp);
-            }
-            if (!p.hasAudio())
-            {
-                p.playbackReset(tmp);
-            }
+            p.resetPlaybackTime(tmp);
         }
     }
 
@@ -835,10 +822,7 @@ namespace tl
                 p.audioMutex.state.speed = actualSpeed;
                 p.audioReset(p.currentTime->get());
             }
-            if (!p.hasAudio())
-            {
-                p.playbackReset(p.currentTime->get());
-            }
+            p.playbackReset(p.currentTime->get());
         }
     }
 
@@ -916,7 +900,6 @@ namespace tl
             bool clearRequests = false;
             bool clearCache = false;
             CacheDir cacheDir = CacheDir::First;
-            PlayerCacheOptions cacheOptions;
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 state = p.mutex.state;
@@ -926,14 +909,8 @@ namespace tl
                 p.mutex.clearCache = false;
                 cacheDir = p.mutex.cacheDir;
             }
-            if (state != p.thread.state ||
-                clearRequests ||
-                clearCache ||
-                cacheDir != p.thread.cacheDir)
-            {
-                p.thread.state = state;
-                p.thread.cacheDir = cacheDir;
-            }
+            p.thread.state = state;
+            p.thread.cacheDir = cacheDir;
 
             // Clear requests.
             if (clearRequests)
@@ -974,10 +951,7 @@ namespace tl
                             p.audioMutex.state.muteTimeout = now + p.playerOptions.muteTimeout;
                             p.audioReset(p.currentTime->get());
                         }
-                        if (!p.hasAudio())
-                        {
-                            p.playbackReset(p.currentTime->get());
-                        }
+                        p.playbackReset(p.currentTime->get());
                     }
                 }
                 else

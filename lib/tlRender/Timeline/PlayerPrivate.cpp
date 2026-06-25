@@ -24,14 +24,7 @@ namespace tl
             out = tl::loop(out, range, &looped);
             if (looped)
             {
-                {
-                    std::unique_lock<std::mutex> lock(audioMutex.mutex);
-                    audioReset(out);
-                }
-                if (!hasAudio())
-                {
-                    playbackReset(out);
-                }
+                resetPlaybackTime(out);
             }
             break;
         }
@@ -87,10 +80,7 @@ namespace tl
                     audioMutex.state.playback = Playback::Forward;
                     audioReset(out);
                 }
-                if (!hasAudio())
-                {
-                    playbackReset(out);
-                }
+                playbackReset(out);
             }
             else if (out > range.end_time_inclusive() && Playback::Forward == playbackValue)
             {
@@ -108,10 +98,7 @@ namespace tl
                     audioMutex.state.playback = Playback::Reverse;
                     audioReset(out);
                 }
-                if (!hasAudio())
-                {
-                    playbackReset(out);
-                }
+                playbackReset(out);
             }
             break;
         }
@@ -505,6 +492,20 @@ namespace tl
         noAudio.start = time;
     }
 
+    void Player::Private::resetPlaybackTime(const OTIO_NS::RationalTime& time)
+    {
+        // Reset both playback clocks. The audio-sample clock (audioMutex) is
+        // read by _tick only when an audio device is open; the wall clock
+        // (noAudio) only when it is not. Resetting the inactive one is a
+        // harmless dead write, which lets the timing paths avoid branching on
+        // hasAudio() at every call site.
+        {
+            std::unique_lock<std::mutex> lock(audioMutex.mutex);
+            audioReset(time);
+        }
+        playbackReset(time);
+    }
+
     void Player::Private::log()
     {
         if (auto logSystem = this->logSystem.lock())
@@ -612,42 +613,5 @@ namespace tl
                 arg(cachedVideoFramesDisplay).
                 arg(cachedAudioFramesDisplay));
         }
-    }
-
-    bool Player::Private::PlaybackState::operator == (const PlaybackState& other) const
-    {
-        return
-            playback == other.playback &&
-            currentTime == other.currentTime &&
-            inOutRange == other.inOutRange &&
-            compare == other.compare &&
-            compareTime == other.compareTime &&
-            ioOptions == other.ioOptions &&
-            videoLayer == other.videoLayer &&
-            compareVideoLayers == other.compareVideoLayers &&
-            audioOffset == other.audioOffset &&
-            cacheOptions == other.cacheOptions;
-    }
-
-    bool Player::Private::PlaybackState::operator != (const PlaybackState& other) const
-    {
-        return !(*this == other);
-    }
-
-    bool Player::Private::AudioState::operator == (const AudioState& other) const
-    {
-        return
-            playback == other.playback &&
-            speed == other.speed &&
-            volume == other.volume &&
-            mute == other.mute &&
-            channelMute == other.channelMute &&
-            muteTimeout == other.muteTimeout &&
-            audioOffset == other.audioOffset;
-    }
-
-    bool Player::Private::AudioState::operator != (const AudioState& other) const
-    {
-        return !(*this == other);
     }
 }
