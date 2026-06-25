@@ -173,11 +173,6 @@ namespace tl
         void _requests();
         void _finishRequests();
 
-        std::shared_ptr<Audio> _padAudioToOneSecond(
-            const std::shared_ptr<Audio>&,
-            double seconds,
-            const OTIO_NS::TimeRange&);
-
         FTK_PRIVATE();
     };
 }

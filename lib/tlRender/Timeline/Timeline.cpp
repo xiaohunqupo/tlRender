@@ -686,37 +686,24 @@ namespace tl
     void Timeline::cancelRequests(const std::vector<uint64_t>& ids)
     {
         FTK_P();
+        auto cancel = [&ids](auto& requests)
+        {
+            auto i = requests.begin();
+            while (i != requests.end())
+            {
+                if (std::find(ids.begin(), ids.end(), (*i)->id) != ids.end())
+                {
+                    i = requests.erase(i);
+                }
+                else
+                {
+                    ++i;
+                }
+            }
+        };
         std::unique_lock<std::mutex> lock(p.mutex.mutex);
-        {
-            auto i = p.mutex.videoRequests.begin();
-            while (i != p.mutex.videoRequests.end())
-            {
-                const auto j = std::find(ids.begin(), ids.end(), (*i)->id);
-                if (j != ids.end())
-                {
-                    i = p.mutex.videoRequests.erase(i);
-                }
-                else
-                {
-                    ++i;
-                }
-            }
-        }
-        {
-            auto i = p.mutex.audioRequests.begin();
-            while (i != p.mutex.audioRequests.end())
-            {
-                const auto j = std::find(ids.begin(), ids.end(), (*i)->id);
-                if (j != ids.end())
-                {
-                    i = p.mutex.audioRequests.erase(i);
-                }
-                else
-                {
-                    ++i;
-                }
-            }
-        }
+        cancel(p.mutex.videoRequests);
+        cancel(p.mutex.audioRequests);
     }
 
     size_t Timeline::getObjectCount()
@@ -1123,28 +1110,7 @@ namespace tl
             }
             if (valid)
             {
-                VideoFrame frame;
-                if (!p.ioInfo.video.empty())
-                {
-                    frame.size = p.ioInfo.video.front().size;
-                }
-                frame.time = (*videoRequestIt)->time;
-                for (auto& j : (*videoRequestIt)->layerData)
-                {
-                    VideoLayer layer;
-                    if (j.image.valid())
-                    {
-                        layer.image = j.image.get().image;
-                    }
-                    if (j.imageB.valid())
-                    {
-                        layer.imageB = j.imageB.get().image;
-                    }
-                    layer.transition = j.transition;
-                    layer.transitionValue = j.transitionValue;
-                    frame.layers.push_back(layer);
-                }
-                (*videoRequestIt)->promise.set_value(frame);
+                (*videoRequestIt)->promise.set_value(p.videoFrame(**videoRequestIt));
                 videoRequestIt = p.thread.videoRequestsInProgress.erase(videoRequestIt);
                 continue;
             }
@@ -1165,28 +1131,7 @@ namespace tl
             }
             if (valid)
             {
-                AudioFrame frame;
-                frame.seconds = (*audioRequestIt)->seconds;
-                for (auto& j : (*audioRequestIt)->layerData)
-                {
-                    AudioLayer layer;
-                    if (j.audio.valid())
-                    {
-                        const auto audioData = j.audio.get();
-                        if (audioData.audio)
-                        {
-                            layer.audio = _padAudioToOneSecond(audioData.audio, j.seconds, j.timeRange);
-                        }
-                    }
-                    frame.layers.push_back(layer);
-                }
-                if (frame.layers.empty())
-                {
-                    auto audio = Audio::create(p.ioInfo.audio, p.ioInfo.audio.sampleRate);
-                    audio->zero();
-                    frame.layers.push_back({ audio });
-                }
-                (*audioRequestIt)->promise.set_value(frame);
+                (*audioRequestIt)->promise.set_value(p.audioFrame(**audioRequestIt));
                 audioRequestIt = p.thread.audioRequestsInProgress.erase(audioRequestIt);
                 continue;
             }
@@ -1218,55 +1163,78 @@ namespace tl
             p.thread.audioRequestsInProgress.clear();
             for (auto& request : videoRequests)
             {
-                VideoFrame frame;
-                frame.time = request->time;
-                for (auto& i : request->layerData)
-                {
-                    VideoLayer layer;
-                    if (i.image.valid())
-                    {
-                        layer.image = i.image.get().image;
-                    }
-                    if (i.imageB.valid())
-                    {
-                        layer.imageB = i.imageB.get().image;
-                    }
-                    layer.transition = i.transition;
-                    layer.transitionValue = i.transitionValue;
-                    frame.layers.push_back(layer);
-                }
-                request->promise.set_value(frame);
+                request->promise.set_value(p.videoFrame(*request));
             }
             for (auto& request : audioRequests)
             {
-                AudioFrame frame;
-                frame.seconds = request->seconds;
-                for (auto& i : request->layerData)
-                {
-                    AudioLayer layer;
-                    if (i.audio.valid())
-                    {
-                        layer.audio = i.audio.get().audio;
-                    }
-                    frame.layers.push_back(layer);
-                }
-                request->promise.set_value(frame);
+                request->promise.set_value(p.audioFrame(*request));
             }
         }
     }
 
-    std::shared_ptr<Audio> Timeline::_padAudioToOneSecond(
+    VideoFrame Timeline::Private::videoFrame(VideoRequest& request)
+    {
+        VideoFrame frame;
+        if (!ioInfo.video.empty())
+        {
+            frame.size = ioInfo.video.front().size;
+        }
+        frame.time = request.time;
+        for (auto& i : request.layerData)
+        {
+            VideoLayer layer;
+            if (i.image.valid())
+            {
+                layer.image = i.image.get().image;
+            }
+            if (i.imageB.valid())
+            {
+                layer.imageB = i.imageB.get().image;
+            }
+            layer.transition = i.transition;
+            layer.transitionValue = i.transitionValue;
+            frame.layers.push_back(layer);
+        }
+        return frame;
+    }
+
+    AudioFrame Timeline::Private::audioFrame(AudioRequest& request)
+    {
+        AudioFrame frame;
+        frame.seconds = request.seconds;
+        for (auto& i : request.layerData)
+        {
+            AudioLayer layer;
+            if (i.audio.valid())
+            {
+                const auto audioData = i.audio.get();
+                if (audioData.audio)
+                {
+                    layer.audio = padAudioToOneSecond(audioData.audio, i.seconds, i.timeRange);
+                }
+            }
+            frame.layers.push_back(layer);
+        }
+        if (frame.layers.empty())
+        {
+            auto audio = Audio::create(ioInfo.audio, ioInfo.audio.sampleRate);
+            audio->zero();
+            frame.layers.push_back({ audio });
+        }
+        return frame;
+    }
+
+    std::shared_ptr<Audio> Timeline::Private::padAudioToOneSecond(
         const std::shared_ptr<Audio>& audio,
         double seconds,
-        const OTIO_NS::TimeRange& timeRange)
+        const OTIO_NS::TimeRange& range)
     {
-        FTK_P();
         std::list<std::shared_ptr<Audio> > list;
-        const double s = seconds - p.timeRange.start_time().rescaled_to(1.0).value();
-        if (timeRange.start_time().value() > s)
+        const double s = seconds - timeRange.start_time().rescaled_to(1.0).value();
+        if (range.start_time().value() > s)
         {
             const OTIO_NS::RationalTime t =
-                timeRange.start_time() - OTIO_NS::RationalTime(s, 1.0);
+                range.start_time() - OTIO_NS::RationalTime(s, 1.0);
             const OTIO_NS::RationalTime t2 =
                 t.rescaled_to(audio->getInfo().sampleRate);
             auto silence = Audio::create(audio->getInfo(), t2.value());
@@ -1274,10 +1242,10 @@ namespace tl
             list.push_back(silence);
         }
         list.push_back(audio);
-        if (timeRange.end_time_exclusive().value() < s + 1.0)
+        if (range.end_time_exclusive().value() < s + 1.0)
         {
             const OTIO_NS::RationalTime t =
-                OTIO_NS::RationalTime(s + 1.0, 1.0) - timeRange.end_time_exclusive();
+                OTIO_NS::RationalTime(s + 1.0, 1.0) - range.end_time_exclusive();
             const OTIO_NS::RationalTime t2 =
                 t.rescaled_to(audio->getInfo().sampleRate);
             auto silence = Audio::create(audio->getInfo(), t2.value());

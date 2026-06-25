@@ -94,5 +94,16 @@ namespace tl
             std::chrono::steady_clock::time_point logTimer;
         };
         Thread thread;
+
+        // Build a finished frame from a request whose futures are ready.
+        // Calling these blocks on the layer futures via get(), so callers
+        // must ensure readiness (poll with wait_for, or accept the block at
+        // shutdown).
+        VideoFrame videoFrame(VideoRequest&);
+        AudioFrame audioFrame(AudioRequest&);
+        std::shared_ptr<Audio> padAudioToOneSecond(
+            const std::shared_ptr<Audio>&,
+            double seconds,
+            const OTIO_NS::TimeRange&);
     };
 }
