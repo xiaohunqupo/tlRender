@@ -845,9 +845,14 @@ namespace tl
             }
             else
             {
-                start = p.noAudio.start;
+                std::chrono::steady_clock::time_point playbackTimer;
+                {
+                    std::unique_lock<std::mutex> lock(p.noAudio.mutex);
+                    start = p.noAudio.start;
+                    playbackTimer = p.noAudio.playbackTimer;
+                }
                 const auto now = std::chrono::steady_clock::now();
-                const std::chrono::duration<double> diff = now - p.noAudio.playbackTimer;
+                const std::chrono::duration<double> diff = now - playbackTimer;
                 t = diff.count() * (p.speed->get() * p.speedMult->get()) / timelineSpeed;
             }
             if (Playback::Reverse == playback)

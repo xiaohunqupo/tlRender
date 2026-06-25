@@ -189,21 +189,17 @@ namespace tl
         };
         AudioThread audioThread;
 
-        // The wall clock used for timing when no audio device is open; read by
-        // the main thread in _tick and written by playbackReset().
-        //
-        // NOTE: intended to be main-thread-owned, but it is not quite. In the
-        // no-audio case the cache thread also writes these fields via
-        // playbackReset() from the stall re-sync path in _thread (where _tick
-        // is concurrently reading them), with no lock. The values written are
-        // always close to what is read, so a torn read only nudges one tick's
-        // timestamp, but it is a data race per the memory model. Pre-existing;
-        // a real fix would move that re-sync onto the main thread or guard
-        // these two fields.
+        // The wall clock used for timing when no audio device is open: read by
+        // the main thread in _tick, written by playbackReset(). Guarded by
+        // mutex because the cache thread also resets it from the stall re-sync
+        // path in _thread (the no-audio counterpart of audioReset, which guards
+        // the audio clock with audioMutex). Writes are rare, so the per-tick
+        // read lock is effectively uncontended.
         struct NoAudio
         {
             std::chrono::steady_clock::time_point playbackTimer;
             OTIO_NS::RationalTime start = invalidTime;
+            std::mutex mutex;
         };
         NoAudio noAudio;
     };
