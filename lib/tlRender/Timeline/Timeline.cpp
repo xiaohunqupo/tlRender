@@ -623,7 +623,7 @@ namespace tl
     {
         FTK_P();
         (p.requestId)++;
-        auto request = std::make_shared<Private::VideoRequest>();
+        auto request = std::make_shared<Private::PendingVideoRequest>();
         request->id = p.requestId;
         request->time = time;
         request->options = options;
@@ -656,7 +656,7 @@ namespace tl
     {
         FTK_P();
         (p.requestId)++;
-        auto request = std::make_shared<Private::AudioRequest>();
+        auto request = std::make_shared<Private::PendingAudioRequest>();
         request->id = p.requestId;
         request->seconds = seconds;
         request->options = options;
@@ -935,8 +935,8 @@ namespace tl
         FTK_P();
 
         // Gather requests.
-        std::list<std::shared_ptr<Private::VideoRequest> > newVideoRequests;
-        std::list<std::shared_ptr<Private::AudioRequest> > newAudioRequests;
+        std::list<std::shared_ptr<Private::PendingVideoRequest> > newVideoRequests;
+        std::list<std::shared_ptr<Private::PendingAudioRequest> > newAudioRequests;
         {
             std::unique_lock<std::mutex> lock(p.mutex.mutex);
             p.thread.cv.wait_for(
@@ -1143,8 +1143,8 @@ namespace tl
     {
         FTK_P();
         {
-            std::list<std::shared_ptr<Private::VideoRequest> > videoRequests;
-            std::list<std::shared_ptr<Private::AudioRequest> > audioRequests;
+            std::list<std::shared_ptr<Private::PendingVideoRequest> > videoRequests;
+            std::list<std::shared_ptr<Private::PendingAudioRequest> > audioRequests;
             {
                 std::unique_lock<std::mutex> lock(p.mutex.mutex);
                 p.mutex.stopped = true;
@@ -1172,7 +1172,7 @@ namespace tl
         }
     }
 
-    VideoFrame Timeline::Private::videoFrame(VideoRequest& request)
+    VideoFrame Timeline::Private::videoFrame(PendingVideoRequest& request)
     {
         VideoFrame frame;
         if (!ioInfo.video.empty())
@@ -1198,7 +1198,7 @@ namespace tl
         return frame;
     }
 
-    AudioFrame Timeline::Private::audioFrame(AudioRequest& request)
+    AudioFrame Timeline::Private::audioFrame(PendingAudioRequest& request)
     {
         AudioFrame frame;
         frame.seconds = request.seconds;

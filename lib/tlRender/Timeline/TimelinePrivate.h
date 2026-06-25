@@ -41,10 +41,14 @@ namespace tl
             Transition transition = Transition::None;
             float transitionValue = 0.F;
         };
-        struct VideoRequest
+        // The internal, in-flight record for a request: the promise the caller
+        // is waiting on plus the per-layer IO futures still being assembled.
+        // Distinct from the public tl::VideoRequest (id + future) handed back
+        // by getVideo(); this is the worker side of that handle.
+        struct PendingVideoRequest
         {
-            VideoRequest() {};
-            VideoRequest(VideoRequest&&) = default;
+            PendingVideoRequest() {};
+            PendingVideoRequest(PendingVideoRequest&&) = default;
 
             uint64_t id = 0;
             OTIO_NS::RationalTime time = invalidTime;
@@ -63,10 +67,10 @@ namespace tl
             OTIO_NS::TimeRange timeRange;
             std::future<AudioData> audio;
         };
-        struct AudioRequest
+        struct PendingAudioRequest
         {
-            AudioRequest() {};
-            AudioRequest(AudioRequest&&) = default;
+            PendingAudioRequest() {};
+            PendingAudioRequest(PendingAudioRequest&&) = default;
 
             uint64_t id = 0;
             double seconds = -1.0;
@@ -76,18 +80,28 @@ namespace tl
             std::vector<AudioLayerData> layerData;
         };
 
+        // Shared between the main thread and the request thread; every field
+        // is guarded by mutex. The request queues are filled by the main
+        // thread (getVideo/getAudio, cancelRequests) and drained by the
+        // request thread (_requests). stopped is set by the request thread at
+        // shutdown and read by the main thread to reject late requests.
         struct Mutex
         {
-            std::list<std::shared_ptr<VideoRequest> > videoRequests;
-            std::list<std::shared_ptr<AudioRequest> > audioRequests;
+            std::list<std::shared_ptr<PendingVideoRequest> > videoRequests;
+            std::list<std::shared_ptr<PendingAudioRequest> > audioRequests;
             bool stopped = false;
             std::mutex mutex;
         };
         Mutex mutex;
+        // Owned by the request thread; no locking. The in-progress lists hold
+        // requests whose IO futures are outstanding. thread and running are the
+        // exceptions: the main thread starts the thread (in _init) and clears
+        // running (in ~Timeline) to ask it to stop; running is atomic for that
+        // handoff.
         struct Thread
         {
-            std::list<std::shared_ptr<VideoRequest> > videoRequestsInProgress;
-            std::list<std::shared_ptr<AudioRequest> > audioRequestsInProgress;
+            std::list<std::shared_ptr<PendingVideoRequest> > videoRequestsInProgress;
+            std::list<std::shared_ptr<PendingAudioRequest> > audioRequestsInProgress;
             std::condition_variable cv;
             std::thread thread;
             std::atomic<bool> running;
@@ -99,8 +113,8 @@ namespace tl
         // Calling these blocks on the layer futures via get(), so callers
         // must ensure readiness (poll with wait_for, or accept the block at
         // shutdown).
-        VideoFrame videoFrame(VideoRequest&);
-        AudioFrame audioFrame(AudioRequest&);
+        VideoFrame videoFrame(PendingVideoRequest&);
+        AudioFrame audioFrame(PendingAudioRequest&);
         std::shared_ptr<Audio> padAudioToOneSecond(
             const std::shared_ptr<Audio>&,
             double seconds,

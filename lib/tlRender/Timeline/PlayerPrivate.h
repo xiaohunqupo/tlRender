@@ -94,6 +94,9 @@ namespace tl
 
         std::atomic<bool> running;
 
+        // A snapshot of the playback parameters the main thread publishes to
+        // the cache thread. Copied wholesale into Mutex::state under the lock,
+        // then lifted into Thread::state (the cache thread's working copy).
         struct PlaybackState
         {
             Playback playback = Playback::Stop;
@@ -108,6 +111,11 @@ namespace tl
             PlayerCacheOptions cacheOptions;
         };
 
+        // Shared between the main thread and the cache thread; every field is
+        // guarded by mutex. Main thread -> cache thread: state, the clear*
+        // flags, and cacheDir (written by the setters and _tick). Cache thread
+        // -> main thread: currentVideoFrame, currentAudioFrame, cacheInfo,
+        // which _tick reads back and publishes to the observers.
         struct Mutex
         {
             PlaybackState state;
@@ -121,6 +129,10 @@ namespace tl
         };
         Mutex mutex;
 
+        // Owned by the cache thread (_thread); no locking. state is its working
+        // copy of the last PlaybackState it observed through Mutex; the request
+        // and cache maps are its in-flight IO. thread is the handle: started in
+        // the constructor, joined by the main thread in the destructor.
         struct Thread
         {
             PlaybackState state;
@@ -134,6 +146,8 @@ namespace tl
         };
         Thread thread;
 
+        // The audio parameters the main thread publishes to the audio callback
+        // thread; copied wholesale into AudioMutex::state under the lock.
         struct AudioState
         {
             Playback playback = Playback::Stop;
@@ -145,6 +159,12 @@ namespace tl
             double audioOffset = 0.0;
         };
 
+        // Shared by three threads, all guarded by mutex: the main thread, the
+        // cache thread, and the audio callback thread. Main thread writes state
+        // (the setters) and, via audioReset, reset/start. Cache thread fills and
+        // evicts cache and can also reset (the stall re-sync). Audio callback
+        // reads state/cache/start, consumes reset, and writes frame back, which
+        // the main thread reads in _tick to drive the clock.
         struct AudioMutex
         {
             AudioState state;
@@ -156,6 +176,8 @@ namespace tl
         };
         AudioMutex audioMutex;
 
+        // Owned by the audio callback thread; no locking. The resampler, output
+        // buffer, and sample counters that only the callback touches.
         struct AudioThread
         {
             AudioInfo info;
@@ -167,6 +189,17 @@ namespace tl
         };
         AudioThread audioThread;
 
+        // The wall clock used for timing when no audio device is open; read by
+        // the main thread in _tick and written by playbackReset().
+        //
+        // NOTE: intended to be main-thread-owned, but it is not quite. In the
+        // no-audio case the cache thread also writes these fields via
+        // playbackReset() from the stall re-sync path in _thread (where _tick
+        // is concurrently reading them), with no lock. The values written are
+        // always close to what is read, so a torn read only nudges one tick's
+        // timestamp, but it is a data race per the memory model. Pre-existing;
+        // a real fix would move that re-sync onto the main thread or guard
+        // these two fields.
         struct NoAudio
         {
             std::chrono::steady_clock::time_point playbackTimer;
