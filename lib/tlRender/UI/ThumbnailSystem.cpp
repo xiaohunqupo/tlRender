@@ -41,6 +41,7 @@ namespace tl
         namespace
         {
             const size_t ioCacheMax   = 2;
+            const std::chrono::seconds ioCacheTimeout(3);
             const size_t infoCacheMax = 1000;
 
             std::string getInfoKey(
@@ -651,6 +652,7 @@ namespace tl
         {
             FTK_P();
             tl::IOOptions ioOptions;
+            auto ioCacheTimer = std::chrono::steady_clock::now();
             while (p.thumbnailThread.running)
             {
                 std::shared_ptr<Private::ThumbnailRequest> request;
@@ -670,6 +672,7 @@ namespace tl
                 }
                 if (request)
                 {
+                    ioCacheTimer = std::chrono::steady_clock::now();
                     if (request->options != ioOptions)
                     {
                         p.thumbnailThread.ioCache.clear();
@@ -822,6 +825,16 @@ namespace tl
                     std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
                     p.thumbnailMutex.cache.add(key, image, image ? image->getByteCount() : 0);
                 }
+                else if (p.thumbnailThread.ioCache.getCount() > 0 &&
+                    std::chrono::steady_clock::now() - ioCacheTimer > ioCacheTimeout)
+                {
+                    // Release cached readers (and the decode subprocesses they
+                    // keep alive) once this thread has gone idle. Otherwise a
+                    // file's IRead lingers until a different file's readers push
+                    // it out of the LRU cache, so closing a file leaves its
+                    // ffmpeg process running until the next file is opened.
+                    p.thumbnailThread.ioCache.clear();
+                }
             }
         }
 
@@ -949,6 +962,7 @@ namespace tl
         {
             FTK_P();
             tl::IOOptions ioOptions;
+            auto ioCacheTimer = std::chrono::steady_clock::now();
             while (p.waveformThread.running)
             {
                 std::shared_ptr<Private::WaveformRequest> request;
@@ -968,6 +982,7 @@ namespace tl
                 }
                 if (request)
                 {
+                    ioCacheTimer = std::chrono::steady_clock::now();
                     if (request->options != ioOptions)
                     {
                         p.waveformThread.ioCache.clear();
@@ -1026,6 +1041,14 @@ namespace tl
                         request->options);
                     std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
                     p.waveformMutex.cache.add(key, mesh, mesh ? mesh->getByteCount() : 0);
+                }
+                else if (p.waveformThread.ioCache.getCount() > 0 &&
+                    std::chrono::steady_clock::now() - ioCacheTimer > ioCacheTimeout)
+                {
+                    // Release cached readers (and the decode subprocesses they
+                    // keep alive) once this thread has gone idle; see the note in
+                    // _thumbnailRun().
+                    p.waveformThread.ioCache.clear();
                 }
             }
         }
