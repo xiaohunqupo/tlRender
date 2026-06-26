@@ -109,7 +109,7 @@ namespace tl
                     throw std::runtime_error(ftk::Format("{0}: \"{1}\"").arg(getErrorLabel(r)).arg(fileName));
                 }
                 _avCodecContext[_avStream] = avcodec_alloc_context3(avVideoCodec);
-                if (!_avCodecParameters[_avStream])
+                if (!_avCodecContext[_avStream])
                 {
                     throw std::runtime_error(ftk::Format("Cannot allocate context: \"{0}\"").arg(fileName));
                 }
@@ -413,15 +413,14 @@ namespace tl
             {
                 avcodec_parameters_free(&i.second);
             }
+            if (_avIOContext && _avIOContext->buffer)
+            {
+                av_free(_avIOContext->buffer);
+            }
             if (_avIOContext)
             {
                 avio_context_free(&_avIOContext);
             }
-            //! \bug Free'd by avio_context_free()?
-            //if (_avIOContextBuffer)
-            //{
-            //    av_free(_avIOContextBuffer);
-            //}
             if (_avFormatContext)
             {
                 avformat_close_input(&_avFormatContext);
