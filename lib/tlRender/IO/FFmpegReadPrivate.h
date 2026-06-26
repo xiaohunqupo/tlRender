@@ -71,6 +71,7 @@ namespace tl
         private:
             int _decode(const OTIO_NS::RationalTime& currentTime);
             void _copy(const std::shared_ptr<ftk::Image>&);
+            void _close();
 
             std::string _fileName;
             ReadOptions _options;
@@ -122,6 +123,7 @@ namespace tl
 
         private:
             int _decode(const OTIO_NS::RationalTime& currentTime);
+            void _close();
 
             std::string _fileName;
             ReadOptions _options;
