@@ -18,12 +18,6 @@
 #if defined(TLRENDER_USD)
 #include <tlRender/IO/USD.h>
 #endif // TLRENDER_USD
-#if defined(TLRENDER_WMF)
-#include <tlRender/IO/WMF.h>
-#endif // TLRENDER_WMF
-#if defined(TLRENDER_AVF)
-#include <tlRender/IO/AVF.h>
-#endif // TLRENDER_AVF
 
 #include <ftk/Core/Context.h>
 #include <ftk/Core/String.h>
@@ -53,13 +47,6 @@ namespace tl
 #if defined(TLRENDER_OIIO)
             _plugins.push_back(oiio::ReadPlugin::create(logSystem));
 #endif // TLRENDER_OIIO
-#if defined(TLRENDER_WMF)
-            // \todo WMF support is still a WIP.
-            //_plugins.push_back(wmf::ReadPlugin::create(logSystem));
-#endif // TLRENDER_WMF
-#if defined(TLRENDER_AVF)
-            _plugins.push_back(avf::ReadPlugin::create(logSystem));
-#endif // TLRENDER_AVF
 #if defined(TLRENDER_FFMPEG_CMD)
             _plugins.push_back(ffmpeg_cmd::ReadPlugin::create(logSystem));
 #endif // TLRENDER_FFMPEG_CMD
