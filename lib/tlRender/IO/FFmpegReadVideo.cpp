@@ -497,28 +497,11 @@ namespace tl
                     {
                         throw std::runtime_error(ftk::Format("Cannot allocate frame: \"{0}\"").arg(_fileName));
                     }
-                    //! \bug These fields need to be filled out for
-                    //! sws_scale_frame()?
                     _avFrame2->format = _avOutputPixelFormat;
                     _avFrame2->width = _info.size.w;
                     _avFrame2->height = _info.size.h;
                     _avFrame2->buf[0] = av_buffer_alloc(_info.getByteCount());
 
-                    /*_swsContext = sws_getContext(
-                        _avCodecParameters[_avStream]->width,
-                        _avCodecParameters[_avStream]->height,
-                        _avInputPixelFormat,
-                        _avCodecParameters[_avStream]->width,
-                        _avCodecParameters[_avStream]->height,
-                        _avOutputPixelFormat,
-                        swsScaleFlags,
-                        0,
-                        0,
-                        0);
-                    if (!_swsContext)
-                    {
-                        throw std::runtime_error(ftk::Format("Cannot get context: \"{0}\"").arg(_fileName));
-                    }*/
                     _swsContext = sws_alloc_context();
                     if (!_swsContext)
                     {

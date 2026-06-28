@@ -132,8 +132,10 @@ namespace tl
         private:
             static void _logCallback(void*, int, const char*, va_list);
 
-            //! \todo What is a better way to access the log system from the
-            //! FFmpeg callback?
+            // av_log_set_callback() installs a process-global C callback with
+            // no user-data parameter, so it can't be handed an instance
+            // pointer; a file-scope weak_ptr is the available way to reach the
+            // log system.
             static std::weak_ptr<ftk::LogSystem> _logSystemWeak;
 
             FTK_PRIVATE();

@@ -217,7 +217,7 @@ namespace tl
                     formatLog.push_back(ftk::Format("{0} ({1})").arg(avInputFormat->name).arg(avInputFormat->extensions));
                 }
             }
-            //! \bug Why aren't these in the list of input formats?
+            // These extensions need to be added manually:
             extensions[".m4v"] = FileType::Media;
             extensions[".mxf"] = FileType::Media;
             extensions[".wav"] = FileType::Media;

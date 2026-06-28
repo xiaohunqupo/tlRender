@@ -296,9 +296,27 @@ namespace tl
             case ftk::ImageType::YUV_420P_U16:
             case ftk::ImageType::YUV_422P_U16:
             case ftk::ImageType::YUV_444P_U16:
-                //! \bug How do we flip YUV data?
-                throw std::runtime_error(ftk::Format("Incompatible pixel type: \"{0}\"").arg(p.fileName));
+            {
+                // Flip each plane by its own height. Chroma is vertically
+                // subsampled (half height) only for 4:2:0; full height
+                // otherwise.
+                const bool halfChromaH =
+                    ftk::ImageType::YUV_420P_U8  == info.type ||
+                    ftk::ImageType::YUV_420P_U16 == info.type;
+                const int planeH[3] = {
+                    static_cast<int>(info.size.h),
+                    static_cast<int>(halfChromaH ? info.size.h / 2 : info.size.h),
+                    static_cast<int>(halfChromaH ? info.size.h / 2 : info.size.h) };
+                for (int i = 0; i < 3; ++i)
+                {
+                    if (p.avFrame2->data[i] && p.avFrame2->linesize[i])
+                    {
+                        p.avFrame2->data[i] += p.avFrame2->linesize[i] * (planeH[i] - 1);
+                        p.avFrame2->linesize[i] = -p.avFrame2->linesize[i];
+                    }
+                }
                 break;
+            }
             default: break;
             }
 

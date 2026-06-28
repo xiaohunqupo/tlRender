@@ -159,7 +159,6 @@ namespace tl
                                 {
                                     if (auto logSystem = _logSystem.lock())
                                     {
-                                        //! \todo How should this be handled?
                                         logSystem->print(
                                             "tl::ffmpeg::Read",
                                             e.what(),
@@ -174,7 +173,6 @@ namespace tl
                     {
                         if (auto logSystem = _logSystem.lock())
                         {
-                            //! \todo How should this be handled?
                             logSystem->print(
                                 "tl::ffmpeg::Read",
                                 e.what(),
