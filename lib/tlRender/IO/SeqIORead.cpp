@@ -70,7 +70,6 @@ namespace tl
                 }
                 catch (const std::exception& e)
                 {
-                    //! \todo How should this be handled?
                     if (auto logSystem = _logSystem.lock())
                     {
                         logSystem->print(
@@ -90,12 +89,10 @@ namespace tl
 
     ISeqRead::ISeqRead() :
         _p(new Private)
-    {
-    }
+    {}
 
     ISeqRead::~ISeqRead()
-    {
-    }
+    {}
 
     std::future<IOInfo> ISeqRead::getInfo()
     {
@@ -184,8 +181,7 @@ namespace tl
                     {
                         return
                             !_p->mutex.infoRequests.empty() ||
-                            !_p->mutex.videoRequests.empty() ||
-                            !_p->thread.videoRequestsInProgress.empty();
+                            !_p->mutex.videoRequests.empty();
                     }))
                 {
                     infoRequests = std::move(p.mutex.infoRequests);

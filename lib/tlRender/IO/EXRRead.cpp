@@ -435,11 +435,20 @@ namespace tl
                             for (size_t c = 0; c < channels; ++c)
                             {
                                 const ftk::V2I sampling(1, 1);
+                                // OpenEXR addresses pixels in absolute coordinates,
+                                // so the slice base must be biased by the window
+                                // origin (as the non-fast path does for the data
+                                // window). Without this, a non-zero display-window
+                                // origin shifts the image and writes past the end
+                                // of the buffer. In the fast path display == data.
                                 frameBuffer.insert(
                                     _layers[layer].channels[c],
                                     Imf::Slice(
                                         _layers[layer].pixelType,
-                                        reinterpret_cast<char*>(out.image->getData()) + (c * channelByteCount),
+                                        reinterpret_cast<char*>(out.image->getData())
+                                            - (displayWindow.min.y * scb)
+                                            - (displayWindow.min.x * cb)
+                                            + (c * channelByteCount),
                                         cb,
                                         scb,
                                         sampling.x,

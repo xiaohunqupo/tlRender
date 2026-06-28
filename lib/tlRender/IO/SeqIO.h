@@ -54,7 +54,12 @@ namespace tl
             const OTIO_NS::RationalTime&,
             const IOOptions&) = 0;
 
-        //! \bug This must be called in the sub-class destructor.
+        //! Stop and join the worker thread. This MUST be called from the
+        //! most-derived destructor: the worker calls the pure-virtual _getInfo()
+        //! and _readVideo(), so the thread must be joined while the derived
+        //! object is still alive. Joining from ~ISeqRead() would be too late --
+        //! the derived vtable and members are already gone, risking a
+        //! pure-virtual call or use-after-free.
         void _finish();
 
         int64_t _startFrame = 0;

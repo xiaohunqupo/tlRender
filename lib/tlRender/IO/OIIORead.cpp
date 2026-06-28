@@ -18,8 +18,9 @@ namespace tl
         {
             void oiioDiscardError()
             {
-                //! \bug If we don't get the error it will be automatically
-                //! printed to stderr?
+                // Retrieve and clear OIIO's pending global error. If left
+                // unretrieved, OIIO emits it to stderr later; we call this on
+                // the paths where we surface our own exception instead.
                 OIIO::geterror();
             }
         }
