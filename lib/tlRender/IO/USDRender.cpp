@@ -197,6 +197,17 @@ namespace tl
                 arg(glRenderer).
                 arg(glVersion));*/
 
+            if (!p.sdlWindow || !p.sdlGLContext)
+            {
+                logSystem->print(
+                    "tl::usd::Render",
+                    "OpenGL context unavailable; USD rendering is disabled.",
+                    ftk::LogType::Error);
+                std::unique_lock<std::mutex> lock(p.mutex.mutex);
+                p.mutex.stopped = true;
+                return;
+            }
+
             SDL_GL_MakeCurrent(p.sdlWindow, nullptr);
 
             p.thread.logTimer = std::chrono::steady_clock::now();
@@ -219,6 +230,7 @@ namespace tl
                     }
                 });
             
+            try
             {
                 std::vector<std::string> renderers;
                 for (const auto& id : UsdImagingGLEngine::GetRendererPlugins())
@@ -231,6 +243,13 @@ namespace tl
                         "\n"
                         "    * Renderers: {0}").
                     arg(ftk::join(renderers, ", ")));
+            }
+            catch (const std::exception& e)
+            {
+                logSystem->print(
+                    "tl::usd::Render",
+                    e.what(),
+                    ftk::LogType::Error);
             }
         }
 
@@ -574,17 +593,34 @@ namespace tl
                 p.thread.diskCache.setMax(diskCacheByteCount);
                 if (diskCacheByteCount > 0 && !p.thread.tmpDir)
                 {
-                    p.thread.tmpDir.reset(new ftk::TmpDir);
-                    if (auto logSystem = p.logSystem.lock())
+                    try
                     {
-                        logSystem->print(
-                            "tl::usd::Render",
-                            ftk::Format(
-                                "\n"
-                                "    * Temp directory: {0}\n"
-                                "    * Disk cache: {1}GB").
-                            arg(p.thread.tmpDir->getPath()).
-                            arg(diskCacheByteCount / ftk::gigabyte));
+                        p.thread.tmpDir.reset(new ftk::TmpDir);
+                        if (auto logSystem = p.logSystem.lock())
+                        {
+                            logSystem->print(
+                                "tl::usd::Render",
+                                ftk::Format(
+                                    "\n"
+                                    "    * Temp directory: {0}\n"
+                                    "    * Disk cache: {1}GB").
+                                arg(p.thread.tmpDir->getPath()).
+                                arg(diskCacheByteCount / ftk::gigabyte));
+                        }
+                    }
+                    catch (const std::exception& e)
+                    {
+                        // Couldn't create the temp dir: disable the disk cache
+                        // for this run rather than letting it escape the thread.
+                        diskCacheByteCount = 0;
+                        p.thread.diskCache.setMax(0);
+                        if (auto logSystem = p.logSystem.lock())
+                        {
+                            logSystem->print(
+                                "tl::usd::Render",
+                                e.what(),
+                                ftk::LogType::Error);
+                        }
                     }
                 }
                 else if (0 == diskCacheByteCount && p.thread.tmpDir)
@@ -606,45 +642,60 @@ namespace tl
                 }
                 if (infoRequest)
                 {
-                    const std::string fileName = infoRequest->path.getFileName(true);
-                    Private::StageCacheItem stageCacheItem;
-                    if (!p.thread.stageCache.get(fileName, stageCacheItem))
-                    {
-                        _open(fileName, stageCacheItem.stage, stageCacheItem.engine);
-                        p.thread.stageCache.add(fileName, stageCacheItem);
-                    }
                     IOInfo info;
-                    if (stageCacheItem.stage)
+                    try
                     {
-                        const double startTimeCode = stageCacheItem.stage->GetStartTimeCode();
-                        const double endTimeCode = stageCacheItem.stage->GetEndTimeCode();
-                        const double timeCodesPerSecond = stageCacheItem.stage->GetTimeCodesPerSecond();
-                        GfCamera gfCamera;
-                        auto camera = getCamera(stageCacheItem.stage, cameraName);
-                        if (camera)
+                        const std::string fileName = infoRequest->path.getFileName(true);
+                        Private::StageCacheItem stageCacheItem;
+                        if (!p.thread.stageCache.get(fileName, stageCacheItem))
                         {
-                            //std::cout << fileName << " camera: " <<
-                            //    camera.GetPath().GetAsToken().GetText() << std::endl;
-                            gfCamera = camera.GetCamera(startTimeCode);
+                            _open(fileName, stageCacheItem.stage, stageCacheItem.engine);
+                            p.thread.stageCache.add(fileName, stageCacheItem);
                         }
-                        else
+                        if (stageCacheItem.stage)
                         {
-                            gfCamera = getCameraToFrameStage(stageCacheItem.stage, startTimeCode, purposes);
+                            const double startTimeCode = stageCacheItem.stage->GetStartTimeCode();
+                            const double endTimeCode = stageCacheItem.stage->GetEndTimeCode();
+                            const double timeCodesPerSecond = stageCacheItem.stage->GetTimeCodesPerSecond();
+                            GfCamera gfCamera;
+                            auto camera = getCamera(stageCacheItem.stage, cameraName);
+                            if (camera)
+                            {
+                                //std::cout << fileName << " camera: " <<
+                                //    camera.GetPath().GetAsToken().GetText() << std::endl;
+                                gfCamera = camera.GetCamera(startTimeCode);
+                            }
+                            else
+                            {
+                                gfCamera = getCameraToFrameStage(stageCacheItem.stage, startTimeCode, purposes);
+                            }
+                            float aspectRatio = gfCamera.GetAspectRatio();
+                            if (GfIsClose(aspectRatio, 0.F, 1e-4))
+                            {
+                                aspectRatio = 1.F;
+                            }
+                            info.video.push_back(ftk::ImageInfo(
+                                renderWidth,
+                                renderWidth / aspectRatio,
+                                ftk::ImageType::RGBA_F16));
+                            info.videoTime = OTIO_NS::TimeRange::range_from_start_end_time_inclusive(
+                                OTIO_NS::RationalTime(startTimeCode, timeCodesPerSecond),
+                                OTIO_NS::RationalTime(endTimeCode, timeCodesPerSecond));
+                            //std::cout << fileName << " range: " << info.videoTime << std::endl;
                         }
-                        float aspectRatio = gfCamera.GetAspectRatio();
-                        if (GfIsClose(aspectRatio, 0.F, 1e-4))
-                        {
-                            aspectRatio = 1.F;
-                        }
-                        info.video.push_back(ftk::ImageInfo(
-                            renderWidth,
-                            renderWidth / aspectRatio,
-                            ftk::ImageType::RGBA_F16));
-                        info.videoTime = OTIO_NS::TimeRange::range_from_start_end_time_inclusive(
-                            OTIO_NS::RationalTime(startTimeCode, timeCodesPerSecond),
-                            OTIO_NS::RationalTime(endTimeCode, timeCodesPerSecond));
-                        //std::cout << fileName << " range: " << info.videoTime << std::endl;
                     }
+                    catch (const std::exception& e)
+                    {
+                        if (auto logSystem = p.logSystem.lock())
+                        {
+                            const std::string id = ftk::Format("tl::usd::Render ({0}: {1})").
+                                arg(__FILE__).
+                                arg(__LINE__);
+                            logSystem->print(id, e.what(), ftk::LogType::Error);
+                        }
+                    }
+                    // Always fulfil the promise so the caller never hangs, even
+                    // when _open()/camera framing throws on a malformed stage.
                     infoRequest->promise.set_value(info);
                 }
 
@@ -964,4 +1015,3 @@ namespace tl
         }
     }
 }
-
