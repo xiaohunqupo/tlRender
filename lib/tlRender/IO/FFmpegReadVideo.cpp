@@ -9,7 +9,6 @@ extern "C"
 {
 #include <libavutil/imgutils.h>
 #include <libavutil/opt.h>
-
 } // extern "C"
 
 namespace tl
@@ -427,17 +426,14 @@ namespace tl
             {
                 avcodec_parameters_free(&i.second);
             }
-            if (_avIOContext && _avIOContext->buffer)
-            {
-                av_free(_avIOContext->buffer);
-            }
-            if (_avIOContext)
-            {
-                avio_context_free(&_avIOContext);
-            }
             if (_avFormatContext)
             {
                 avformat_close_input(&_avFormatContext);
+            }
+            if (_avIOContext)
+            {
+                av_freep(&_avIOContext->buffer);
+                avio_context_free(&_avIOContext);
             }
         }
 
