@@ -10,7 +10,9 @@
 #include <ftk/Core/Context.h>
 #include <ftk/Core/FileIO.h>
 
+#include <algorithm>
 #include <array>
+#include <cmath>
 #include <sstream>
 
 namespace tl
@@ -28,6 +30,7 @@ namespace tl
 
         void FFmpegTest::run()
         {
+            _convert();
             _io();
         }
 
@@ -208,6 +211,157 @@ namespace tl
                         }
                     }
                 }
+            }
+        }
+
+        void FFmpegTest::_convert()
+        {
+            // Round-trip a known color image through the writer and back through
+            // the reader with YUV->RGB conversion forced ON, then check pixels.
+            //
+            // The pre-existing _io() test writes a *zeroed* (black) image and
+            // only asserts size and tags -- black survives every color bug, so
+            // it cannot catch a broken conversion. This test paints vertical
+            // color stripes (invariant under the reader's y-mirror) and verifies
+            // each stripe's center survives the round-trip. The tolerance is
+            // deliberately loose: it sits far above codec + colorspace rounding
+            // on a flat stripe interior, but far below a gross failure such as
+            // black output or a saturated channel. It is a regression guard for
+            // the conversion path, not a colorimetric assertion.
+            auto readSystem = _context->getSystem<ReadSystem>();
+            auto readPlugin = readSystem->getPlugin<ffmpeg::ReadPlugin>();
+            auto writeSystem = _context->getSystem<WriteSystem>();
+            auto writePlugin = writeSystem->getPlugin<ffmpeg::WritePlugin>();
+
+            // Expected stripe colors, full-range RGB (16-bit). Primaries near
+            // saturation plus near-black and near-white exercise the matrix and
+            // the limited/full range handling.
+            const std::array<std::array<uint16_t, 3>, 6> stripes =
+            {{
+                {{ 60000,  2000,  2000 }},  // red
+                {{  2000, 60000,  2000 }},  // green
+                {{  2000,  2000, 60000 }},  // blue
+                {{ 32768, 32768, 32768 }},  // mid gray
+                {{  4000,  4000,  4000 }},  // near black
+                {{ 61000, 61000, 61000 }}   // near white
+            }};
+
+            const ftk::Size2I size(360, 240);
+            const int stripeW = size.w / static_cast<int>(stripes.size());
+
+            const auto imageInfo = ftk::ImageInfo(size, ftk::ImageType::RGB_U16);
+            if (!writePlugin->getInfo(imageInfo).isValid())
+            {
+                _print("_convert: writer does not support RGB_U16; skipping");
+                return;
+            }
+            auto image = ftk::Image::create(imageInfo);
+            {
+                uint16_t* p = reinterpret_cast<uint16_t*>(image->getData());
+                for (int y = 0; y < size.h; ++y)
+                {
+                    for (int x = 0; x < size.w; ++x)
+                    {
+                        const size_t s = std::min<size_t>(
+                            x / stripeW, stripes.size() - 1);
+                        *p++ = stripes[s][0];
+                        *p++ = stripes[s][1];
+                        *p++ = stripes[s][2];
+                    }
+                }
+            }
+
+            // Sample a pixel as normalized [0,1] RGB, tolerating whatever bit
+            // depth the conversion produced (8- or 16-bit RGB).
+            auto sample = [](
+                const std::shared_ptr<ftk::Image>& img,
+                int x, int y) -> std::array<float, 3>
+            {
+                const int w = img->getSize().w;
+                const uint8_t* const d = img->getData();
+                std::array<float, 3> out = {{ 0.f, 0.f, 0.f }};
+                switch (img->getInfo().type)
+                {
+                case ftk::ImageType::RGB_U16:
+                {
+                    const uint16_t* const px =
+                        reinterpret_cast<const uint16_t*>(d) +
+                        (static_cast<size_t>(y) * w + x) * 3;
+                    for (int c = 0; c < 3; ++c) out[c] = px[c] / 65535.f;
+                    break;
+                }
+                case ftk::ImageType::RGB_U8:
+                {
+                    const uint8_t* const px =
+                        d + (static_cast<size_t>(y) * w + x) * 3;
+                    for (int c = 0; c < 3; ++c) out[c] = px[c] / 255.f;
+                    break;
+                }
+                default: break;
+                }
+                return out;
+            };
+
+            const ftk::Path path("FFmpegConvertTest.mov");
+            try
+            {
+                IOInfo info;
+                info.video.push_back(imageInfo);
+                info.videoTime = OTIO_NS::TimeRange(
+                    OTIO_NS::RationalTime(0.0, 24.0),
+                    OTIO_NS::RationalTime(1.0, 24.0));
+                {
+                    auto write = writePlugin->write(path, info, IOOptions());
+                    write->writeVideo(OTIO_NS::RationalTime(0.0, 24.0), image);
+                }
+
+                IOOptions readOptions;
+                readOptions["FFmpeg/YUVToRGB"] = "1";
+                auto read = readPlugin->read(path, readOptions);
+                const auto ioInfo = read->getInfo().get();
+                FTK_ASSERT(!ioInfo.video.empty());
+                const auto videoData =
+                    read->readVideo(OTIO_NS::RationalTime(0.0, 24.0)).get();
+                FTK_ASSERT(videoData.image);
+
+                const ftk::ImageType type = videoData.image->getInfo().type;
+                if (type != ftk::ImageType::RGB_U16 &&
+                    type != ftk::ImageType::RGB_U8)
+                {
+                    _print("_convert: unexpected output type; skipping pixel check");
+                    return;
+                }
+
+                const int yMid = videoData.image->getSize().h / 2;
+                const float tolerance = 0.12f; // ~8000/65535
+                for (size_t i = 0; i < stripes.size(); ++i)
+                {
+                    const int xMid =
+                        static_cast<int>(i) * stripeW + stripeW / 2;
+                    const auto got = sample(videoData.image, xMid, yMid);
+                    const std::array<float, 3> want =
+                    {{
+                        stripes[i][0] / 65535.f,
+                        stripes[i][1] / 65535.f,
+                        stripes[i][2] / 65535.f
+                    }};
+                    for (int c = 0; c < 3; ++c)
+                    {
+                        if (std::fabs(got[c] - want[c]) > tolerance)
+                        {
+                            std::stringstream ss;
+                            ss << "Color conversion mismatch, stripe " << i <<
+                                " channel " << c << ": expected " << want[c] <<
+                                " got " << got[c];
+                            _error(ss.str());
+                        }
+                        FTK_ASSERT(std::fabs(got[c] - want[c]) <= tolerance);
+                    }
+                }
+            }
+            catch (const std::exception& e)
+            {
+                _error(e.what());
             }
         }
     }

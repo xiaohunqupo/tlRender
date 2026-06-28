@@ -9,6 +9,7 @@ extern "C"
 {
 #include <libavutil/imgutils.h>
 #include <libavutil/opt.h>
+
 } // extern "C"
 
 namespace tl
@@ -278,6 +279,16 @@ namespace tl
                     {
                         _info.videoLevels = ftk::VideoLevels::LegalRange;
                     }
+                    const bool convertedToRGB =
+                        _avInputPixelFormat != _avOutputPixelFormat &&
+                        (AV_PIX_FMT_RGB24  == _avOutputPixelFormat ||
+                         AV_PIX_FMT_RGB48  == _avOutputPixelFormat ||
+                         AV_PIX_FMT_RGBA   == _avOutputPixelFormat ||
+                         AV_PIX_FMT_RGBA64 == _avOutputPixelFormat);
+                    if (convertedToRGB)
+                    {
+                        _info.videoLevels = ftk::VideoLevels::FullRange;
+                    }
                     switch (_avCodecParameters[_avStream]->color_space)
                     {
                     case AVCOL_SPC_BT2020_NCL:
@@ -527,42 +538,6 @@ namespace tl
                     {
                         throw std::runtime_error(ftk::Format("Cannot initialize sws context: \"{0}\"").arg(_fileName));
                     }
-
-                    const int* inTable    = nullptr;
-                    int        inFull     = 0;
-                    const int* outTable   = nullptr;
-                    int        outFull    = 0;
-                    int        brightness = 0;
-                    int        contrast   = 0;
-                    int        saturation = 0;
-
-                    r = sws_getColorspaceDetails(
-                        _swsContext,
-                        (int**)&inTable,
-                        &inFull,
-                        (int**)&outTable,
-                        &outFull,
-                        &brightness,
-                        &contrast,
-                        &saturation);
-
-                    AVColorSpace colorSpace = _avCodecParameters[_avStream]->color_space;
-                    if (AVCOL_SPC_UNSPECIFIED == colorSpace)
-                    {
-                        colorSpace = AVCOL_SPC_BT709;
-                    }
-                    inFull = 1;
-                    outFull = 1;
-
-                    r = sws_setColorspaceDetails(
-                        _swsContext,
-                        sws_getCoefficients(colorSpace),
-                        inFull,
-                        sws_getCoefficients(AVCOL_SPC_BT709),
-                        outFull,
-                        brightness,
-                        contrast,
-                        saturation);
                 }
             }
         }
@@ -807,14 +782,14 @@ namespace tl
                     w,
                     h,
                     1);
-                /*sws_scale(
-                    _swsContext,
-                    (uint8_t const* const*)_avFrame->data,
-                    _avFrame->linesize,
-                    0,
-                    _avFrame->height,
-                    _avFrame2->data,
-                    _avFrame2->linesize);*/
+                _avFrame->color_range =
+                    (AVCOL_RANGE_JPEG == _avCodecContext[_avStream]->color_range)
+                    ? AVCOL_RANGE_JPEG
+                    : AVCOL_RANGE_MPEG;
+                _avFrame->colorspace =
+                    (AVCOL_SPC_BT2020_NCL == _avCodecParameters[_avStream]->color_space)
+                    ? AVCOL_SPC_BT2020_NCL
+                    : AVCOL_SPC_BT709;
                 sws_scale_frame(_swsContext, _avFrame2, _avFrame);
             }
         }
