@@ -61,7 +61,7 @@ set(FFmpeg_CONFIGURE_ARGS
     --disable-programs
     --disable-doc
     --disable-avfilter
-    --disable-hwaccels
+    --enable-hwaccels
     --disable-devices
     --disable-filters
     --disable-alsa
@@ -103,6 +103,17 @@ set(FFmpeg_CONFIGURE_ARGS
     ${FFmpeg_CXXFLAGS}
     ${FFmpeg_OBJCFLAGS}
     ${FFmpeg_LDFLAGS})
+# Enable platform hardware decoders. FFmpeg's configure is last-wins, so these
+# override the --disable-* flags above only on the matching platform (e.g. the
+# --disable-videotoolbox above stays in effect on Windows).
+if(APPLE)
+    list(APPEND FFmpeg_CONFIGURE_ARGS
+        --enable-videotoolbox)
+elseif(WIN32)
+    list(APPEND FFmpeg_CONFIGURE_ARGS
+        --enable-d3d11va
+        --enable-dxva2)
+endif()
 if(TLRENDER_FFMPEG_MINIMAL)
     list(APPEND FFmpeg_CONFIGURE_ARGS
         --disable-decoders

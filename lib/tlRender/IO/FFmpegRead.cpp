@@ -74,6 +74,12 @@ namespace tl
                 std::stringstream ss(i->second);
                 ss >> p.options.yuvToRGBConversion;
             }
+            i = options.find("FFmpeg/HWAccel");
+            if (i != options.end())
+            {
+                std::stringstream ss(i->second);
+                ss >> p.options.hwAccel;
+            }
             i = options.find("FFmpeg/AudioChannelCount");
             if (i != options.end())
             {
@@ -126,7 +132,8 @@ namespace tl
                         p.readVideo = std::make_shared<ReadVideo>(
                             path.hasProtocol() ? path.get() : path.getFileName(true),
                             _mem,
-                            p.options);
+                            p.options,
+                            _logSystem.lock());
                         const auto& videoInfo = p.readVideo->getInfo();
                         if (videoInfo.isValid())
                         {

@@ -5,6 +5,8 @@
 
 #include <tlRender/IO/FFmpegPrivate.h>
 
+#include <ftk/Core/LogSystem.h>
+
 extern "C"
 {
 #include <libavcodec/avcodec.h>
@@ -39,6 +41,7 @@ namespace tl
         struct ReadOptions
         {
             bool yuvToRGBConversion = false;
+            bool hwAccel = false;
             AudioInfo audioConvertInfo;
             size_t threadCount = Options().threadCount;
             size_t requestTimeout = 5;
@@ -52,7 +55,8 @@ namespace tl
             ReadVideo(
                 const std::string& fileName,
                 const std::vector<ftk::MemFile>& memory,
-                const ReadOptions& options);
+                const ReadOptions& options,
+                const std::shared_ptr<ftk::LogSystem>& logSystem);
 
             ~ReadVideo();
 
@@ -70,7 +74,11 @@ namespace tl
 
         private:
             int _decode(const OTIO_NS::RationalTime& currentTime);
-            void _copy(const std::shared_ptr<ftk::Image>&);
+            void _copy(const std::shared_ptr<ftk::Image>&, AVFrame* frame);
+            void _initHwAccel(const AVCodec*);
+            void _initSws(AVPixelFormat srcFormat);
+            static AVPixelFormat _getHwFormat(AVCodecContext*, const AVPixelFormat*);
+            void _log(const std::string&, ftk::LogType = ftk::LogType::Message) const;
             void _close();
 
             std::string _fileName;
@@ -92,6 +100,12 @@ namespace tl
             AVPixelFormat _avInputPixelFormat = AV_PIX_FMT_NONE;
             AVPixelFormat _avOutputPixelFormat = AV_PIX_FMT_NONE;
             SwsContext* _swsContext = nullptr;
+            AVBufferRef* _hwDeviceContext = nullptr;
+            AVPixelFormat _hwPixelFormat = AV_PIX_FMT_NONE;
+            AVFrame* _swFrame = nullptr;
+            bool _hwAccel = false;
+            bool _hwLogged = false;
+            std::weak_ptr<ftk::LogSystem> _logSystem;
             std::list<std::shared_ptr<ftk::Image> > _buffer;
             bool _eof = false;
         };

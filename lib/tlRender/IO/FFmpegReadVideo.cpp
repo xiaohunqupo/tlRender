@@ -4,11 +4,14 @@
 #include <tlRender/IO/FFmpegReadPrivate.h>
 
 #include <ftk/Core/Format.h>
+#include <ftk/Core/LogSystem.h>
 
 extern "C"
 {
+#include <libavutil/hwcontext.h>
 #include <libavutil/imgutils.h>
 #include <libavutil/opt.h>
+#include <libavutil/pixdesc.h>
 
 } // extern "C"
 
@@ -19,9 +22,11 @@ namespace tl
         ReadVideo::ReadVideo(
             const std::string& fileName,
             const std::vector<ftk::MemFile>& memory,
-            const ReadOptions& options) :
+            const ReadOptions& options,
+            const std::shared_ptr<ftk::LogSystem>& logSystem) :
             _fileName(fileName),
-            _options(options)
+            _options(options),
+            _logSystem(logSystem)
         {
             try
             {
@@ -122,6 +127,12 @@ namespace tl
                     }
                     _avCodecContext[_avStream]->thread_count = options.threadCount;
                     _avCodecContext[_avStream]->thread_type = FF_THREAD_FRAME;
+                    if (options.hwAccel)
+                    {
+                        // Attempt hardware decode. On any failure this is a no-op
+                        // and decoding stays on the software path.
+                        _initHwAccel(avVideoCodec);
+                    }
                     r = avcodec_open2(_avCodecContext[_avStream], avVideoCodec, 0);
                     if (r < 0)
                     {
@@ -274,6 +285,21 @@ namespace tl
                             _info.type = ftk::ImageType::YUV_420P_U8;
                         }
                         break;
+                    }
+                    if (_hwAccel)
+                    {
+                        // Hardware frames download as NV12 (8-bit) or P010 (>8-bit).
+                        // They are handed to the display shader as semi-planar YUV
+                        // with no colour conversion -- the shader performs YUV->RGB
+                        // exactly as for software-decoded YUV, so hardware and
+                        // software decoding match, and the cache keeps the smaller
+                        // YUV footprint. _avOutputPixelFormat doubles as the expected
+                        // download format and the sws fallback target (see _copy()).
+                        const AVPixFmtDescriptor* desc =
+                            av_pix_fmt_desc_get(_avInputPixelFormat);
+                        const bool gt8 = desc && desc->comp[0].depth > 8;
+                        _avOutputPixelFormat = gt8 ? AV_PIX_FMT_P010LE : AV_PIX_FMT_NV12;
+                        _info.type = gt8 ? ftk::ImageType::YUV_420SP_U16 : ftk::ImageType::YUV_420SP_U8;
                     }
                     if (_avCodecContext[_avStream]->color_range != AVCOL_RANGE_JPEG)
                     {
@@ -429,6 +455,10 @@ namespace tl
             {
                 av_frame_free(&_avFrame);
             }
+            if (_swFrame)
+            {
+                av_frame_free(&_swFrame);
+            }
             for (auto i : _avCodecContext)
             {
                 avcodec_free_context(&i.second);
@@ -445,6 +475,10 @@ namespace tl
             {
                 av_freep(&_avIOContext->buffer);
                 avio_context_free(&_avIOContext);
+            }
+            if (_hwDeviceContext)
+            {
+                av_buffer_unref(&_hwDeviceContext);
             }
         }
 
@@ -502,26 +536,152 @@ namespace tl
                     _avFrame2->height = _info.size.h;
                     _avFrame2->buf[0] = av_buffer_alloc(_info.getByteCount());
 
-                    _swsContext = sws_alloc_context();
-                    if (!_swsContext)
+                    if (_hwAccel)
                     {
-                        throw std::runtime_error(ftk::Format("Cannot allocate context: \"{0}\"").arg(_fileName));
+                        _swFrame = av_frame_alloc();
+                        if (!_swFrame)
+                        {
+                            throw std::runtime_error(ftk::Format("Cannot allocate frame: \"{0}\"").arg(_fileName));
+                        }
+                        // The scaler is created lazily in _copy(), once the real
+                        // source format is known (the hardware download format, or
+                        // the decoder's software-fallback format).
                     }
-                    av_opt_set_defaults(_swsContext);
-                    int r = av_opt_set_int(_swsContext, "srcw", _avCodecParameters[_avStream]->width, AV_OPT_SEARCH_CHILDREN);
-                    r = av_opt_set_int(_swsContext, "srch", _avCodecParameters[_avStream]->height, AV_OPT_SEARCH_CHILDREN);
-                    r = av_opt_set_int(_swsContext, "src_format", _avInputPixelFormat, AV_OPT_SEARCH_CHILDREN);
-                    r = av_opt_set_int(_swsContext, "dstw", _avCodecParameters[_avStream]->width, AV_OPT_SEARCH_CHILDREN);
-                    r = av_opt_set_int(_swsContext, "dsth", _avCodecParameters[_avStream]->height, AV_OPT_SEARCH_CHILDREN);
-                    r = av_opt_set_int(_swsContext, "dst_format", _avOutputPixelFormat, AV_OPT_SEARCH_CHILDREN);
-                    r = av_opt_set_int(_swsContext, "sws_flags", swsScaleFlags, AV_OPT_SEARCH_CHILDREN);
-                    r = av_opt_set_int(_swsContext, "threads", _options.threadCount, AV_OPT_SEARCH_CHILDREN);
-                    r = sws_init_context(_swsContext, nullptr, nullptr);
-                    if (r < 0)
+                    else
                     {
-                        throw std::runtime_error(ftk::Format("Cannot initialize sws context: \"{0}\"").arg(_fileName));
+                        _initSws(_avInputPixelFormat);
                     }
                 }
+            }
+        }
+
+        void ReadVideo::_log(const std::string& message, ftk::LogType type) const
+        {
+            if (auto logSystem = _logSystem.lock())
+            {
+                logSystem->print("tl::ffmpeg::ReadVideo", message, type);
+            }
+        }
+
+        AVPixelFormat ReadVideo::_getHwFormat(
+            AVCodecContext* context,
+            const AVPixelFormat* formats)
+        {
+            auto self = static_cast<ReadVideo*>(context->opaque);
+            for (const AVPixelFormat* p = formats; *p != AV_PIX_FMT_NONE; ++p)
+            {
+                if (*p == self->_hwPixelFormat)
+                {
+                    return *p;
+                }
+            }
+            // The hardware format was not offered for this stream; let the decoder
+            // fall back to a software format. _decode() detects this per frame (the
+            // frame format will not match _hwPixelFormat, so no download happens)
+            // and _copy() builds the scaler from whatever format actually arrives.
+            return formats[0];
+        }
+
+        void ReadVideo::_initHwAccel(const AVCodec* codec)
+        {
+            // The hardware path outputs 4:2:0 NV12/P010 with limited-range YUV
+            // colour handling. For sources it would not reproduce faithfully --
+            // full-range, or chroma subsampling other than 4:2:0 -- stay on the
+            // software decoder so hardware decoding is always a faithful match
+            // (it silently falls back rather than altering the image).
+            const AVPixelFormat inputFormat =
+                static_cast<AVPixelFormat>(_avCodecParameters[_avStream]->format);
+            const AVPixFmtDescriptor* inputDesc = av_pix_fmt_desc_get(inputFormat);
+            const bool is420 = inputDesc &&
+                1 == inputDesc->log2_chroma_w && 1 == inputDesc->log2_chroma_h;
+            if (AVCOL_RANGE_JPEG == _avCodecParameters[_avStream]->color_range)
+            {
+                _log(
+                    ftk::Format("Hardware decoding skipped for a full-range source; using software decoding: \"{0}\"").arg(_fileName),
+                    ftk::LogType::Warning);
+                return;
+            }
+            if (!is420)
+            {
+                _log(
+                    ftk::Format("Hardware decoding skipped for a non-4:2:0 source; using software decoding: \"{0}\"").arg(_fileName),
+                    ftk::LogType::Warning);
+                return;
+            }
+#if defined(__APPLE__)
+            const AVHWDeviceType type = AV_HWDEVICE_TYPE_VIDEOTOOLBOX;
+#elif defined(_WIN32)
+            const AVHWDeviceType type = AV_HWDEVICE_TYPE_D3D11VA;
+#else
+            const AVHWDeviceType type = AV_HWDEVICE_TYPE_VAAPI;
+#endif
+            // Find a hardware configuration for this codec and device type.
+            AVPixelFormat hwFormat = AV_PIX_FMT_NONE;
+            for (int i = 0; ; ++i)
+            {
+                const AVCodecHWConfig* config = avcodec_get_hw_config(codec, i);
+                if (!config)
+                {
+                    break;
+                }
+                if ((config->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX) &&
+                    config->device_type == type)
+                {
+                    hwFormat = config->pix_fmt;
+                    break;
+                }
+            }
+            if (AV_PIX_FMT_NONE == hwFormat)
+            {
+                // This codec has no hardware support here; stay on the software path.
+                _log(
+                    ftk::Format("Hardware decoding is not available for the codec \"{0}\"; using software decoding").
+                    arg(codec->name ? codec->name : "?"),
+                    ftk::LogType::Warning);
+                return;
+            }
+            // Create the hardware device. On failure, stay on the software path.
+            AVBufferRef* device = nullptr;
+            if (av_hwdevice_ctx_create(&device, type, nullptr, nullptr, 0) < 0)
+            {
+                _log(
+                    ftk::Format("Cannot create a hardware decoding device ({0}); using software decoding").
+                    arg(av_hwdevice_get_type_name(type)),
+                    ftk::LogType::Warning);
+                return;
+            }
+            _hwDeviceContext = device;
+            _hwPixelFormat = hwFormat;
+            _hwAccel = true;
+            _avCodecContext[_avStream]->hw_device_ctx = av_buffer_ref(_hwDeviceContext);
+            _avCodecContext[_avStream]->opaque = this;
+            _avCodecContext[_avStream]->get_format = _getHwFormat;
+            _log(
+                ftk::Format("Hardware decoding enabled ({0}) for the codec \"{1}\"").
+                arg(av_hwdevice_get_type_name(type)).
+                arg(codec->name ? codec->name : "?"));
+        }
+
+        void ReadVideo::_initSws(AVPixelFormat srcFormat)
+        {
+            _swsContext = sws_alloc_context();
+            if (!_swsContext)
+            {
+                throw std::runtime_error(ftk::Format("Cannot allocate context: \"{0}\"").arg(_fileName));
+            }
+            av_opt_set_defaults(_swsContext);
+            int r = av_opt_set_int(_swsContext, "srcw", _avCodecParameters[_avStream]->width, AV_OPT_SEARCH_CHILDREN);
+            r = av_opt_set_int(_swsContext, "srch", _avCodecParameters[_avStream]->height, AV_OPT_SEARCH_CHILDREN);
+            r = av_opt_set_int(_swsContext, "src_format", srcFormat, AV_OPT_SEARCH_CHILDREN);
+            r = av_opt_set_int(_swsContext, "dstw", _avCodecParameters[_avStream]->width, AV_OPT_SEARCH_CHILDREN);
+            r = av_opt_set_int(_swsContext, "dsth", _avCodecParameters[_avStream]->height, AV_OPT_SEARCH_CHILDREN);
+            r = av_opt_set_int(_swsContext, "dst_format", _avOutputPixelFormat, AV_OPT_SEARCH_CHILDREN);
+            r = av_opt_set_int(_swsContext, "sws_flags", swsScaleFlags, AV_OPT_SEARCH_CHILDREN);
+            r = av_opt_set_int(_swsContext, "threads", _options.threadCount, AV_OPT_SEARCH_CHILDREN);
+            r = sws_init_context(_swsContext, nullptr, nullptr);
+            if (r < 0)
+            {
+                throw std::runtime_error(ftk::Format("Cannot initialize sws context: \"{0}\"").arg(_fileName));
             }
         }
 
@@ -648,6 +808,30 @@ namespace tl
                 {
                     return out;
                 }
+                AVFrame* frame = _avFrame;
+                if (_hwAccel && _avFrame->format == _hwPixelFormat)
+                {
+                    // Download the hardware surface to a CPU frame (NV12/P010).
+                    av_frame_unref(_swFrame);
+                    if (av_hwframe_transfer_data(_swFrame, _avFrame, 0) < 0)
+                    {
+                        _log(
+                            ftk::Format("Cannot download a hardware frame; skipping: \"{0}\"").
+                            arg(_fileName),
+                            ftk::LogType::Warning);
+                        continue;
+                    }
+                    av_frame_copy_props(_swFrame, _avFrame);
+                    frame = _swFrame;
+                    if (!_hwLogged)
+                    {
+                        // Confirms frames are really decoding on the hardware, as
+                        // opposed to the device being attached but the decoder
+                        // having fallen back to software (see _getHwFormat()).
+                        _log(ftk::Format("Hardware decoding is active: \"{0}\"").arg(_fileName));
+                        _hwLogged = true;
+                    }
+                }
                 const int64_t timestamp = _avFrame->pts != AV_NOPTS_VALUE ? _avFrame->pts : _avFrame->pkt_dts;
                 //std::cout << "video timestamp: " << timestamp << std::endl;
 
@@ -676,7 +860,7 @@ namespace tl
                     tags["hdr"] = nlohmann::json(hdrData).dump();
                     image->setTags(tags);
 
-                    _copy(image);
+                    _copy(image, frame);
                     _buffer.push_back(image);
                     out = 1;
                     break;
@@ -685,16 +869,40 @@ namespace tl
             return out;
         }
 
-        void ReadVideo::_copy(const std::shared_ptr<ftk::Image>& image)
+        void ReadVideo::_copy(const std::shared_ptr<ftk::Image>& image, AVFrame* frame)
         {
             const auto& info = image->getInfo();
             const std::size_t w = info.size.w;
             const std::size_t h = info.size.h;
             uint8_t* const data = image->getData();
+            if (_hwAccel && frame->format == _avOutputPixelFormat)
+            {
+                // Native semi-planar copy (NV12/P010): luma plane, then the
+                // interleaved chroma plane, straight into the ftk image. No colour
+                // conversion -- the display shader does YUV->RGB. The sws fallback
+                // below covers the rare case of an unexpected download format.
+                const std::size_t bytes =
+                    (AV_PIX_FMT_P010LE == _avOutputPixelFormat) ? 2 : 1;
+                const uint8_t* const dataY = frame->data[0];
+                const uint8_t* const dataUV = frame->data[1];
+                const int linesizeY = frame->linesize[0];
+                const int linesizeUV = frame->linesize[1];
+                for (std::size_t i = 0; i < h; ++i)
+                {
+                    std::memcpy(data + w * bytes * i, dataY + linesizeY * i, w * bytes);
+                }
+                uint8_t* const dataOutUV = data + w * h * bytes;
+                const std::size_t h2 = h / 2;
+                for (std::size_t i = 0; i < h2; ++i)
+                {
+                    std::memcpy(dataOutUV + w * bytes * i, dataUV + linesizeUV * i, w * bytes);
+                }
+                return;
+            }
             if (canCopy(_avInputPixelFormat, _avOutputPixelFormat))
             {
-                const uint8_t* const data0 = _avFrame->data[0];
-                const int linesize0 = _avFrame->linesize[0];
+                const uint8_t* const data0 = frame->data[0];
+                const int linesize0 = frame->linesize[0];
                 switch (_avInputPixelFormat)
                 {
                 case AV_PIX_FMT_RGB24:
@@ -728,10 +936,10 @@ namespace tl
                 {
                     const std::size_t w2 = w / 2;
                     const std::size_t h2 = h / 2;
-                    const uint8_t* const data1 = _avFrame->data[1];
-                    const uint8_t* const data2 = _avFrame->data[2];
-                    const int linesize1 = _avFrame->linesize[1];
-                    const int linesize2 = _avFrame->linesize[2];
+                    const uint8_t* const data1 = frame->data[1];
+                    const uint8_t* const data2 = frame->data[2];
+                    const int linesize1 = frame->linesize[1];
+                    const int linesize2 = frame->linesize[2];
                     for (std::size_t i = 0; i < h; ++i)
                     {
                         std::memcpy(
@@ -757,6 +965,12 @@ namespace tl
             }
             else
             {
+                if (!_swsContext)
+                {
+                    // Build the scaler now that the real source format is known
+                    // (the hardware download format, or a software-fallback format).
+                    _initSws(static_cast<AVPixelFormat>(frame->format));
+                }
                 av_image_fill_arrays(
                     _avFrame2->data,
                     _avFrame2->linesize,
@@ -765,15 +979,15 @@ namespace tl
                     w,
                     h,
                     1);
-                _avFrame->color_range =
+                frame->color_range =
                     (AVCOL_RANGE_JPEG == _avCodecContext[_avStream]->color_range)
                     ? AVCOL_RANGE_JPEG
                     : AVCOL_RANGE_MPEG;
-                _avFrame->colorspace =
+                frame->colorspace =
                     (AVCOL_SPC_BT2020_NCL == _avCodecParameters[_avStream]->color_space)
                     ? AVCOL_SPC_BT2020_NCL
                     : AVCOL_SPC_BT709;
-                sws_scale_frame(_swsContext, _avFrame2, _avFrame);
+                sws_scale_frame(_swsContext, _avFrame2, frame);
             }
         }
     }

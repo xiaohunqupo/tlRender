@@ -25,6 +25,7 @@ namespace tl
         {
             return
                 yuvToRgb == other.yuvToRgb &&
+                hwAccel == other.hwAccel &&
                 threadCount == other.threadCount;
         }
 
@@ -37,6 +38,7 @@ namespace tl
         {
             IOOptions out;
             out["FFmpeg/YUVToRGB"] = ftk::Format("{0}").arg(value.yuvToRgb);
+            out["FFmpeg/HWAccel"] = ftk::Format("{0}").arg(value.hwAccel);
             out["FFmpeg/ThreadCount"] = ftk::Format("{0}").arg(value.threadCount);
             return out;
         }
@@ -439,12 +441,17 @@ namespace tl
         void to_json(nlohmann::json& json, const Options& value)
         {
             json["YUVToRGB"] = value.yuvToRgb;
+            json["HWAccel"] = value.hwAccel;
             json["ThreadCount"] = value.threadCount;
         }
 
         void from_json(const nlohmann::json& json, Options& value)
         {
             json.at("YUVToRGB").get_to(value.yuvToRgb);
+            if (json.contains("HWAccel"))
+            {
+                json.at("HWAccel").get_to(value.hwAccel);
+            }
             json.at("ThreadCount").get_to(value.threadCount);
         }
     }

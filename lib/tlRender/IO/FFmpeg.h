@@ -17,6 +17,7 @@ namespace tl
         struct TL_API_TYPE Options
         {
             bool   yuvToRgb    = false;
+            bool   hwAccel     = false;
             size_t threadCount = 0;
 
             TL_API bool operator == (const Options&) const;
