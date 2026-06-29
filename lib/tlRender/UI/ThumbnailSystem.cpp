@@ -376,7 +376,7 @@ namespace tl
             }
 
             InfoRequest out;
-            out.id = p.requestId;
+            out.id = request->id;
             out.future = request->promise.get_future();
             return out;
         }
@@ -435,7 +435,7 @@ namespace tl
             }
 
             ThumbnailRequest out;
-            out.id = p.requestId;
+            out.id = request->id;
             out.height = height;
             out.time = time;
             out.future = request->promise.get_future();
@@ -496,7 +496,7 @@ namespace tl
             }
 
             WaveformRequest out;
-            out.id = p.requestId;
+            out.id = request->id;
             out.size = size;
             out.timeRange = timeRange;
             out.future = request->promise.get_future();
@@ -624,7 +624,6 @@ namespace tl
                     IOInfo info;
                     try
                     {
-                        const std::string& fileName = request->path.get();
                         //std::cout << "info request: " << request->path.get() << std::endl;
                         auto context = p.context.lock();
                         auto ioSystem = context->getSystem<ReadSystem>();
@@ -705,50 +704,52 @@ namespace tl
                                 size.w = request->height * ftk::aspectRatio(info.video[0].size);
                                 size.h = request->height;
                             }
-                            ftk::gl::OffscreenBufferOptions options;
-                            if (ftk::gl::doCreate(
-                                p.thumbnailThread.buffer,
-                                size,
-                                ftk::gl::TextureType::RGBA_U8))
+                            if (size.isValid())
                             {
-                                p.thumbnailThread.buffer = ftk::gl::OffscreenBuffer::create(
+                                if (ftk::gl::doCreate(
+                                    p.thumbnailThread.buffer,
                                     size,
-                                    ftk::gl::TextureType::RGBA_U8);
-                            }
-                            const OTIO_NS::RationalTime time =
-                                request->time != invalidTime ?
-                                request->time :
-                                info.videoTime.start_time();
-                            auto videoRequest = read->readVideo(time, request->options);
-                            if (videoRequest.valid())
-                            {
-                                const auto videoData = videoRequest.get();
-                                if (p.thumbnailThread.render &&
-                                    p.thumbnailThread.buffer &&
-                                    videoData.image &&
-                                    p.thumbnailThread.running)
+                                    ftk::gl::TextureType::RGBA_U8))
                                 {
-                                    ftk::gl::OffscreenBufferBinding binding(p.thumbnailThread.buffer);
-                                    p.thumbnailThread.render->begin(size);
-                                    ftk::ImageOptions imageOptions;
-                                    imageOptions.cache = false;
-                                    p.thumbnailThread.render->IRender::drawImage(
-                                        videoData.image,
-                                        ftk::Box2I(0, 0, size.w, size.h),
-                                        ftk::Color4F(1.F, 1.F, 1.F),
-                                        imageOptions);
-                                    p.thumbnailThread.render->end();
-                                    image = ftk::Image::create(
-                                        ftk::ImageInfo(size.w, size.h, ftk::ImageType::RGBA_U8));
-                                    glPixelStorei(GL_PACK_ALIGNMENT, 1);
-                                    glReadPixels(
-                                        0,
-                                        0,
-                                        size.w,
-                                        size.h,
-                                        GL_RGBA,
-                                        GL_UNSIGNED_BYTE,
-                                        image->getData());
+                                    p.thumbnailThread.buffer = ftk::gl::OffscreenBuffer::create(
+                                        size,
+                                        ftk::gl::TextureType::RGBA_U8);
+                                }
+                                const OTIO_NS::RationalTime time =
+                                    request->time != invalidTime ?
+                                    request->time :
+                                    info.videoTime.start_time();
+                                auto videoRequest = read->readVideo(time, request->options);
+                                if (videoRequest.valid())
+                                {
+                                    const auto videoData = videoRequest.get();
+                                    if (p.thumbnailThread.render &&
+                                        p.thumbnailThread.buffer &&
+                                        videoData.image &&
+                                        p.thumbnailThread.running)
+                                    {
+                                        ftk::gl::OffscreenBufferBinding binding(p.thumbnailThread.buffer);
+                                        p.thumbnailThread.render->begin(size);
+                                        ftk::ImageOptions imageOptions;
+                                        imageOptions.cache = false;
+                                        p.thumbnailThread.render->IRender::drawImage(
+                                            videoData.image,
+                                            ftk::Box2I(0, 0, size.w, size.h),
+                                            ftk::Color4F(1.F, 1.F, 1.F),
+                                            imageOptions);
+                                        p.thumbnailThread.render->end();
+                                        image = ftk::Image::create(
+                                            ftk::ImageInfo(size.w, size.h, ftk::ImageType::RGBA_U8));
+                                        glPixelStorei(GL_PACK_ALIGNMENT, 1);
+                                        glReadPixels(
+                                            0,
+                                            0,
+                                            size.w,
+                                            size.h,
+                                            GL_RGBA,
+                                            GL_UNSIGNED_BYTE,
+                                            image->getData());
+                                    }
                                 }
                             }
                         }
@@ -869,7 +870,7 @@ namespace tl
                             if (x0 <= x1)
                             {
                                 min = std::numeric_limits<float>::max();
-                                max = std::numeric_limits<float>::min();
+                                max = std::numeric_limits<float>::lowest();
                                 for (int i = x0; i <= x1 && i < sampleCount; ++i)
                                 {
                                     const float v = *(data + i * info.channelCount);
@@ -894,59 +895,6 @@ namespace tl
                                 out->v.push_back(ftk::V2F(box.x(), box.y() + box.h()));
                                 out->triangles.push_back(ftk::Triangle2({ j + 0, j + 2, j + 1 }));
                                 out->triangles.push_back(ftk::Triangle2({ j + 2, j + 0, j + 3 }));
-                            }
-                        }
-                        break;
-                    }
-                    default: break;
-                    }
-                }
-                return out;
-            }
-
-            std::shared_ptr<ftk::Image> audioImage(
-                const std::shared_ptr<Audio>& audio,
-                const ftk::Size2I& size)
-            {
-                auto out = ftk::Image::create(size.w, size.h, ftk::ImageType::L_U8);
-                const auto& info = audio->getInfo();
-                const size_t sampleCount = audio->getSampleCount();
-                if (sampleCount > 0)
-                {
-                    switch (info.type)
-                    {
-                    case AudioType::F32:
-                    {
-                        const float* data = reinterpret_cast<const float*>(
-                            audio->getData());
-                        for (int x = 0; x < size.w; ++x)
-                        {
-                            const int x0 = static_cast<int>(std::min(
-                                static_cast<size_t>((x + 0) / static_cast<double>(size.w - 1) * (sampleCount - 1)),
-                                sampleCount - 1));
-                            const int x1 = static_cast<int>(std::min(
-                                static_cast<size_t>((x + 1) / static_cast<double>(size.w - 1) * (sampleCount - 1)),
-                                sampleCount - 1));
-                            //std::cout << x << ": " << x0 << " " << x1 << std::endl;
-                            float min = 0.F;
-                            float max = 0.F;
-                            if (x0 < x1)
-                            {
-                                min = std::numeric_limits<float>::max();
-                                max = std::numeric_limits<float>::min();
-                                for (int i = x0; i < x1; ++i)
-                                {
-                                    const float v = *(data + i * info.channelCount);
-                                    min = std::min(min, v);
-                                    max = std::max(max, v);
-                                }
-                            }
-                            uint8_t* p = out->getData() + x;
-                            for (int y = 0; y < size.h; ++y)
-                            {
-                                const float v = y / static_cast<float>(size.h - 1) * 2.F - 1.F;
-                                *p = (v > min && v < max) ? 255 : 0;
-                                p += size.w;
                             }
                         }
                         break;
