@@ -17,7 +17,6 @@ namespace tl
     {
         struct VideoClipItem::Private
         {
-            std::string clipName;
             ftk::Path path;
             std::vector<ftk::MemFile> memRead;
             std::shared_ptr<ThumbnailSystem> thumbnailSystem;
@@ -63,13 +62,12 @@ namespace tl
                 parent);
             FTK_P();
 
-            p.clipName = clip->name();
             p.path = path;
             p.memRead = timeline->getMem(clip->media_reference());
             p.thumbnailSystem = context->getSystem<ThumbnailSystem>();
 
             p.ioOptions = _data->options.ioOptions;
-            p.ioOptions["USD/CameraName"] = p.clipName;
+            p.ioOptions["USD/CameraName"] = clip->name();
         }
 
         VideoClipItem::VideoClipItem() :
@@ -135,7 +133,6 @@ namespace tl
         
         ftk::Size2I VideoClipItem::getSizeHint() const
         {
-            FTK_P();
             ftk::Size2I out = IBasicItem::getSizeHint();
             if (_displayOptions.thumbnails)
             {

@@ -56,7 +56,6 @@ namespace tl
             
             auto timeline = p.player->getTimeline();
             const auto otioTimeline = timeline->getTimeline();
-            int stackIndex = 0;
             for (const auto& child : otioTimeline->tracks()->children())
             {
                 if (auto otioTrack = OTIO_NS::dynamic_retainer_cast<OTIO_NS::Track>(child))
@@ -166,7 +165,6 @@ namespace tl
 
                     p.tracks.push_back(track);
                 }
-                ++stackIndex;
             }
 
             _tracksUpdate();
@@ -710,8 +708,6 @@ namespace tl
             if (_timeRange != invalidTimeRange)
             {
                 const ftk::Box2I& g = getGeometry();
-                const int w = getSizeHint().w;
-                const double duration = _timeRange.duration().rescaled_to(1.0).value();
                 const double rate = _timeRange.duration().rate();
                 const double seconds = _getSecondsInc(event.fontSystem);
                 if (seconds > 0.0)

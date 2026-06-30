@@ -155,7 +155,7 @@ namespace tl
             bool parentsEnabled,
             const ftk::TickEvent& event)
         {
-            IWidget::tickEvent(parentsVisible, parentsEnabled, event);
+            IBasicItem::tickEvent(parentsVisible, parentsEnabled, event);
             FTK_P();
 
             // Check if the I/O information is finished.
