@@ -9,6 +9,8 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/String.h>
 
+#include <cmath>
+
 namespace tl
 {
     OTIO_NS::RationalTime Player::Private::loopPlayback(const OTIO_NS::RationalTime& time, bool& looped)
@@ -495,6 +497,13 @@ namespace tl
 
     void Player::Private::resetPlaybackTime(const OTIO_NS::RationalTime& time)
     {
+        // Only seek and loop wrap call this, so it is the choke point for
+        // genuine position discontinuities -- the jumps the dropped-frame
+        // detector must absorb rather than count. The stall re-sync resets the
+        // clock through playbackReset() directly and deliberately does NOT land
+        // here, so a sustained stall keeps counting the frames it skips.
+        droppedFramesReset = true;
+
         // Reset both playback clocks. The audio-sample clock (audioMutex) is
         // read by _tick only when an audio device is open; the wall clock
         // (noAudio) only when it is not. Resetting the inactive one is a
@@ -505,6 +514,61 @@ namespace tl
             audioReset(time);
         }
         playbackReset(time);
+    }
+
+    void Player::Private::droppedFramesTick(
+        const OTIO_NS::RationalTime& presentedTime,
+        Playback playback,
+        double timelineSpeed)
+    {
+        const OTIO_NS::RationalTime clockTime = currentTime->get();
+        if (clockTime == invalidTime)
+        {
+            return;
+        }
+
+        // (Re)establish the baseline after a discontinuity (seek, loop wrap,
+        // play start) or on the first tick. The running total carries across so
+        // loops keep accumulating; the clock anchor and shown-count restart so
+        // the discontinuity jump itself is not counted.
+        if (droppedFramesReset.exchange(false) || !droppedClockBaseline.has_value())
+        {
+            droppedClockBaseline = clockTime;
+            droppedPresentedLast = presentedTime;
+            droppedShownCount = 0;
+            droppedPeak = 0;
+            droppedBase = droppedFrames->get();
+            return;
+        }
+
+        // Count each distinct frame actually shown since the baseline.
+        if (presentedTime != invalidTime && presentedTime != droppedPresentedLast)
+        {
+            droppedPresentedLast = presentedTime;
+            ++droppedShownCount;
+        }
+
+        // Only meaningful at real-time or slower playback. Faster speeds (the
+        // accelerate feature or a custom fast speed) skip source frames by
+        // design, which is not the same as the engine failing to keep up.
+        const double effectiveRate = speed->get() * speedMult->get();
+        if (effectiveRate <= timelineSpeed * 1.001)
+        {
+            const double dir = (Playback::Reverse == playback) ? -1.0 : 1.0;
+            const int64_t clockAdvance = static_cast<int64_t>(std::llround(
+                (clockTime - droppedClockBaseline.value()).rescaled_to(timelineSpeed).value() * dir));
+
+            // Frames the clock passed but never showed. The -2 absorbs the
+            // in-flight current frame plus the normal sub-frame presentation
+            // lag, so steady playback reads zero. droppedPeak only grows, so the
+            // count never ticks backwards when presentation briefly catches up.
+            const int64_t deficit = clockAdvance - droppedShownCount - 2;
+            if (deficit > droppedPeak)
+            {
+                droppedPeak = deficit;
+                droppedFrames->setIfChanged(droppedBase + static_cast<size_t>(droppedPeak));
+            }
+        }
     }
 
     void Player::Private::log()

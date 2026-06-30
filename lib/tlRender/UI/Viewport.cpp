@@ -45,12 +45,6 @@ namespace tl
             };
             std::optional<FpsData> fpsData;
             std::shared_ptr<ftk::Observable<size_t> > droppedFrames;
-            struct DroppedFramesData
-            {
-                bool init = true;
-                double frame = 0.0;
-            };
-            std::optional<DroppedFramesData> droppedFramesData;
             bool inputEnabled = true;
             std::pair<ftk::MouseButton, ftk::KeyModifier> panBinding =
                 std::make_pair(ftk::MouseButton::Middle, ftk::KeyModifier::None);
@@ -88,6 +82,7 @@ namespace tl
 
             std::shared_ptr<ftk::Observer<Playback> > playbackObserver;
             std::shared_ptr<ftk::ListObserver<VideoFrame> > videoFrameObserver;
+            std::shared_ptr<ftk::Observer<size_t> > droppedFramesObserver;
         };
 
         void Viewport::_init(
@@ -308,9 +303,9 @@ namespace tl
             p.fps->setIfChanged(0.0);
             p.fpsData.reset();
             p.droppedFrames->setIfChanged(0);
-            p.droppedFramesData.reset();
             p.playbackObserver.reset();
             p.videoFrameObserver.reset();
+            p.droppedFramesObserver.reset();
 
             p.player = value;
 
@@ -332,8 +327,6 @@ namespace tl
                         default:
                             p.fps->setIfChanged(0.0);
                             p.fpsData.reset();
-                            p.droppedFrames->setIfChanged(0);
-                            p.droppedFramesData.reset();
                             break;
                         }
                     });
@@ -362,6 +355,13 @@ namespace tl
 
                         p.doRender = true;
                         setDrawUpdate();
+                    });
+
+                p.droppedFramesObserver = ftk::Observer<size_t>::create(
+                    p.player->observeDroppedFrames(),
+                    [this](size_t value)
+                    {
+                        _p->droppedFrames->setIfChanged(value);
                     });
             }
             else if (!p.videoFrame.empty())
@@ -724,11 +724,6 @@ namespace tl
                             p.displayOptions->get(),
                             compareOptions,
                             p.colorBuffer->get());
-
-                        if (!p.videoFrame.empty() && p.fpsData.has_value())
-                        {
-                            _droppedFramesUpdate(p.videoFrame[0].time);
-                        }
                     }
 
                     // Draw the background buffer.
@@ -1026,22 +1021,5 @@ namespace tl
             }
         }
 
-        void Viewport::_droppedFramesUpdate(const OTIO_NS::RationalTime& value)
-        {
-            FTK_P();
-            if (!p.droppedFramesData.has_value())
-            {
-                p.droppedFramesData = Private::DroppedFramesData();
-            }
-            else
-            {
-                const double frameDiff = value.value() - p.droppedFramesData->frame;
-                if (std::abs(frameDiff) > 1.0)
-                {
-                    p.droppedFrames->setIfChanged(p.droppedFrames->get() + 1);
-                }
-            }
-            p.droppedFramesData->frame = value.value();
-        }
     }
 }

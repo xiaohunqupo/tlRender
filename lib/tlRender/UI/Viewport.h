@@ -240,8 +240,6 @@ namespace tl
             ftk::V2I _getViewportCenter() const;
             void _frameView();
 
-            void _droppedFramesUpdate(const OTIO_NS::RationalTime&);
-
             FTK_PRIVATE();
         };
     }

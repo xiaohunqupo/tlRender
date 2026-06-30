@@ -119,6 +119,7 @@ namespace tl
         p.currentAudioFrame = ftk::ObservableList<AudioFrame>::create();
         p.cacheOptions = ftk::Observable<PlayerCacheOptions>::create(playerOptions.cache);
         p.cacheInfo = ftk::Observable<PlayerCacheInfo>::create();
+        p.droppedFrames = ftk::Observable<size_t>::create(0);
 
         // Create observers.
         auto audioSystem = context->getSystem<AudioSystem>();
@@ -328,6 +329,16 @@ namespace tl
         return _p->actualSpeed;
     }
 
+    size_t Player::getDroppedFrames() const
+    {
+        return _p->droppedFrames->get();
+    }
+
+    std::shared_ptr<ftk::IObservable<size_t> > Player::observeDroppedFrames() const
+    {
+        return _p->droppedFrames;
+    }
+
     Playback Player::getPlayback() const
     {
         return _p->playback->get();
@@ -396,6 +407,8 @@ namespace tl
         }
         else if (p.playback->setIfChanged(value))
         {
+            p.droppedFrames->setIfChanged(0);
+            p.droppedFramesReset = true;
             if (value != Playback::Stop)
             {
                 p.toggle = value;
@@ -889,6 +902,14 @@ namespace tl
         p.currentVideoFrame->setIfChanged(currentVideoFrame);
         p.currentAudioFrame->setIfChanged(currentAudioFrame);
         p.cacheInfo->setIfChanged(cacheInfo);
+
+        if (playback != Playback::Stop && timelineSpeed > 0.0)
+        {
+            p.droppedFramesTick(
+                !currentVideoFrame.empty() ? currentVideoFrame[0].time : invalidTime,
+                playback,
+                timelineSpeed);
+        }
     }
 
     void Player::_thread()

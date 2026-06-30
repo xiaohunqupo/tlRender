@@ -162,6 +162,15 @@ namespace tl
         //! Observe the actual playback speed (speed * speed multiplier).
         TL_API std::shared_ptr<ftk::IObservable<double> > observeActualSpeed() const;
 
+        //! Get the number of frames dropped during playback. This counts the
+        //! frames the engine skipped to keep in sync with the playback clock
+        //! (decode or I/O could not keep up); it is measured only at real-time
+        //! or slower speeds, and is reset when playback starts or stops.
+        TL_API size_t getDroppedFrames() const;
+
+        //! Observe the number of frames dropped during playback.
+        TL_API std::shared_ptr<ftk::IObservable<size_t> > observeDroppedFrames() const;
+
         //! Get the playback mode.
         TL_API Playback getPlayback() const;
 

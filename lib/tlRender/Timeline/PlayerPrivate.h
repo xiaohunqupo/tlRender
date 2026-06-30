@@ -18,6 +18,7 @@
 
 #include <atomic>
 #include <mutex>
+#include <optional>
 #include <thread>
 
 namespace tl
@@ -37,6 +38,7 @@ namespace tl
         bool hasAudio() const;
         void playbackReset(const OTIO_NS::RationalTime&);
         void resetPlaybackTime(const OTIO_NS::RationalTime&);
+        void droppedFramesTick(const OTIO_NS::RationalTime& presentedTime, Playback, double timelineSpeed);
         void audioInit(const std::shared_ptr<ftk::Context>&);
         void audioReset(const OTIO_NS::RationalTime&);
 #if defined(FTK_SDL2) || defined(FTK_SDL3)
@@ -78,11 +80,30 @@ namespace tl
         std::shared_ptr<ftk::ObservableList<AudioFrame> > currentAudioFrame;
         std::shared_ptr<ftk::Observable<PlayerCacheOptions> > cacheOptions;
         std::shared_ptr<ftk::Observable<PlayerCacheInfo> > cacheInfo;
+        std::shared_ptr<ftk::Observable<size_t> > droppedFrames;
         std::shared_ptr<ftk::ListObserver<AudioDeviceInfo> > audioDevicesObserver;
         std::shared_ptr<ftk::Observer<AudioDeviceInfo> > defaultAudioDeviceObserver;
 
         int accelerate = 0;
         tl::Playback toggle = tl::Playback::Forward;
+
+        // Dropped-frame detection state, owned by the main thread (_tick). The
+        // count is how many frames the playback clock passed that were never
+        // presented (decode/IO could not keep up): the clock's advance since the
+        // baseline, minus the number of distinct frames actually shown. Measuring
+        // against the clock (not just frame-to-frame) means a stall that presents
+        // no frames at all still accumulates, because the clock keeps moving.
+        // droppedFramesReset re-establishes the baseline after a genuine position
+        // discontinuity (seek, loop wrap, play start); the stall re-sync
+        // deliberately does not raise it. droppedBase carries the running total
+        // across baselines so loops keep accumulating; droppedPeak is the
+        // high-water deficit since the baseline, so the count never decreases.
+        std::optional<OTIO_NS::RationalTime> droppedClockBaseline;
+        OTIO_NS::RationalTime droppedPresentedLast = invalidTime;
+        int64_t droppedShownCount = 0;
+        int64_t droppedPeak = 0;
+        size_t droppedBase = 0;
+        std::atomic<bool> droppedFramesReset{ true };
 
         bool audioDevices = false;
         AudioInfo audioInfo;
