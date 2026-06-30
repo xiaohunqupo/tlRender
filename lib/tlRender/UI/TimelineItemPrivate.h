@@ -47,6 +47,7 @@ namespace tl
                 ftk::FontInfo fontInfo;
                 ftk::FontMetrics fontMetrics;
                 ftk::Box2I scrollArea;
+                ftk::Size2I sizeHint;
             };
             SizeData size;
 
