@@ -166,6 +166,7 @@ namespace tl
                 std::shared_ptr<gl::Render> render;
                 std::shared_ptr<ftk::gl::OffscreenBuffer> buffer;
                 ftk::LRUCache<std::string, std::shared_ptr<IRead> > ioCache;
+                std::atomic<bool> ioCacheClear = false;
                 std::condition_variable cv;
                 std::thread thread;
                 std::atomic<bool> running;
@@ -175,6 +176,7 @@ namespace tl
             struct WaveformThread
             {
                 ftk::LRUCache<std::string, std::shared_ptr<IRead> > ioCache;
+                std::atomic<bool> ioCacheClear = false;
                 std::condition_variable cv;
                 std::thread thread;
                 std::atomic<bool> running;
@@ -597,6 +599,15 @@ namespace tl
                 std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
                 p.waveformMutex.cache.clear();
             }
+
+            // Signal the worker threads to drop their cached open readers so a
+            // reloaded file is re-opened rather than served from a reader that
+            // points at the previous file contents. The ioCache is owned by its
+            // worker thread, so it is cleared there rather than under a lock.
+            p.thumbnailThread.ioCacheClear = true;
+            p.thumbnailThread.cv.notify_one();
+            p.waveformThread.ioCacheClear = true;
+            p.waveformThread.cv.notify_one();
         }
 
         void ThumbnailSystem::_infoRun()
@@ -654,6 +665,11 @@ namespace tl
             auto ioCacheTimer = std::chrono::steady_clock::now();
             while (p.thumbnailThread.running)
             {
+                if (p.thumbnailThread.ioCacheClear.exchange(false))
+                {
+                    p.thumbnailThread.ioCache.clear();
+                }
+
                 std::shared_ptr<Private::ThumbnailRequest> request;
                 {
                     std::unique_lock<std::mutex> lock(p.thumbnailMutex.mutex);
@@ -913,6 +929,11 @@ namespace tl
             auto ioCacheTimer = std::chrono::steady_clock::now();
             while (p.waveformThread.running)
             {
+                if (p.waveformThread.ioCacheClear.exchange(false))
+                {
+                    p.waveformThread.ioCache.clear();
+                }
+
                 std::shared_ptr<Private::WaveformRequest> request;
                 {
                     std::unique_lock<std::mutex> lock(p.waveformMutex.mutex);
