@@ -20,9 +20,7 @@ namespace tl
         {
             std::shared_ptr<ItemData> itemData;
             std::shared_ptr<Player> player;
-            std::shared_ptr<ftk::Observable<bool> > editable;
             std::shared_ptr<ftk::Observable<bool> > frameView;
-            std::function<void(bool)> frameViewCallback;
             std::shared_ptr<ftk::Observable<bool> > scrollBarsVisible;
             std::shared_ptr<ftk::Observable<bool> > autoScroll;
             std::pair<ftk::MouseButton, ftk::KeyModifier> scrollBinding =
@@ -77,7 +75,6 @@ namespace tl
                 timeUnitsModel :
                 TimeUnitsModel::create(context);
 
-            p.editable = ftk::Observable<bool>::create(false);
             p.frameView = ftk::Observable<bool>::create(true);
             p.scrollBarsVisible = ftk::Observable<bool>::create(true);
             p.autoScroll = ftk::Observable<bool>::create(true);
@@ -390,14 +387,6 @@ namespace tl
                 setFrameView(true);
                 frameView();
             }
-        }
-
-        void TimelineWidget::tickEvent(
-            bool parentsVisible,
-            bool parentsEnabled,
-            const ftk::TickEvent& event)
-        {
-            IWidget::tickEvent(parentsVisible, parentsEnabled, event);
         }
 
         void TimelineWidget::sizeHintEvent(const ftk::SizeHintEvent& event)
