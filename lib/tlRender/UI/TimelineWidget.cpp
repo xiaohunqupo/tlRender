@@ -658,7 +658,6 @@ namespace tl
                     p.timelineItem = TimelineItem::create(
                         context,
                         p.player,
-                        p.player->getTimeline()->getTimeline()->tracks(),
                         p.scale,
                         p.itemOptions->get(),
                         p.displayOptions->get(),

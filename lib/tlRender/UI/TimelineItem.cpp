@@ -22,7 +22,6 @@ namespace tl
         void TimelineItem::_init(
             const std::shared_ptr<ftk::Context>& context,
             const std::shared_ptr<Player>& player,
-            const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Stack>& stack,
             double scale,
             const ItemOptions& options,
             const DisplayOptions& displayOptions,
@@ -205,7 +204,6 @@ namespace tl
         std::shared_ptr<TimelineItem> TimelineItem::create(
             const std::shared_ptr<ftk::Context>& context,
             const std::shared_ptr<Player>& player,
-            const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Stack>& stack,
             double scale,
             const ItemOptions& options,
             const DisplayOptions& displayOptions,
@@ -216,7 +214,6 @@ namespace tl
             out->_init(
                 context,
                 player,
-                stack,
                 scale,
                 options,
                 displayOptions,

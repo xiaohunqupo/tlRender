@@ -32,7 +32,6 @@ namespace tl
             void _init(
                 const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<Player>&,
-                const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Stack>&,
                 double scale,
                 const ItemOptions&,
                 const DisplayOptions&,
@@ -48,7 +47,6 @@ namespace tl
             TL_API static std::shared_ptr<TimelineItem> create(
                 const std::shared_ptr<ftk::Context>&,
                 const std::shared_ptr<Player>&,
-                const OTIO_NS::SerializableObject::Retainer<OTIO_NS::Stack>&,
                 double scale,
                 const ItemOptions&,
                 const DisplayOptions&,
