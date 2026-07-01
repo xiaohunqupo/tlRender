@@ -325,7 +325,7 @@ namespace tl
                 AVChannelLayout channelLayout;
                 av_channel_layout_default(&channelLayout, _info.channelCount);
                 const auto& avCodecParameters = _avCodecParameters[_avStream];
-                int r = swr_alloc_set_opts2(
+                swr_alloc_set_opts2(
                     &_swrContext,
                     &channelLayout,
                     fromAudioType(_info.type),

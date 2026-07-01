@@ -708,7 +708,6 @@ namespace tl
                 const double seconds = _getSecondsInc(event.fontSystem);
                 if (seconds > 0.0)
                 {
-                    const ftk::Size2I labelMaxSize = _getLabelMaxSize(event.fontSystem);
                     const double t0 = std::floor(posToTime(drawRect.min.x).rescaled_to(1.0).value() / seconds) * seconds;
                     const double t1 = std::ceil(posToTime(drawRect.max.x).rescaled_to(1.0).value() / seconds) * seconds;
                     for (double t = t0; t <= t1; t += seconds)

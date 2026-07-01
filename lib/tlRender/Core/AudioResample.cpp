@@ -54,7 +54,7 @@ namespace tl
             av_channel_layout_default(&inputChannelLayout, p.inputInfo.channelCount);
             AVChannelLayout outputChannelLayout;
             av_channel_layout_default(&outputChannelLayout, p.outputInfo.channelCount);
-            int r = swr_alloc_set_opts2(
+            swr_alloc_set_opts2(
                 &p.swrContext,
                 &outputChannelLayout,
                 fromAudioType(p.outputInfo.type),
