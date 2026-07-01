@@ -46,7 +46,6 @@ namespace tl
                 throw std::runtime_error(ftk::Format("No video: \"{0}\"").arg(p.fileName));
             }
 
-            AVCodecID avCodecID = AV_CODEC_ID_MPEG4;
             int avProfile = AV_PROFILE_UNKNOWN;
             auto option = options.find("FFmpeg/Codec");
             std::string codec;

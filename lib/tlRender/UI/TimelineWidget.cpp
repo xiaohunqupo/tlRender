@@ -502,7 +502,6 @@ namespace tl
             const ftk::V2I& scrollPos)
         {
             FTK_P();
-            const int w = getGeometry().w();
             const double zoomMin = _getTimelineScale();
             const double zoomMax = _getTimelineScaleMax();
             const double zoomClamped = ftk::clamp(zoomNew, zoomMin, zoomMax);

@@ -82,7 +82,6 @@ namespace tl
         {
             const ftk::Path& path = player->getPath();
             const ftk::Path& audioPath = player->getAudioPath();
-            const PlayerOptions& playerOptions = player->getPlayerOptions();
             const Options options = player->getOptions();
             const OTIO_NS::TimeRange& timeRange = player->getTimeRange();
             const IOInfo& ioInfo = player->getIOInfo();

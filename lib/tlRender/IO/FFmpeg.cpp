@@ -71,7 +71,6 @@ namespace tl
                 }
                 case AV_FRAME_DATA_DYNAMIC_HDR_PLUS:
                 {
-                    auto data = reinterpret_cast<AVDynamicHDRPlus*>(sideData[i]->data);
                     break;
                 }
                 default: break;
