@@ -230,7 +230,7 @@ namespace tl
                             const int64_t memIndex = seq ? (frame - _startFrame) : 0;
                             out = _readVideo(
                                 fileName,
-                                memIndex >= 0 && memIndex < _mem.size() ? &_mem[memIndex] : nullptr,
+                                memIndex >= 0 && memIndex < static_cast<int>(_mem.size()) ? &_mem[memIndex] : nullptr,
                                 time,
                                 options);
                         }

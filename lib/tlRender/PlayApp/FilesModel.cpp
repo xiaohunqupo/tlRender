@@ -73,7 +73,7 @@ namespace tl
 
         void FilesModel::close(int index)
         {
-            if (index >= 0 && index < _players->getSize())
+            if (index >= 0 && index < static_cast<int>(_players->getSize()))
             {
                 if (auto player = _player->get())
                 {
@@ -143,7 +143,7 @@ namespace tl
 
         void FilesModel::setCurrent(int value)
         {
-            if (value >= 0 && value < _players->getSize())
+            if (value >= 0 && value < static_cast<int>(_players->getSize()))
             {
                 auto player = _player->get();
                 _player->setIfChanged(_players->getItem(value));
@@ -210,7 +210,7 @@ namespace tl
         {
             if (auto player = _player->get())
             {
-                if (index >= 0 && index < _players->getSize())
+                if (index >= 0 && index < static_cast<int>(_players->getSize()))
                 {
                     auto bPlayer = _players->getItem(index);
                     player->setCompare({ bPlayer->getTimeline() });

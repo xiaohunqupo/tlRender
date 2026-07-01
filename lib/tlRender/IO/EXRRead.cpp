@@ -413,7 +413,7 @@ namespace tl
                             std::atoi(i->second.c_str()),
                             static_cast<int>(_info.video.size()) - 1);
                     }
-                    if (layer >= 0 && layer < _info.video.size() && layer < _layers.size())
+                    if (layer >= 0 && layer < static_cast<int>(_info.video.size()) && layer < static_cast<int>(_layers.size()))
                     {
                         Imf::InputPart imfPart(*_f, _layers[layer].part);
                         const Imf::Header& imfHeader = _f->header(_layers[layer].part);
