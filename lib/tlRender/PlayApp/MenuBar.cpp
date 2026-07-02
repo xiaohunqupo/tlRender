@@ -57,7 +57,7 @@ namespace tl
                                 }
                                 close();
                             });
-                        action->setChecked(i == _playerIndex);
+                        action->setChecked(static_cast<int>(i) == _playerIndex);
                         _activeActions.push_back(action);
                         _activeMenu->addAction(action);
                     }
@@ -70,7 +70,7 @@ namespace tl
                     _playerIndex = value;
                     for (size_t i = 0; i < _activeActions.size(); ++i)
                     {
-                        _activeActions[i]->setChecked(i == value);
+                        _activeActions[i]->setChecked(static_cast<int>(i) == value);
                     }
                 });
 
@@ -146,7 +146,7 @@ namespace tl
                                     app->getFilesModel()->setB(value ? static_cast<int>(i) : -1);
                                 }
                             });
-                        action->setChecked(i == _bPlayerIndex);
+                        action->setChecked(static_cast<int>(i) == _bPlayerIndex);
                         _bFileActions.push_back(action);
                         _bFileMenu->addAction(action);
                     }
@@ -159,7 +159,7 @@ namespace tl
                     _bPlayerIndex = value;
                     for (size_t i = 0; i < _bFileActions.size(); ++i)
                     {
-                        _bFileActions[i]->setChecked(i == value);
+                        _bFileActions[i]->setChecked(static_cast<int>(i) == value);
                     }
                 });
         }

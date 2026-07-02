@@ -425,14 +425,14 @@ namespace tl
                         const ftk::ImageInfo& imageInfo = _info.video[layer];
                         out.image = ftk::Image::create(imageInfo);
                         out.image->setTags(_info.tags);
-                        const size_t channels = ftk::getChannelCount(imageInfo.type);
-                        const size_t channelByteCount = ftk::getBitDepth(imageInfo.type) / 8;
-                        const size_t cb = channels * channelByteCount;
-                        const size_t scb = imageInfo.size.w * channels * channelByteCount;
+                        const int channels = ftk::getChannelCount(imageInfo.type);
+                        const int channelByteCount = ftk::getBitDepth(imageInfo.type) / 8;
+                        const int cb = channels * channelByteCount;
+                        const int scb = imageInfo.size.w * channels * channelByteCount;
                         if (fast)
                         {
                             Imf::FrameBuffer frameBuffer;
-                            for (size_t c = 0; c < channels; ++c)
+                            for (int c = 0; c < channels; ++c)
                             {
                                 const ftk::V2I sampling(1, 1);
                                 // OpenEXR addresses pixels in absolute coordinates,

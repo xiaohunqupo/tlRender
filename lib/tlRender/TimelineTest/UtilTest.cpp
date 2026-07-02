@@ -288,7 +288,7 @@ namespace tl
 
                 auto audio = Audio::create(info, info.sampleRate);
                 int32_t* audioP = reinterpret_cast<int32_t*>(audio->getData());
-                for (size_t i = 0; i < info.sampleRate; ++i, audioP += 2)
+                for (int i = 0; i < info.sampleRate; ++i, audioP += 2)
                 {
                     audioP[0] = i;
                     audioP[1] = i + 1;
@@ -310,8 +310,8 @@ namespace tl
                 audioP = reinterpret_cast<int32_t*>(out[0]->getData());
                 for (size_t i = 0, j = info.sampleRate - 1000; i < out[0]->getSampleCount(); ++i, ++j, audioP += 2)
                 {
-                    FTK_ASSERT(j == audioP[0]);
-                    FTK_ASSERT((j + 1) == audioP[1]);
+                    FTK_ASSERT(static_cast<int>(j) == audioP[0]);
+                    FTK_ASSERT(static_cast<int>(j + 1) == audioP[1]);
                 }
 
                 frames.push_back(AudioFrame({ 1.0, { { audio } } }));
@@ -323,15 +323,15 @@ namespace tl
                 size_t j = info.sampleRate - 1000;
                 for (; i < 1000; ++i, ++j, audioP += 2)
                 {
-                    FTK_ASSERT(j == audioP[0]);
-                    FTK_ASSERT((j + 1) == audioP[1]);
+                    FTK_ASSERT(static_cast<int>(j) == audioP[0]);
+                    FTK_ASSERT(static_cast<int>(j + 1) == audioP[1]);
                 }
                 i = 0;
                 j = 0;
                 for (; i < 1000; ++i, ++j, audioP += 2)
                 {
-                    FTK_ASSERT(j == audioP[0]);
-                    FTK_ASSERT((j + 1) == audioP[1]);
+                    FTK_ASSERT(static_cast<int>(j) == audioP[0]);
+                    FTK_ASSERT(static_cast<int>(j + 1) == audioP[1]);
                 }
 
                 out = audioCopy(info, frames, Playback::Reverse, info.sampleRate, 2000);
@@ -342,8 +342,8 @@ namespace tl
                 j = info.sampleRate - 2000;
                 for (; i < 2000; ++i, ++j, audioP += 2)
                 {
-                    FTK_ASSERT(j == audioP[0]);
-                    FTK_ASSERT((j + 1) == audioP[1]);
+                    FTK_ASSERT(static_cast<int>(j) == audioP[0]);
+                    FTK_ASSERT(static_cast<int>(j + 1) == audioP[1]);
                 }
 
                 out = audioCopy(info, frames, Playback::Reverse, info.sampleRate + 1000, 2000);
@@ -354,15 +354,15 @@ namespace tl
                 j = info.sampleRate - 1000;
                 for (; i < 1000; ++i, ++j, audioP += 2)
                 {
-                    FTK_ASSERT(j == audioP[0]);
-                    FTK_ASSERT((j + 1) == audioP[1]);
+                    FTK_ASSERT(static_cast<int>(j) == audioP[0]);
+                    FTK_ASSERT(static_cast<int>(j + 1) == audioP[1]);
                 }
                 i = 0;
                 j = 0;
                 for (; i < 1000; ++i, ++j, audioP += 2)
                 {
-                    FTK_ASSERT(j == audioP[0]);
-                    FTK_ASSERT((j + 1) == audioP[1]);
+                    FTK_ASSERT(static_cast<int>(j) == audioP[0]);
+                    FTK_ASSERT(static_cast<int>(j + 1) == audioP[1]);
                 }
             }
         }
