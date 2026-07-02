@@ -50,7 +50,7 @@ namespace tl
             AudioType::None,
             AudioType::None
         };
-        return value < static_cast<int>(data.size()) ? data[value] : AudioType::None;
+        return value >= 0 && value < static_cast<int>(data.size()) ? data[value] : AudioType::None;
     }
 
     AudioType getFloatAudioType(int value)
@@ -67,7 +67,7 @@ namespace tl
             AudioType::None,
             AudioType::F64
         };
-        return value < static_cast<int>(data.size()) ? data[value] : AudioType::None;
+        return value >= 0 && value < static_cast<int>(data.size()) ? data[value] : AudioType::None;
     }
 
     AudioInfo::AudioInfo()
