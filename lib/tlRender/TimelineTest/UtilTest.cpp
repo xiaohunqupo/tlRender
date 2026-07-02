@@ -300,8 +300,8 @@ namespace tl
                 audioP = reinterpret_cast<int32_t*>(out[0]->getData());
                 for (size_t i = 0; i < out[0]->getSampleCount(); ++i, audioP += 2)
                 {
-                    FTK_ASSERT(i == audioP[0]);
-                    FTK_ASSERT((i + 1) == audioP[1]);
+                    FTK_ASSERT(static_cast<int32_t>(i) == audioP[0]);
+                    FTK_ASSERT(static_cast<int32_t>(i + 1) == audioP[1]);
                 }
 
                 out = audioCopy(info, frames, Playback::Forward, info.sampleRate - 1000, 2000);

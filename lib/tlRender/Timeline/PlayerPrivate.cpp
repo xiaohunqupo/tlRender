@@ -153,7 +153,7 @@ namespace tl
         // account clips with different sizes or multiple tracks.
         size_t byteCount = 0;
         if (thread.state.videoLayer >= 0 &&
-            thread.state.videoLayer < ioInfo.video.size())
+            thread.state.videoLayer < static_cast<int>(ioInfo.video.size()))
         {
             byteCount += ioInfo.video[thread.state.videoLayer].getByteCount();
 
@@ -165,7 +165,7 @@ namespace tl
                     thread.state.videoLayer;
                 const IOInfo& compareInfo = thread.state.compare[i]->getIOInfo();
                 if (compareLayer >= 0 &&
-                    compareLayer < compareInfo.video.size())
+                    compareLayer < static_cast<int>(compareInfo.video.size()))
                 {
                     byteCount += compareInfo.video[compareLayer].getByteCount();
                 }
@@ -246,7 +246,6 @@ namespace tl
         const ftk::Range<int64_t> audioCacheRange = getAudioCacheRange(audioCacheMax);
 
         // Remove frames from the video cache.
-        bool videoCacheChanged = false;
         {
             const auto looped = tl::loop(
                 videoCacheRange,
@@ -267,7 +266,6 @@ namespace tl
                 if (!found)
                 {
                     i = thread.videoCache.erase(i);
-                    videoCacheChanged = true;
                 }
                 else
                 {
@@ -277,7 +275,6 @@ namespace tl
         }
 
         // Remove frames from the audio cache.
-        bool audioCacheChanged = false;
         {
             const auto looped = tl::loop(
                 audioCacheRange,
@@ -301,7 +298,6 @@ namespace tl
                 if (!found)
                 {
                     i = audioMutex.cache.erase(i);
-                    audioCacheChanged = true;
                 }
                 else
                 {
@@ -405,7 +401,6 @@ namespace tl
                     videoFrameList.emplace_back(videoFrame);
                 }
                 thread.videoCache[time] = videoFrameList;
-                videoCacheChanged = true;
                 videoRequestsIt = thread.videoRequests.erase(videoRequestsIt);
             }
             else
@@ -429,7 +424,6 @@ namespace tl
                     audioMutex.cache[audioRequestsIt->first] = audioFrame;
                 }
                 audioRequestsIt = thread.audioRequests.erase(audioRequestsIt);
-                audioCacheChanged = true;
             }
             else
             {

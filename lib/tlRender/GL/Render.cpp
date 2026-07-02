@@ -18,11 +18,6 @@ namespace tl
 {
     namespace gl
     {
-        namespace
-        {
-            const int pboSizeMin = 1024;
-        }
-
 #if defined(TLRENDER_OCIO)
         OCIOTexture::OCIOTexture(
             unsigned id,

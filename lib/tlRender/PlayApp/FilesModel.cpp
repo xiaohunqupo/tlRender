@@ -78,12 +78,12 @@ namespace tl
                 if (auto player = _player->get())
                 {
                     std::size_t j = _players->indexOf(player);
-                    if (j > 0 && index <= j)
+                    if (j > 0 && index <= static_cast<int>(j))
                     {
                         --j;
                     }
                     std::size_t k = _players->indexOf(_bPlayer->get());
-                    if (k != ftk::ObservableListInvalidIndex && k > 0 && index <= k)
+                    if (k != ftk::ObservableListInvalidIndex && k > 0 && index <= static_cast<int>(k))
                     {
                         --k;
                     }

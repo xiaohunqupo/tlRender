@@ -257,7 +257,7 @@ namespace tl
                                 player->forward();
                             }
                             ++_debugInput;
-                            if (_debugInput >= _cmdLine.inputs->getList().size())
+                            if (_debugInput >= static_cast<int>(_cmdLine.inputs->getList().size()))
                             {
                                 _debugInput = 0;
                             }

@@ -887,7 +887,7 @@ namespace tl
                             {
                                 min = std::numeric_limits<float>::max();
                                 max = std::numeric_limits<float>::lowest();
-                                for (int i = x0; i <= x1 && i < sampleCount; ++i)
+                                for (int i = x0; i <= x1 && i < static_cast<int>(sampleCount); ++i)
                                 {
                                     const float v = *(data + i * info.channelCount);
                                     min = std::min(min, v);

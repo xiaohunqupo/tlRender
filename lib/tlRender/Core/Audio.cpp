@@ -50,7 +50,7 @@ namespace tl
             AudioType::None,
             AudioType::None
         };
-        return value < data.size() ? data[value] : AudioType::None;
+        return value < static_cast<int>(data.size()) ? data[value] : AudioType::None;
     }
 
     AudioType getFloatAudioType(int value)
@@ -67,7 +67,7 @@ namespace tl
             AudioType::None,
             AudioType::F64
         };
-        return value < data.size() ? data[value] : AudioType::None;
+        return value < static_cast<int>(data.size()) ? data[value] : AudioType::None;
     }
 
     AudioInfo::AudioInfo()
@@ -235,7 +235,7 @@ namespace tl
             for (int i = 0; i < info.channelCount; ++i)
             {
                 channelVolumes.push_back(
-                    i < channelMute.size() && channelMute[i] ?
+                    i < static_cast<int>(channelMute.size()) && channelMute[i] ?
                     0.F :
                     volume);
             }
@@ -410,8 +410,6 @@ namespace tl
         const ftk::Range<S32_T> S32Range(
             std::numeric_limits<S32_T>::min(),
             std::numeric_limits<S32_T>::max());
-        const ftk::Range<F32_T> F32Range(-1.F, 1.F);
-        const ftk::Range<F64_T> F64Range(-1.F, 1.F);
 
         void S8ToS16(S8_T value, S16_T& out)
         {

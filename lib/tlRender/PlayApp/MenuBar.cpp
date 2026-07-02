@@ -85,7 +85,7 @@ namespace tl
                         const std::filesystem::path path = *i;
                         auto action = ftk::Action::create(
                             path.filename().u8string(),
-                            [this, appWeak, path]
+                            [appWeak, path]
                             {
                                 if (auto app = appWeak.lock())
                                 {

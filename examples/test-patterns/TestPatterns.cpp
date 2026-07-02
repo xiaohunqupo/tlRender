@@ -105,7 +105,7 @@ namespace tl
                         ftk::Box2I(framesPos.x, framesPos.y, framesSize.x, framesSize.y),
                         ftk::Color4F(0.F, .5F, 0.F));*/
 
-                    const size_t resolution = 100;
+                    const int resolution = 100;
                     ftk::TriMesh2F mesh;
                     mesh.v.push_back(ftk::V2F(
                         _size.w / 2.F,
