@@ -87,33 +87,18 @@ set(FFmpeg_CONFIGURE_ARGS
     --disable-audiotoolbox
     --disable-cuda-llvm
     --disable-cuvid
-    --disable-d3d11va
     --disable-d3d12va
-    --disable-dxva2
     --disable-ffnvcodec
     --disable-mediafoundation
     --disable-nvdec
     --disable-nvenc
     --disable-v4l2-m2m
-    --disable-vaapi
     --disable-vdpau
-    --disable-videotoolbox
     --enable-pic
     ${FFmpeg_CFLAGS}
     ${FFmpeg_CXXFLAGS}
     ${FFmpeg_OBJCFLAGS}
     ${FFmpeg_LDFLAGS})
-# Enable platform hardware decoders. FFmpeg's configure is last-wins, so these
-# override the --disable-* flags above only on the matching platform (e.g. the
-# --disable-videotoolbox above stays in effect on Windows).
-if(APPLE)
-    list(APPEND FFmpeg_CONFIGURE_ARGS
-        --enable-videotoolbox)
-elseif(WIN32)
-    list(APPEND FFmpeg_CONFIGURE_ARGS
-        --enable-d3d11va
-        --enable-dxva2)
-endif()
 if(TLRENDER_FFMPEG_MINIMAL)
     list(APPEND FFmpeg_CONFIGURE_ARGS
         --disable-decoders
