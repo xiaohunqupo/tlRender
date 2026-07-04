@@ -4,7 +4,7 @@
 #include <tlRender/UI/TimeUnitsWidget.h>
 
 #include <ftk/UI/ButtonGroup.h>
-#include <ftk/UI/IWidgetPopup.h>
+#include <ftk/UI/ComboBoxPrivate.h>
 #include <ftk/UI/RowLayout.h>
 #include <ftk/UI/ToolButton.h>
 
@@ -12,87 +12,12 @@ namespace tl
 {
     namespace ui
     {
-        namespace
-        {
-            class TimeUnitsPopup : public ftk::IWidgetPopup
-            {
-                FTK_NON_COPYABLE(TimeUnitsPopup);
-
-            protected:
-                void _init(
-                    const std::shared_ptr<ftk::Context>&,
-                    const std::shared_ptr<TimeUnitsModel>&,
-                    const std::shared_ptr<IWidget>& parent);
-
-                TimeUnitsPopup() = default;
-
-            public:
-                virtual ~TimeUnitsPopup() = default;
-
-                static std::shared_ptr<TimeUnitsPopup> create(
-                    const std::shared_ptr<ftk::Context>&,
-                    const std::shared_ptr<TimeUnitsModel>&,
-                    const std::shared_ptr<IWidget>& parent = nullptr);
-
-            private:
-                std::shared_ptr<ftk::ButtonGroup> _buttonGroup;
-                std::vector<std::shared_ptr<ftk::ToolButton> > _buttons;
-                std::shared_ptr<ftk::Observer<TimeUnits> > _timeUnitsObserver;
-            };
-
-            void TimeUnitsPopup::_init(
-                const std::shared_ptr<ftk::Context>& context,
-                const std::shared_ptr<TimeUnitsModel>& model,
-                const std::shared_ptr<IWidget>& parent)
-            {
-                IWidgetPopup::_init(context, "tl::ui::TimeUnitsPopup", parent);
-
-                _buttonGroup = ftk::ButtonGroup::create(context, ftk::ButtonGroupType::Radio);
-
-                auto layout = ftk::VerticalLayout::create(context);
-                layout->setSpacingRole(ftk::SizeRole::None);
-                setWidget(layout);
-
-                for (const auto& label : getTimeUnitsLabels())
-                {
-                    auto button = ftk::ToolButton::create(context, label, layout);
-                    button->setCheckable(true);
-                    _buttonGroup->addButton(button);
-                    _buttons.push_back(button);
-                }
-
-                _buttonGroup->setCheckedCallback(
-                    [this, model](int index, bool value)
-                    {
-                        model->setTimeUnits(static_cast<TimeUnits>(index));
-                        close();
-                    });
-
-                _timeUnitsObserver = ftk::Observer<TimeUnits>::create(
-                    model->observeTimeUnits(),
-                    [this](TimeUnits value)
-                    {
-                        _buttonGroup->setChecked(static_cast<int>(value));
-                    });
-            }
-
-            std::shared_ptr<TimeUnitsPopup> TimeUnitsPopup::create(
-                const std::shared_ptr<ftk::Context>& context,
-                const std::shared_ptr<TimeUnitsModel>& model,
-                const std::shared_ptr<IWidget>& parent)
-            {
-                std::shared_ptr<TimeUnitsPopup> out(new TimeUnitsPopup);
-                out->_init(context, model, parent);
-                return out;
-            }
-        }
-
         struct TimeUnitsWidget::Private
         {
             std::shared_ptr<TimeUnitsModel> model;
 
             std::shared_ptr<ftk::ToolButton> button;
-            std::shared_ptr<TimeUnitsPopup> popup;
+            std::shared_ptr<ftk::ComboBoxMenu> menu;
         };
 
         void TimeUnitsWidget::_init(
@@ -109,10 +34,53 @@ namespace tl
             p.button->setIcon("Time");
             p.button->setPopupIcon(true);
 
-            p.button->setPressedCallback(
+            p.button->setClickedCallback(
                 [this]
                 {
-                    _showPopup();
+                    FTK_P();
+                    if (auto context = getContext())
+                    {
+                        if (!p.menu)
+                        {
+                            std::vector<ftk::ComboBoxItem> items;
+                            for (const auto& label : getTimeUnitsLabels())
+                            {
+                                items.push_back(ftk::ComboBoxItem(label));
+                            }
+                            p.menu = ftk::ComboBoxMenu::create(
+                                context,
+                                items,
+                                static_cast<int>(p.model->getTimeUnits()));
+                            p.menu->open(getWindow(), p.button->getGeometry());
+                            auto weak = std::weak_ptr<TimeUnitsWidget>(
+                                std::dynamic_pointer_cast<TimeUnitsWidget>(shared_from_this()));
+                            p.menu->setCallback(
+                                [weak](int index)
+                                {
+                                    if (auto widget = weak.lock())
+                                    {
+                                        widget->_p->menu->close();
+                                        if (index != -1)
+                                        {
+                                            widget->_p->model->setTimeUnits(static_cast<TimeUnits>(index));
+                                        }
+                                    }
+                                });
+                            p.menu->setCloseCallback(
+                                [weak]
+                                {
+                                    if (auto widget = weak.lock())
+                                    {
+                                        widget->_p->menu.reset();
+                                    }
+                                });
+                        }
+                        else
+                        {
+                            p.menu->close();
+                            p.menu.reset();
+                        }
+                    }
                 });
         }
 
@@ -142,35 +110,6 @@ namespace tl
         {
             IWidget::setGeometry(value);
             _p->button->setGeometry(value);
-        }
-
-        void TimeUnitsWidget::_showPopup()
-        {
-            FTK_P();
-            auto context = getContext();
-            auto window = getWindow();
-            if (context && window)
-            {
-                if (!p.popup)
-                {
-                    p.popup = TimeUnitsPopup::create(context, p.model);
-                    p.popup->open(window, p.button->getGeometry());
-                    std::weak_ptr<TimeUnitsWidget> weak(std::dynamic_pointer_cast<TimeUnitsWidget>(shared_from_this()));
-                    p.popup->setCloseCallback(
-                        [weak]
-                        {
-                            if (auto widget = weak.lock())
-                            {
-                                widget->_p->popup.reset();
-                            }
-                        });
-                }
-                else
-                {
-                    p.popup->close();
-                    p.popup.reset();
-                }
-            }
         }
     }
 }

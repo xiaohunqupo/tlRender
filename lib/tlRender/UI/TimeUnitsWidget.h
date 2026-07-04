@@ -37,8 +37,6 @@ namespace tl
             TL_API void setGeometry(const ftk::Box2I&) override;
 
         private:
-            void _showPopup();
-
             FTK_PRIVATE();
         };
     }
