@@ -621,6 +621,7 @@ namespace tl
             const ftk::Box2I& g = getGeometry();
             render->drawRect(g, ftk::Color4F(0.F, 0.F, 0.F));
 
+            const auto& bgOptions = p.bgOptions->get();
             if (p.doRender)
             {
                 p.doRender = false;
@@ -628,30 +629,46 @@ namespace tl
                 {
                     // Create the background and foreground buffers.
                     const ftk::Size2I size = g.size();
+                    const auto& fgOptions = p.fgOptions->get();
                     ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
                     offscreenBufferOptions.colorFilters.minify = ftk::ImageFilter::Nearest;
                     offscreenBufferOptions.colorFilters.magnify = ftk::ImageFilter::Nearest;
-                    if (ftk::gl::doCreate(
-                        p.bgBuffer,
-                        size,
-                        ftk::gl::TextureType::RGBA_U8,
-                        offscreenBufferOptions))
+                    if (bgOptions.type != tl::Background::Solid ||
+                        bgOptions.outline.enabled)
                     {
-                        p.bgBuffer = ftk::gl::OffscreenBuffer::create(
+                        if (ftk::gl::doCreate(
+                            p.bgBuffer,
                             size,
                             ftk::gl::TextureType::RGBA_U8,
-                            offscreenBufferOptions);
+                            offscreenBufferOptions))
+                        {
+                            p.bgBuffer = ftk::gl::OffscreenBuffer::create(
+                                size,
+                                ftk::gl::TextureType::RGBA_U8,
+                                offscreenBufferOptions);
+                        }
                     }
-                    if (ftk::gl::doCreate(
-                        p.fgBuffer,
-                        size,
-                        ftk::gl::TextureType::RGBA_U8,
-                        offscreenBufferOptions))
+                    else
                     {
-                        p.fgBuffer = ftk::gl::OffscreenBuffer::create(
+                        p.bgBuffer.reset();
+                    }
+                    if (fgOptions.grid.enabled || fgOptions.centerMarker.enabled)
+                    {
+                        if (ftk::gl::doCreate(
+                            p.fgBuffer,
                             size,
                             ftk::gl::TextureType::RGBA_U8,
-                            offscreenBufferOptions);
+                            offscreenBufferOptions))
+                        {
+                            p.fgBuffer = ftk::gl::OffscreenBuffer::create(
+                                size,
+                                ftk::gl::TextureType::RGBA_U8,
+                                offscreenBufferOptions);
+                        }
+                    }
+                    else
+                    {
+                        p.fgBuffer.reset();
                     }
 
                     // Create the main buffer.
@@ -732,7 +749,7 @@ namespace tl
                         ftk::gl::OffscreenBufferBinding binding(p.bgBuffer);
                         render->clearViewport(ftk::Color4F(0.F, 0.F, 0.F, 0.F));
                         render->setTransform(pm);
-                        render->drawBackground(boxes, vm, p.bgOptions->get(), compareOptions);
+                        render->drawBackground(boxes, vm, bgOptions, compareOptions);
                     }
 
                     // Draw the foreground buffer.
@@ -741,10 +758,10 @@ namespace tl
                         ftk::gl::OffscreenBufferBinding binding(p.fgBuffer);
                         render->clearViewport(ftk::Color4F(0.F, 0.F, 0.F, 0.F));
                         render->setTransform(pm);
-                        ForegroundOptions options = p.fgOptions->get();
-                        options.grid.fontInfo.size *= p.size.displayScale;
-                        options.grid.textMargin *= p.size.displayScale;
-                        render->drawForeground(boxes, vm, options, compareOptions);
+                        ForegroundOptions fgOptionsTmp = fgOptions;
+                        fgOptionsTmp.grid.fontInfo.size *= p.size.displayScale;
+                        fgOptionsTmp.grid.textMargin *= p.size.displayScale;
+                        render->drawForeground(boxes, vm, fgOptionsTmp, compareOptions);
                     }
                 }
                 catch (const std::exception& e)
@@ -759,6 +776,11 @@ namespace tl
             if (p.bgBuffer)
             {
                 render->drawTexture(p.bgBuffer->getColorID(), g, true);
+            }
+            else if (tl::Background::Solid == bgOptions.type)
+            {
+                // Optimize drawing solid backgrounds.
+                render->drawRect(g, bgOptions.solidColor);
             }
             if (p.buffer)
             {
