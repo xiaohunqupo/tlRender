@@ -97,7 +97,7 @@ git clone https://github.com/grizzlypeak3d/tlRender.git
 
 Run the super build script:
 ```
-sh tlRender/sbuild-linux.sh tlRender
+sh tlRender/sbuild-linux.sh
 ```
 
 Try running the `tlplay` application:
@@ -127,7 +127,7 @@ git clone https://github.com/grizzlypeak3d/tlRender.git
 
 Run the super build script:
 ```
-sh tlRender/sbuild-macos.sh tlRender
+sh tlRender/sbuild-macos.sh
 ```
 
 Try running the `tlplay` application:
@@ -165,7 +165,7 @@ git clone https://github.com/grizzlypeak3d/tlRender.git
 
 Run the super build script:
 ```
-tlRender\sbuild-win.bat tlRender
+tlRender\sbuild-win.bat
 ```
 
 Try running the `tlplay` application:
