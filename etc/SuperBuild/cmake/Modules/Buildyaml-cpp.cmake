@@ -4,11 +4,11 @@ set(yaml-cpp_GIT_REPOSITORY "https://github.com/jbeder/yaml-cpp.git")
 set(yaml-cpp_GIT_TAG "0.8.0")
 
 set(yaml-cpp_ARGS
+    ${TLRENDER_EXTERNAL_ARGS}
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5
     -DYAML_CPP_BUILD_CONTRIB=OFF
     -DYAML_CPP_BUILD_TOOLS=OFF
-    -DYAML_CPP_BUILD_TESTS=OFF
-    -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-    ${TLRENDER_EXTERNAL_ARGS})
+    -DYAML_CPP_BUILD_TESTS=OFF)
 
 ExternalProject_Add(
     yaml-cpp

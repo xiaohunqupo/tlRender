@@ -4,11 +4,11 @@ set(expat_GIT_REPOSITORY "https://github.com/libexpat/libexpat.git")
 set(expat_GIT_TAG "R_2_7_2")
 
 set(expat_ARGS
+    ${TLRENDER_EXTERNAL_ARGS}
     -DEXPAT_BUILD_TOOLS=OFF
     -DEXPAT_BUILD_EXAMPLES=OFF
     -DEXPAT_BUILD_TESTS=OFF
-    -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-    ${TLRENDER_EXTERNAL_ARGS})
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5)
 
 ExternalProject_Add(
     expat

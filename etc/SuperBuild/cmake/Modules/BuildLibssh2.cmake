@@ -4,11 +4,11 @@ set(Libssh2_GIT_REPOSITORY "https://github.com/libssh2/libssh2.git")
 set(Libssh2_GIT_TAG "libssh2-1.11.0")
 
 set(Libssh2_ARGS
+    ${TLRENDER_EXTERNAL_ARGS}
     -DCRYPTO_BACKEND=OpenSSL
     -DBUILD_EXAMPLES=OFF
     -DBUILD_TESTING=OFF
-    -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-    ${TLRENDER_EXTERNAL_ARGS})
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5)
 
 ExternalProject_Add(
     Libssh2

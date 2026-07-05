@@ -17,7 +17,6 @@ endif()
 
 set(libjpeg-turbo_ARGS
     ${TLRENDER_EXTERNAL_ARGS}
-    -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_PREFIX}/lib
     -DENABLE_SHARED=${libjpeg-turbo_ENABLE_SHARED}
     -DENABLE_STATIC=${libjpeg-turbo_ENABLE_STATIC}
     -DWITH_TOOLS=OFF

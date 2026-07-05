@@ -5,7 +5,6 @@ set(TIFF_GIT_TAG "v4.5.0")
 
 set(TIFF_ARGS
     ${TLRENDER_EXTERNAL_ARGS}
-    -DCMAKE_INSTALL_LIBDIR=lib
     -Dtiff-tools=OFF
     -Dtiff-tests=OFF
     -Dtiff-contrib=OFF

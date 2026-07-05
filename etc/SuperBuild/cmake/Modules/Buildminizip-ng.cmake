@@ -4,6 +4,7 @@ set(minizip-ng_GIT_REPOSITORY "https://github.com/zlib-ng/minizip-ng.git")
 set(minizip-ng_GIT_TAG "4.0.10")
 
 set(minizip-ng_ARGS
+    ${TLRENDER_EXTERNAL_ARGS}
     -DMZ_COMPAT=OFF
     -DMZ_BZIP2=OFF
     -DMZ_LZMA=OFF
@@ -15,8 +16,7 @@ set(minizip-ng_ARGS
     -DMZ_OPENSSL=OFF
     -DMZ_BCRYPT=OFF
     -DMZ_LIBBSD=OFF
-    -DMZ_ICONV=OFF
-    ${TLRENDER_EXTERNAL_ARGS})
+    -DMZ_ICONV=OFF)
 
 ExternalProject_Add(
     minizip-ng
