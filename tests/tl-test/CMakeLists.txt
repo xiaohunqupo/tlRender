@@ -1,9 +1,4 @@
-set(HEADERS)
-
-set(SOURCE
-    main.cpp)
-
-add_executable(tl-test ${SOURCE} ${HEADERS})
+add_executable(tl-test main.cpp)
 
 target_include_directories(tl-test
     PUBLIC
