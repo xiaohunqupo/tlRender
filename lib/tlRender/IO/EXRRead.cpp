@@ -106,7 +106,7 @@ namespace tl
 
         namespace
         {
-            std::string getLabel(Imf::PixelType value)
+            [[maybe_unused]] std::string getLabel(Imf::PixelType value)
             {
                 const std::array<std::string, 3> data =
                 {
@@ -117,7 +117,7 @@ namespace tl
                 return data[value];
             }
 
-            std::string getLabel(Imf::Compression value)
+            [[maybe_unused]] std::string getLabel(Imf::Compression value)
             {
                 static const std::array<std::string, static_cast<size_t>(Imf::Compression::NUM_COMPRESSION_METHODS) > data =
                 {

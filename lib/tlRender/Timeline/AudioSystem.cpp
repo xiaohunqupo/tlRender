@@ -218,7 +218,7 @@ namespace tl
     {
 #if defined(FTK_SDL2) || defined(FTK_SDL3)
         //! \todo This is duplicated in AudioSystem.cpp and PlayerAudio.cpp
-        AudioType fromSDL(SDL_AudioFormat value)
+        [[maybe_unused]] AudioType fromSDL(SDL_AudioFormat value)
         {
             AudioType out = AudioType::F32;
             if (SDL_AUDIO_BITSIZE(value) == 8 &&
