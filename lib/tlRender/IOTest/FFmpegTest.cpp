@@ -190,7 +190,7 @@ namespace tl
                                         std::stringstream ss;
                                         ss << fileName << ' ' << size << ' ' << pixelType << ".mp4";
                                         _print(ss.str());
-                                        path = ftk::Path(ss.str());
+                                        path = ftk::Path((_getTempDir() / ss.str()).u8string());
                                     }
                                     auto image = ftk::Image::create(imageInfo);
                                     image->zero();
@@ -302,7 +302,7 @@ namespace tl
                 return out;
             };
 
-            const ftk::Path path("FFmpegConvertTest.mov");
+            const ftk::Path path((_getTempDir() / "FFmpegConvertTest.mov").u8string());
             try
             {
                 IOInfo info;

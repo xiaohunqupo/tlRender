@@ -304,7 +304,7 @@ namespace tl
                                         std::stringstream ss;
                                         ss << fileName << ' ' << size << ' ' << pixelType << ".0.exr";
                                         _print(ss.str());
-                                        path = ftk::Path(ss.str());
+                                        path = ftk::Path((_getTempDir() / ss.str()).u8string());
                                     }
                                     auto image = ftk::Image::create(imageInfo);
                                     image->zero();
