@@ -188,38 +188,10 @@ namespace tl
             fileBrowserSystem->getModel()->setOptions(fileBrowserOptions);
             fileBrowserSystem->setRecentFilesModel(_recentFilesModel);
 
-#if defined(TLRENDER_BMD)
-            // Initialize the BMD output device.
-            _bmdOutputDevice = bmd::OutputDevice::create(_context);
-            bmd::DeviceConfig bmdConfig;
-            bmdConfig.deviceIndex = 0;
-            bmdConfig.displayModeIndex = 3;
-            bmdConfig.pixelType = bmd::PixelType::_8BitBGRA;
-            _bmdOutputDevice->setConfig(bmdConfig);
-            /*ForegroundOptions fgOptions;
-            fgOptions.grid.enabled = true;
-            //fgOptions.grid.size = 1;
-            fgOptions.grid.labels = GridLabels::Alphanumeric;
-            //fgOptions.grid.lineWidth = 10;
-            fgOptions.outline.enabled = true;
-            _bmdOutputDevice->setForegroundOptions(fgOptions);*/
-            //_bmdOutputDevice->setEnabled(true);
-#endif // TLRENDER_BMD
-
             // Create the main window.
             _window = MainWindow::create(
                 _context,
                 std::dynamic_pointer_cast<App>(shared_from_this()));
-
-            // Create an observer to update the BMD output device.
-#if defined(TLRENDER_BMD)
-            _playerObserver = ftk::Observer<std::shared_ptr<Player> >::create(
-                _filesModel->observePlayer(),
-                [this](const std::shared_ptr<Player>& value)
-                {
-                    _bmdOutputDevice->setPlayer(value);
-                });
-#endif // TLRENDER_BMD
 
             for (const auto& input : _cmdLine.inputs->getList())
             {

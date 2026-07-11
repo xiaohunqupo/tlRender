@@ -6,10 +6,6 @@
 #include <tlRender/Timeline/Player.h>
 #include <tlRender/Timeline/TimeUnits.h>
 
-#if defined(TLRENDER_BMD)
-#include <tlRender/Device/BMDOutputDevice.h>
-#endif // TLRENDER_BMD
-
 #include <ftk/UI/App.h>
 #include <ftk/UI/RecentFilesModel.h>
 #include <ftk/UI/SysLogModel.h>
@@ -70,10 +66,6 @@ namespace tl
             std::shared_ptr<FilesModel> _filesModel;
 
             std::shared_ptr<MainWindow> _window;
-
-#if defined(TLRENDER_BMD)
-            std::shared_ptr<bmd::OutputDevice> _bmdOutputDevice;
-#endif // TLRENDER_BMD
 
             std::shared_ptr<ftk::Observer<std::shared_ptr<Player> > > _playerObserver;
 

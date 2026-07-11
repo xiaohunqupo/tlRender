@@ -1,5 +1,4 @@
 add_subdirectory(Core)
-add_subdirectory(Device)
 add_subdirectory(GL)
 add_subdirectory(IO)
 add_subdirectory(Resource)
