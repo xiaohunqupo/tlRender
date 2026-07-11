@@ -32,7 +32,7 @@ set(SOURCE
     ViewActions.cpp
     WindowActions.cpp)
 
-set(LIBRARIES tlUI tlDevice)
+set(LIBRARIES tlUI)
 
 add_library(tlPlayApp ${HEADERS} ${SOURCE})
 

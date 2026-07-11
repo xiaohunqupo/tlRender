@@ -5,15 +5,12 @@
 
 #include <tlRender/UI/Init.h>
 
-#include <tlRender/Device/Init.h>
-
 int main(int argc, char* argv[])
 {
     try
     {
         auto context = ftk::Context::create();
         tl::ui::init(context);
-        tl::device::init(context);
         auto args = ftk::convert(argc, argv);
         auto app = tl::play::App::create(context, args);
         if (app->hasCmdLineHelp())
