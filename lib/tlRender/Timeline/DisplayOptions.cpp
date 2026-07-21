@@ -20,8 +20,7 @@ namespace tl
             brightness == other.brightness &&
             contrast == other.contrast &&
             saturation == other.saturation &&
-            hue == other.hue &&
-            invert == other.invert;
+            hue == other.hue;
     }
 
     bool Color::operator != (const Color& other) const
@@ -142,6 +141,7 @@ namespace tl
     {
         return
             channels == other.channels &&
+            negative == other.negative &&
             mirror == other.mirror &&
             aspectRatio == other.aspectRatio &&
             color == other.color &&
@@ -272,7 +272,6 @@ namespace tl
         json["Contrast"] = in.contrast;
         json["Saturation"] = in.saturation;
         json["Hue"] = in.hue;
-        json["Invert"] = in.invert;
     }
 
     void to_json(nlohmann::json& json, const Levels& in)
@@ -316,6 +315,7 @@ namespace tl
     void to_json(nlohmann::json& json, const DisplayOptions& in)
     {
         json["Channels"] = to_string(in.channels);
+        json["Negative"] = in.negative;
         json["AspectRatio"] = in.aspectRatio;
         json["Mirror"] = in.mirror;
         json["Color"] = in.color;
@@ -333,7 +333,6 @@ namespace tl
         json.at("Contrast").get_to(out.contrast);
         json.at("Saturation").get_to(out.saturation);
         json.at("Hue").get_to(out.hue);
-        json.at("Invert").get_to(out.invert);
     }
 
     void from_json(const nlohmann::json& json, Levels& out)
@@ -377,6 +376,7 @@ namespace tl
     void from_json(const nlohmann::json& json, DisplayOptions& out)
     {
         from_string(json.at("Channels").get<std::string>(), out.channels);
+        json.at("Negative").get_to(out.negative);
         json.at("Mirror").get_to(out.mirror);
         json.at("AspectRatio").get_to(out.aspectRatio);
         json.at("Color").get_to(out.color);

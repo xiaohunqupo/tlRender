@@ -21,7 +21,6 @@ namespace tl
         ftk::V3F contrast   = ftk::V3F(1.F, 1.F, 1.F);
         ftk::V3F saturation = ftk::V3F(1.F, 1.F, 1.F);
         float    hue        = 0.F;
-        bool     invert     = false;
 
         TL_API bool operator == (const Color&) const;
         TL_API bool operator != (const Color&) const;
@@ -154,6 +153,7 @@ namespace tl
     struct TL_API_TYPE DisplayOptions
     {
         ftk::ChannelDisplay channels    = ftk::ChannelDisplay::Color;
+        bool                negative    = false;
         ftk::ImageMirror    mirror;
         AspectRatioOptions  aspectRatio;
         Color               color;

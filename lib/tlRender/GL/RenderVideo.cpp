@@ -899,6 +899,7 @@ namespace tl
                 p.shaders["display"]->bind();
                 p.shaders["display"]->setUniform("textureSampler", 0);
                 p.shaders["display"]->setUniform("channels", static_cast<int>(displayOptions.channels));
+                p.shaders["display"]->setUniform("negative", displayOptions.negative);
                 p.shaders["display"]->setUniform("mirrorX", displayOptions.mirror.x);
                 p.shaders["display"]->setUniform("mirrorY", displayOptions.mirror.y);
                 const bool colorMatrixEnabled =
@@ -910,9 +911,6 @@ namespace tl
                 {
                     p.shaders["display"]->setUniform("colorMatrix", color(displayOptions.color));
                 }
-                p.shaders["display"]->setUniform(
-                    "colorInvert",
-                    displayOptions.color.enabled ? displayOptions.color.invert : false);
                 p.shaders["display"]->setUniform("levelsEnabled", displayOptions.levels.enabled);
                 p.shaders["display"]->setUniform("levels.inLow", displayOptions.levels.inLow);
                 p.shaders["display"]->setUniform("levels.inHigh", displayOptions.levels.inHigh);
