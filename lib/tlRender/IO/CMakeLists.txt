@@ -8,6 +8,7 @@ set(HEADERS
     SystemInline.h
     Write.h)
 set(HEADERS_PRIVATE
+    RequestQueuePrivate.h
     SeqIOReadPrivate.h)
 
 set(SOURCE

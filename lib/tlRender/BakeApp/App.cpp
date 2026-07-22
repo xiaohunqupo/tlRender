@@ -542,9 +542,8 @@ namespace tl
         void App::_writeAudio()
         {
             if (!_hasAudio)
-            {
                 return;
-            }
+
             const double videoSeconds = _outputTime.rescaled_to(1.0).value();
             while (_audioSeconds < std::min(videoSeconds, _audioDurationSeconds))
             {
@@ -560,15 +559,7 @@ namespace tl
                         layers.push_back(layer.audio);
                     }
                 }
-                std::shared_ptr<Audio> audio;
-                if (1 == layers.size())
-                {
-                    audio = layers.front();
-                }
-                else if (!layers.empty())
-                {
-                    audio = mixAudio(layers, 1.F);
-                }
+                auto audio = mixAudio(layers, 1.F);
                 if (audio && audio->isValid())
                 {
                     // Trim the final chunk to the in/out range.

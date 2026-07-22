@@ -70,8 +70,6 @@ namespace tl
         private:
             void _videoThread();
             void _audioThread();
-            void _cancelVideoRequests();
-            void _cancelAudioRequests();
 
             FTK_PRIVATE();
         };

@@ -5,6 +5,8 @@
 
 #include <tlRender/IO/FFmpegPrivate.h>
 
+#include <tlRender/IO/RequestQueuePrivate.h>
+
 #include <ftk/Core/LogSystem.h>
 
 extern "C"
@@ -193,21 +195,16 @@ namespace tl
                 IOOptions options;
                 std::promise<VideoData> promise;
             };
-            struct VideoMutex
-            {
-                std::list<std::shared_ptr<InfoRequest> > infoRequests;
-                std::list<std::shared_ptr<VideoRequest> > videoRequests;
-                bool stopped = false;
-                std::mutex mutex;
-            };
-            VideoMutex videoMutex;
+            // The info and video queues share one condition so that the
+            // video thread can wait for a request on either.
+            RequestCondition videoCondition;
+            RequestQueue<InfoRequest, IOInfo> infoRequests{ videoCondition };
+            RequestQueue<VideoRequest, VideoData> videoRequests{ videoCondition };
             struct VideoThread
             {
                 OTIO_NS::RationalTime currentTime = invalidTime;
                 std::chrono::steady_clock::time_point logTimer;
-                std::condition_variable cv;
                 std::thread thread;
-                std::atomic<bool> running{ false };
             };
             VideoThread videoThread;
 
@@ -217,21 +214,13 @@ namespace tl
                 IOOptions options;
                 std::promise<AudioData> promise;
             };
-            struct AudioMutex
-            {
-                std::list<std::shared_ptr<AudioRequest> > requests;
-                //std::shared_ptr<AudioRequest> currentRequest;
-                bool stopped = false;
-                std::mutex mutex;
-            };
-            AudioMutex audioMutex;
+            RequestCondition audioCondition;
+            RequestQueue<AudioRequest, AudioData> audioRequests{ audioCondition };
             struct AudioThread
             {
                 OTIO_NS::RationalTime currentTime = invalidTime;
                 std::chrono::steady_clock::time_point logTimer;
-                std::condition_variable cv;
                 std::thread thread;
-                std::atomic<bool> running{ false };
             };
             AudioThread audioThread;
 

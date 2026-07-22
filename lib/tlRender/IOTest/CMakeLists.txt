@@ -1,8 +1,10 @@
 set(HEADERS
-    IOTest.h)
+    IOTest.h
+    RequestQueueTest.h)
 
 set(SOURCE
-    IOTest.cpp)
+    IOTest.cpp
+    RequestQueueTest.cpp)
 
 if(TLRENDER_FFMPEG_PLUGIN)
     list(APPEND HEADERS FFmpegTest.h)

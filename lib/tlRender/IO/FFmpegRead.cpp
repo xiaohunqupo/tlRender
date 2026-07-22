@@ -143,8 +143,6 @@ namespace tl
                 from_string(i->second, p.options.audioBufferSize);
             }
 
-            p.videoThread.running = true;
-            p.audioThread.running = true;
             p.videoThread.thread = std::thread(
                 [this, path]
                 {
@@ -201,20 +199,10 @@ namespace tl
                                     }
                                 }
 
-                                // Mark the queue as stopped and cancel any
-                                // pending requests, whether the thread is
-                                // exiting normally or from an exception.
-                                // Without this, requests made after an
-                                // audio thread failure would never
-                                // complete. (The video thread epilogue
-                                // below also does this, but only runs at
-                                // shutdown or if setup fails before this
-                                // thread is spawned.)
-                                {
-                                    std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
-                                    p.audioMutex.stopped = true;
-                                }
-                                _cancelAudioRequests();
+                                // The epilogue; the video thread epilogue
+                                // only runs at shutdown or if setup fails
+                                // before this thread is spawned.
+                                p.audioCondition.stopQueues();
                             });
 
                         _videoThread();
@@ -236,16 +224,11 @@ namespace tl
                         }
                     }
 
-                    {
-                        std::unique_lock<std::mutex> lock(p.videoMutex.mutex);
-                        p.videoMutex.stopped = true;
-                    }
-                    _cancelVideoRequests();
-                    {
-                        std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
-                        p.audioMutex.stopped = true;
-                    }
-                    _cancelAudioRequests();
+                    // The epilogue; the audio queues are included for the
+                    // case where setup fails before the audio thread is
+                    // spawned.
+                    p.videoCondition.stopQueues();
+                    p.audioCondition.stopQueues();
                 });
         }
 
@@ -257,18 +240,10 @@ namespace tl
         {
             FTK_P();
 
-            // Stop the threads under their locks and wake them so that
-            // shutdown does not have to wait for the request timeout.
-            {
-                std::unique_lock<std::mutex> lock(p.videoMutex.mutex);
-                p.videoThread.running = false;
-            }
-            p.videoThread.cv.notify_one();
-            {
-                std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
-                p.audioThread.running = false;
-            }
-            p.audioThread.cv.notify_one();
+            // Stop the conditions and wake the threads so that shutdown
+            // does not have to wait for the request timeout.
+            p.videoCondition.stop();
+            p.audioCondition.stop();
             if (p.videoThread.thread.joinable())
             {
                 p.videoThread.thread.join();
@@ -303,26 +278,7 @@ namespace tl
         std::future<IOInfo> Read::getInfo()
         {
             FTK_P();
-            auto request = std::make_shared<Private::InfoRequest>();
-            auto future = request->promise.get_future();
-            bool valid = false;
-            {
-                std::unique_lock<std::mutex> lock(p.videoMutex.mutex);
-                if (!p.videoMutex.stopped)
-                {
-                    valid = true;
-                    p.videoMutex.infoRequests.push_back(request);
-                }
-            }
-            if (valid)
-            {
-                p.videoThread.cv.notify_one();
-            }
-            else
-            {
-                request->promise.set_value(IOInfo());
-            }
-            return future;
+            return p.infoRequests.push(std::make_shared<Private::InfoRequest>());
         }
 
         std::future<VideoData> Read::readVideo(
@@ -333,25 +289,7 @@ namespace tl
             auto request = std::make_shared<Private::VideoRequest>();
             request->time = time;
             request->options = merge(options, _options);
-            auto future = request->promise.get_future();
-            bool valid = false;
-            {
-                std::unique_lock<std::mutex> lock(p.videoMutex.mutex);
-                if (!p.videoMutex.stopped)
-                {
-                    valid = true;
-                    p.videoMutex.videoRequests.push_back(request);
-                }
-            }
-            if (valid)
-            {
-                p.videoThread.cv.notify_one();
-            }
-            else
-            {
-                request->promise.set_value(VideoData());
-            }
-            return future;
+            return p.videoRequests.push(request);
         }
 
         std::future<AudioData> Read::readAudio(
@@ -362,31 +300,15 @@ namespace tl
             auto request = std::make_shared<Private::AudioRequest>();
             request->timeRange = timeRange;
             request->options = merge(options, _options);
-            auto future = request->promise.get_future();
-            bool valid = false;
-            {
-                std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
-                if (!p.audioMutex.stopped)
-                {
-                    valid = true;
-                    p.audioMutex.requests.push_back(request);
-                }
-            }
-            if (valid)
-            {
-                p.audioThread.cv.notify_one();
-            }
-            else
-            {
-                request->promise.set_value(AudioData());
-            }
-            return future;
+            return p.audioRequests.push(request);
         }
 
         void Read::cancelRequests()
         {
-            _cancelVideoRequests();
-            _cancelAudioRequests();
+            FTK_P();
+            p.infoRequests.cancel();
+            p.videoRequests.cancel();
+            p.audioRequests.cancel();
         }
 
         std::string Read::getError() const
@@ -410,49 +332,22 @@ namespace tl
             p.readVideo->start();
             p.videoThread.logTimer = std::chrono::steady_clock::now();
             size_t errorCount = 0;
-            while (p.videoThread.running)
+            while (p.videoCondition.wait(std::chrono::milliseconds(p.options.requestTimeout)))
             {
-                // Check requests.
-                std::list<std::shared_ptr<Private::InfoRequest> > infoRequests;
-                std::shared_ptr<Private::VideoRequest> videoRequest;
-                {
-                    std::unique_lock<std::mutex> lock(p.videoMutex.mutex);
-                    if (p.videoThread.cv.wait_for(
-                        lock,
-                        std::chrono::milliseconds(p.options.requestTimeout),
-                        [this]
-                        {
-                            return
-                                !_p->videoMutex.infoRequests.empty() ||
-                                !_p->videoMutex.videoRequests.empty() ||
-                                !_p->videoThread.running;
-                        }))
-                    {
-                        infoRequests = std::move(p.videoMutex.infoRequests);
-                        if (!p.videoMutex.videoRequests.empty())
-                        {
-                            videoRequest = p.videoMutex.videoRequests.front();
-                            p.videoMutex.videoRequests.pop_front();
-                        }
-                    }
-                }
-
                 // Information requests.
-                for (auto& request : infoRequests)
+                for (const auto& request : p.infoRequests.popAll())
                 {
                     request->promise.set_value(p.info);
                 }
 
-                // Seek, process, and handle the request. If an exception
-                // escapes, complete the promise with an empty value first,
-                // matching the cancel behavior, so the caller never sees a
-                // broken promise; then rethrow so the thread epilogue
-                // stops the queue.
-                try
+                // Video request. The guard completes the promise if an
+                // exception escapes; see PromiseGuard.
+                if (auto videoRequest = p.videoRequests.pop())
                 {
+                    PromiseGuard<VideoData> guard(videoRequest->promise);
+
                     // Seek.
-                    if (videoRequest &&
-                        !videoRequest->time.strictly_equal(p.videoThread.currentTime))
+                    if (!videoRequest->time.strictly_equal(p.videoThread.currentTime))
                     {
                         p.videoThread.currentTime = videoRequest->time;
                         p.readVideo->seek(p.videoThread.currentTime);
@@ -460,38 +355,21 @@ namespace tl
 
                     // Process.
                     while (
-                        videoRequest &&
                         p.readVideo->isBufferEmpty() &&
                         p.readVideo->isValid() &&
-                        _p->readVideo->process(p.videoThread.currentTime))
+                        p.readVideo->process(p.videoThread.currentTime))
                         ;
 
-                    // Handle request.
-                    if (videoRequest)
+                    // Handle the request.
+                    VideoData data;
+                    data.time = videoRequest->time;
+                    if (!p.readVideo->isBufferEmpty())
                     {
-                        VideoData data;
-                        data.time = videoRequest->time;
-                        if (!p.readVideo->isBufferEmpty())
-                        {
-                            data.image = p.readVideo->popBuffer();
-                        }
-                        videoRequest->promise.set_value(data);
+                        data.image = p.readVideo->popBuffer();
+                    }
+                    guard.setValue(std::move(data));
 
-                        p.videoThread.currentTime += OTIO_NS::RationalTime(1.0, p.info.videoTime.duration().rate());
-                    }
-                }
-                catch (...)
-                {
-                    if (videoRequest)
-                    {
-                        try
-                        {
-                            videoRequest->promise.set_value(VideoData());
-                        }
-                        catch (const std::future_error&)
-                        {}
-                    }
-                    throw;
+                    p.videoThread.currentTime += OTIO_NS::RationalTime(1.0, p.info.videoTime.duration().rate());
                 }
 
                 // Record any new errors from the worker, logging the
@@ -532,17 +410,12 @@ namespace tl
                         if (auto logSystem = _logSystem.lock())
                         {
                             const std::string id = ftk::Format("tl::ffmpeg::Read {0}").arg(this);
-                            size_t requestsSize = 0;
-                            {
-                                std::unique_lock<std::mutex> lock(p.videoMutex.mutex);
-                                requestsSize = p.videoMutex.videoRequests.size();
-                            }
                             logSystem->print(id, ftk::Format(
                                 "\n"
                                 "    * Path: {0}\n"
                                 "    * Video requests: {1}").
                                 arg(_path.get()).
-                                arg(requestsSize));
+                                arg(p.videoRequests.size()));
                         }
                     }
                 }*/
@@ -557,48 +430,26 @@ namespace tl
             p.audioThread.logTimer = std::chrono::steady_clock::now();
             const bool audioValid = p.info.audio.isValid();
             size_t errorCount = 0;
-            while (p.audioThread.running)
+            while (p.audioCondition.wait(std::chrono::milliseconds(p.options.requestTimeout)))
             {
-                // Check requests.
-                std::shared_ptr<Private::AudioRequest> request;
-                size_t requestSampleCount = 0;
-                bool seek = false;
+                // Audio request. The guard completes the promise if an
+                // exception escapes; see PromiseGuard.
+                if (auto request = p.audioRequests.pop())
                 {
-                    std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
-                    if (p.audioThread.cv.wait_for(
-                        lock,
-                        std::chrono::milliseconds(p.options.requestTimeout),
-                        [this]
-                        {
-                            return
-                                !_p->audioMutex.requests.empty() ||
-                                !_p->audioThread.running;
-                        }))
+                    PromiseGuard<AudioData> guard(request->promise);
+
+                    size_t requestSampleCount = 0;
+                    bool seek = false;
+                    if (audioValid)
                     {
-                        if (!p.audioMutex.requests.empty())
+                        requestSampleCount = request->timeRange.duration().rescaled_to(p.info.audio.sampleRate).value();
+                        if (!request->timeRange.start_time().strictly_equal(p.audioThread.currentTime))
                         {
-                            request = p.audioMutex.requests.front();
-                            p.audioMutex.requests.pop_front();
-                            if (audioValid)
-                            {
-                                requestSampleCount = request->timeRange.duration().rescaled_to(p.info.audio.sampleRate).value();
-                                if (!request->timeRange.start_time().strictly_equal(p.audioThread.currentTime))
-                                {
-                                    seek = true;
-                                    p.audioThread.currentTime = request->timeRange.start_time();
-                                }
-                            }
+                            seek = true;
+                            p.audioThread.currentTime = request->timeRange.start_time();
                         }
                     }
-                }
 
-                // Seek, process, and handle the request. If an exception
-                // escapes, complete the promise with an empty value first,
-                // matching the cancel behavior, so the caller never sees a
-                // broken promise; then rethrow so the thread epilogue
-                // stops the queue.
-                try
-                {
                     // Seek.
                     if (seek)
                     {
@@ -607,12 +458,11 @@ namespace tl
 
                     // Process.
                     bool intersects = false;
-                    if (request && audioValid)
+                    if (audioValid)
                     {
                         intersects = request->timeRange.intersects(p.info.audioTime);
                     }
                     while (
-                        request &&
                         intersects &&
                         p.readAudio->getBufferSize() < request->timeRange.duration().rescaled_to(p.info.audio.sampleRate).value() &&
                         p.readAudio->isValid() &&
@@ -623,54 +473,38 @@ namespace tl
                             p.options.audioBufferSize.rescaled_to(p.info.audio.sampleRate).value()))
                         ;
 
-                    // Handle request.
-                    if (request)
+                    // Handle the request.
+                    AudioData audioData;
+                    audioData.time = request->timeRange.start_time();
+                    if (audioValid)
                     {
-                        AudioData audioData;
-                        audioData.time = request->timeRange.start_time();
-                        if (audioValid)
+                        // Note that the request time range may be expressed
+                        // at any rate, so sizes and offsets must be
+                        // rescaled to the sample rate rather than using the
+                        // raw time values.
+                        audioData.audio = Audio::create(
+                            p.info.audio,
+                            requestSampleCount);
+                        audioData.audio->zero();
+                        if (intersects)
                         {
-                            // Note that the request time range may be expressed
-                            // at any rate, so sizes and offsets must be
-                            // rescaled to the sample rate rather than using the
-                            // raw time values.
-                            audioData.audio = Audio::create(
-                                p.info.audio,
-                                requestSampleCount);
-                            audioData.audio->zero();
-                            if (intersects)
+                            size_t offset = 0;
+                            if (audioData.time < p.info.audioTime.start_time())
                             {
-                                size_t offset = 0;
-                                if (audioData.time < p.info.audioTime.start_time())
-                                {
-                                    offset = std::min(
-                                        static_cast<size_t>(
-                                            (p.info.audioTime.start_time() - audioData.time).
-                                                rescaled_to(p.info.audio.sampleRate).value()),
-                                        requestSampleCount);
-                                }
-                                p.readAudio->bufferCopy(
-                                    audioData.audio->getData() + offset * p.info.audio.getByteCount(),
-                                    audioData.audio->getSampleCount() - offset);
+                                offset = std::min(
+                                    static_cast<size_t>(
+                                        (p.info.audioTime.start_time() - audioData.time).
+                                            rescaled_to(p.info.audio.sampleRate).value()),
+                                    requestSampleCount);
                             }
+                            p.readAudio->bufferCopy(
+                                audioData.audio->getData() + offset * p.info.audio.getByteCount(),
+                                audioData.audio->getSampleCount() - offset);
                         }
-                        request->promise.set_value(audioData);
+                    }
+                    guard.setValue(std::move(audioData));
 
-                        p.audioThread.currentTime += request->timeRange.duration();
-                    }
-                }
-                catch (...)
-                {
-                    if (request)
-                    {
-                        try
-                        {
-                            request->promise.set_value(AudioData());
-                        }
-                        catch (const std::future_error&)
-                        {}
-                    }
-                    throw;
+                    p.audioThread.currentTime += request->timeRange.duration();
                 }
 
                 // Record any new errors from the worker, logging the
@@ -711,54 +545,15 @@ namespace tl
                         if (auto logSystem = _logSystem.lock())
                         {
                             const std::string id = ftk::Format("tl::ffmpeg::Read {0}").arg(this);
-                            size_t requestsSize = 0;
-                            {
-                                std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
-                                requestsSize = p.audioMutex.requests.size();
-                            }
                             logSystem->print(id, ftk::Format(
                                 "\n"
                                 "    * Path: {0}\n"
                                 "    * Audio requests: {1}").
                                 arg(_path.get()).
-                                arg(requestsSize));
+                                arg(p.audioRequests.size()));
                         }
                     }
                 }*/
-            }
-        }
-
-        void Read::_cancelVideoRequests()
-        {
-            FTK_P();
-            std::list<std::shared_ptr<Private::InfoRequest> > infoRequests;
-            std::list<std::shared_ptr<Private::VideoRequest> > videoRequests;
-            {
-                std::unique_lock<std::mutex> lock(p.videoMutex.mutex);
-                infoRequests = std::move(p.videoMutex.infoRequests);
-                videoRequests = std::move(p.videoMutex.videoRequests);
-            }
-            for (auto& request : infoRequests)
-            {
-                request->promise.set_value(IOInfo());
-            }
-            for (auto& request : videoRequests)
-            {
-                request->promise.set_value(VideoData());
-            }
-        }
-
-        void Read::_cancelAudioRequests()
-        {
-            FTK_P();
-            std::list<std::shared_ptr<Private::AudioRequest> > requests;
-            {
-                std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
-                requests = std::move(p.audioMutex.requests);
-            }
-            for (auto& request : requests)
-            {
-                request->promise.set_value(AudioData());
             }
         }
     }
