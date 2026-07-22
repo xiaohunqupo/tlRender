@@ -4,6 +4,7 @@
 #include <tlRender/IO/OIIO.h>
 
 #include <ftk/Core/Format.h>
+#include <ftk/Core/LogSystem.h>
 
 #include <OpenImageIO/imagebufalgo.h>
 
@@ -26,6 +27,17 @@ namespace tl
                 }
             }
             IReadPlugin::_init("OIIO", exts, logSystem);
+
+            std::vector<std::string> log;
+            for (const auto& i : exts)
+            {
+                log.push_back(i.first);
+            }
+            logSystem->print(
+                "tl::OIIO::ReadPlugin",
+                ftk::Format(
+                    "\n"
+                    "    * Formats: {0}").arg(ftk::join(log, ", ")));
         }
 
         std::shared_ptr<ReadPlugin> ReadPlugin::create(
@@ -67,6 +79,17 @@ namespace tl
                 }
             }
             IWritePlugin::_init("OIIO", exts, logSystem);
+
+            std::vector<std::string> log;
+            for (const auto& i : exts)
+            {
+                log.push_back(i.first);
+            }
+            logSystem->print(
+                "tl::OIIO::WritePlugin",
+                ftk::Format(
+                    "\n"
+                    "    * Formats: {0}").arg(ftk::join(log, ", ")));
         }
 
         std::shared_ptr<WritePlugin> WritePlugin::create(
