@@ -22,6 +22,7 @@ namespace tl
         private:
             void _convert();
             void _io();
+            void _audio();
         };
     }
 }

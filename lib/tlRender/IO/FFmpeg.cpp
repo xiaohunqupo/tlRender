@@ -301,6 +301,8 @@ namespace tl
         {
             std::vector<AVCodecID> codecIds;
             std::vector<std::string> codecNames;
+            std::vector<AVCodecID> audioCodecIds;
+            std::vector<std::string> audioCodecNames;
         };
 
         void WritePlugin::_init(
@@ -317,6 +319,11 @@ namespace tl
                 {
                     p.codecIds.push_back(avCodec->id);
                     p.codecNames.push_back(avCodec->name);
+                }
+                else if (AVMEDIA_TYPE_AUDIO == avCodec->type && av_codec_is_encoder(avCodec))
+                {
+                    p.audioCodecIds.push_back(avCodec->id);
+                    p.audioCodecNames.push_back(avCodec->name);
                 }
             }
 
@@ -353,8 +360,10 @@ namespace tl
                 ftk::Format(
                     "\n"
                     "    * Codecs: {0}\n"
-                    "    * Formats: {1}").
+                    "    * Audio codecs: {1}\n"
+                    "    * Formats: {2}").
                 arg(ftk::join(p.codecNames, ", ")).
+                arg(ftk::join(p.audioCodecNames, ", ")).
                 arg(ftk::join(formatLog, ", ")));
         }
 
@@ -373,6 +382,11 @@ namespace tl
         const std::vector<std::string>& WritePlugin::getCodecs() const
         {
             return _p->codecNames;
+        }
+
+        const std::vector<std::string>& WritePlugin::getAudioCodecs() const
+        {
+            return _p->audioCodecNames;
         }
 
         ftk::ImageInfo WritePlugin::getInfo(

@@ -18,6 +18,9 @@
 #include <ftk/Core/Math.h>
 #include <ftk/Core/String.h>
 
+#include <algorithm>
+#include <cstring>
+
 namespace tl
 {
     namespace bake
@@ -27,10 +30,12 @@ namespace tl
             std::vector<std::string>& argv)
         {
             std::vector<std::string> ffmpegCodecs;
+            std::vector<std::string> ffmpegAudioCodecs;
 #if defined(TLRENDER_FFMPEG_PLUGIN)
             auto ioSystem = context->getSystem<WriteSystem>();
             auto ffmpegPlugin = ioSystem->getPlugin<ffmpeg::WritePlugin>();
             ffmpegCodecs = ffmpegPlugin->getCodecs();
+            ffmpegAudioCodecs = ffmpegPlugin->getAudioCodecs();
 #endif // TLRENDER_FFMPEG_PLUGIN
             _cmdLine.input = ftk::CmdLineArg<std::string>::create(
                 "input",
@@ -112,6 +117,12 @@ namespace tl
                 "FFmpeg",
                 "mjpeg",
                 ftk::quotes(ffmpegCodecs));
+            _cmdLine.ffmpegAudioCodec = ftk::CmdLineOption<std::string>::create(
+                { "-ffmpegAudioCodec", "-ffac" },
+                "Output audio codec. The default is chosen by the output format.",
+                "FFmpeg",
+                std::optional<std::string>(),
+                ftk::quotes(ffmpegAudioCodecs));
             _cmdLine.ffmpegThreadCount = ftk::CmdLineOption<int>::create(
                 { "-ffmpegThreadCount" },
                 "Number of threads for I/O.",
@@ -185,6 +196,7 @@ namespace tl
 #endif // TLRENDER_EXR
 #if defined(TLRENDER_FFMPEG_PLUGIN)
                     _cmdLine.ffmpegCodec,
+                    _cmdLine.ffmpegAudioCodec,
                     _cmdLine.ffmpegThreadCount,
 #endif // TLRENDER_FFMPEG_PLUGIN
 #if defined(TLRENDER_USD)
@@ -292,6 +304,22 @@ namespace tl
             IOInfo ioInfo;
             ioInfo.video.push_back(_outputInfo);
             ioInfo.videoTime = _timeRange;
+#if defined(TLRENDER_FFMPEG_PLUGIN)
+            if (info.audio.isValid() &&
+                std::dynamic_pointer_cast<ffmpeg::WritePlugin>(_writerPlugin))
+            {
+                _hasAudio = true;
+                ioInfo.audio = info.audio;
+                ioInfo.audioTime = OTIO_NS::TimeRange(
+                    OTIO_NS::RationalTime(0.0, info.audio.sampleRate),
+                    _timeRange.duration().rescaled_to(info.audio.sampleRate));
+                _audioStartSeconds = _timeRange.start_time().rescaled_to(1.0).value();
+                _audioDurationSeconds = _timeRange.duration().rescaled_to(1.0).value();
+                _print(ftk::Format("Audio: {0} channels, {1}Hz").
+                    arg(ioInfo.audio.channelCount).
+                    arg(ioInfo.audio.sampleRate));
+            }
+#endif // TLRENDER_FFMPEG_PLUGIN
             _writer = _writerPlugin->write(ftk::Path(output), ioInfo, _getIOOptions());
             if (!_writer)
             {
@@ -347,6 +375,10 @@ namespace tl
                 _tick();
             }
 
+            // Finish writing. Errors while flushing and finalizing the
+            // file are reported here as exceptions.
+            _writer->finish();
+
             const auto now = std::chrono::steady_clock::now();
             const std::chrono::duration<float> diff = now - _startTime;
             _print(ftk::Format("Seconds elapsed: {0}").arg(diff.count()));
@@ -386,6 +418,10 @@ namespace tl
             if (_cmdLine.ffmpegCodec->hasValue())
             {
                 out["FFmpeg/Codec"] = _cmdLine.ffmpegCodec->getValue();
+            }
+            if (_cmdLine.ffmpegAudioCodec->hasValue())
+            {
+                out["FFmpeg/AudioCodec"] = _cmdLine.ffmpegAudioCodec->getValue();
             }
             if (_cmdLine.ffmpegThreadCount->hasValue())
             {
@@ -488,6 +524,70 @@ namespace tl
                 _running = false;
             }
             _outputTime += OTIO_NS::RationalTime(1, _outputTime.rate());
+
+            // Write the audio.
+            _writeAudio();
+        }
+
+        void App::_writeAudio()
+        {
+            if (!_hasAudio)
+            {
+                return;
+            }
+            const double videoSeconds = _outputTime.rescaled_to(1.0).value();
+            while (_audioSeconds < std::min(videoSeconds, _audioDurationSeconds))
+            {
+                // Get one second of audio from the timeline and mix the
+                // layers together.
+                auto frame = _timeline->getAudio(
+                    _audioStartSeconds + _audioSeconds).future.get();
+                std::vector<std::shared_ptr<Audio> > layers;
+                for (const auto& layer : frame.layers)
+                {
+                    if (layer.audio)
+                    {
+                        layers.push_back(layer.audio);
+                    }
+                }
+                std::shared_ptr<Audio> audio;
+                if (1 == layers.size())
+                {
+                    audio = layers.front();
+                }
+                else if (!layers.empty())
+                {
+                    audio = mixAudio(layers, 1.F);
+                }
+                if (audio && audio->isValid())
+                {
+                    // Trim the final chunk to the in/out range.
+                    const double remaining = _audioDurationSeconds - _audioSeconds;
+                    if (remaining < 1.0)
+                    {
+                        const size_t sampleCount = std::min(
+                            audio->getSampleCount(),
+                            static_cast<size_t>(
+                                remaining * audio->getInfo().sampleRate + .5));
+                        auto tmp = Audio::create(audio->getInfo(), sampleCount);
+                        std::memcpy(
+                            tmp->getData(),
+                            audio->getData(),
+                            tmp->getByteCount());
+                        audio = tmp;
+                    }
+                    const OTIO_NS::TimeRange timeRange(
+                        OTIO_NS::RationalTime(
+                            _audioSamples,
+                            audio->getInfo().sampleRate),
+                        OTIO_NS::RationalTime(
+                            audio->getSampleCount(),
+                            audio->getInfo().sampleRate));
+                    _writer->writeAudio(timeRange, audio);
+                    _audioSamples += audio->getSampleCount();
+                }
+                _audioSeconds += 1.0;
+            }
         }
 
         void App::_printProgress()

@@ -55,6 +55,7 @@ namespace tl
 #endif // TLRENDER_EXR
 #if defined(TLRENDER_FFMPEG_PLUGIN)
             std::shared_ptr<ftk::CmdLineOption<std::string> > ffmpegCodec;
+            std::shared_ptr<ftk::CmdLineOption<std::string> > ffmpegAudioCodec;
             std::shared_ptr<ftk::CmdLineOption<int> > ffmpegThreadCount;
 #endif // TLRENDER_FFMPEG_PLUGIN
 #if defined(TLRENDER_USD)
@@ -94,6 +95,7 @@ namespace tl
             IOOptions _getIOOptions() const;
 
             void _tick();
+            void _writeAudio();
             void _printProgress();
 
             CmdLine _cmdLine;
@@ -106,6 +108,11 @@ namespace tl
             OTIO_NS::TimeRange _timeRange = invalidTimeRange;
             OTIO_NS::RationalTime _inputTime = invalidTime;
             OTIO_NS::RationalTime _outputTime = invalidTime;
+            bool _hasAudio = false;
+            double _audioStartSeconds = 0.0;
+            double _audioDurationSeconds = 0.0;
+            double _audioSeconds = 0.0;
+            int64_t _audioSamples = 0;
 
             std::shared_ptr<ftk::gl::Window> _window;
             std::shared_ptr<IIOPlugin> _usdPlugin;

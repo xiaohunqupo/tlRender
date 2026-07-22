@@ -4,12 +4,18 @@
 #include <tlRender/IO/FFmpegPrivate.h>
 
 #include <ftk/Core/Format.h>
+#include <ftk/Core/LogSystem.h>
+
+#include <algorithm>
 
 extern "C"
 {
 #include <libavcodec/avcodec.h>
+#include <libavutil/audio_fifo.h>
+#include <libavutil/channel_layout.h>
 #include <libavutil/imgutils.h>
 #include <libavutil/opt.h>
+#include <libswresample/swresample.h>
 }
 
 namespace tl
@@ -27,7 +33,18 @@ namespace tl
             AVPixelFormat avPixelFormatIn = AV_PIX_FMT_NONE;
             AVFrame* avFrame2 = nullptr;
             SwsContext* swsContext = nullptr;
+
+            AVCodecContext* avAudioCodecContext = nullptr;
+            AVStream* avAudioStream = nullptr;
+            AVPacket* avAudioPacket = nullptr;
+            AVFrame* avAudioFrame = nullptr;
+            AVSampleFormat avSampleFormatIn = AV_SAMPLE_FMT_NONE;
+            SwrContext* swrContext = nullptr;
+            AVAudioFifo* avAudioFifo = nullptr;
+            int64_t audioSampleCount = 0;
+
             bool opened = false;
+            bool finished = false;
         };
 
         void Write::_init(
@@ -111,6 +128,185 @@ namespace tl
 
             p.avVideoStream->time_base = { rational.second, rational.first };
             p.avVideoStream->avg_frame_rate = { rational.first, rational.second };
+
+            // Setup the audio stream.
+            if (info.audio.isValid())
+            {
+                std::string audioCodec;
+                option = options.find("FFmpeg/AudioCodec");
+                if (option != options.end())
+                {
+                    audioCodec = option->second;
+                }
+                const AVCodec* avAudioCodec = nullptr;
+                if (!audioCodec.empty())
+                {
+                    avAudioCodec = avcodec_find_encoder_by_name(audioCodec.c_str());
+                    if (!avAudioCodec)
+                    {
+                        throw std::runtime_error(ftk::Format("Cannot find audio encoder \"{0}\": \"{1}\"").
+                            arg(audioCodec).arg(p.fileName));
+                    }
+                }
+                else if (p.avFormatContext->oformat->audio_codec != AV_CODEC_ID_NONE)
+                {
+                    avAudioCodec = avcodec_find_encoder(p.avFormatContext->oformat->audio_codec);
+                }
+                if (!avAudioCodec)
+                {
+                    // The container does not support audio; skip it.
+                    if (logSystem)
+                    {
+                        logSystem->print(
+                            "tl::ffmpeg::Write",
+                            ftk::Format("No audio encoder for the output format, "
+                                "audio will not be written: \"{0}\"").arg(p.fileName),
+                            ftk::LogType::Warning);
+                    }
+                }
+                else
+                {
+                    p.avSampleFormatIn = fromAudioType(info.audio.type);
+                    if (AV_SAMPLE_FMT_NONE == p.avSampleFormatIn)
+                    {
+                        throw std::runtime_error(ftk::Format("Incompatible audio type: \"{0}\"").arg(p.fileName));
+                    }
+
+                    p.avAudioCodecContext = avcodec_alloc_context3(avAudioCodec);
+                    if (!p.avAudioCodecContext)
+                    {
+                        throw std::runtime_error(ftk::Format("Cannot allocate context: \"{0}\"").arg(p.fileName));
+                    }
+                    p.avAudioStream = avformat_new_stream(p.avFormatContext, avAudioCodec);
+                    if (!p.avAudioStream)
+                    {
+                        throw std::runtime_error(ftk::Format("Cannot allocate stream: \"{0}\"").arg(p.fileName));
+                    }
+
+                    // Pick a sample format supported by the encoder,
+                    // preferring an exact match with the input.
+                    AVSampleFormat avSampleFormat = p.avSampleFormatIn;
+                    if (avAudioCodec->sample_fmts)
+                    {
+                        avSampleFormat = avAudioCodec->sample_fmts[0];
+                        for (const AVSampleFormat* i = avAudioCodec->sample_fmts;
+                            *i != AV_SAMPLE_FMT_NONE;
+                            ++i)
+                        {
+                            if (*i == p.avSampleFormatIn)
+                            {
+                                avSampleFormat = *i;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Pick a sample rate supported by the encoder,
+                    // preferring the closest to the input.
+                    int sampleRate = info.audio.sampleRate;
+                    if (avAudioCodec->supported_samplerates)
+                    {
+                        int closest = avAudioCodec->supported_samplerates[0];
+                        for (const int* i = avAudioCodec->supported_samplerates; *i; ++i)
+                        {
+                            if (std::abs(*i - sampleRate) < std::abs(closest - sampleRate))
+                            {
+                                closest = *i;
+                            }
+                        }
+                        sampleRate = closest;
+                    }
+
+                    p.avAudioCodecContext->codec_id = avAudioCodec->id;
+                    p.avAudioCodecContext->codec_type = AVMEDIA_TYPE_AUDIO;
+                    p.avAudioCodecContext->sample_fmt = avSampleFormat;
+                    p.avAudioCodecContext->sample_rate = sampleRate;
+                    p.avAudioCodecContext->time_base = { 1, sampleRate };
+                    av_channel_layout_default(
+                        &p.avAudioCodecContext->ch_layout,
+                        info.audio.channelCount);
+                    if (p.avFormatContext->oformat->flags & AVFMT_GLOBALHEADER)
+                    {
+                        p.avAudioCodecContext->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+                    }
+
+                    r = avcodec_open2(p.avAudioCodecContext, avAudioCodec, NULL);
+                    if (r < 0)
+                    {
+                        throw std::runtime_error(ftk::Format("{0}: \"{1}\"").arg(getErrorLabel(r)).arg(p.fileName));
+                    }
+                    r = avcodec_parameters_from_context(
+                        p.avAudioStream->codecpar,
+                        p.avAudioCodecContext);
+                    if (r < 0)
+                    {
+                        throw std::runtime_error(ftk::Format("{0}: \"{1}\"").arg(getErrorLabel(r)).arg(p.fileName));
+                    }
+                    p.avAudioStream->time_base = { 1, sampleRate };
+
+                    // Setup the resampler for converting the input audio
+                    // to the encoder format.
+                    AVChannelLayout channelLayoutIn;
+                    av_channel_layout_default(&channelLayoutIn, info.audio.channelCount);
+                    r = swr_alloc_set_opts2(
+                        &p.swrContext,
+                        &p.avAudioCodecContext->ch_layout,
+                        p.avAudioCodecContext->sample_fmt,
+                        p.avAudioCodecContext->sample_rate,
+                        &channelLayoutIn,
+                        p.avSampleFormatIn,
+                        info.audio.sampleRate,
+                        0,
+                        NULL);
+                    av_channel_layout_uninit(&channelLayoutIn);
+                    if (r < 0 || !p.swrContext)
+                    {
+                        throw std::runtime_error(ftk::Format("Cannot get context: \"{0}\"").arg(p.fileName));
+                    }
+                    swr_init(p.swrContext);
+
+                    // The FIFO re-chunks incoming audio into the frame
+                    // size required by the encoder.
+                    p.avAudioFifo = av_audio_fifo_alloc(
+                        p.avAudioCodecContext->sample_fmt,
+                        p.avAudioCodecContext->ch_layout.nb_channels,
+                        p.avAudioCodecContext->sample_rate);
+                    if (!p.avAudioFifo)
+                    {
+                        throw std::runtime_error(ftk::Format("Cannot allocate FIFO: \"{0}\"").arg(p.fileName));
+                    }
+
+                    p.avAudioPacket = av_packet_alloc();
+                    if (!p.avAudioPacket)
+                    {
+                        throw std::runtime_error(ftk::Format("Cannot allocate packet: \"{0}\"").arg(p.fileName));
+                    }
+
+                    const int frameSize = p.avAudioCodecContext->frame_size > 0 ?
+                        p.avAudioCodecContext->frame_size :
+                        1024;
+                    p.avAudioFrame = av_frame_alloc();
+                    if (!p.avAudioFrame)
+                    {
+                        throw std::runtime_error(ftk::Format("Cannot allocate frame: \"{0}\"").arg(p.fileName));
+                    }
+                    p.avAudioFrame->format = p.avAudioCodecContext->sample_fmt;
+                    p.avAudioFrame->sample_rate = p.avAudioCodecContext->sample_rate;
+                    p.avAudioFrame->nb_samples = frameSize;
+                    r = av_channel_layout_copy(
+                        &p.avAudioFrame->ch_layout,
+                        &p.avAudioCodecContext->ch_layout);
+                    if (r < 0)
+                    {
+                        throw std::runtime_error(ftk::Format("{0}: \"{1}\"").arg(getErrorLabel(r)).arg(p.fileName));
+                    }
+                    r = av_frame_get_buffer(p.avAudioFrame, 0);
+                    if (r < 0)
+                    {
+                        throw std::runtime_error(ftk::Format("{0}: \"{1}\"").arg(getErrorLabel(r)).arg(p.fileName));
+                    }
+                }
+            }
 
             for (const auto& i : info.tags)
             {
@@ -210,12 +406,45 @@ namespace tl
         {
             FTK_P();
 
-            if (p.opened)
+            try
             {
-                _encodeVideo(nullptr);
-                av_write_trailer(p.avFormatContext);
+                finish();
+            }
+            catch (const std::exception& e)
+            {
+                // The destructor cannot throw; log the error instead.
+                // Call finish() explicitly to have errors that occur
+                // while finalizing the file reported as exceptions.
+                if (auto logSystem = _logSystem.lock())
+                {
+                    logSystem->print(
+                        "tl::ffmpeg::Write",
+                        ftk::Format("Error finishing \"{0}\": {1}").
+                            arg(p.fileName).arg(e.what()),
+                        ftk::LogType::Error);
+                }
             }
 
+            if (p.avAudioFifo)
+            {
+                av_audio_fifo_free(p.avAudioFifo);
+            }
+            if (p.swrContext)
+            {
+                swr_free(&p.swrContext);
+            }
+            if (p.avAudioFrame)
+            {
+                av_frame_free(&p.avAudioFrame);
+            }
+            if (p.avAudioPacket)
+            {
+                av_packet_free(&p.avAudioPacket);
+            }
+            if (p.avAudioCodecContext)
+            {
+                avcodec_free_context(&p.avAudioCodecContext);
+            }
             if (p.swsContext)
             {
                 sws_freeContext(p.swsContext);
@@ -255,6 +484,65 @@ namespace tl
             auto out = std::shared_ptr<Write>(new Write);
             out->_init(path, info, options, logSystem);
             return out;
+        }
+
+        void Write::finish()
+        {
+            FTK_P();
+
+            if (!p.opened || p.finished)
+            {
+                return;
+            }
+            // Mark as finished up front so that a failed finish is not
+            // retried by the destructor.
+            p.finished = true;
+
+            // Flush the video encoder.
+            _encodeVideo(nullptr);
+
+            // Drain the audio resampler, then the FIFO (including a
+            // final partial frame), then flush the audio encoder.
+            if (p.avAudioCodecContext)
+            {
+                const int swrSamples = swr_get_out_samples(p.swrContext, 0);
+                if (swrSamples > 0)
+                {
+                    uint8_t** swrData = nullptr;
+                    int r = av_samples_alloc_array_and_samples(
+                        &swrData,
+                        nullptr,
+                        p.avAudioCodecContext->ch_layout.nb_channels,
+                        swrSamples,
+                        p.avAudioCodecContext->sample_fmt,
+                        0);
+                    if (r >= 0)
+                    {
+                        const int converted = swr_convert(
+                            p.swrContext,
+                            swrData,
+                            swrSamples,
+                            nullptr,
+                            0);
+                        if (converted > 0)
+                        {
+                            av_audio_fifo_write(
+                                p.avAudioFifo,
+                                reinterpret_cast<void**>(swrData),
+                                converted);
+                        }
+                        if (swrData)
+                        {
+                            av_freep(&swrData[0]);
+                        }
+                        av_freep(&swrData);
+                    }
+                }
+                _drainAudioFifo(true);
+                _encodeAudio(nullptr);
+            }
+
+            av_write_trailer(p.avFormatContext);
         }
 
         void Write::writeVideo(
@@ -336,6 +624,126 @@ namespace tl
             _encodeVideo(p.avFrame);
         }
 
+        void Write::writeAudio(
+            const OTIO_NS::TimeRange&,
+            const std::shared_ptr<Audio>& audio,
+            const IOOptions&)
+        {
+            FTK_P();
+
+            if (!p.avAudioCodecContext || !audio || !audio->isValid())
+            {
+                return;
+            }
+
+            // Convert the input audio to the encoder format.
+            const int sampleCount = audio->getSampleCount();
+            const uint8_t* data = audio->getData();
+            const int swrSamples = swr_get_out_samples(p.swrContext, sampleCount);
+            uint8_t** swrData = nullptr;
+            int r = av_samples_alloc_array_and_samples(
+                &swrData,
+                nullptr,
+                p.avAudioCodecContext->ch_layout.nb_channels,
+                swrSamples,
+                p.avAudioCodecContext->sample_fmt,
+                0);
+            if (r < 0)
+            {
+                throw std::runtime_error(ftk::Format("{0}: \"{1}\"").arg(getErrorLabel(r)).arg(p.fileName));
+            }
+            const int converted = swr_convert(
+                p.swrContext,
+                swrData,
+                swrSamples,
+                &data,
+                sampleCount);
+            if (converted > 0)
+            {
+                av_audio_fifo_write(
+                    p.avAudioFifo,
+                    reinterpret_cast<void**>(swrData),
+                    converted);
+            }
+            if (swrData)
+            {
+                av_freep(&swrData[0]);
+            }
+            av_freep(&swrData);
+            if (converted < 0)
+            {
+                throw std::runtime_error(ftk::Format("{0}: \"{1}\"").arg(getErrorLabel(converted)).arg(p.fileName));
+            }
+
+            _drainAudioFifo(false);
+        }
+
+        void Write::_drainAudioFifo(bool flush)
+        {
+            FTK_P();
+
+            const int frameSize = p.avAudioCodecContext->frame_size > 0 ?
+                p.avAudioCodecContext->frame_size :
+                1024;
+            while (av_audio_fifo_size(p.avAudioFifo) >= frameSize ||
+                (flush && av_audio_fifo_size(p.avAudioFifo) > 0))
+            {
+                const int size = std::min(av_audio_fifo_size(p.avAudioFifo), frameSize);
+                int r = av_frame_make_writable(p.avAudioFrame);
+                if (r < 0)
+                {
+                    throw std::runtime_error(ftk::Format("{0}: \"{1}\"").arg(getErrorLabel(r)).arg(p.fileName));
+                }
+                p.avAudioFrame->nb_samples = size;
+                r = av_audio_fifo_read(
+                    p.avAudioFifo,
+                    reinterpret_cast<void**>(p.avAudioFrame->data),
+                    size);
+                if (r < size)
+                {
+                    throw std::runtime_error(ftk::Format("Cannot read FIFO: \"{0}\"").arg(p.fileName));
+                }
+                p.avAudioFrame->pts = p.audioSampleCount;
+                p.audioSampleCount += size;
+                _encodeAudio(p.avAudioFrame);
+            }
+        }
+
+        void Write::_encodeAudio(AVFrame* frame)
+        {
+            FTK_P();
+
+            int r = avcodec_send_frame(p.avAudioCodecContext, frame);
+            if (r < 0)
+            {
+                throw std::runtime_error(ftk::Format("Cannot write audio: \"{0}\"").arg(p.fileName));
+            }
+
+            while (r >= 0)
+            {
+                r = avcodec_receive_packet(p.avAudioCodecContext, p.avAudioPacket);
+                if (r == AVERROR(EAGAIN) || r == AVERROR_EOF)
+                {
+                    return;
+                }
+                else if (r < 0)
+                {
+                    throw std::runtime_error(ftk::Format("Cannot write audio: \"{0}\"").arg(p.fileName));
+                }
+                p.avAudioPacket->stream_index = p.avAudioStream->index;
+                av_packet_rescale_ts(
+                    p.avAudioPacket,
+                    p.avAudioCodecContext->time_base,
+                    p.avAudioStream->time_base);
+                r = av_interleaved_write_frame(p.avFormatContext, p.avAudioPacket);
+                if (r < 0)
+                {
+                    throw std::runtime_error(ftk::Format("Cannot write audio: \"{0}\"").arg(p.fileName));
+                }
+                av_packet_unref(p.avAudioPacket);
+            }
+        }
+
         void Write::_encodeVideo(AVFrame* frame)
         {
             FTK_P();
@@ -357,6 +765,7 @@ namespace tl
                 {
                     throw std::runtime_error(ftk::Format("Cannot write frame: \"{0}\"").arg(p.fileName));
                 }
+                p.avPacket->stream_index = p.avVideoStream->index;
                 r = av_interleaved_write_frame(p.avFormatContext, p.avPacket);
                 if (r < 0)
                 {

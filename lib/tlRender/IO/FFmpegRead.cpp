@@ -7,6 +7,8 @@
 #include <ftk/Core/Format.h>
 #include <ftk/Core/LogSystem.h>
 
+#include <algorithm>
+
 extern "C"
 {
 #include <libavutil/opt.h>
@@ -51,12 +53,36 @@ namespace tl
                 return bufferData->size;
             }
 
+            // Note that the seek mode must be honored, and the actual
+            // resulting position returned; returning the requested offset
+            // unclamped lets avio's notion of the stream position diverge
+            // from reality, which can send demuxer probing loops astray.
+            int64_t pos = 0;
+            switch (whence & ~AVSEEK_FORCE)
+            {
+            case SEEK_SET:
+                pos = offset;
+                break;
+            case SEEK_CUR:
+                pos = static_cast<int64_t>(bufferData->offset) + offset;
+                break;
+            case SEEK_END:
+                pos = static_cast<int64_t>(bufferData->size) + offset;
+                break;
+            default:
+                return AVERROR(EINVAL);
+            }
+            if (pos < 0)
+            {
+                return AVERROR(EINVAL);
+            }
+
             bufferData->offset = ftk::clamp(
-                offset,
+                pos,
                 static_cast<int64_t>(0),
                 static_cast<int64_t>(bufferData->size));
 
-            return offset;
+            return static_cast<int64_t>(bufferData->offset);
         }
 
         void Read::_init(
@@ -172,6 +198,21 @@ namespace tl
                                             ftk::LogType::Error);
                                     }
                                 }
+
+                                // Mark the queue as stopped and cancel any
+                                // pending requests, whether the thread is
+                                // exiting normally or from an exception.
+                                // Without this, requests made after an
+                                // audio thread failure would never
+                                // complete. (The video thread epilogue
+                                // below also does this, but only runs at
+                                // shutdown or if setup fails before this
+                                // thread is spawned.)
+                                {
+                                    std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
+                                    p.audioMutex.stopped = true;
+                                }
+                                _cancelAudioRequests();
                             });
 
                         _videoThread();
@@ -430,6 +471,7 @@ namespace tl
             p.audioThread.currentTime = p.info.audioTime.start_time();
             p.readAudio->start();
             p.audioThread.logTimer = std::chrono::steady_clock::now();
+            const bool audioValid = p.info.audio.isValid();
             while (p.audioThread.running)
             {
                 // Check requests.
@@ -450,11 +492,14 @@ namespace tl
                         {
                             request = p.audioMutex.requests.front();
                             p.audioMutex.requests.pop_front();
-                            requestSampleCount = request->timeRange.duration().rescaled_to(p.info.audio.sampleRate).value();
-                            if (!request->timeRange.start_time().strictly_equal(p.audioThread.currentTime))
+                            if (audioValid)
                             {
-                                seek = true;
-                                p.audioThread.currentTime = request->timeRange.start_time();
+                                requestSampleCount = request->timeRange.duration().rescaled_to(p.info.audio.sampleRate).value();
+                                if (!request->timeRange.start_time().strictly_equal(p.audioThread.currentTime))
+                                {
+                                    seek = true;
+                                    p.audioThread.currentTime = request->timeRange.start_time();
+                                }
                             }
                         }
                     }
@@ -468,7 +513,7 @@ namespace tl
 
                 // Process.
                 bool intersects = false;
-                if (request)
+                if (request && audioValid)
                 {
                     intersects = request->timeRange.intersects(p.info.audioTime);
                 }
@@ -489,18 +534,31 @@ namespace tl
                 {
                     AudioData audioData;
                     audioData.time = request->timeRange.start_time();
-                    audioData.audio = Audio::create(p.info.audio, request->timeRange.duration().value());
-                    audioData.audio->zero();
-                    if (intersects)
+                    if (audioValid)
                     {
-                        size_t offset = 0;
-                        if (audioData.time < p.info.audioTime.start_time())
+                        // Note that the request time range may be expressed
+                        // at any rate, so sizes and offsets must be
+                        // rescaled to the sample rate rather than using the
+                        // raw time values.
+                        audioData.audio = Audio::create(
+                            p.info.audio,
+                            requestSampleCount);
+                        audioData.audio->zero();
+                        if (intersects)
                         {
-                            offset = (p.info.audioTime.start_time() - audioData.time).value();
+                            size_t offset = 0;
+                            if (audioData.time < p.info.audioTime.start_time())
+                            {
+                                offset = std::min(
+                                    static_cast<size_t>(
+                                        (p.info.audioTime.start_time() - audioData.time).
+                                            rescaled_to(p.info.audio.sampleRate).value()),
+                                    requestSampleCount);
+                            }
+                            p.readAudio->bufferCopy(
+                                audioData.audio->getData() + offset * p.info.audio.getByteCount(),
+                                audioData.audio->getSampleCount() - offset);
                         }
-                        p.readAudio->bufferCopy(
-                            audioData.audio->getData() + offset * p.info.audio.getByteCount(),
-                            audioData.audio->getSampleCount() - offset);
                     }
                     request->promise.set_value(audioData);
 

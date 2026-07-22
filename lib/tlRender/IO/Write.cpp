@@ -23,6 +23,15 @@ namespace tl
     IWrite::~IWrite()
     {}
 
+    void IWrite::writeAudio(
+        const OTIO_NS::TimeRange&,
+        const std::shared_ptr<Audio>&,
+        const IOOptions&)
+    {}
+
+    void IWrite::finish()
+    {}
+
     struct IWritePlugin::Private
     {
     };

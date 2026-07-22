@@ -28,6 +28,22 @@ namespace tl
             const std::shared_ptr<ftk::Image>&,
             const IOOptions& = IOOptions()) = 0;
 
+        //! Write audio data. The default implementation does nothing;
+        //! writers that support audio should override this. Audio is
+        //! expected to be written sequentially, starting at the beginning
+        //! of the audio time range given in the IOInfo.
+        TL_API virtual void writeAudio(
+            const OTIO_NS::TimeRange&,
+            const std::shared_ptr<Audio>&,
+            const IOOptions& = IOOptions());
+
+        //! Finish writing, flushing any buffered data and finalizing the
+        //! file. This is called automatically by the destructor, but since
+        //! destructors cannot throw, errors that occur while finalizing
+        //! are only logged. Call finish() explicitly to have those errors
+        //! reported as exceptions.
+        TL_API virtual void finish();
+
     protected:
         IOInfo _info;
     };

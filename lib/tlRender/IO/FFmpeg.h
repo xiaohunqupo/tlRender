@@ -100,8 +100,17 @@ namespace tl
                 const std::shared_ptr<ftk::Image>&,
                 const IOOptions& = IOOptions()) override;
 
+            TL_API void writeAudio(
+                const OTIO_NS::TimeRange&,
+                const std::shared_ptr<Audio>&,
+                const IOOptions& = IOOptions()) override;
+
+            TL_API void finish() override;
+
         private:
             void _encodeVideo(AVFrame*);
+            void _encodeAudio(AVFrame*);
+            void _drainAudioFifo(bool flush);
 
             FTK_PRIVATE();
         };
@@ -155,8 +164,11 @@ namespace tl
             TL_API static std::shared_ptr<WritePlugin> create(
                 const std::shared_ptr<ftk::LogSystem>&);
 
-            //! Get the list of codecs.
+            //! Get the list of video codecs.
             TL_API const std::vector<std::string>& getCodecs() const;
+
+            //! Get the list of audio codecs.
+            TL_API const std::vector<std::string>& getAudioCodecs() const;
 
             TL_API ftk::ImageInfo getInfo(
                 const ftk::ImageInfo&,
