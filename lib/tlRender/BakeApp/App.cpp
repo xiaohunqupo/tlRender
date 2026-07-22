@@ -375,9 +375,19 @@ namespace tl
                 _tick();
             }
 
-            // Finish writing. Errors while flushing and finalizing the
-            // file are reported here as exceptions.
+            // Finish writing.
             _writer->finish();
+
+            const size_t readErrorCount = _timeline->getReadErrorCount();
+            if (readErrorCount > 0)
+            {
+                throw std::runtime_error(
+                    ftk::Format(
+                        "{0} error(s) occurred while reading, the output may "
+                        "be incomplete: {1}").
+                    arg(readErrorCount).
+                    arg(_timeline->getReadError()));
+            }
 
             const auto now = std::chrono::steady_clock::now();
             const std::chrono::duration<float> diff = now - _startTime;

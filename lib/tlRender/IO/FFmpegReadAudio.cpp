@@ -24,7 +24,9 @@ namespace tl
                     _avFormatContext = avformat_alloc_context();
                     if (!_avFormatContext)
                     {
-                        throw std::runtime_error(ftk::Format("Cannot allocate format context: \"{0}\"").arg(fileName));
+                        throw std::runtime_error(
+                            ftk::Format("Cannot allocate format context: \"{0}\"").
+                            arg(fileName));
                     }
 
                     _avIOBufferData = AVIOBufferData(memory[0].p, memory[0].size);
@@ -39,7 +41,9 @@ namespace tl
                         &avIOBufferSeek);
                     if (!_avIOContext)
                     {
-                        throw std::runtime_error(ftk::Format("Cannot allocate I/O context: \"{0}\"").arg(fileName));
+                        throw std::runtime_error(
+                            ftk::Format("Cannot allocate I/O context: \"{0}\"").
+                            arg(fileName));
                     }
 
                     _avFormatContext->pb = _avIOContext;
@@ -355,16 +359,17 @@ namespace tl
                 AVRational r;
                 r.num = 1;
                 r.den = _info.sampleRate;
-                if (av_seek_frame(
+                const int seekError = av_seek_frame(
                     _avFormatContext,
                     _avStream,
                     av_rescale_q(
                         time.value() - _timeRange.start_time().value(),
                         r,
                         _avFormatContext->streams[_avStream]->time_base),
-                    AVSEEK_FLAG_BACKWARD) < 0)
+                    AVSEEK_FLAG_BACKWARD);
+                if (seekError < 0)
                 {
-                    //! \todo How should this be handled?
+                    _setError(seekError);
                 }
             }
 
@@ -384,6 +389,25 @@ namespace tl
 
             _buffer.clear();
             _eof = false;
+        }
+
+        size_t ReadAudio::getErrorCount() const
+        {
+            return _errorCount;
+        }
+
+        const std::string& ReadAudio::getErrorString() const
+        {
+            return _errorString;
+        }
+
+        void ReadAudio::_setError(int error)
+        {
+            ++_errorCount;
+            if (_errorString.empty())
+            {
+                _errorString = getErrorLabel(error);
+            }
         }
 
         bool ReadAudio::process(
@@ -408,7 +432,7 @@ namespace tl
                         }
                         else if (decoding < 0)
                         {
-                            //! \todo How should this be handled?
+                            _setError(decoding);
                             break;
                         }
                     }
@@ -423,7 +447,7 @@ namespace tl
                         }
                         else if (decoding < 0)
                         {
-                            //! \todo How should this be handled?
+                            _setError(decoding);
                             break;
                         }
                         decoding = _decode(currentTime);
@@ -445,7 +469,7 @@ namespace tl
                         }
                         else if (decoding < 0)
                         {
-                            //! \todo How should this be handled?
+                            _setError(decoding);
                             break;
                         }
                         else if (1 == decoding)

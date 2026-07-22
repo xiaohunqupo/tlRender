@@ -26,7 +26,16 @@ namespace tl
         ftk::Path path;
         ftk::Path audioPath;
         Options options;
+        // Owned by the request thread, like the Thread struct below.
         ftk::LRUCache<std::string, std::shared_ptr<IRead> > readCache;
+        // Errors observed while building frames (broken promises caught
+        // in videoFrame()/audioFrame()). Owned by the request thread.
+        size_t frameErrorCount = 0;
+        std::string frameError;
+        // High water mark of the reader error total, so the count stays
+        // monotonic when readers are evicted from the cache. Owned by
+        // the request thread.
+        size_t readErrorMax = 0;
         OTIO_NS::TimeRange timeRange = invalidTimeRange;
         IOInfo ioInfo;
         uint64_t requestId = 0;
@@ -90,6 +99,8 @@ namespace tl
             std::list<std::shared_ptr<PendingVideoRequest> > videoRequests;
             std::list<std::shared_ptr<PendingAudioRequest> > audioRequests;
             bool stopped = false;
+            std::string readError;
+            size_t readErrorCount = 0;
             std::mutex mutex;
         };
         Mutex mutex;
@@ -104,7 +115,7 @@ namespace tl
             std::list<std::shared_ptr<PendingAudioRequest> > audioRequestsInProgress;
             std::condition_variable cv;
             std::thread thread;
-            std::atomic<bool> running;
+            std::atomic<bool> running{ false };
             std::chrono::steady_clock::time_point logTimer;
         };
         Thread thread;
@@ -115,6 +126,11 @@ namespace tl
         // shutdown).
         VideoFrame videoFrame(PendingVideoRequest&);
         AudioFrame audioFrame(PendingAudioRequest&);
+        // Aggregate reader and frame errors into the mutex-guarded
+        // fields. Called on the request thread before completing a
+        // request, so the error state is current by the time a caller's
+        // future resolves.
+        void updateReadErrors();
         std::shared_ptr<Audio> padAudioToOneSecond(
             const std::shared_ptr<Audio>&,
             double seconds,

@@ -55,7 +55,7 @@ namespace tl
             std::chrono::steady_clock::time_point logTimer;
             std::condition_variable cv;
             std::thread thread;
-            std::atomic<bool> running;
+            std::atomic<bool> running{ false };
         };
         Thread thread;
     };

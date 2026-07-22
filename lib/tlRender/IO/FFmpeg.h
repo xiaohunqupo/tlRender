@@ -64,6 +64,9 @@ namespace tl
                 const IOOptions& = IOOptions()) override;
             TL_API void cancelRequests() override;
 
+            TL_API std::string getError() const override;
+            TL_API size_t getErrorCount() const override;
+
         private:
             void _videoThread();
             void _audioThread();
@@ -184,8 +187,7 @@ namespace tl
         private:
             static void _logCallback(void*, int, const char*, va_list);
 
-            //! \todo What is a better way to access the log system from the
-            //! FFmpeg callback?
+            // See comment in ReadPlugin.
             static std::weak_ptr<ftk::LogSystem> _logSystemWeak;
 
             FTK_PRIVATE();

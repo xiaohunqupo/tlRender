@@ -35,7 +35,9 @@ namespace tl
                     _avFormatContext = avformat_alloc_context();
                     if (!_avFormatContext)
                     {
-                        throw std::runtime_error(ftk::Format("Cannot allocate format context: \"{0}\"").arg(fileName));
+                        throw std::runtime_error(
+                            ftk::Format("Cannot allocate format context: \"{0}\"").
+                            arg(fileName));
                     }
 
                     _avIOBufferData = AVIOBufferData(memory[0].p, memory[0].size);
@@ -50,7 +52,9 @@ namespace tl
                         &avIOBufferSeek);
                     if (!_avIOContext)
                     {
-                        throw std::runtime_error(ftk::Format("Cannot allocate I/O context: \"{0}\"").arg(fileName));
+                        throw std::runtime_error(
+                            ftk::Format("Cannot allocate I/O context: \"{0}\"").
+                            arg(fileName));
                     }
 
                     _avFormatContext->pb = _avIOContext;
@@ -63,13 +67,19 @@ namespace tl
                     nullptr);
                 if (r < 0)
                 {
-                    throw std::runtime_error(ftk::Format("{0}: \"{1}\"").arg(getErrorLabel(r)).arg(fileName));
+                    throw std::runtime_error(
+                        ftk::Format("{0}: \"{1}\"").
+                        arg(getErrorLabel(r)).
+                        arg(fileName));
                 }
 
                 r = avformat_find_stream_info(_avFormatContext, nullptr);
                 if (r < 0)
                 {
-                    throw std::runtime_error(ftk::Format("{0}: \"{1}\"").arg(getErrorLabel(r)).arg(fileName));
+                    throw std::runtime_error(
+                        ftk::Format("{0}: \"{1}\"").
+                        arg(getErrorLabel(r)).
+                        arg(fileName));
                 }
                 for (unsigned int i = 0; i < _avFormatContext->nb_streams; ++i)
                 {
@@ -103,27 +113,39 @@ namespace tl
                     auto avVideoCodec = avcodec_find_decoder(avVideoCodecParameters->codec_id);
                     if (!avVideoCodec)
                     {
-                        throw std::runtime_error(ftk::Format("No video codec found: \"{0}\"").arg(fileName));
+                        throw std::runtime_error(
+                            ftk::Format("No video codec found: \"{0}\"").
+                            arg(fileName));
                     }
                     _avCodecParameters[_avStream] = avcodec_parameters_alloc();
                     if (!_avCodecParameters[_avStream])
                     {
-                        throw std::runtime_error(ftk::Format("Cannot allocate parameters: \"{0}\"").arg(fileName));
+                        throw std::runtime_error(
+                            ftk::Format("Cannot allocate parameters: \"{0}\"").
+                            arg(fileName));
                     }
                     r = avcodec_parameters_copy(_avCodecParameters[_avStream], avVideoCodecParameters);
                     if (r < 0)
                     {
-                        throw std::runtime_error(ftk::Format("{0}: \"{1}\"").arg(getErrorLabel(r)).arg(fileName));
+                        throw std::runtime_error(
+                            ftk::Format("{0}: \"{1}\"").
+                            arg(getErrorLabel(r)).
+                            arg(fileName));
                     }
                     _avCodecContext[_avStream] = avcodec_alloc_context3(avVideoCodec);
                     if (!_avCodecContext[_avStream])
                     {
-                        throw std::runtime_error(ftk::Format("Cannot allocate context: \"{0}\"").arg(fileName));
+                        throw std::runtime_error(
+                            ftk::Format("Cannot allocate context: \"{0}\"").
+                            arg(fileName));
                     }
                     r = avcodec_parameters_to_context(_avCodecContext[_avStream], _avCodecParameters[_avStream]);
                     if (r < 0)
                     {
-                        throw std::runtime_error(ftk::Format("{0}: \"{1}\"").arg(getErrorLabel(r)).arg(fileName));
+                        throw std::runtime_error(
+                            ftk::Format("{0}: \"{1}\"").
+                            arg(getErrorLabel(r)).
+                            arg(fileName));
                     }
                     _avCodecContext[_avStream]->thread_count = options.threadCount;
                     _avCodecContext[_avStream]->thread_type = FF_THREAD_FRAME;
@@ -136,7 +158,10 @@ namespace tl
                     r = avcodec_open2(_avCodecContext[_avStream], avVideoCodec, 0);
                     if (r < 0)
                     {
-                        throw std::runtime_error(ftk::Format("{0}: \"{1}\"").arg(getErrorLabel(r)).arg(fileName));
+                        throw std::runtime_error(
+                            ftk::Format("{0}: \"{1}\"").
+                            arg(getErrorLabel(r)).
+                            arg(fileName));
                     }
 
                     _info.size.w = _avCodecParameters[_avStream]->width;
@@ -521,7 +546,9 @@ namespace tl
                 _avFrame = av_frame_alloc();
                 if (!_avFrame)
                 {
-                    throw std::runtime_error(ftk::Format("Cannot allocate frame: \"{0}\"").arg(_fileName));
+                    throw std::runtime_error(
+                        ftk::Format("Cannot allocate frame: \"{0}\"").
+                        arg(_fileName));
                 }
 
                 if (!canCopy(_avInputPixelFormat, _avOutputPixelFormat))
@@ -529,7 +556,9 @@ namespace tl
                     _avFrame2 = av_frame_alloc();
                     if (!_avFrame2)
                     {
-                        throw std::runtime_error(ftk::Format("Cannot allocate frame: \"{0}\"").arg(_fileName));
+                        throw std::runtime_error(
+                            ftk::Format("Cannot allocate frame: \"{0}\"").
+                            arg(_fileName));
                     }
                     _avFrame2->format = _avOutputPixelFormat;
                     _avFrame2->width = _info.size.w;
@@ -541,7 +570,9 @@ namespace tl
                         _swFrame = av_frame_alloc();
                         if (!_swFrame)
                         {
-                            throw std::runtime_error(ftk::Format("Cannot allocate frame: \"{0}\"").arg(_fileName));
+                            throw std::runtime_error(
+                                ftk::Format("Cannot allocate frame: \"{0}\"").
+                                arg(_fileName));
                         }
                         // The scaler is created lazily in _copy(), once the real
                         // source format is known (the hardware download format, or
@@ -693,21 +724,41 @@ namespace tl
             {
                 avcodec_flush_buffers(_avCodecContext[_avStream]);
 
-                if (av_seek_frame(
+                const int seekError = av_seek_frame(
                     _avFormatContext,
                     _avStream,
                     av_rescale_q(
                         time.value() - _timeRange.start_time().value(),
                         swap(_avSpeed),
                         _avFormatContext->streams[_avStream]->time_base),
-                    AVSEEK_FLAG_BACKWARD) < 0)
+                    AVSEEK_FLAG_BACKWARD);
+                if (seekError < 0)
                 {
-                    //! \todo How should this be handled?
+                    _setError(seekError);
                 }
             }
 
             _buffer.clear();
             _eof = false;
+        }
+
+        size_t ReadVideo::getErrorCount() const
+        {
+            return _errorCount;
+        }
+
+        const std::string& ReadVideo::getErrorString() const
+        {
+            return _errorString;
+        }
+
+        void ReadVideo::_setError(int error)
+        {
+            ++_errorCount;
+            if (_errorString.empty())
+            {
+                _errorString = getErrorLabel(error);
+            }
         }
 
         bool ReadVideo::process(const OTIO_NS::RationalTime& currentTime)
@@ -730,7 +781,7 @@ namespace tl
                         }
                         else if (decoding < 0)
                         {
-                            //! \todo How should this be handled?
+                            _setError(decoding);
                             break;
                         }
                     }
@@ -745,7 +796,7 @@ namespace tl
                         }
                         else if (decoding < 0)
                         {
-                            //! \todo How should this be handled?
+                            _setError(decoding);
                             break;
                         }
                         decoding = _decode(currentTime);
@@ -759,7 +810,7 @@ namespace tl
                         }
                         else if (decoding < 0)
                         {
-                            //! \todo How should this be handled?
+                            _setError(decoding);
                             break;
                         }
                         else if (1 == decoding)

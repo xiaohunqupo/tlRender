@@ -38,6 +38,15 @@ namespace tl
         //! Cancel pending requests.
         TL_API virtual void cancelRequests() = 0;
 
+        //! Get the first error encountered while reading, or an empty
+        //! string. Errors are also sent to the log. The default
+        //! implementation returns an empty string.
+        TL_API virtual std::string getError() const;
+
+        //! Get the number of errors encountered while reading. The
+        //! default implementation returns zero.
+        TL_API virtual size_t getErrorCount() const;
+
     protected:
         std::vector<ftk::MemFile> _mem;
     };

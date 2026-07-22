@@ -19,6 +19,7 @@
 #include <opentimelineio/externalReference.h>
 #include <opentimelineio/imageSequenceReference.h>
 #include <opentimelineio/transition.h>
+#include <algorithm>
 
 namespace tl
 {
@@ -617,6 +618,18 @@ namespace tl
         return _p->ioInfo;
     }
 
+    std::string Timeline::getReadError() const
+    {
+        std::unique_lock<std::mutex> lock(_p->mutex.mutex);
+        return _p->mutex.readError;
+    }
+
+    size_t Timeline::getReadErrorCount() const
+    {
+        std::unique_lock<std::mutex> lock(_p->mutex.mutex);
+        return _p->mutex.readErrorCount;
+    }
+
     VideoRequest Timeline::getVideo(
         const OTIO_NS::RationalTime& time,
         const IOOptions& options)
@@ -1110,7 +1123,9 @@ namespace tl
             }
             if (valid)
             {
-                (*videoRequestIt)->promise.set_value(p.videoFrame(**videoRequestIt));
+                const auto frame = p.videoFrame(**videoRequestIt);
+                p.updateReadErrors();
+                (*videoRequestIt)->promise.set_value(frame);
                 videoRequestIt = p.thread.videoRequestsInProgress.erase(videoRequestIt);
                 continue;
             }
@@ -1131,7 +1146,9 @@ namespace tl
             }
             if (valid)
             {
-                (*audioRequestIt)->promise.set_value(p.audioFrame(**audioRequestIt));
+                const auto frame = p.audioFrame(**audioRequestIt);
+                p.updateReadErrors();
+                (*audioRequestIt)->promise.set_value(frame);
                 audioRequestIt = p.thread.audioRequestsInProgress.erase(audioRequestIt);
                 continue;
             }
@@ -1163,11 +1180,41 @@ namespace tl
             p.thread.audioRequestsInProgress.clear();
             for (auto& request : videoRequests)
             {
-                request->promise.set_value(p.videoFrame(*request));
+                const auto frame = p.videoFrame(*request);
+                p.updateReadErrors();
+                request->promise.set_value(frame);
             }
             for (auto& request : audioRequests)
             {
-                request->promise.set_value(p.audioFrame(*request));
+                const auto frame = p.audioFrame(*request);
+                p.updateReadErrors();
+                request->promise.set_value(frame);
+            }
+        }
+    }
+
+    void Timeline::Private::updateReadErrors()
+    {
+        size_t count = frameErrorCount;
+        std::string error = frameError;
+        for (const auto& read : readCache.getValues())
+        {
+            if (read)
+            {
+                count += read->getErrorCount();
+                if (error.empty())
+                {
+                    error = read->getError();
+                }
+            }
+        }
+        readErrorMax = std::max(readErrorMax, count);
+        {
+            std::unique_lock<std::mutex> lock(mutex.mutex);
+            mutex.readErrorCount = readErrorMax;
+            if (mutex.readError.empty())
+            {
+                mutex.readError = error;
             }
         }
     }
@@ -1183,13 +1230,31 @@ namespace tl
         for (auto& i : request.layerData)
         {
             VideoLayer layer;
-            if (i.image.valid())
+            try
             {
-                layer.image = i.image.get().image;
+                if (i.image.valid())
+                {
+                    layer.image = i.image.get().image;
+                }
+                if (i.imageB.valid())
+                {
+                    layer.imageB = i.imageB.get().image;
+                }
             }
-            if (i.imageB.valid())
+            catch (const std::exception& e)
             {
-                layer.imageB = i.imageB.get().image;
+                ++frameErrorCount;
+                if (frameError.empty())
+                {
+                    frameError = e.what();
+                }
+                if (auto logSystemLocked = logSystem.lock())
+                {
+                    logSystemLocked->print(
+                        "tl::Timeline",
+                        e.what(),
+                        ftk::LogType::Error);
+                }
             }
             layer.transition = i.transition;
             layer.transitionValue = i.transitionValue;
@@ -1205,12 +1270,30 @@ namespace tl
         for (auto& i : request.layerData)
         {
             AudioLayer layer;
-            if (i.audio.valid())
+            try
             {
-                const auto audioData = i.audio.get();
-                if (audioData.audio)
+                if (i.audio.valid())
                 {
-                    layer.audio = padAudioToOneSecond(audioData.audio, i.seconds, i.timeRange);
+                    const auto audioData = i.audio.get();
+                    if (audioData.audio)
+                    {
+                        layer.audio = padAudioToOneSecond(audioData.audio, i.seconds, i.timeRange);
+                    }
+                }
+            }
+            catch (const std::exception& e)
+            {
+                ++frameErrorCount;
+                if (frameError.empty())
+                {
+                    frameError = e.what();
+                }
+                if (auto logSystemLocked = logSystem.lock())
+                {
+                    logSystemLocked->print(
+                        "tl::Timeline",
+                        e.what(),
+                        ftk::LogType::Error);
                 }
             }
             frame.layers.push_back(layer);

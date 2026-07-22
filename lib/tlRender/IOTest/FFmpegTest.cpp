@@ -142,6 +142,13 @@ namespace tl
                         "Timeout reading a truncated file");
                 }
                 const auto videoData = future.get();
+                // The truncated file must record a queryable error;
+                // silently returning empty data is not acceptable.
+                if (read->getError().empty() || 0 == read->getErrorCount())
+                {
+                    throw std::runtime_error(
+                        "Expected an error reading a truncated file");
+                }
             }
         }
 
@@ -629,6 +636,16 @@ namespace tl
                         _error(ss.str());
                         FTK_ASSERT(false);
                     }
+                }
+
+                // A clean file must not record any errors.
+                if (!read->getError().empty() || read->getErrorCount() > 0)
+                {
+                    std::stringstream ss;
+                    ss << "PCM: unexpected read errors: " <<
+                        read->getErrorCount() << ": " << read->getError();
+                    _error(ss.str());
+                    FTK_ASSERT(false);
                 }
             }
             catch (const std::exception& e)

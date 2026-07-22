@@ -128,6 +128,15 @@ namespace tl
         //! the first clip in the timeline.
         TL_API const IOInfo& getIOInfo() const;
 
+        //! Get the first error encountered while reading, or an empty
+        //! string. Errors are also sent to the log.
+        TL_API std::string getReadError() const;
+
+        //! Get the number of errors encountered while reading. The count
+        //! is a lower bound; errors from readers that have been evicted
+        //! from the internal cache may not be included.
+        TL_API size_t getReadErrorCount() const;
+
         ///@}
 
         //! \name Video and Audio

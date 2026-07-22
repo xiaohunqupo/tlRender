@@ -53,10 +53,6 @@ namespace tl
                 return bufferData->size;
             }
 
-            // Note that the seek mode must be honored, and the actual
-            // resulting position returned; returning the requested offset
-            // unclamped lets avio's notion of the stream position diverge
-            // from reality, which can send demuxer probing loops astray.
             int64_t pos = 0;
             switch (whence & ~AVSEEK_FORCE)
             {
@@ -197,6 +193,12 @@ namespace tl
                                             e.what(),
                                             ftk::LogType::Error);
                                     }
+                                    std::unique_lock<std::mutex> lock(p.errorMutex.mutex);
+                                    ++p.errorMutex.audioCount;
+                                    if (p.errorMutex.error.empty())
+                                    {
+                                        p.errorMutex.error = e.what();
+                                    }
                                 }
 
                                 // Mark the queue as stopped and cancel any
@@ -226,6 +228,12 @@ namespace tl
                                 e.what(),
                                 ftk::LogType::Error);
                         }
+                        std::unique_lock<std::mutex> lock(p.errorMutex.mutex);
+                        ++p.errorMutex.videoCount;
+                        if (p.errorMutex.error.empty())
+                        {
+                            p.errorMutex.error = e.what();
+                        }
                     }
 
                     {
@@ -248,8 +256,19 @@ namespace tl
         Read::~Read()
         {
             FTK_P();
-            p.videoThread.running = false;
-            p.audioThread.running = false;
+
+            // Stop the threads under their locks and wake them so that
+            // shutdown does not have to wait for the request timeout.
+            {
+                std::unique_lock<std::mutex> lock(p.videoMutex.mutex);
+                p.videoThread.running = false;
+            }
+            p.videoThread.cv.notify_one();
+            {
+                std::unique_lock<std::mutex> lock(p.audioMutex.mutex);
+                p.audioThread.running = false;
+            }
+            p.audioThread.cv.notify_one();
             if (p.videoThread.thread.joinable())
             {
                 p.videoThread.thread.join();
@@ -370,12 +389,27 @@ namespace tl
             _cancelAudioRequests();
         }
 
+        std::string Read::getError() const
+        {
+            FTK_P();
+            std::unique_lock<std::mutex> lock(p.errorMutex.mutex);
+            return p.errorMutex.error;
+        }
+
+        size_t Read::getErrorCount() const
+        {
+            FTK_P();
+            std::unique_lock<std::mutex> lock(p.errorMutex.mutex);
+            return p.errorMutex.videoCount + p.errorMutex.audioCount;
+        }
+
         void Read::_videoThread()
         {
             FTK_P();
             p.videoThread.currentTime = p.info.videoTime.start_time();
             p.readVideo->start();
             p.videoThread.logTimer = std::chrono::steady_clock::now();
+            size_t errorCount = 0;
             while (p.videoThread.running)
             {
                 // Check requests.
@@ -390,7 +424,8 @@ namespace tl
                         {
                             return
                                 !_p->videoMutex.infoRequests.empty() ||
-                                !_p->videoMutex.videoRequests.empty();
+                                !_p->videoMutex.videoRequests.empty() ||
+                                !_p->videoThread.running;
                         }))
                     {
                         infoRequests = std::move(p.videoMutex.infoRequests);
@@ -408,34 +443,83 @@ namespace tl
                     request->promise.set_value(p.info);
                 }
 
-                // Seek.
-                if (videoRequest &&
-                    !videoRequest->time.strictly_equal(p.videoThread.currentTime))
+                // Seek, process, and handle the request. If an exception
+                // escapes, complete the promise with an empty value first,
+                // matching the cancel behavior, so the caller never sees a
+                // broken promise; then rethrow so the thread epilogue
+                // stops the queue.
+                try
                 {
-                    p.videoThread.currentTime = videoRequest->time;
-                    p.readVideo->seek(p.videoThread.currentTime);
+                    // Seek.
+                    if (videoRequest &&
+                        !videoRequest->time.strictly_equal(p.videoThread.currentTime))
+                    {
+                        p.videoThread.currentTime = videoRequest->time;
+                        p.readVideo->seek(p.videoThread.currentTime);
+                    }
+
+                    // Process.
+                    while (
+                        videoRequest &&
+                        p.readVideo->isBufferEmpty() &&
+                        p.readVideo->isValid() &&
+                        _p->readVideo->process(p.videoThread.currentTime))
+                        ;
+
+                    // Handle request.
+                    if (videoRequest)
+                    {
+                        VideoData data;
+                        data.time = videoRequest->time;
+                        if (!p.readVideo->isBufferEmpty())
+                        {
+                            data.image = p.readVideo->popBuffer();
+                        }
+                        videoRequest->promise.set_value(data);
+
+                        p.videoThread.currentTime += OTIO_NS::RationalTime(1.0, p.info.videoTime.duration().rate());
+                    }
+                }
+                catch (...)
+                {
+                    if (videoRequest)
+                    {
+                        try
+                        {
+                            videoRequest->promise.set_value(VideoData());
+                        }
+                        catch (const std::future_error&)
+                        {}
+                    }
+                    throw;
                 }
 
-                // Process.
-                while (
-                    videoRequest &&
-                    p.readVideo->isBufferEmpty() &&
-                    p.readVideo->isValid() &&
-                    _p->readVideo->process(p.videoThread.currentTime))
-                    ;
-
-                // Handle request.
-                if (videoRequest)
+                // Record any new errors from the worker, logging the
+                // first one.
+                if (p.readVideo->getErrorCount() != errorCount)
                 {
-                    VideoData data;
-                    data.time = videoRequest->time;
-                    if (!p.readVideo->isBufferEmpty())
+                    const bool first = 0 == errorCount;
+                    errorCount = p.readVideo->getErrorCount();
                     {
-                        data.image = p.readVideo->popBuffer();
+                        std::unique_lock<std::mutex> lock(p.errorMutex.mutex);
+                        p.errorMutex.videoCount = errorCount;
+                        if (p.errorMutex.error.empty())
+                        {
+                            p.errorMutex.error = p.readVideo->getErrorString();
+                        }
                     }
-                    videoRequest->promise.set_value(data);
-                    
-                    p.videoThread.currentTime += OTIO_NS::RationalTime(1.0, p.info.videoTime.duration().rate());
+                    if (first)
+                    {
+                        if (auto logSystem = _logSystem.lock())
+                        {
+                            logSystem->print(
+                                "tl::ffmpeg::Read",
+                                ftk::Format("Errors reading video: \"{0}\": {1}").
+                                    arg(_path.get()).
+                                    arg(p.readVideo->getErrorString()),
+                                ftk::LogType::Error);
+                        }
+                    }
                 }
 
                 // Logging.
@@ -472,6 +556,7 @@ namespace tl
             p.readAudio->start();
             p.audioThread.logTimer = std::chrono::steady_clock::now();
             const bool audioValid = p.info.audio.isValid();
+            size_t errorCount = 0;
             while (p.audioThread.running)
             {
                 // Check requests.
@@ -485,7 +570,9 @@ namespace tl
                         std::chrono::milliseconds(p.options.requestTimeout),
                         [this]
                         {
-                            return !_p->audioMutex.requests.empty();
+                            return
+                                !_p->audioMutex.requests.empty() ||
+                                !_p->audioThread.running;
                         }))
                     {
                         if (!p.audioMutex.requests.empty())
@@ -505,64 +592,113 @@ namespace tl
                     }
                 }
 
-                // Seek.
-                if (seek)
+                // Seek, process, and handle the request. If an exception
+                // escapes, complete the promise with an empty value first,
+                // matching the cancel behavior, so the caller never sees a
+                // broken promise; then rethrow so the thread epilogue
+                // stops the queue.
+                try
                 {
-                    p.readAudio->seek(p.audioThread.currentTime);
-                }
-
-                // Process.
-                bool intersects = false;
-                if (request && audioValid)
-                {
-                    intersects = request->timeRange.intersects(p.info.audioTime);
-                }
-                while (
-                    request &&
-                    intersects &&
-                    p.readAudio->getBufferSize() < request->timeRange.duration().rescaled_to(p.info.audio.sampleRate).value() &&
-                    p.readAudio->isValid() &&
-                    p.readAudio->process(
-                        p.audioThread.currentTime,
-                        requestSampleCount ?
-                        requestSampleCount :
-                        p.options.audioBufferSize.rescaled_to(p.info.audio.sampleRate).value()))
-                    ;
-
-                // Handle request.
-                if (request)
-                {
-                    AudioData audioData;
-                    audioData.time = request->timeRange.start_time();
-                    if (audioValid)
+                    // Seek.
+                    if (seek)
                     {
-                        // Note that the request time range may be expressed
-                        // at any rate, so sizes and offsets must be
-                        // rescaled to the sample rate rather than using the
-                        // raw time values.
-                        audioData.audio = Audio::create(
-                            p.info.audio,
-                            requestSampleCount);
-                        audioData.audio->zero();
-                        if (intersects)
+                        p.readAudio->seek(p.audioThread.currentTime);
+                    }
+
+                    // Process.
+                    bool intersects = false;
+                    if (request && audioValid)
+                    {
+                        intersects = request->timeRange.intersects(p.info.audioTime);
+                    }
+                    while (
+                        request &&
+                        intersects &&
+                        p.readAudio->getBufferSize() < request->timeRange.duration().rescaled_to(p.info.audio.sampleRate).value() &&
+                        p.readAudio->isValid() &&
+                        p.readAudio->process(
+                            p.audioThread.currentTime,
+                            requestSampleCount ?
+                            requestSampleCount :
+                            p.options.audioBufferSize.rescaled_to(p.info.audio.sampleRate).value()))
+                        ;
+
+                    // Handle request.
+                    if (request)
+                    {
+                        AudioData audioData;
+                        audioData.time = request->timeRange.start_time();
+                        if (audioValid)
                         {
-                            size_t offset = 0;
-                            if (audioData.time < p.info.audioTime.start_time())
+                            // Note that the request time range may be expressed
+                            // at any rate, so sizes and offsets must be
+                            // rescaled to the sample rate rather than using the
+                            // raw time values.
+                            audioData.audio = Audio::create(
+                                p.info.audio,
+                                requestSampleCount);
+                            audioData.audio->zero();
+                            if (intersects)
                             {
-                                offset = std::min(
-                                    static_cast<size_t>(
-                                        (p.info.audioTime.start_time() - audioData.time).
-                                            rescaled_to(p.info.audio.sampleRate).value()),
-                                    requestSampleCount);
+                                size_t offset = 0;
+                                if (audioData.time < p.info.audioTime.start_time())
+                                {
+                                    offset = std::min(
+                                        static_cast<size_t>(
+                                            (p.info.audioTime.start_time() - audioData.time).
+                                                rescaled_to(p.info.audio.sampleRate).value()),
+                                        requestSampleCount);
+                                }
+                                p.readAudio->bufferCopy(
+                                    audioData.audio->getData() + offset * p.info.audio.getByteCount(),
+                                    audioData.audio->getSampleCount() - offset);
                             }
-                            p.readAudio->bufferCopy(
-                                audioData.audio->getData() + offset * p.info.audio.getByteCount(),
-                                audioData.audio->getSampleCount() - offset);
+                        }
+                        request->promise.set_value(audioData);
+
+                        p.audioThread.currentTime += request->timeRange.duration();
+                    }
+                }
+                catch (...)
+                {
+                    if (request)
+                    {
+                        try
+                        {
+                            request->promise.set_value(AudioData());
+                        }
+                        catch (const std::future_error&)
+                        {}
+                    }
+                    throw;
+                }
+
+                // Record any new errors from the worker, logging the
+                // first one.
+                if (p.readAudio->getErrorCount() != errorCount)
+                {
+                    const bool first = 0 == errorCount;
+                    errorCount = p.readAudio->getErrorCount();
+                    {
+                        std::unique_lock<std::mutex> lock(p.errorMutex.mutex);
+                        p.errorMutex.audioCount = errorCount;
+                        if (p.errorMutex.error.empty())
+                        {
+                            p.errorMutex.error = p.readAudio->getErrorString();
                         }
                     }
-                    request->promise.set_value(audioData);
-
-                    p.audioThread.currentTime += request->timeRange.duration();
+                    if (first)
+                    {
+                        if (auto logSystem = _logSystem.lock())
+                        {
+                            logSystem->print(
+                                "tl::ffmpeg::Read",
+                                ftk::Format("Errors reading audio: \"{0}\": {1}").
+                                    arg(_path.get()).
+                                    arg(p.readAudio->getErrorString()),
+                                ftk::LogType::Error);
+                        }
+                    }
                 }
 
                 // Logging.

@@ -69,12 +69,18 @@ namespace tl
             void seek(const OTIO_NS::RationalTime&);
             bool process(const OTIO_NS::RationalTime& currentTime);
 
+            //! The number of read/decode errors encountered, and the
+            //! first error. Only accessed from the owning thread.
+            size_t getErrorCount() const;
+            const std::string& getErrorString() const;
+
             bool isBufferEmpty() const;
             std::shared_ptr<ftk::Image> popBuffer();
 
         private:
             int _decode(const OTIO_NS::RationalTime& currentTime);
             void _copy(const std::shared_ptr<ftk::Image>&, AVFrame* frame);
+            void _setError(int);
             void _initHwAccel(const AVCodec*);
             void _initSws(AVPixelFormat srcFormat);
             static AVPixelFormat _getHwFormat(AVCodecContext*, const AVPixelFormat*);
@@ -108,6 +114,8 @@ namespace tl
             std::weak_ptr<ftk::LogSystem> _logSystem;
             std::list<std::shared_ptr<ftk::Image> > _buffer;
             bool _eof = false;
+            size_t _errorCount = 0;
+            std::string _errorString;
         };
 
         class ReadAudio
@@ -132,11 +140,17 @@ namespace tl
                 const OTIO_NS::RationalTime& currentTime,
                 size_t sampleCount);
 
+            //! The number of read/decode errors encountered, and the
+            //! first error. Only accessed from the owning thread.
+            size_t getErrorCount() const;
+            const std::string& getErrorString() const;
+
             size_t getBufferSize() const;
             void bufferCopy(uint8_t*, size_t sampleCount);
 
         private:
             int _decode(const OTIO_NS::RationalTime& currentTime);
+            void _setError(int);
             void _close();
 
             std::string _fileName;
@@ -156,6 +170,8 @@ namespace tl
             SwrContext* _swrContext = nullptr;
             std::list<std::shared_ptr<Audio> > _buffer;
             bool _eof = false;
+            size_t _errorCount = 0;
+            std::string _errorString;
         };
 
         struct Read::Private
@@ -191,7 +207,7 @@ namespace tl
                 std::chrono::steady_clock::time_point logTimer;
                 std::condition_variable cv;
                 std::thread thread;
-                std::atomic<bool> running;
+                std::atomic<bool> running{ false };
             };
             VideoThread videoThread;
 
@@ -215,9 +231,20 @@ namespace tl
                 std::chrono::steady_clock::time_point logTimer;
                 std::condition_variable cv;
                 std::thread thread;
-                std::atomic<bool> running;
+                std::atomic<bool> running{ false };
             };
             AudioThread audioThread;
+
+            // Errors are recorded by the worker threads and read through
+            // getError()/getErrorCount() from any thread.
+            struct ErrorMutex
+            {
+                std::string error;
+                size_t videoCount = 0;
+                size_t audioCount = 0;
+                std::mutex mutex;
+            };
+            ErrorMutex errorMutex;
         };
     }
 }
