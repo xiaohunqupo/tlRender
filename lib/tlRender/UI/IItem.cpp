@@ -49,6 +49,7 @@ namespace tl
                 minimize == other.minimize &&
                 thumbnails == other.thumbnails &&
                 thumbnailHeight == other.thumbnailHeight &&
+                waveforms == other.waveforms &&
                 waveformWidth == other.waveformWidth &&
                 waveformHeight == other.waveformHeight &&
                 waveformPrim == other.waveformPrim &&
@@ -271,6 +272,7 @@ namespace tl
             json["Minimize"] = value.minimize;
             json["Thumbnails"] = value.thumbnails;
             json["ThumbnailHeight"] = value.thumbnailHeight;
+            json["Waveforms"] = value.waveforms;
             json["WaveformWidth"] = value.waveformWidth;
             json["WaveformHeight"] = value.waveformHeight;
             json["WaveformPrim"] = to_string(value.waveformPrim);
@@ -291,6 +293,7 @@ namespace tl
             json["Minimize"].get_to(value.minimize);
             json["Thumbnails"].get_to(value.thumbnails);
             json["ThumbnailHeight"].get_to(value.thumbnailHeight);
+            json["Waveforms"].get_to(value.waveforms);
             json["WaveformWidth"].get_to(value.waveformWidth);
             json["WaveformHeight"].get_to(value.waveformHeight);
             from_string(json["WaveformPrim"].get<std::string>(), value.waveformPrim);

@@ -78,6 +78,7 @@ namespace tl
 
             bool thumbnails = true;
             int thumbnailHeight = 100;
+            bool waveforms = true;
             int waveformWidth = 50;
             int waveformHeight = 50;
             WaveformPrim waveformPrim = WaveformPrim::Mesh;

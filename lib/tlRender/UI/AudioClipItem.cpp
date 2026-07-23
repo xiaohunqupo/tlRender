@@ -114,7 +114,7 @@ namespace tl
         void AudioClipItem::setDisplayOptions(const DisplayOptions& value)
         {
             const bool thumbnailsChanged =
-                value.thumbnails != _displayOptions.thumbnails ||
+                value.waveforms != _displayOptions.waveforms ||
                 value.waveformWidth != _displayOptions.waveformWidth ||
                 value.waveformHeight != _displayOptions.waveformHeight ||
                 value.waveformPrim != _displayOptions.waveformPrim;
@@ -131,7 +131,7 @@ namespace tl
         ftk::Size2I AudioClipItem::getSizeHint() const
         {
             ftk::Size2I out = IBasicItem::getSizeHint();
-            if (_displayOptions.thumbnails)
+            if (_displayOptions.waveforms)
             {
                 out.h += _displayOptions.waveformHeight;
             }
@@ -213,7 +213,7 @@ namespace tl
             const ftk::DrawEvent& event)
         {
             IBasicItem::drawEvent(drawRect, event);
-            if (_displayOptions.thumbnails)
+            if (_displayOptions.waveforms)
             {
                 _drawWaveforms(drawRect, event);
             }
