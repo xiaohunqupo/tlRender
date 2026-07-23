@@ -187,12 +187,21 @@ namespace tl
     {
         OTIO_NS::TimeRange out;
 
+        // Clamp the read behind and read ahead so that the total cache
+        // range, including the current frame, fits within the maximum
+        // size.
         const double rate = thread.state.currentTime.rate();
+        const double behindFrames = std::min(
+            OTIO_NS::RationalTime(thread.state.cacheOptions.readBehind, 1.0).
+                rescaled_to(rate).round().value(),
+            max > 0 ? static_cast<double>(max - 1) : 0.0);
+        const double aheadFrames = std::max(
+            static_cast<double>(max) - behindFrames - 1.0,
+            0.0);
+        const OTIO_NS::RationalTime readBehind(behindFrames, rate);
         const OTIO_NS::RationalTime readAhead = std::min(
-            OTIO_NS::RationalTime(max, rate),
+            OTIO_NS::RationalTime(aheadFrames, rate),
             thread.state.inOutRange.duration());
-        const OTIO_NS::RationalTime readBehind =
-            OTIO_NS::RationalTime(thread.state.cacheOptions.readBehind, 1.0).rescaled_to(rate);
 
         switch (thread.cacheDir)
         {
@@ -216,11 +225,17 @@ namespace tl
     {
         ftk::Range<int64_t> out;
 
+        // Clamp the read behind and read ahead so that the total cache
+        // range, including the current second, fits within the maximum
+        // size.
         const int64_t c = thread.state.currentTime.rescaled_to(1.0).value();
+        const int64_t readBehind = std::min(
+            static_cast<int64_t>(
+                OTIO_NS::RationalTime(thread.state.cacheOptions.readBehind, 1.0).value()),
+            max > 0 ? static_cast<int64_t>(max - 1) : 0);
         const int64_t readAhead = std::min(
-            max,
-            static_cast<size_t>(thread.state.inOutRange.duration().rescaled_to(1.0).value()));
-        const int64_t readBehind = OTIO_NS::RationalTime(thread.state.cacheOptions.readBehind, 1.0).value();
+            std::max(static_cast<int64_t>(max) - readBehind - 1, static_cast<int64_t>(0)),
+            static_cast<int64_t>(thread.state.inOutRange.duration().rescaled_to(1.0).value()));
 
         switch (thread.cacheDir)
         {
