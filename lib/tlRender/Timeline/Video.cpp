@@ -12,6 +12,8 @@ namespace tl
             imageOptions == other.imageOptions &&
             imageB == other.imageB &&
             imageOptionsB == other.imageOptionsB &&
+            bounds == other.bounds &&
+            boundsB == other.boundsB &&
             transition == other.transition &&
             transitionValue == other.transitionValue;
     }
@@ -25,6 +27,7 @@ namespace tl
     {
         return
             size == other.size &&
+            canvasSize == other.canvasSize &&
             time.strictly_equal(other.time) &&
             layers == other.layers;
     }

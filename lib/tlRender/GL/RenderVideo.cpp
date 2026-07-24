@@ -721,6 +721,32 @@ namespace tl
             imageShader->setUniform("transform.mvp", transform);
 
             const ftk::Size2I& offscreenBufferSize = box.size();
+
+            // The box a layer occupies within the offscreen buffer. Without
+            // OTIO spatial coordinates a layer fills the buffer as before;
+            // with them it keeps its place in the timeline canvas, scaled to
+            // the buffer.
+            const auto layerBox = [&videoFrame, &offscreenBufferSize](
+                const std::optional<ftk::Box2F>& bounds)
+            {
+                ftk::Box2I out(ftk::V2I(), offscreenBufferSize);
+                if (bounds.has_value() && videoFrame.canvasSize.isValid())
+                {
+                    const float sx = offscreenBufferSize.w /
+                        static_cast<float>(videoFrame.canvasSize.w);
+                    const float sy = offscreenBufferSize.h /
+                        static_cast<float>(videoFrame.canvasSize.h);
+                    out = ftk::Box2I(
+                        ftk::V2I(
+                            std::lround(bounds.value().min.x * sx),
+                            std::lround(bounds.value().min.y * sy)),
+                        ftk::V2I(
+                            std::lround(bounds.value().max.x * sx),
+                            std::lround(bounds.value().max.y * sy)));
+                }
+                return out;
+            };
+
             ftk::gl::OffscreenBufferOptions offscreenBufferOptions;
             offscreenBufferOptions.colorFilters = displayOptions.imageFilters;
             if (doCreate(
@@ -786,7 +812,7 @@ namespace tl
                                     IRender::drawImage(
                                         layer.image,
                                         getBox(
-                                            ftk::Box2I(ftk::V2I(), offscreenBufferSize),
+                                            layerBox(layer.bounds),
                                             layer.image->getInfo(),
                                             displayOptions.aspectRatio),
                                         ftk::Color4F(1.F, 1.F, 1.F),
@@ -805,7 +831,7 @@ namespace tl
                                     IRender::drawImage(
                                         layer.imageB,
                                         getBox(
-                                            ftk::Box2I(ftk::V2I(), offscreenBufferSize),
+                                            layerBox(layer.boundsB),
                                             layer.imageB->getInfo(),
                                             displayOptions.aspectRatio),
                                         ftk::Color4F(1.F, 1.F, 1.F),
@@ -846,7 +872,7 @@ namespace tl
                                 IRender::drawImage(
                                     layer.image,
                                     getBox(
-                                        ftk::Box2I(ftk::V2I(), offscreenBufferSize),
+                                        layerBox(layer.bounds),
                                         layer.image->getInfo(),
                                         displayOptions.aspectRatio),
                                     ftk::Color4F(1.F, 1.F, 1.F, 1.F - layer.transitionValue),
@@ -859,8 +885,8 @@ namespace tl
                                 IRender::drawImage(
                                     layer.imageB,
                                     getBox(
-                                        ftk::Box2I(ftk::V2I(), offscreenBufferSize),
-                                        layer.image->getInfo(),
+                                        layerBox(layer.boundsB),
+                                        layer.imageB->getInfo(),
                                         displayOptions.aspectRatio),
                                     ftk::Color4F(1.F, 1.F, 1.F, layer.transitionValue),
                                     imageOptionsTmp);
@@ -875,7 +901,7 @@ namespace tl
                             IRender::drawImage(
                                 layer.image,
                                 getBox(
-                                    ftk::Box2I(ftk::V2I(), offscreenBufferSize),
+                                    layerBox(layer.bounds),
                                     layer.image->getInfo(),
                                     displayOptions.aspectRatio),
                                 ftk::Color4F(1.F, 1.F, 1.F),

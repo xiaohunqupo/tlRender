@@ -175,6 +175,7 @@ namespace tl
 
         bool _getVideoInfo(const OTIO_NS::Composable*);
         bool _getAudioInfo(const OTIO_NS::Composable*);
+        void _getCanvas();
 
         float _transitionValue(double frame, double in, double out) const;
 

@@ -32,6 +32,48 @@ namespace tl
         "Relative",
         "Absolute");
 
+    namespace
+    {
+        //! Get the image information used to lay out each video frame, taken
+        //! from the first layer that has an image.
+        //!
+        //! When the frame has a canvas from the OTIO spatial coordinates, the
+        //! canvas size is substituted for the image size. The canvas spans the
+        //! whole timeline, so the layout stays the same no matter which clips
+        //! are visible or what resolution they were rendered at; the layers are
+        //! positioned within it when they are drawn. The canvas already
+        //! describes the display geometry, so the pixel aspect ratio is not
+        //! applied a second time.
+        std::vector<ftk::ImageInfo> getInfos(const std::vector<VideoFrame>& videoFrame)
+        {
+            std::vector<ftk::ImageInfo> out;
+            for (const auto& i : videoFrame)
+            {
+                ftk::ImageInfo info;
+                for (const auto& layer : i.layers)
+                {
+                    if (layer.image)
+                    {
+                        info = layer.image->getInfo();
+                        break;
+                    }
+                    else if (layer.imageB)
+                    {
+                        info = layer.imageB->getInfo();
+                        break;
+                    }
+                }
+                if (i.canvasSize.isValid())
+                {
+                    info.size = i.canvasSize;
+                    info.pixelAspectRatio = 1.F;
+                }
+                out.push_back(info);
+            }
+            return out;
+        }
+    }
+
     bool CompareOptions::operator == (const CompareOptions& other) const
     {
         return
@@ -181,26 +223,7 @@ namespace tl
         const AspectRatioOptions& aspectRatioOptions,
         const std::vector<VideoFrame>& videoFrame)
     {
-        std::vector<ftk::ImageInfo> infos;
-        for (const auto& i : videoFrame)
-        {
-            ftk::ImageInfo info;
-            for (const auto& layer : i.layers)
-            {
-                if (layer.image)
-                {
-                    info = layer.image->getInfo();
-                    break;
-                }
-                else if (layer.imageB)
-                {
-                    info = layer.imageB->getInfo();
-                    break;
-                }
-            }
-            infos.push_back(info);
-        }
-        return getBoxes(options, aspectRatioOptions, infos);
+        return getBoxes(options, aspectRatioOptions, getInfos(videoFrame));
     }
 
     ftk::Size2I getRenderSize(
@@ -240,26 +263,7 @@ namespace tl
         const AspectRatioOptions& aspectRatioOptions,
         const std::vector<VideoFrame>& videoFrame)
     {
-        std::vector<ftk::ImageInfo> infos;
-        for (const auto& i : videoFrame)
-        {
-            ftk::ImageInfo info;
-            for (const auto& layer : i.layers)
-            {
-                if (layer.image)
-                {
-                    info = layer.image->getInfo();
-                    break;
-                }
-                else if (layer.imageB)
-                {
-                    info = layer.imageB->getInfo();
-                    break;
-                }
-            }
-            infos.push_back(info);
-        }
-        return getRenderSize(options, aspectRatioOptions, infos);
+        return getRenderSize(options, aspectRatioOptions, getInfos(videoFrame));
     }
 
     OTIO_NS::RationalTime getCompareTime(

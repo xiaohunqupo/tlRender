@@ -38,6 +38,169 @@ namespace tl
             _videoData();
             _timeline();
             _separateAudio();
+            _spatial();
+        }
+
+        void TimelineTest::_spatial()
+        {
+            // The fixtures pair a 1920x1080 clip with a 640x360 one. The
+            // expected boxes are what each set of OTIO spatial coordinates
+            // works out to in image space, after being scaled from unit-less
+            // coordinates to pixels, flipped from Y-up to Y-down, and moved so
+            // the canvas starts at the origin.
+            const ftk::Box2F full(ftk::V2F(0.F, 0.F), ftk::V2F(1920.F, 1080.F));
+            struct Case
+            {
+                std::string fileName;
+                ftk::Size2I canvasSize;
+                ftk::Box2F first;
+                ftk::Box2F second;
+            };
+            const std::vector<Case> cases =
+            {
+                // The same box written three different ways. All three must
+                // give the same result, and both clips must fill the canvas
+                // whatever resolution they were rendered at.
+                { "SpatialCoordinates.otio", ftk::Size2I(1920, 1080), full, full },
+                { "SpatialCoordinatesUnits.otio", ftk::Size2I(1920, 1080), full, full },
+                { "SpatialCoordinatesCentered.otio", ftk::Size2I(1920, 1080), full, full },
+
+                // Side by side on a wider canvas.
+                { "SpatialCoordinatesSideBySide.otio", ftk::Size2I(3840, 1080),
+                  full,
+                  ftk::Box2F(ftk::V2F(1920.F, 0.F), ftk::V2F(3840.F, 1080.F)) },
+
+                // OTIO is Y-up, so "Upper" ends up at the top of the canvas
+                // and "Lower", the first clip, at the bottom.
+                { "SpatialCoordinatesOffsetY.otio", ftk::Size2I(1920, 2160),
+                  ftk::Box2F(ftk::V2F(0.F, 1080.F), ftk::V2F(1920.F, 2160.F)),
+                  full }
+            };
+
+            for (const auto& i : cases)
+            {
+                try
+                {
+                    const ftk::Path path(TLRENDER_SAMPLE_DATA, i.fileName);
+                    _print(ftk::Format("Path: {0}").arg(path.get()));
+                    auto timeline = Timeline::create(_context, path);
+
+                    // The clips are 24 frames each, so these land one in each.
+                    const std::vector<std::pair<double, ftk::Box2F> > frames =
+                    {
+                        { 0.0, i.first },
+                        { 30.0, i.second }
+                    };
+                    for (const auto& frame : frames)
+                    {
+                        auto request = timeline->getVideo(
+                            OTIO_NS::RationalTime(frame.first, 24.0));
+                        const VideoFrame videoFrame = request.future.get();
+                        FTK_ASSERT(i.canvasSize == videoFrame.canvasSize);
+                        FTK_ASSERT(!videoFrame.layers.empty());
+                        FTK_ASSERT(videoFrame.layers[0].bounds.has_value());
+                        FTK_ASSERT(frame.second == videoFrame.layers[0].bounds.value());
+                    }
+                }
+                catch (const std::exception& e)
+                {
+                    _error(e.what());
+                }
+            }
+
+            // Timelines without spatial coordinates are laid out from the
+            // image sizes as before.
+            try
+            {
+                const ftk::Path path(TLRENDER_SAMPLE_DATA, "MultipleClips.otio");
+                _print(ftk::Format("Path: {0}").arg(path.get()));
+                auto timeline = Timeline::create(_context, path);
+                auto request = timeline->getVideo(OTIO_NS::RationalTime(0.0, 24.0));
+                const VideoFrame videoFrame = request.future.get();
+                FTK_ASSERT(!videoFrame.canvasSize.isValid());
+                for (const auto& layer : videoFrame.layers)
+                {
+                    FTK_ASSERT(!layer.bounds.has_value());
+                }
+            }
+            catch (const std::exception& e)
+            {
+                _error(e.what());
+            }
+
+            // The pixels per unit must come from the first clip that has
+            // spatial coordinates, not simply the first clip. Taking it from a
+            // clip without them leaves the scale at 1 and reads the unit-less
+            // coordinates as pixels, which gives a canvas of a few pixels.
+            try
+            {
+                const ftk::Path path(TLRENDER_SAMPLE_DATA, "SpatialCoordinatesSecondClip.otio");
+                _print(ftk::Format("Path: {0}").arg(path.get()));
+                auto timeline = Timeline::create(_context, path);
+                auto request = timeline->getVideo(OTIO_NS::RationalTime(30.0, 24.0));
+                const VideoFrame videoFrame = request.future.get();
+                FTK_ASSERT(ftk::Size2I(1920, 1080) == videoFrame.canvasSize);
+                FTK_ASSERT(!videoFrame.layers.empty());
+                FTK_ASSERT(videoFrame.layers[0].bounds.has_value());
+                FTK_ASSERT(full == videoFrame.layers[0].bounds.value());
+            }
+            catch (const std::exception& e)
+            {
+                _error(e.what());
+            }
+
+            // Spatial::None ignores the coordinates even when they are there.
+            try
+            {
+                const ftk::Path path(TLRENDER_SAMPLE_DATA, "SpatialCoordinates.otio");
+                _print(ftk::Format("Path: {0}").arg(path.get()));
+                Options options;
+                options.spatial = Spatial::None;
+                auto timeline = Timeline::create(_context, path, options);
+                auto request = timeline->getVideo(OTIO_NS::RationalTime(0.0, 24.0));
+                const VideoFrame videoFrame = request.future.get();
+                FTK_ASSERT(!videoFrame.canvasSize.isValid());
+                for (const auto& layer : videoFrame.layers)
+                {
+                    FTK_ASSERT(!layer.bounds.has_value());
+                }
+            }
+            catch (const std::exception& e)
+            {
+                _error(e.what());
+            }
+
+            // Only the first clip of this timeline has spatial coordinates.
+            // The default leaves the second clip alone, so it is laid out at
+            // its own resolution; Spatial::Normalize gives it the reference
+            // size so that both clips are displayed at the same size.
+            try
+            {
+                const ftk::Path path(TLRENDER_SAMPLE_DATA, "SpatialCoordinatesPartial.otio");
+                _print(ftk::Format("Path: {0}").arg(path.get()));
+                {
+                    auto timeline = Timeline::create(_context, path);
+                    auto request = timeline->getVideo(OTIO_NS::RationalTime(30.0, 24.0));
+                    const VideoFrame videoFrame = request.future.get();
+                    FTK_ASSERT(!videoFrame.layers.empty());
+                    FTK_ASSERT(!videoFrame.layers[0].bounds.has_value());
+                }
+                {
+                    Options options;
+                    options.spatial = Spatial::Normalize;
+                    auto timeline = Timeline::create(_context, path, options);
+                    auto request = timeline->getVideo(OTIO_NS::RationalTime(30.0, 24.0));
+                    const VideoFrame videoFrame = request.future.get();
+                    FTK_ASSERT(ftk::Size2I(1920, 1080) == videoFrame.canvasSize);
+                    FTK_ASSERT(!videoFrame.layers.empty());
+                    FTK_ASSERT(videoFrame.layers[0].bounds.has_value());
+                    FTK_ASSERT(full == videoFrame.layers[0].bounds.value());
+                }
+            }
+            catch (const std::exception& e)
+            {
+                _error(e.what());
+            }
         }
 
         void TimelineTest::_enums()

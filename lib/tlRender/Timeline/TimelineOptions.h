@@ -21,11 +21,34 @@ namespace tl
     };
     TL_ENUM(ImageSeqAudio);
 
+    //! Spatial coordinate options.
+    enum class TL_API_TYPE Spatial
+    {
+        //! Ignore the OTIO spatial coordinates, laying out clips from their
+        //! image sizes
+        None,
+
+        //! Use the OTIO spatial coordinates where clips provide them
+        Coordinates,
+
+        //! Use the OTIO spatial coordinates, and give clips without them the
+        //! size of the first video clip, so that clips of differing
+        //! resolutions are all displayed at the same size
+        Normalize,
+
+        Count,
+        First = None
+    };
+    TL_ENUM(Spatial);
+
     //! Timeline options.
     struct TL_API_TYPE Options
     {
         //! Image sequence audio.
         ImageSeqAudio imageSeqAudio = ImageSeqAudio::Ext;
+
+        //! Spatial coordinates.
+        Spatial spatial = Spatial::Coordinates;
 
         //! Image sequence audio extensions.
         std::vector<std::string> imageSeqAudioExts = { ".mp3", ".wav" };

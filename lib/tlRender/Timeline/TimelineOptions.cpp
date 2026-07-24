@@ -16,10 +16,17 @@ namespace tl
         "Ext",
         "FileName");
 
+    TL_ENUM_IMPL(
+        Spatial,
+        "None",
+        "Coordinates",
+        "Normalize");
+
     bool Options::operator == (const Options& other) const
     {
         return
             imageSeqAudio == other.imageSeqAudio &&
+            spatial == other.spatial &&
             imageSeqAudioExts == other.imageSeqAudioExts &&
             imageSeqAudioFileName == other.imageSeqAudioFileName &&
             compat == other.compat &&

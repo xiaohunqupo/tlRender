@@ -23,6 +23,26 @@ namespace tl
 {
     namespace timeline_tests
     {
+        namespace
+        {
+            // How long to let the playback thread run in each state. This is
+            // spent waiting rather than working, and it is multiplied by the
+            // number of timelines, loop modes, and playback states covered
+            // below, so it dominates the time this test takes. Keep it short.
+            const std::chrono::duration<float> playbackTime(0.25F);
+
+            void waitForPlayback()
+            {
+                const auto t = std::chrono::steady_clock::now();
+                std::chrono::duration<float> diff;
+                do
+                {
+                    ftk::sleep(std::chrono::milliseconds(10));
+                    diff = std::chrono::steady_clock::now() - t;
+                } while (diff < playbackTime);
+            }
+        }
+
         PlayerTest::PlayerTest(const std::shared_ptr<ftk::Context>& context) :
             ITest(context, "timeline_tests::PlayerTest")
         {}
@@ -347,43 +367,18 @@ namespace tl
                     player->seek(timeRange.start_time());
                     player->setLoop(loop);
                     player->setPlayback(Playback::Forward);
-                    auto t = std::chrono::steady_clock::now();
-                    std::chrono::duration<float> diff;
-                    do
-                    {
-                        ftk::sleep(std::chrono::milliseconds(10));
-                        const auto t2 = std::chrono::steady_clock::now();
-                        diff = t2 - t;
-                    } while (diff.count() < 1.F);
+                    waitForPlayback();
 
                     player->seek(timeRange.end_time_inclusive());
-                    t = std::chrono::steady_clock::now();
-                    do
-                    {
-                        ftk::sleep(std::chrono::milliseconds(10));
-                        const auto t2 = std::chrono::steady_clock::now();
-                        diff = t2 - t;
-                    } while (diff.count() < 1.F);
+                    waitForPlayback();
 
                     player->seek(timeRange.end_time_inclusive());
                     player->setPlayback(Playback::Reverse);
-                    t = std::chrono::steady_clock::now();
-                    do
-                    {
-                        ftk::sleep(std::chrono::milliseconds(10));
-                        const auto t2 = std::chrono::steady_clock::now();
-                        diff = t2 - t;
-                    } while (diff.count() < 1.F);
+                    waitForPlayback();
 
                     player->seek(timeRange.start_time());
                     player->setSpeed(doubleSpeed);
-                    t = std::chrono::steady_clock::now();
-                    do
-                    {
-                        ftk::sleep(std::chrono::milliseconds(10));
-                        const auto t2 = std::chrono::steady_clock::now();
-                        diff = t2 - t;
-                    } while (diff.count() < 1.F);
+                    waitForPlayback();
                     player->setSpeed(defaultSpeed);
                 }
                 player->setPlayback(Playback::Stop);
