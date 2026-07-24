@@ -33,7 +33,7 @@ namespace tl
             std::vector<VideoFrame> videoFrame;
             std::shared_ptr<ftk::Observable<ftk::V2I> > viewPos;
             std::shared_ptr<ftk::Observable<double> > zoom;
-            ftk::RangeD zoomRange = ftk::RangeD(0.01, 500.0);
+            ftk::RangeD zoomRange = ftk::RangeD(0.01, 512.0);
             std::shared_ptr<ftk::Observable<std::pair<ftk::V2I, double> > > viewPosZoom;
             std::shared_ptr<ftk::Observable<bool> > frameView;
             std::shared_ptr<ftk::Observable<bool> > framed;
